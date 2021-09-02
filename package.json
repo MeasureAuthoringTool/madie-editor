@@ -1,5 +1,6 @@
 {
   "name": "@madie/madie-editor",
+  "version": "0.0.0",
   "scripts": {
     "start": "webpack serve --port 8501",
     "start:standalone": "webpack serve --env standalone",
