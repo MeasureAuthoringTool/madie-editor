@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import ReactDOM from "react-dom";
 import singleSpaReact from "single-spa-react";
 import Root from "./root.component";
-import MadieAceEditor from "./AceEditor/ace-editor";
+import MadieAceEditor from "./AceEditor/madie-ace-editor";
 
 const lifecycles = singleSpaReact({
   React,
@@ -14,6 +14,6 @@ const lifecycles = singleSpaReact({
   },
 });
 
-export const MadieEditor: FC = MadieAceEditor;
+export const MadieEditor: FC<{ props }> = MadieAceEditor;
 
 export const { bootstrap, mount, unmount } = lifecycles;
