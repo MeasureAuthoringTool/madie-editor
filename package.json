@@ -31,7 +31,7 @@
     "@madie/madie-layout": "^0.0.2",
     "@madie/madie-root": "^0.0.2",
     "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.0.0",
+    "@testing-library/react": "^12.1.0",
     "@types/jest": "^27.0.1",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
@@ -55,7 +55,7 @@
     "postcss": "^8.3.6",
     "postcss-loader": "^6.1.1",
     "postcss-preset-env": "^6.7.0",
-    "prettier": "^2.3.2",
+    "prettier": "^2.4.1",
     "pretty-quick": "^3.1.1",
     "styled-components": "^5.3.1",
     "tailwindcss": "^2.2.9",
@@ -76,7 +76,7 @@
     "react-ace": "^9.4.3",
     "react-dom": "^17.0.2",
     "single-spa": "^5.9.3",
-    "single-spa-react": "^4.3.1"
+    "single-spa-react": "^4.4.0"
   },
   "types": "dist/madie-madie-editor.d.ts",
   "browserslist": [
