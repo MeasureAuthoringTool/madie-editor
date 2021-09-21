@@ -9,6 +9,7 @@ export default function MadieAceEditor({ props }) {
     <AceEditor
       mode="java"
       theme="monokai"
+      defaultValue={props.defaultValue}
       onChange={(val) => {
         props.handleValueChanges(val);
       }}
