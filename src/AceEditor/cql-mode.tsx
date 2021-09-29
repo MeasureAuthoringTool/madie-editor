@@ -54,8 +54,8 @@ export class CqlHighlightRules extends window.ace.acequire(
     const keywordMapper = this.createKeywordMapper(
       {
         keyword: keywords,
-        matTimingKeyword: timingKeywords,
-        matFunctionKeyword: functionKeywords,
+        timingKeywords: timingKeywords,
+        functionKeywords: functionKeywords,
         "constant.language": builtinConstants,
       },
       "identifier",
