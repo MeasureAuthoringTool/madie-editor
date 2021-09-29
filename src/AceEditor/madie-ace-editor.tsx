@@ -7,7 +7,6 @@ import CqlMode from "./cql-mode";
 
 export default function MadieAceEditor({ props }) {
   const aceRef = useRef<AceEditor>(null);
-  // const { width, height } = useResizeDetector({ aceRef });
 
   useEffect(() => {
     const cqlMode = new CqlMode();
