@@ -1,12 +1,11 @@
-import "brace/mode/java";
+import Ace from "ace-builds/src-noconflict/ace";
+import "ace-builds/src-noconflict/mode-sql";
 
-// @ts-ignore
-export class CqlHighlightRules extends window.ace.acequire(
+export class CqlHighlightRules extends Ace.require(
   "ace/mode/text_highlight_rules"
 ).TextHighlightRules {
   constructor() {
     super();
-
     const keywords =
       "after|all|and|as|asc|ascending|before|begins|begun|between|Boolean|by|called|case|cast|Choice|Code|codesystem|codesystems|" +
       "collapse|Concept|contains|context|convert|date|Date|DateTime|day|days|Decimal|default|define|desc|descending|difference|display|distinct|div|duration|during|" +
@@ -50,7 +49,6 @@ export class CqlHighlightRules extends window.ace.acequire(
       // new attributes for QDM 5.6
       "class|interpretation|organizationType|locationType";
 
-    // @ts-ignore
     const keywordMapper = this.createKeywordMapper(
       {
         keyword: keywords,
@@ -62,7 +60,6 @@ export class CqlHighlightRules extends window.ace.acequire(
       false
     );
 
-    // @ts-ignore
     this.$rules = {
       start: [
         {
@@ -109,17 +106,16 @@ export class CqlHighlightRules extends window.ace.acequire(
         },
       ],
     };
-
-    // @ts-ignore
     this.normalizeRules();
   }
 }
 
-export default // @ts-ignore
-class CqlMode extends window.ace.acequire("ace/mode/java").Mode {
+export default class CqlMode extends Ace.require("ace/mode/sql").Mode {
   constructor() {
     super();
-    // @ts-ignore
     this.HighlightRules = CqlHighlightRules;
+    this.lineCommentStart = "//";
+    this.blockComment = { start: "/*", end: "*/" };
+    this.$id = "ace/mode/cql";
   }
 }

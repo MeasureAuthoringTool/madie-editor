@@ -16,7 +16,7 @@ export default function MadieAceEditor({ props }) {
 
   return (
     <AceEditor
-      mode="sql" // Temp value of mode
+      mode="sql" // Temporary value of mode to prevent a dynamic search request.
       ref={aceRef}
       theme="eclipse"
       defaultValue={props.defaultValue}
