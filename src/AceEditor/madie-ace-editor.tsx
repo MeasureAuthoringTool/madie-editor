@@ -16,7 +16,7 @@ export default function MadieAceEditor({ props }) {
     // @ts-ignore
     aceRef?.current?.editor?.getSession()?.setMode(cqlMode);
     localStorage.setItem(localStorageKey, cql);
-  }, [cql]);
+  }, [cql, localStorageKey]);
 
   return (
     <AceEditor
