@@ -1,6 +1,6 @@
 {
   "name": "@madie/madie-editor",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "files": [
     "dist/**/*"
   ],
@@ -52,6 +52,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.0.6",
     "jest-cli": "^27.0.6",
+    "node-polyfill-webpack-plugin": "^1.1.4",
     "postcss": "^8.3.6",
     "postcss-loader": "^6.1.1",
     "postcss-preset-env": "^7.0.1",
@@ -62,6 +63,7 @@
     "ts-config-single-spa": "^3.0.0",
     "twin.macro": "^2.7.0",
     "typescript": "^4.4.3",
+    "util": "^0.12.4",
     "webpack": "^5.52.1",
     "webpack-cli": "^4.8.0",
     "webpack-config-single-spa-react": "^4.0.2",
@@ -71,7 +73,9 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@madie/cql-antlr-parser": "^0.1.0",
     "@testing-library/user-event": "^13.2.1",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-ace": "^9.4.3",
     "react-dom": "^17.0.2",
