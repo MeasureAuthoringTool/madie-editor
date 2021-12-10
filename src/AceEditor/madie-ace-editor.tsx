@@ -73,10 +73,6 @@ const MadieAceEditor = ({
   const [isParsing, setParsing] = useState(false);
   const aceRef = useRef<AceEditor>(null);
 
-  const watchSetEditor = (ed) => {
-    setEditor(ed);
-  };
-
   const customSetAnnotations = (annotations, editor) => {
     editor.getSession().setAnnotations(annotations);
     setAnnotations(annotations);
@@ -84,15 +80,12 @@ const MadieAceEditor = ({
 
   const debouncedParse: any = useRef(
     _.debounce((nextValue: string, event?: any, editor?: any) => {
-      // console.log("event: ", event);
       const errors = parseEditorContent(nextValue);
       const annotations = mapParserErrorsToAceAnnotations(errors);
-      // setAnnotations();
       if (editor) {
-        // editor.getSession().setAnnotations(annotations);
         customSetAnnotations(annotations, editor);
       } else {
-        console.warn("editor is not set! cannot do annotation things!", editor);
+        console.warn("Editor is not set! cannot do annotation things!", editor);
       }
       setParsing(false);
     }, debounceDuration)
@@ -105,13 +98,8 @@ const MadieAceEditor = ({
 
   useNonNullEffectOnce(() => {
     if (defaultValue) {
-      // console.log("defaultValue updated", defaultValue);
       const errors = parseEditorContent(defaultValue);
       const annotations = mapParserErrorsToAceAnnotations(errors);
-      // setAnnotations(annotations);
-      // console.log("annotations: ", annotations);
-      // using editor...setAnnotations because annotations prop on react-ace clears some annotatios on newline
-      // editor.getSession().setAnnotations(annotations);
       customSetAnnotations(annotations, editor);
       setParsing(false);
     }
@@ -139,9 +127,8 @@ const MadieAceEditor = ({
           handleValueChanges(value);
           debouncedParse(value, event, editor);
         }}
-        // annotations={annotations}
         onLoad={(aceEditor) => {
-          watchSetEditor(aceEditor);
+          setEditor(aceEditor);
         }}
         width="100%"
         name="ace-editor-wrapper"
