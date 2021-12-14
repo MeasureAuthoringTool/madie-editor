@@ -12,8 +12,8 @@ import { Ace } from "ace-builds";
 
 export interface EditorPropsType {
   defaultValue: string;
-  handleValueChanges: (value: string) => void;
-  debounceDuration?: number;
+  onChange: (value: string) => void;
+  parseDebounceTime?: number;
 }
 
 const parseEditorContent = (content): any[] => {
@@ -28,7 +28,6 @@ const parseEditorContent = (content): any[] => {
 const mapParserErrorsToAceAnnotations = (errors): any[] => {
   let annotations = [];
   if (errors) {
-    // console.log("mapping errors: ", errors);
     annotations = errors.map((error) => ({
       row: error.start.line - 1,
       column: error.start.position,
@@ -47,10 +46,7 @@ const useNonNullEffectOnce = (cb, deps) => {
       (_.isNil(deps) || deps.every((dep) => !_.isNil(dep)))
     ) {
       used.current = true;
-      // console.log("using the thing");
       return cb();
-    } else {
-      // console.log("ignoring the thing");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
@@ -65,8 +61,8 @@ const ErrorDiv = tw.div`
 
 const MadieAceEditor = ({
   defaultValue,
-  handleValueChanges,
-  debounceDuration = 1500,
+  onChange,
+  parseDebounceTime = 1500,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<any>();
   const [annotations, setAnnotations] = useState<Ace.Annotation[]>([]);
@@ -88,12 +84,19 @@ const MadieAceEditor = ({
         console.warn("Editor is not set! cannot do annotation things!", editor);
       }
       setParsing(false);
-    }, debounceDuration)
+    }, parseDebounceTime)
   ).current;
+
   useEffect(() => {
     const cqlMode = new CqlMode();
     // @ts-ignore
     aceRef?.current?.editor?.getSession()?.setMode(cqlMode);
+
+    return () => {
+      if (debouncedParse) {
+        debouncedParse.cancel();
+      }
+    };
   }, []);
 
   useNonNullEffectOnce(() => {
@@ -121,10 +124,10 @@ const MadieAceEditor = ({
         mode="sql" // Temporary value of mode to prevent a dynamic search request.
         ref={aceRef}
         theme="monokai"
-        defaultValue={defaultValue}
+        value={defaultValue}
         onChange={(value, event) => {
           setParsing(true);
-          handleValueChanges(value);
+          onChange(value);
           debouncedParse(value, event, editor);
         }}
         onLoad={(aceEditor) => {
