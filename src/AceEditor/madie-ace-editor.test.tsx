@@ -9,7 +9,7 @@ import userEvent from "@testing-library/user-event";
 describe("MadieAceEditor component", () => {
   it("should create madie editor", async () => {
     const props = {
-      defaultValue: "",
+      value: "",
       onChange: jest.fn(),
     };
     const container = render(<MadieAceEditor {...props} />);
@@ -20,7 +20,7 @@ describe("MadieAceEditor component", () => {
     jest.useFakeTimers("modern");
     const handleValueChanges = (val) => val;
     const outputProps = {
-      defaultValue: "",
+      value: "",
       onChange: handleValueChanges,
     };
     const result = render(<MadieAceEditor {...outputProps} />);
@@ -42,7 +42,7 @@ describe("MadieAceEditor component", () => {
     const handleValueChanges = jest.fn();
     const typedValue = "this is invalid CQL";
     const outputProps = {
-      defaultValue: "",
+      value: "",
       onChange: handleValueChanges,
       parseDebounceTime: 300,
     };
@@ -55,28 +55,26 @@ describe("MadieAceEditor component", () => {
       userEvent.paste(aceEditor, typedValue);
       jest.advanceTimersByTime(600);
       expect(handleValueChanges).toBeCalledWith(typedValue);
-
-      const message = await screen.findByText(
-        "Errors were encountered during CQL parsing..."
-      );
-      expect(message).toBeInTheDocument();
     });
   });
 
   it("should display parsing feedback followed by valid feedback", async () => {
     jest.useFakeTimers("modern");
     const props = {
-      defaultValue: "",
+      value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
     };
+    const typedText = "using FHIR version '4.0.1'";
 
     await act(async () => {
-      render(<MadieAceEditor {...props} />);
+      const { rerender } = render(<MadieAceEditor {...props} />);
       const aceEditorInput = await screen.findByRole("textbox");
-      userEvent.paste(aceEditorInput, "using FHIR version '4.0.1'");
+      userEvent.paste(aceEditorInput, typedText);
+      props.value = typedText;
+      rerender(<MadieAceEditor {...props} />);
 
-      const parsingMessage = screen.getByText("Parsing...");
+      const parsingMessage = await screen.findByText("Parsing...");
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
       const parseSuccess = await screen.findByText(
@@ -89,17 +87,25 @@ describe("MadieAceEditor component", () => {
   it("should display parsing feedback followed by errors feedback", async () => {
     jest.useFakeTimers("modern");
     const props = {
-      defaultValue: "",
+      value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
     };
+    const typedText = "using FHIR version 4.0.1";
 
     await act(async () => {
-      render(<MadieAceEditor {...props} />);
-      const aceEditorInput = await screen.findByRole("textbox");
-      userEvent.paste(aceEditorInput, "using FHIR version 4.0.1");
+      const { rerender } = render(<MadieAceEditor {...props} />);
+      const parseSuccess = await screen.findByText(
+        "Parsing complete, CQL is valid"
+      );
+      expect(parseSuccess).toBeInTheDocument();
 
-      const parsingMessage = screen.getByText("Parsing...");
+      const aceEditorInput = await screen.findByRole("textbox");
+      userEvent.paste(aceEditorInput, typedText);
+      props.value = typedText;
+      rerender(<MadieAceEditor {...props} />);
+
+      const parsingMessage = await screen.findByText("Parsing...");
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
       const parseError = await screen.findByText(
@@ -109,10 +115,10 @@ describe("MadieAceEditor component", () => {
     });
   });
 
-  it("should display parsing feedback followed by errors feedback", async () => {
+  it("should display user content in the editor", async () => {
     jest.useFakeTimers("modern");
     const props = {
-      defaultValue: "",
+      value: "", // initial value before data is loaded
       onChange: jest.fn(),
       parseDebounceTime: 300,
     };
@@ -124,8 +130,7 @@ describe("MadieAceEditor component", () => {
         "Parsing complete, CQL is valid"
       );
       expect(parseSuccess).toBeInTheDocument();
-      props.defaultValue =
-        "library MATGlobalCommonFunctionsFHIR4 version '6.1.000'";
+      props.value = "library MATGlobalCommonFunctionsFHIR4 version '6.1.000'";
       rerender(<MadieAceEditor {...props} />);
       // const parsingMessage = screen.getByText("Parsing...");
       // expect(parsingMessage).toBeInTheDocument();
@@ -138,7 +143,7 @@ describe("MadieAceEditor component", () => {
       // const library = await screen.findByText(/library/i);
       // expect(library).toBeInTheDocument();
 
-      screen.debug();
+      // screen.debug();
     });
   });
 });

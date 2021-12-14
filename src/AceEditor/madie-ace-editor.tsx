@@ -11,7 +11,7 @@ import CqlMode from "./cql-mode";
 import { Ace } from "ace-builds";
 
 export interface EditorPropsType {
-  defaultValue: string;
+  value: string;
   onChange: (value: string) => void;
   parseDebounceTime?: number;
 }
@@ -38,20 +38,6 @@ const mapParserErrorsToAceAnnotations = (errors): any[] => {
   return annotations;
 };
 
-const useNonNullEffectOnce = (cb, deps) => {
-  const used = useRef(false);
-  useEffect(() => {
-    if (
-      !used.current &&
-      (_.isNil(deps) || deps.every((dep) => !_.isNil(dep)))
-    ) {
-      used.current = true;
-      return cb();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-};
-
 const ErrorDiv = tw.div`
   border
   border-gray-300
@@ -60,7 +46,7 @@ const ErrorDiv = tw.div`
   dark:bg-gray-900`;
 
 const MadieAceEditor = ({
-  defaultValue,
+  value = "",
   onChange,
   parseDebounceTime = 1500,
 }: EditorPropsType) => {
@@ -75,13 +61,13 @@ const MadieAceEditor = ({
   };
 
   const debouncedParse: any = useRef(
-    _.debounce((nextValue: string, event?: any, editor?: any) => {
+    _.debounce((nextValue: string, editor?: any) => {
       const errors = parseEditorContent(nextValue);
       const annotations = mapParserErrorsToAceAnnotations(errors);
       if (editor) {
         customSetAnnotations(annotations, editor);
       } else {
-        console.warn("Editor is not set! cannot do annotation things!", editor);
+        console.warn("Editor is not set! Cannot set annotations!", editor);
       }
       setParsing(false);
     }, parseDebounceTime)
@@ -99,14 +85,12 @@ const MadieAceEditor = ({
     };
   }, []);
 
-  useNonNullEffectOnce(() => {
-    if (defaultValue) {
-      const errors = parseEditorContent(defaultValue);
-      const annotations = mapParserErrorsToAceAnnotations(errors);
-      customSetAnnotations(annotations, editor);
-      setParsing(false);
+  useEffect(() => {
+    if (!_.isNil(value) && editor) {
+      setParsing(true);
+      debouncedParse(value, editor);
     }
-  }, [defaultValue, editor]);
+  }, [value, editor]);
 
   const renderFooterMsg = () => {
     if (isParsing) {
@@ -124,11 +108,9 @@ const MadieAceEditor = ({
         mode="sql" // Temporary value of mode to prevent a dynamic search request.
         ref={aceRef}
         theme="monokai"
-        value={defaultValue}
-        onChange={(value, event) => {
-          setParsing(true);
+        value={value}
+        onChange={(value) => {
           onChange(value);
-          debouncedParse(value, event, editor);
         }}
         onLoad={(aceEditor) => {
           setEditor(aceEditor);
