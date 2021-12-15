@@ -5,6 +5,7 @@
     "declarationDir": "dist",
     "declarationMap": true,
     "jsx": "react-jsx",
+    "target": "es6",
     "sourceMap": true
   },
   "files": ["src/madie-madie-editor.tsx"],
