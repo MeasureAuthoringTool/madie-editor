@@ -1,10 +1,13 @@
 import * as React from "react";
 import { act, render, screen } from "@testing-library/react";
-import MadieAceEditor from "./madie-ace-editor";
+import MadieAceEditor, {
+  mapParserErrorsToAceAnnotations,
+} from "./madie-ace-editor";
 
 import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/theme-monokai";
 import userEvent from "@testing-library/user-event";
+import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 
 describe("MadieAceEditor component", () => {
   it("should create madie editor", async () => {
@@ -145,5 +148,53 @@ describe("MadieAceEditor component", () => {
 
       // screen.debug();
     });
+  });
+});
+
+describe("mapParserErrorsToAceAnnotations", () => {
+  test("that the function returns an empty array with null input", () => {
+    const annotations = mapParserErrorsToAceAnnotations(null);
+    expect(annotations).toEqual([]);
+  });
+
+  test("that the function returns an empty array with undefined input", () => {
+    const annotations = mapParserErrorsToAceAnnotations(undefined);
+    expect(annotations).toEqual([]);
+  });
+
+  test("that the function maps parser errors to annotations", () => {
+    const errors: CqlError[] = [
+      {
+        text: "error text",
+        name: "error name",
+        start: { line: 5, position: 10 },
+        stop: { line: 5, position: 12 },
+        message: `Cannot find symbol "Measurement Period"`,
+      },
+      {
+        text: "error text",
+        name: "error name",
+        start: { line: 8, position: 24 },
+        stop: { line: 8, position: 33 },
+        message: `Cannot find symbol "LengthInDays"`,
+      },
+    ];
+
+    const annotations = mapParserErrorsToAceAnnotations(errors);
+    expect(annotations).toHaveLength(2);
+    expect(annotations).toEqual([
+      {
+        row: 4,
+        column: 10,
+        type: "error",
+        text: `10:12 | Cannot find symbol "Measurement Period"`,
+      },
+      {
+        row: 7,
+        column: 24,
+        type: "error",
+        text: `24:33 | Cannot find symbol "LengthInDays"`,
+      },
+    ]);
   });
 });
