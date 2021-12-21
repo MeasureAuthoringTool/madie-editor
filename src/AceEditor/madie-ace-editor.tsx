@@ -9,6 +9,7 @@ import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 import CqlMode from "./cql-mode";
 import { Ace } from "ace-builds";
+import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 
 export interface EditorPropsType {
   value: string;
@@ -16,8 +17,8 @@ export interface EditorPropsType {
   parseDebounceTime?: number;
 }
 
-const parseEditorContent = (content): any[] => {
-  let errors = [];
+export const parseEditorContent = (content): any[] => {
+  let errors: CqlError[] = [];
   const parseOutput = new CqlAntlr(content).parse();
   if (parseOutput.errors && parseOutput.errors.length > 0) {
     errors = parseOutput.errors;
@@ -25,8 +26,10 @@ const parseEditorContent = (content): any[] => {
   return errors;
 };
 
-const mapParserErrorsToAceAnnotations = (errors): any[] => {
-  let annotations = [];
+export const mapParserErrorsToAceAnnotations = (
+  errors: CqlError[]
+): Ace.Annotation[] => {
+  let annotations: Ace.Annotation[] = [];
   if (errors) {
     annotations = errors.map((error) => ({
       row: error.start.line - 1,
@@ -38,12 +41,7 @@ const mapParserErrorsToAceAnnotations = (errors): any[] => {
   return annotations;
 };
 
-const ErrorDiv = tw.div`
-  border
-  border-gray-300
-  sm:text-sm
-  dark:border-gray-700
-  dark:bg-gray-900`;
+const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
 
 const MadieAceEditor = ({
   value = "",
@@ -83,14 +81,14 @@ const MadieAceEditor = ({
         debouncedParse.cancel();
       }
     };
-  }, []);
+  }, [debouncedParse]);
 
   useEffect(() => {
     if (!_.isNil(value) && editor) {
       setParsing(true);
       debouncedParse(value, editor);
     }
-  }, [value, editor]);
+  }, [value, editor, debouncedParse]);
 
   const renderFooterMsg = () => {
     if (isParsing) {
@@ -120,7 +118,7 @@ const MadieAceEditor = ({
         enableBasicAutocompletion={true}
         editorProps={{ $blockScrolling: true }}
       />
-      <ErrorDiv>{renderFooterMsg()}</ErrorDiv>
+      <FooterDiv>{renderFooterMsg()}</FooterDiv>
     </div>
   );
 };
