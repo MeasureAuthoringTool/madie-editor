@@ -82,7 +82,7 @@ const MadieAceEditor = ({
     } else {
       console.warn("Editor is not set! Cannot set annotations!", editor);
     }
-  }, [parserAnnotations, inboundAnnotations]);
+  }, [parserAnnotations, inboundAnnotations, editor]);
 
   useEffect(() => {
     const cqlMode = new CqlMode();
