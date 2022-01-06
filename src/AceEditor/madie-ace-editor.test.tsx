@@ -19,6 +19,15 @@ describe("MadieAceEditor component", () => {
     expect(container).toBeDefined();
   });
 
+  it("should create madie editor without default value prop", async () => {
+    const props = {
+      value: null,
+      onChange: jest.fn(),
+    };
+    const container = render(<MadieAceEditor {...props} />);
+    expect(container).toBeDefined();
+  });
+
   it("should call AceEditor with expected props", async () => {
     jest.useFakeTimers("modern");
     const handleValueChanges = (val) => val;
@@ -48,6 +57,7 @@ describe("MadieAceEditor component", () => {
       value: "",
       onChange: handleValueChanges,
       parseDebounceTime: 300,
+      inboundAnnotations: [],
     };
 
     await act(async () => {
@@ -67,6 +77,7 @@ describe("MadieAceEditor component", () => {
       value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
+      inboundAnnotations: [],
     };
     const typedText = "using FHIR version '4.0.1'";
 
@@ -93,6 +104,7 @@ describe("MadieAceEditor component", () => {
       value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
+      inboundAnnotations: [],
     };
     const typedText = "using FHIR version 4.0.1";
 
@@ -112,7 +124,46 @@ describe("MadieAceEditor component", () => {
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
       const parseError = await screen.findByText(
-        "Errors were encountered during CQL parsing..."
+        "1 issues were found with CQL..."
+      );
+      expect(parseError).toBeInTheDocument();
+    });
+  });
+
+  it("should display parsing feedback followed by errors feedback with inbound errors included", async () => {
+    jest.useFakeTimers("modern");
+    const props = {
+      value: "",
+      onChange: jest.fn(),
+      parseDebounceTime: 300,
+      inboundAnnotations: [
+        {
+          row: 0,
+          column: 15,
+          type: "error",
+          text: `ELM: ${15}:${25} | ELM translation error`,
+        },
+      ],
+    };
+    const typedText = "using FHIR version 4.0.1";
+
+    await act(async () => {
+      const { rerender } = render(<MadieAceEditor {...props} />);
+      const parseSuccess = await screen.findByText(
+        "Parsing complete, CQL is valid"
+      );
+      expect(parseSuccess).toBeInTheDocument();
+
+      const aceEditorInput = await screen.findByRole("textbox");
+      userEvent.paste(aceEditorInput, typedText);
+      props.value = typedText;
+      rerender(<MadieAceEditor {...props} />);
+
+      const parsingMessage = await screen.findByText("Parsing...");
+      expect(parsingMessage).toBeInTheDocument();
+      jest.advanceTimersByTime(600);
+      const parseError = await screen.findByText(
+        "2 issues were found with CQL..."
       );
       expect(parseError).toBeInTheDocument();
     });
@@ -124,6 +175,7 @@ describe("MadieAceEditor component", () => {
       value: "", // initial value before data is loaded
       onChange: jest.fn(),
       parseDebounceTime: 300,
+      inboundAnnotations: [],
     };
 
     await act(async () => {
@@ -180,6 +232,7 @@ describe("mapParserErrorsToAceAnnotations", () => {
       },
     ];
 
+    const source = "Parse";
     const annotations = mapParserErrorsToAceAnnotations(errors);
     expect(annotations).toHaveLength(2);
     expect(annotations).toEqual([
@@ -187,13 +240,13 @@ describe("mapParserErrorsToAceAnnotations", () => {
         row: 4,
         column: 10,
         type: "error",
-        text: `10:12 | Cannot find symbol "Measurement Period"`,
+        text: `${source}: 10:12 | Cannot find symbol "Measurement Period"`,
       },
       {
         row: 7,
         column: 24,
         type: "error",
-        text: `24:33 | Cannot find symbol "LengthInDays"`,
+        text: `${source}: 24:33 | Cannot find symbol "LengthInDays"`,
       },
     ]);
   });

@@ -15,6 +15,7 @@ export interface EditorPropsType {
   value: string;
   onChange: (value: string) => void;
   parseDebounceTime?: number;
+  inboundAnnotations?: Ace.Annotation[];
 }
 
 export const parseEditorContent = (content): any[] => {
@@ -35,7 +36,7 @@ export const mapParserErrorsToAceAnnotations = (
       row: error.start.line - 1,
       column: error.start.position,
       type: "error",
-      text: `${error.start.position}:${error.stop.position} | ${error.message}`,
+      text: `Parse: ${error.start.position}:${error.stop.position} | ${error.message}`,
     }));
   }
   return annotations;
@@ -44,32 +45,44 @@ export const mapParserErrorsToAceAnnotations = (
 const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
 
 const MadieAceEditor = ({
-  value = "",
+  value,
   onChange,
   parseDebounceTime = 1500,
+  inboundAnnotations,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<any>();
-  const [annotations, setAnnotations] = useState<Ace.Annotation[]>([]);
+  const [editorAnnotations, setEditorAnnotations] = useState<Ace.Annotation[]>(
+    []
+  );
+  const [parserAnnotations, setParserAnnotations] = useState<Ace.Annotation[]>(
+    []
+  );
   const [isParsing, setParsing] = useState(false);
   const aceRef = useRef<AceEditor>(null);
 
   const customSetAnnotations = (annotations, editor) => {
     editor.getSession().setAnnotations(annotations);
-    setAnnotations(annotations);
+    setEditorAnnotations(annotations);
   };
 
   const debouncedParse: any = useRef(
-    _.debounce((nextValue: string, editor?: any) => {
+    _.debounce(async (nextValue: string) => {
       const errors = parseEditorContent(nextValue);
       const annotations = mapParserErrorsToAceAnnotations(errors);
-      if (editor) {
-        customSetAnnotations(annotations, editor);
-      } else {
-        console.warn("Editor is not set! Cannot set annotations!", editor);
-      }
+      setParserAnnotations(annotations);
       setParsing(false);
     }, parseDebounceTime)
   ).current;
+
+  useEffect(() => {
+    const iann = inboundAnnotations || [];
+    const allAnnotations = [...iann, ...parserAnnotations];
+    if (editor) {
+      customSetAnnotations(allAnnotations, editor);
+    } else {
+      console.warn("Editor is not set! Cannot set annotations!", editor);
+    }
+  }, [parserAnnotations, inboundAnnotations, editor]);
 
   useEffect(() => {
     const cqlMode = new CqlMode();
@@ -93,8 +106,10 @@ const MadieAceEditor = ({
   const renderFooterMsg = () => {
     if (isParsing) {
       return <span>Parsing...</span>;
-    } else if (annotations && annotations.length > 0) {
-      return <span>Errors were encountered during CQL parsing...</span>;
+    } else if (editorAnnotations && editorAnnotations.length > 0) {
+      return (
+        <span>{editorAnnotations.length} issues were found with CQL...</span>
+      );
     } else {
       return <span>Parsing complete, CQL is valid</span>;
     }
