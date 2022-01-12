@@ -69,11 +69,11 @@
     "webpack-config-single-spa-react": "^4.0.2",
     "webpack-config-single-spa-react-ts": "^4.0.2",
     "webpack-config-single-spa-ts": "^4.1.1",
-    "webpack-dev-server": "^4.2.1",
+    "webpack-dev-server": "^4.7.3",
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@madie/cql-antlr-parser": "^0.1.1",
+    "@madie/cql-antlr-parser": "^1.0.0",
     "@testing-library/user-event": "^13.2.1",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
