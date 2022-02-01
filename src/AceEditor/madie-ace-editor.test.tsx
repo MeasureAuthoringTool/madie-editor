@@ -1,10 +1,253 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
-import MadieAceEditor from "./madie-ace-editor";
+import { act, render, screen } from "@testing-library/react";
+import MadieAceEditor, {
+  mapParserErrorsToAceAnnotations,
+} from "./madie-ace-editor";
+
+import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/theme-monokai";
+import userEvent from "@testing-library/user-event";
+import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 
 describe("MadieAceEditor component", () => {
-  it("should be madie editor", async () => {
-    const container = render(<MadieAceEditor props="" />);
+  it("should create madie editor", async () => {
+    const props = {
+      value: "",
+      onChange: jest.fn(),
+    };
+    const container = render(<MadieAceEditor {...props} />);
     expect(container).toBeDefined();
+  });
+
+  it("should create madie editor without default value prop", async () => {
+    const props = {
+      value: null,
+      onChange: jest.fn(),
+    };
+    const container = render(<MadieAceEditor {...props} />);
+    expect(container).toBeDefined();
+  });
+
+  it("should call AceEditor with expected props", async () => {
+    jest.useFakeTimers("modern");
+    const handleValueChanges = (val) => val;
+    const outputProps = {
+      value: "",
+      onChange: handleValueChanges,
+    };
+    const result = render(<MadieAceEditor {...outputProps} />);
+    const editorValue = "using FHIR version 4.0.1";
+    let aceEditor: any = await result.container.querySelector(
+      "#ace-editor-wrapper textarea"
+    );
+    userEvent.paste(aceEditor, editorValue);
+
+    aceEditor = await result.container.querySelector(
+      "#ace-editor-wrapper textarea"
+    );
+
+    expect(aceEditor.value).toContain(editorValue);
+  });
+
+  it("should call props handleValueChanges with the expected value", async () => {
+    jest.useFakeTimers("modern");
+    const handleValueChanges = jest.fn();
+    const typedValue = "this is invalid CQL";
+    const outputProps = {
+      value: "",
+      onChange: handleValueChanges,
+      parseDebounceTime: 300,
+      inboundAnnotations: [],
+    };
+
+    await act(async () => {
+      const result = render(<MadieAceEditor {...outputProps} />);
+      let aceEditor: any = await result.container.querySelector(
+        "#ace-editor-wrapper textarea"
+      );
+      userEvent.paste(aceEditor, typedValue);
+      jest.advanceTimersByTime(600);
+      expect(handleValueChanges).toBeCalledWith(typedValue);
+    });
+  });
+
+  it("should display parsing feedback followed by valid feedback", async () => {
+    jest.useFakeTimers("modern");
+    const props = {
+      value: "",
+      onChange: jest.fn(),
+      parseDebounceTime: 300,
+      inboundAnnotations: [],
+    };
+    const typedText = "using FHIR version '4.0.1'";
+
+    await act(async () => {
+      const { rerender } = render(<MadieAceEditor {...props} />);
+      const aceEditorInput = await screen.findByRole("textbox");
+      userEvent.paste(aceEditorInput, typedText);
+      props.value = typedText;
+      rerender(<MadieAceEditor {...props} />);
+
+      const parsingMessage = await screen.findByText("Parsing...");
+      expect(parsingMessage).toBeInTheDocument();
+      jest.advanceTimersByTime(600);
+      const parseSuccess = await screen.findByText(
+        "Parsing complete, CQL is valid"
+      );
+      expect(parseSuccess).toBeInTheDocument();
+    });
+  });
+
+  it("should display parsing feedback followed by errors feedback", async () => {
+    jest.useFakeTimers("modern");
+    const props = {
+      value: "",
+      onChange: jest.fn(),
+      parseDebounceTime: 300,
+      inboundAnnotations: [],
+    };
+    const typedText = "using FHIR version 4.0.1";
+
+    await act(async () => {
+      const { rerender } = render(<MadieAceEditor {...props} />);
+      const parseSuccess = await screen.findByText(
+        "Parsing complete, CQL is valid"
+      );
+      expect(parseSuccess).toBeInTheDocument();
+
+      const aceEditorInput = await screen.findByRole("textbox");
+      userEvent.paste(aceEditorInput, typedText);
+      props.value = typedText;
+      rerender(<MadieAceEditor {...props} />);
+
+      const parsingMessage = await screen.findByText("Parsing...");
+      expect(parsingMessage).toBeInTheDocument();
+      jest.advanceTimersByTime(600);
+      const parseError = await screen.findByText(
+        "1 issues were found with CQL..."
+      );
+      expect(parseError).toBeInTheDocument();
+    });
+  });
+
+  it("should display parsing feedback followed by errors feedback with inbound errors included", async () => {
+    jest.useFakeTimers("modern");
+    const props = {
+      value: "",
+      onChange: jest.fn(),
+      parseDebounceTime: 300,
+      inboundAnnotations: [
+        {
+          row: 0,
+          column: 15,
+          type: "error",
+          text: `ELM: ${15}:${25} | ELM translation error`,
+        },
+      ],
+    };
+    const typedText = "using FHIR version 4.0.1";
+
+    await act(async () => {
+      const { rerender } = render(<MadieAceEditor {...props} />);
+      const parseSuccess = await screen.findByText(
+        "Parsing complete, CQL is valid"
+      );
+      expect(parseSuccess).toBeInTheDocument();
+
+      const aceEditorInput = await screen.findByRole("textbox");
+      userEvent.paste(aceEditorInput, typedText);
+      props.value = typedText;
+      rerender(<MadieAceEditor {...props} />);
+
+      const parsingMessage = await screen.findByText("Parsing...");
+      expect(parsingMessage).toBeInTheDocument();
+      jest.advanceTimersByTime(600);
+      const parseError = await screen.findByText(
+        "2 issues were found with CQL..."
+      );
+      expect(parseError).toBeInTheDocument();
+    });
+  });
+
+  it("should display user content in the editor", async () => {
+    jest.useFakeTimers("modern");
+    const props = {
+      value: "", // initial value before data is loaded
+      onChange: jest.fn(),
+      parseDebounceTime: 300,
+      inboundAnnotations: [],
+    };
+
+    await act(async () => {
+      const { rerender } = render(<MadieAceEditor {...props} />);
+      const aceEditorInput = await screen.findByRole("textbox");
+      const parseSuccess = await screen.findByText(
+        "Parsing complete, CQL is valid"
+      );
+      expect(parseSuccess).toBeInTheDocument();
+      props.value = "library MATGlobalCommonFunctionsFHIR4 version '6.1.000'";
+      rerender(<MadieAceEditor {...props} />);
+      // const parsingMessage = screen.getByText("Parsing...");
+      // expect(parsingMessage).toBeInTheDocument();
+      jest.advanceTimersByTime(600);
+      const parseSuccess2 = await screen.findByText(
+        "Parsing complete, CQL is valid"
+      );
+      expect(parseSuccess2).toBeInTheDocument();
+
+      // const library = await screen.findByText(/library/i);
+      // expect(library).toBeInTheDocument();
+
+      // screen.debug();
+    });
+  });
+});
+
+describe("mapParserErrorsToAceAnnotations", () => {
+  test("that the function returns an empty array with null input", () => {
+    const annotations = mapParserErrorsToAceAnnotations(null);
+    expect(annotations).toEqual([]);
+  });
+
+  test("that the function returns an empty array with undefined input", () => {
+    const annotations = mapParserErrorsToAceAnnotations(undefined);
+    expect(annotations).toEqual([]);
+  });
+
+  test("that the function maps parser errors to annotations", () => {
+    const errors: CqlError[] = [
+      {
+        text: "error text",
+        name: "error name",
+        start: { line: 5, position: 10 },
+        stop: { line: 5, position: 12 },
+        message: `Cannot find symbol "Measurement Period"`,
+      },
+      {
+        text: "error text",
+        name: "error name",
+        start: { line: 8, position: 24 },
+        stop: { line: 8, position: 33 },
+        message: `Cannot find symbol "LengthInDays"`,
+      },
+    ];
+
+    const source = "Parse";
+    const annotations = mapParserErrorsToAceAnnotations(errors);
+    expect(annotations).toHaveLength(2);
+    expect(annotations).toEqual([
+      {
+        row: 4,
+        column: 10,
+        type: "error",
+        text: `${source}: 10:12 | Cannot find symbol "Measurement Period"`,
+      },
+      {
+        row: 7,
+        column: 24,
+        type: "error",
+        text: `${source}: 24:33 | Cannot find symbol "LengthInDays"`,
+      },
+    ]);
   });
 });
