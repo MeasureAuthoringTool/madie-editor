@@ -43,7 +43,7 @@
     "babel-jest": "^27.4.6",
     "concurrently": "^6.5.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.6.0",
+    "eslint": "^8.8.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-ts-react-important-stuff": "^3.0.0",
     "eslint-plugin-prettier": "^4.0.0",
