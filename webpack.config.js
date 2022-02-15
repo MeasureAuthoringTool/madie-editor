@@ -3,8 +3,17 @@ const { mergeWithRules } = require("webpack-merge");
 const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
 const path = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const orgName = "madie";
+
+// const fileConfig = {
+// 	dirStyles: path.join(__dirname, '/src/styles/sass'),
+// 	dirStatics: path.join(__dirname, '/app/static-assets'),
+// 	dirBuild: path.resolve(__dirname, 'public'),
+// 	dirSrc: path.join(__dirname, 'src'),
+//   }
 
 module.exports = (webpackConfigEnv, argv) => {
   const defaultConfig = singleSpaDefaults({
@@ -23,6 +32,7 @@ module.exports = (webpackConfigEnv, argv) => {
       "@madie/root-config",
       "@madie/madie-layout",
       "@madie/madie-auth",
+    //   "@madie/madie-design-system"
     ],
   };
 
@@ -40,6 +50,67 @@ module.exports = (webpackConfigEnv, argv) => {
             "postcss-loader",
           ],
         },
+		{
+			test: /\.scss$/,
+			resolve: {
+			  extensions: ['.scss', '.sass'],
+			},
+			use: [
+			  {
+				loader: 'style-loader',
+			  },
+			  {
+				loader: 'css-loader',
+				options: { sourceMap: true, importLoaders: 2 },
+			  },
+			  {
+				loader: 'postcss-loader',
+				options: {
+				  sourceMap: true,
+				},
+			  },
+			  {
+				loader: 'sass-loader',
+			  },
+			],
+			exclude: /node_modules/,
+		  }
+		// {
+		// 	test: /\.scss$/,
+		// 	include: [/node_modules/, /src/],
+		// 	use: [
+		// 	  'style-loader',
+		// 	  'css-loader',
+		// 	  {
+		// 		loader: 'sass-loader',
+		// 		// options: {
+		// 		//   data: '@import "path/to/global.scss";',
+		// 		//   includePaths:[__dirname, 'src']
+		// 		// },
+		// 	  },
+		// 	],
+		//   },
+        // {
+        //     test: /\.scss$/,
+        //     use: [
+        //         {
+        //         loader: MiniCssExtractPlugin.loader,
+        //         },
+		// 		{ loader: 'style-loader' },
+        //         'css-loader',
+        //         {
+        //         loader: 'sass-loader',
+        //         // options: {
+        //         //     sassOptions: {
+        //         //     // includePaths: ['styles'],
+		// 		// 	includePaths: ['@madie/madie-design-system']
+        //         //     },
+        //         // },
+        //         },
+        //         'sass-loader',
+        //     ],
+        //     exclude: /node_modules/,
+        // },
       ],
     },
     devServer: {
@@ -69,6 +140,13 @@ module.exports = (webpackConfigEnv, argv) => {
           ),
           publicPath: "/madie-auth",
         },
+        {
+          directory: path.join(
+            __dirname,
+            "node_modules/@madie/madie-design-system/"
+          ),
+          publicPath: "/madie-design-system",
+        }
       ],
     },
     plugins: [
@@ -78,9 +156,34 @@ module.exports = (webpackConfigEnv, argv) => {
           "node_modules/@madie/madie-root/dist/index.html"
         ),
       }),
+      new MiniCssExtractPlugin({
+        filename: 'default.css',
+      }),
+	//   new CopyWebpackPlugin({
+	// 	patterns: [
+	// 		// "**/*",
+	// 		{
+	// 		from: './node_modules/@madie/madie-design-system/fonts/',
+	// 		toType: 'dir',
+	// 		to: 'fonts'
+	// 		  },
+	// 		//   {
+    //         //     context: 'node_modules/@madie/madie-design-system/fonts',
+    //         //     from: '**/*',
+    //         //     to: '/fonts'
+    //         // },
+	// 	],
+	//   })
     ],
   };
-
+// 	patterns: [
+// 		{
+// 		from: path.join(__dirname, '/node_modules/@madie/madie-design-system/fonts/'),
+// 		to: path.resolve(__dirname, 'public/fonts')
+// 	  	},
+// 	],
+//   })
+  
   // node polyfills
   const polyfillConfig = {
     resolve: {
@@ -89,6 +192,33 @@ module.exports = (webpackConfigEnv, argv) => {
       },
     },
     plugins: [new NodePolyfillPlugin()],
+  };
+  console.log('webpack', path.join(__dirname, '/node_modules/@madie/madie-design-system/fonts/'))
+  console.log('resolve',path.resolve(__dirname, 'public/fonts'));
+  const copyConfig = {
+    resolve: {
+      fallback: {
+        fs: false,
+      },
+    },
+    plugins: [new CopyWebpackPlugin({
+		patterns: [
+			{
+				from: path.join('/node_modules/@madie/madie-design-system/fonts/'),
+				to: path.resolve('public/fonts'),
+			}
+			// {
+			// 	// from: path.join(__dirname, '/node_modules/@madie/madie-design-system/fonts/'),
+			// 	from: '/Users/matt.mcphillips/madie/madie-editor/node_modules/@madie/madie-design-system/fonts/',
+			// 	to: 'public/fonts'
+			// 	// to: path.resolve(__dirname, 'public/fonts'),
+			//   },
+			//   {
+			// 	from: path.join(__dirname, '/node_modules/@madie/madie-design-system/images/'),
+			// 	to: path.resolve(__dirname, 'public/images'),
+			//   },
+		  ],
+	  })],
   };
 
   return mergeWithRules({
@@ -99,5 +229,6 @@ module.exports = (webpackConfigEnv, argv) => {
       },
     },
     plugins: "append",
-  })(defaultConfig, newCssRule, polyfillConfig, externalsConfig);
+//   })(defaultConfig, newCssRule, polyfillConfig, externalsConfig);
+  })(defaultConfig, newCssRule, polyfillConfig, externalsConfig, copyConfig);
 };

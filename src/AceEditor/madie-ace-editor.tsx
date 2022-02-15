@@ -10,6 +10,8 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import CqlMode from "./cql-mode";
 import { Ace } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
+import { Button } from "@madie/madie-design-system/dist/react";
+// import './root.scss'
 
 export interface EditorPropsType {
   value: string;
@@ -117,6 +119,7 @@ const MadieAceEditor = ({
 
   return (
     <div>
+      <Button>Button!</Button>
       <AceEditor
         mode="sql" // Temporary value of mode to prevent a dynamic search request.
         ref={aceRef}
