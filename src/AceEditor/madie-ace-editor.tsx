@@ -16,6 +16,7 @@ export interface EditorPropsType {
   onChange: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
+  height?: string;
 }
 
 export const parseEditorContent = (content): any[] => {
@@ -47,6 +48,7 @@ const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
 const MadieAceEditor = ({
   value,
   onChange,
+  height,
   parseDebounceTime = 1500,
   inboundAnnotations,
 }: EditorPropsType) => {
@@ -129,6 +131,8 @@ const MadieAceEditor = ({
           setEditor(aceEditor);
         }}
         width="100%"
+        height={height}
+        wrapEnabled={true}
         name="ace-editor-wrapper"
         enableBasicAutocompletion={true}
         editorProps={{ $blockScrolling: true }}
