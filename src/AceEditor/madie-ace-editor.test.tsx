@@ -2,6 +2,7 @@ import * as React from "react";
 import { act, render, screen } from "@testing-library/react";
 import MadieAceEditor, {
   mapParserErrorsToAceAnnotations,
+  mapParserErrorsToAceMarkers,
 } from "./madie-ace-editor";
 
 import "ace-builds/src-noconflict/mode-java";
@@ -261,6 +262,71 @@ describe("mapParserErrorsToAceAnnotations", () => {
         column: 24,
         type: "error",
         text: `${source}: 24:33 | Cannot find symbol "LengthInDays"`,
+      },
+    ]);
+  });
+});
+
+describe("map parser errors to ace markers", () => {
+  test("that the function returns an empty array with null input", () => {
+    const annotations = mapParserErrorsToAceMarkers(null);
+    expect(annotations).toEqual([]);
+  });
+
+  test("that the function returns an empty array with undefined input", () => {
+    const annotations = mapParserErrorsToAceMarkers(undefined);
+    expect(annotations).toEqual([]);
+  });
+
+  test("that the function maps parser errors to annotations", () => {
+    const errors: CqlError[] = [
+      {
+        text: "error text",
+        name: "error name",
+        start: { line: 5, position: 10 },
+        stop: { line: 5, position: 12 },
+        message: `Cannot find symbol "Measurement Period"`,
+      },
+      {
+        text: "error text",
+        name: "error name",
+        start: { line: 8, position: 24 },
+        stop: { line: 8, position: 33 },
+        message: `Cannot find symbol "LengthInDays"`,
+      },
+    ];
+
+    const source = "Parse";
+    const markers = mapParserErrorsToAceMarkers(errors);
+    expect(markers).toHaveLength(errors.length);
+    expect(markers).toEqual([
+      {
+        range: {
+          start: {
+            row: 4,
+            column: 10,
+          },
+          end: {
+            row: 4,
+            column: 12,
+          },
+        },
+        clazz: "editor-error-underline",
+        type: "text",
+      },
+      {
+        range: {
+          start: {
+            row: 7,
+            column: 24,
+          },
+          end: {
+            row: 7,
+            column: 33,
+          },
+        },
+        clazz: "editor-error-underline",
+        type: "text",
       },
     ]);
   });

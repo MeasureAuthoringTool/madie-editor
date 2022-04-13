@@ -8,14 +8,17 @@ import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 import CqlMode from "./cql-mode";
-import { Ace } from "ace-builds";
+import { Ace, Range } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
+
+import "./madie-custom.css";
 
 export interface EditorPropsType {
   value: string;
   onChange: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
+  inboundErrorMarkers?: Ace.MarkerLike[];
   height?: string;
   readOnly?: boolean;
 }
@@ -44,6 +47,23 @@ export const mapParserErrorsToAceAnnotations = (
   return annotations;
 };
 
+export const mapParserErrorsToAceMarkers = (errors: CqlError[]) => {
+  let markers = [];
+  if (errors) {
+    markers = errors.map((error) => ({
+      range: new Range(
+        error.start.line - 1,
+        error.start.position,
+        error.stop.line - 1,
+        error.stop.position
+      ),
+      clazz: "editor-error-underline",
+      type: "text",
+    }));
+  }
+  return markers;
+};
+
 const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
 
 const MadieAceEditor = ({
@@ -52,6 +72,7 @@ const MadieAceEditor = ({
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
+  inboundErrorMarkers,
   readOnly = false,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<any>();
@@ -59,6 +80,9 @@ const MadieAceEditor = ({
     []
   );
   const [parserAnnotations, setParserAnnotations] = useState<Ace.Annotation[]>(
+    []
+  );
+  const [parseErrorMarkers, setParseErrorMarkers] = useState<Ace.MarkerLike[]>(
     []
   );
   const [isParsing, setParsing] = useState(false);
@@ -73,10 +97,23 @@ const MadieAceEditor = ({
     _.debounce(async (nextValue: string) => {
       const errors = parseEditorContent(nextValue);
       const annotations = mapParserErrorsToAceAnnotations(errors);
+      const aceMarkers = mapParserErrorsToAceMarkers(errors);
+      setParseErrorMarkers(aceMarkers);
       setParserAnnotations(annotations);
       setParsing(false);
     }, parseDebounceTime)
   ).current;
+
+  const removeErrorMarkersFromEditor = (session) => {
+    let currMarkers = session.getMarkers(true);
+    let errorMarkerIds = [];
+    for (const m in currMarkers) {
+      if (currMarkers[m].clazz === "editor-error-underline") {
+        errorMarkerIds.push(currMarkers[m].id);
+      }
+    }
+    errorMarkerIds.forEach((id) => session.removeMarker(id));
+  };
 
   useEffect(() => {
     const iann = inboundAnnotations || [];
@@ -87,6 +124,23 @@ const MadieAceEditor = ({
       console.warn("Editor is not set! Cannot set annotations!", editor);
     }
   }, [parserAnnotations, inboundAnnotations, editor]);
+
+  useEffect(() => {
+    if (editor) {
+      let session = editor.getSession();
+      // Remove previous error markers to prevent duplicates
+      // (Ace renders each dup as a new element)
+      removeErrorMarkersFromEditor(editor.getSession());
+      // Set latest parseErrorMarkers
+      const inbound = inboundErrorMarkers || [];
+      const allErrorMarkers = [...inbound, ...parseErrorMarkers];
+      allErrorMarkers.forEach((marker) => {
+        let range = Range.fromPoints(marker.range.start, marker.range.end);
+        // Set inFront to true to display underline when line is selected
+        session.addMarker(range, "editor-error-underline", "text", true);
+      });
+    }
+  }, [editor, parseErrorMarkers, inboundErrorMarkers]);
 
   useEffect(() => {
     const cqlMode = new CqlMode();
