@@ -17,6 +17,7 @@ export interface EditorPropsType {
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   height?: string;
+  readOnly?: boolean;
 }
 
 export const parseEditorContent = (content): any[] => {
@@ -51,6 +52,7 @@ const MadieAceEditor = ({
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
+  readOnly = false,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<any>();
   const [editorAnnotations, setEditorAnnotations] = useState<Ace.Annotation[]>(
@@ -133,6 +135,7 @@ const MadieAceEditor = ({
         width="100%"
         height={height}
         wrapEnabled={true}
+        readOnly={readOnly}
         name="ace-editor-wrapper"
         enableBasicAutocompletion={true}
         editorProps={{ $blockScrolling: true }}

@@ -201,6 +201,20 @@ describe("MadieAceEditor component", () => {
       // screen.debug();
     });
   });
+
+  it("should do things", () => {
+    jest.useFakeTimers("modern");
+    const props = {
+      value: "", // initial value before data is loaded
+      onChange: jest.fn(),
+      parseDebounceTime: 300,
+      inboundAnnotations: [],
+      readOnly: true,
+    };
+
+    render(<MadieAceEditor {...props} />);
+    expect(screen.getByRole("textbox")).toHaveAttribute("readonly");
+  });
 });
 
 describe("mapParserErrorsToAceAnnotations", () => {
