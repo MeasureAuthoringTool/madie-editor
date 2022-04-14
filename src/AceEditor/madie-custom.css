@@ -1,0 +1,4 @@
+.editor-error-underline {
+  border-bottom: 0.2em dotted red;
+  position: absolute;
+}
