@@ -106,13 +106,11 @@ const MadieAceEditor = ({
 
   const removeErrorMarkersFromEditor = (session) => {
     let currMarkers = session.getMarkers(true);
-    let errorMarkerIds = [];
     for (const m in currMarkers) {
       if (currMarkers[m].clazz === "editor-error-underline") {
-        errorMarkerIds.push(currMarkers[m].id);
+        session.removeMarker(currMarkers[m].id);
       }
     }
-    errorMarkerIds.forEach((id) => session.removeMarker(id));
   };
 
   useEffect(() => {

@@ -203,7 +203,7 @@ describe("MadieAceEditor component", () => {
     });
   });
 
-  it("should do things", () => {
+  it("should apply readonly attribute", () => {
     jest.useFakeTimers("modern");
     const props = {
       value: "", // initial value before data is loaded
@@ -269,13 +269,13 @@ describe("mapParserErrorsToAceAnnotations", () => {
 
 describe("map parser errors to ace markers", () => {
   test("that the function returns an empty array with null input", () => {
-    const annotations = mapParserErrorsToAceMarkers(null);
-    expect(annotations).toEqual([]);
+    const markers = mapParserErrorsToAceMarkers(null);
+    expect(markers).toEqual([]);
   });
 
   test("that the function returns an empty array with undefined input", () => {
-    const annotations = mapParserErrorsToAceMarkers(undefined);
-    expect(annotations).toEqual([]);
+    const markers = mapParserErrorsToAceMarkers(undefined);
+    expect(markers).toEqual([]);
   });
 
   test("that the function maps parser errors to annotations", () => {
@@ -296,7 +296,6 @@ describe("map parser errors to ace markers", () => {
       },
     ];
 
-    const source = "Parse";
     const markers = mapParserErrorsToAceMarkers(errors);
     expect(markers).toHaveLength(errors.length);
     expect(markers).toEqual([
