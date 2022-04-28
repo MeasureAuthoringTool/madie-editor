@@ -143,8 +143,7 @@ describe("MadieAceEditor component", () => {
   it("should display parsing feedback followed by errors feedback with inbound errors included", async () => {
     jest.useFakeTimers("modern");
     const props = {
-      value:
-        "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000'",
+      value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
       setParseErrors: jest.fn(),
@@ -185,8 +184,7 @@ describe("MadieAceEditor component", () => {
   it("should display user content in the editor", async () => {
     jest.useFakeTimers("modern");
     const props = {
-      value:
-        "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000'", // initial value before data is loaded
+      value: "", // initial value before data is loaded
       onChange: jest.fn(),
       setParseErrors: jest.fn(),
       handleClick: true,
