@@ -176,11 +176,13 @@ const MadieAceEditor = ({
   };
 
   useEffect(() => {
-    if (value.length > 0 && isParsing === false) {
-      if (editorAnnotations.length > 0) {
-        setParseErrors(true);
-      } else {
-        setParseErrors(false);
+    if (handleClick) {
+      if (value.length > 0 && isParsing === false) {
+        if (editorAnnotations.length > 0) {
+          setParseErrors(true);
+        } else {
+          setParseErrors(false);
+        }
       }
     }
   }, [handleClick, editorAnnotations, isParsing, value]);
