@@ -15,6 +15,7 @@ describe("MadieAceEditor component", () => {
     const props = {
       value: "",
       onChange: jest.fn(),
+      handleClick: true,
     };
     const container = render(<MadieAceEditor {...props} />);
     expect(container).toBeDefined();
@@ -22,8 +23,10 @@ describe("MadieAceEditor component", () => {
 
   it("should create madie editor without default value prop", async () => {
     const props = {
-      value: null,
+      value: "",
       onChange: jest.fn(),
+      setParseErrors: jest.fn(),
+      handleClick: true,
     };
     const container = render(<MadieAceEditor {...props} />);
     expect(container).toBeDefined();
@@ -57,6 +60,8 @@ describe("MadieAceEditor component", () => {
     const outputProps = {
       value: "",
       onChange: handleValueChanges,
+      setParseErrors: jest.fn(),
+      handleClick: true,
       parseDebounceTime: 300,
       inboundAnnotations: [],
     };
@@ -78,6 +83,8 @@ describe("MadieAceEditor component", () => {
       value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
+      setParseErrors: jest.fn(),
+      handleClick: true,
       inboundAnnotations: [],
     };
     const typedText = "using FHIR version '4.0.1'";
@@ -105,6 +112,8 @@ describe("MadieAceEditor component", () => {
       value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
+      setParseErrors: jest.fn(),
+      handleClick: true,
       inboundAnnotations: [],
     };
     const typedText = "using FHIR version 4.0.1";
@@ -137,6 +146,8 @@ describe("MadieAceEditor component", () => {
       value: "",
       onChange: jest.fn(),
       parseDebounceTime: 300,
+      setParseErrors: jest.fn(),
+      handleClick: true,
       inboundAnnotations: [
         {
           row: 0,
@@ -175,6 +186,8 @@ describe("MadieAceEditor component", () => {
     const props = {
       value: "", // initial value before data is loaded
       onChange: jest.fn(),
+      setParseErrors: jest.fn(),
+      handleClick: true,
       parseDebounceTime: 300,
       inboundAnnotations: [],
     };
