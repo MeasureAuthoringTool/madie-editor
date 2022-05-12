@@ -2,7 +2,11 @@ import React, { FC } from "react";
 import ReactDOM from "react-dom";
 import singleSpaReact from "single-spa-react";
 import Root from "./root.component";
-import MadieAceEditor, { EditorPropsType } from "./AceEditor/madie-ace-editor";
+import MadieAceEditor, {
+  EditorPropsType,
+  parseEditorContent,
+} from "./AceEditor/madie-ace-editor";
+import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 
 const lifecycles = singleSpaReact({
   React,
@@ -15,6 +19,7 @@ const lifecycles = singleSpaReact({
 });
 
 export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
+export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 export type { EditorPropsType as MadieEditorPropsType };
 
 export const { bootstrap, mount, unmount } = lifecycles;
