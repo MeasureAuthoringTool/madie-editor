@@ -25,7 +25,7 @@ export interface EditorPropsType {
   readOnly?: boolean;
 }
 
-export const parseEditorContent = (content): any[] => {
+export const parseEditorContent = (content): CqlError[] => {
   let errors: CqlError[] = [];
   const parseOutput = new CqlAntlr(content).parse();
   if (parseOutput.errors && parseOutput.errors.length > 0) {
