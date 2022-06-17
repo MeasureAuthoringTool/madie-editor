@@ -16,8 +16,6 @@ import "./madie-custom.css";
 export interface EditorPropsType {
   value: string;
   onChange: (value: string) => void;
-  setParseErrors?: (value: boolean) => void;
-  handleClick?: boolean;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];
@@ -71,8 +69,6 @@ const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
 const MadieAceEditor = ({
   value,
   onChange,
-  setParseErrors,
-  handleClick,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -174,18 +170,6 @@ const MadieAceEditor = ({
       return <span>Parsing complete, CQL is valid</span>;
     }
   };
-
-  useEffect(() => {
-    if (handleClick) {
-      if (value.length > 0 && isParsing === false) {
-        if (editorAnnotations.length > 0) {
-          setParseErrors(true);
-        } else {
-          setParseErrors(false);
-        }
-      }
-    }
-  }, [handleClick, editorAnnotations, isParsing, value]);
 
   return (
     <div>
