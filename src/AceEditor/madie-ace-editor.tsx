@@ -65,7 +65,7 @@ export const mapParserErrorsToAceMarkers = (errors: CqlError[]) => {
 };
 
 const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
-
+// console.log('iace', IAceEditorProps)
 const MadieAceEditor = ({
   value,
   onChange,
@@ -182,6 +182,8 @@ const MadieAceEditor = ({
           onChange(value);
         }}
         onLoad={(aceEditor) => {
+          // On load we want to tell the ace editor that it's inside of a scrollabel page
+          aceEditor.setOption("autoScrollEditorIntoView", true);
           setEditor(aceEditor);
         }}
         width="100%"
@@ -190,7 +192,6 @@ const MadieAceEditor = ({
         readOnly={readOnly}
         name="ace-editor-wrapper"
         enableBasicAutocompletion={true}
-        editorProps={{ $blockScrolling: true }}
       />
       <FooterDiv>{renderFooterMsg()}</FooterDiv>
     </div>
