@@ -23,6 +23,7 @@ module.exports = (webpackConfigEnv, argv) => {
       "@madie/root-config",
       "@madie/madie-layout",
       "@madie/madie-auth",
+      "@madie/madie-util",
     ],
   };
 

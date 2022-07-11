@@ -10,6 +10,16 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import CqlMode from "./cql-mode";
 import { Ace, Range } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
+import {
+  ElmTranslation,
+  ElmTranslationError,
+} from "../api/useElmTranslationServiceApi";
+import {
+  getVsacErrors,
+  mapTranslationAndVsacErrorsToCqlErrors,
+} from "../validations/editorUtil";
+import validateElmTranslation from "../validations/elmTranslateValidation";
+import { useTerminologyServiceApi } from "@madie/madie-util";
 
 import "./madie-custom.css";
 
@@ -29,7 +39,12 @@ export const parseEditorContent = (content): CqlError[] => {
   if (parseOutput.errors && parseOutput.errors.length > 0) {
     errors = parseOutput.errors;
   }
-  return errors;
+  let errorsWithType: CqlError[] = [];
+  errors.forEach((error) => {
+    error.name = "Parse";
+    errorsWithType.push(error);
+  });
+  return errorsWithType;
 };
 
 export const mapParserErrorsToAceAnnotations = (
@@ -41,7 +56,7 @@ export const mapParserErrorsToAceAnnotations = (
       row: error.start.line - 1,
       column: error.start.position,
       type: "error",
-      text: `Parse: ${error.start.position}:${error.stop.position} | ${error.message}`,
+      text: `${error.name}: ${error.start.position}:${error.stop.position} | ${error.message}`,
     }));
   }
   return annotations;
@@ -86,6 +101,7 @@ const MadieAceEditor = ({
     []
   );
   const [isParsing, setParsing] = useState<boolean>(undefined);
+  const [umlsLoggedIn, setUmlsLoggedIn] = useState<boolean>(undefined);
   const aceRef = useRef<AceEditor>(null);
 
   const customSetAnnotations = (annotations, editor) => {
@@ -95,9 +111,51 @@ const MadieAceEditor = ({
 
   const debouncedParse: any = useRef(
     _.debounce(async (nextValue: string) => {
+      //1. parse errors
       const errors = parseEditorContent(nextValue);
-      const annotations = mapParserErrorsToAceAnnotations(errors);
-      const aceMarkers = mapParserErrorsToAceMarkers(errors);
+
+      let allErrors: CqlError[] = [];
+      errors.forEach((parseError) => {
+        allErrors.push(parseError);
+      });
+
+      //2. ELM translation errors
+      const translationResults: ElmTranslation = await getElmTranslation(
+        nextValue
+      );
+      const elmTranslationErrors: ElmTranslationError[] =
+        getElmTranslationErrors(translationResults);
+      if (elmTranslationErrors && elmTranslationErrors.length > 0) {
+        const elmTranslationCqlErrors =
+          mapTranslationAndVsacErrorsToCqlErrors(elmTranslationErrors);
+        elmTranslationCqlErrors.forEach((error) => {
+          allErrors.push(error);
+        });
+      }
+
+      const isLoggedIn = await Promise.resolve(checkLogin());
+      const loggedInUMLS = isLoggedIn.valueOf();
+      if (loggedInUMLS) {
+        setUmlsLoggedIn(true);
+      }
+
+      //3. VSAC (Value Set and Code System) errors
+      const vsacErrorsArray: ElmTranslationError[] = await getVsacErrors(
+        nextValue,
+        translationResults,
+        loggedInUMLS
+      );
+
+      if (vsacErrorsArray && vsacErrorsArray.length > 0) {
+        const vsacErrors =
+          mapTranslationAndVsacErrorsToCqlErrors(vsacErrorsArray);
+        vsacErrors.forEach((error) => {
+          allErrors.push(error);
+        });
+      }
+
+      const annotations = mapParserErrorsToAceAnnotations(allErrors);
+      const aceMarkers = mapParserErrorsToAceMarkers(allErrors);
       setParseErrorMarkers(aceMarkers);
       setParserAnnotations(annotations);
       setParsing(false);
@@ -164,7 +222,10 @@ const MadieAceEditor = ({
       return <span>Parsing...</span>;
     } else if (editorAnnotations && editorAnnotations.length > 0) {
       return (
-        <span>{editorAnnotations.length} issues were found with CQL...</span>
+        <span>
+          {editorAnnotations.length} issues were found with CQL...
+          {!umlsLoggedIn && `Please log in to UMLS`}
+        </span>
       );
     } else {
       return <span>Parsing complete, CQL is valid</span>;
@@ -196,6 +257,52 @@ const MadieAceEditor = ({
       <FooterDiv>{renderFooterMsg()}</FooterDiv>
     </div>
   );
+};
+
+const checkLogin = async (): Promise<Boolean> => {
+  const terminologyServiceApi = useTerminologyServiceApi();
+  let isLoggedIn = false;
+  await terminologyServiceApi
+    .checkLogin()
+    .then(() => {
+      isLoggedIn = true;
+    })
+    .catch((err) => {
+      isLoggedIn = false;
+    });
+  return isLoggedIn;
+};
+
+export const translateEditorContent = async (
+  cql: string
+): Promise<ElmTranslationError[]> => {
+  const translationResults = await getElmTranslation(cql);
+  const elmTranslationErrors: ElmTranslationError[] =
+    getElmTranslationErrors(translationResults);
+  return elmTranslationErrors;
+};
+
+const getElmTranslation = async (cql: string): Promise<ElmTranslation> => {
+  const translationResults = await validateElmTranslation(cql);
+  return translationResults;
+};
+
+const getElmTranslationErrors = (
+  translationResults: ElmTranslation
+): ElmTranslationError[] => {
+  let translationErrorsArray: ElmTranslationError[] = [];
+  const elmTranslationErrors: ElmTranslationError[] =
+    translationResults?.errorExceptions
+      ? translationResults?.errorExceptions
+      : [];
+
+  if (elmTranslationErrors && elmTranslationErrors.length > 0) {
+    elmTranslationErrors.forEach((elmError) => {
+      elmError.errorType = "ELMTranslation";
+      translationErrorsArray.push(elmError);
+    });
+  }
+  return translationErrorsArray;
 };
 
 export default MadieAceEditor;
