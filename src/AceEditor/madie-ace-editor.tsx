@@ -133,7 +133,7 @@ const MadieAceEditor = ({
         });
       }
 
-      const isLoggedIn = await Promise.resolve(checkLogin());
+      const isLoggedIn = await Promise.resolve(CheckLogin());
       const loggedInUMLS = isLoggedIn.valueOf();
       if (loggedInUMLS) {
         setUmlsLoggedIn(true);
@@ -259,7 +259,7 @@ const MadieAceEditor = ({
   );
 };
 
-const checkLogin = async (): Promise<Boolean> => {
+const CheckLogin = async (): Promise<Boolean> => {
   const terminologyServiceApi = useTerminologyServiceApi();
   let isLoggedIn = false;
   await terminologyServiceApi
