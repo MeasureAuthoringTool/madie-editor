@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import { ElmTranslation } from "../api/useElmTranslationServiceApi";
-import validateElmTranslation from "./elmTranslateValidation";
+import useTranslateCql from "./elmTranslateValidation";
 
 const elmTranslationWithNoErrors: ElmTranslation = {
   externalErrors: [],
@@ -78,7 +78,7 @@ describe("ELM Translation validation", () => {
       }
     });
 
-    const elmErrors: ElmTranslation = await validateElmTranslation("test");
+    const elmErrors: ElmTranslation = await useTranslateCql("test");
     expect(elmErrors.errorExceptions.length).toBe(0);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
@@ -96,7 +96,7 @@ describe("ELM Translation validation", () => {
       }
     });
 
-    const elmErrors: ElmTranslation = await validateElmTranslation("test");
+    const elmErrors: ElmTranslation = await useTranslateCql("test");
     expect(elmErrors.errorExceptions.length).toBe(2);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
@@ -113,13 +113,16 @@ describe("ELM Translation validation", () => {
         });
       }
     });
-
-    const elmErrors: ElmTranslation = await validateElmTranslation("test");
-    expect(elmErrors).toBeNull();
+    try {
+      const elmErrors: ElmTranslation = await useTranslateCql("test");
+      expect(elmErrors).toBeNull();
+    } catch (error) {
+      expect(error.status).toBe(500);
+    }
   });
 
   it("translate CQL to ELM no input CQL", async () => {
-    const elmErrors: ElmTranslation = await validateElmTranslation(null);
+    const elmErrors: ElmTranslation = await useTranslateCql(null);
     expect(elmErrors).toBeNull();
   });
 
@@ -135,8 +138,9 @@ describe("ELM Translation validation", () => {
         });
       }
     });
-
-    const elmErrors: ElmTranslation = await validateElmTranslation("test");
-    expect(elmErrors).toBeNull();
+    try {
+      const elmErrors: ElmTranslation = await useTranslateCql("test");
+      expect(elmErrors).toBeNull();
+    } catch (error) {}
   });
 });

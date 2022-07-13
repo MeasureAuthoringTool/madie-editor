@@ -5,10 +5,17 @@ import Root from "./root.component";
 import MadieAceEditor, {
   EditorPropsType,
   parseEditorContent,
-  translateEditorContent,
+  useTranslateCqlToElm,
+  useValidateCodes,
+  validateValueSets,
 } from "./AceEditor/madie-ace-editor";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
-import { ElmTranslationError } from "./api/useElmTranslationServiceApi";
+import {
+  ElmTranslation,
+  ElmTranslationError,
+  ElmValueSet,
+} from "./api/useElmTranslationServiceApi";
+import { CustomCqlCode } from "./api/useTerminologyServiceApi";
 
 const lifecycles = singleSpaReact({
   React,
@@ -22,9 +29,21 @@ const lifecycles = singleSpaReact({
 
 export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
-export const translateContent: (
+
+export const translateContentCqlToElm: (
   content: string
-) => Promise<ElmTranslationError[]> = translateEditorContent;
+) => Promise<ElmTranslation> = useTranslateCqlToElm;
+
+export const validateContentCodes: (
+  customCqlCodes: CustomCqlCode[],
+  loggedInUMLS: boolean
+) => Promise<ElmTranslationError[]> = useValidateCodes;
+
+export const validateContentValueSets: (
+  valuesetsArray: ElmValueSet[],
+  loggedInUMLS: boolean
+) => Promise<ElmTranslationError[]> = validateValueSets;
+
 export type { EditorPropsType as MadieEditorPropsType };
 
 export const { bootstrap, mount, unmount } = lifecycles;

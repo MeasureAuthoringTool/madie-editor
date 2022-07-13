@@ -13,13 +13,12 @@ import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import {
   ElmTranslation,
   ElmTranslationError,
+  ElmValueSet,
 } from "../api/useElmTranslationServiceApi";
-import {
-  getVsacErrors,
-  mapTranslationAndVsacErrorsToCqlErrors,
-} from "../validations/editorUtil";
-import validateElmTranslation from "../validations/elmTranslateValidation";
-import { useTerminologyServiceApi } from "@madie/madie-util";
+import useTranslateCql from "../validations/elmTranslateValidation";
+import useValidateCustomeCqlCodes from "../validations/codesystemValidation";
+import { CustomCqlCode } from "../api/useTerminologyServiceApi";
+import getValueSetErrors from "../validations/valuesetValidation";
 
 import "./madie-custom.css";
 
@@ -101,7 +100,7 @@ const MadieAceEditor = ({
     []
   );
   const [isParsing, setParsing] = useState<boolean>(undefined);
-  const [umlsLoggedIn, setUmlsLoggedIn] = useState<boolean>(undefined);
+
   const aceRef = useRef<AceEditor>(null);
 
   const customSetAnnotations = (annotations, editor) => {
@@ -111,51 +110,10 @@ const MadieAceEditor = ({
 
   const debouncedParse: any = useRef(
     _.debounce(async (nextValue: string) => {
-      //1. parse errors
       const errors = parseEditorContent(nextValue);
 
-      let allErrors: CqlError[] = [];
-      errors.forEach((parseError) => {
-        allErrors.push(parseError);
-      });
-
-      //2. ELM translation errors
-      const translationResults: ElmTranslation = await getElmTranslation(
-        nextValue
-      );
-      const elmTranslationErrors: ElmTranslationError[] =
-        getElmTranslationErrors(translationResults);
-      if (elmTranslationErrors && elmTranslationErrors.length > 0) {
-        const elmTranslationCqlErrors =
-          mapTranslationAndVsacErrorsToCqlErrors(elmTranslationErrors);
-        elmTranslationCqlErrors.forEach((error) => {
-          allErrors.push(error);
-        });
-      }
-
-      const isLoggedIn = await Promise.resolve(CheckLogin());
-      const loggedInUMLS = isLoggedIn.valueOf();
-      if (loggedInUMLS) {
-        setUmlsLoggedIn(true);
-      }
-
-      //3. VSAC (Value Set and Code System) errors
-      const vsacErrorsArray: ElmTranslationError[] = await getVsacErrors(
-        nextValue,
-        translationResults,
-        loggedInUMLS
-      );
-
-      if (vsacErrorsArray && vsacErrorsArray.length > 0) {
-        const vsacErrors =
-          mapTranslationAndVsacErrorsToCqlErrors(vsacErrorsArray);
-        vsacErrors.forEach((error) => {
-          allErrors.push(error);
-        });
-      }
-
-      const annotations = mapParserErrorsToAceAnnotations(allErrors);
-      const aceMarkers = mapParserErrorsToAceMarkers(allErrors);
+      const annotations = mapParserErrorsToAceAnnotations(errors);
+      const aceMarkers = mapParserErrorsToAceMarkers(errors);
       setParseErrorMarkers(aceMarkers);
       setParserAnnotations(annotations);
       setParsing(false);
@@ -222,10 +180,7 @@ const MadieAceEditor = ({
       return <span>Parsing...</span>;
     } else if (editorAnnotations && editorAnnotations.length > 0) {
       return (
-        <span>
-          {editorAnnotations.length} issues were found with CQL...
-          {!umlsLoggedIn && `Please log in to UMLS`}
-        </span>
+        <span>{editorAnnotations.length} issues were found with CQL...</span>
       );
     } else {
       return <span>Parsing complete, CQL is valid</span>;
@@ -259,50 +214,38 @@ const MadieAceEditor = ({
   );
 };
 
-const CheckLogin = async (): Promise<Boolean> => {
-  const terminologyServiceApi = useTerminologyServiceApi();
-  let isLoggedIn = false;
-  await terminologyServiceApi
-    .checkLogin()
-    .then(() => {
-      isLoggedIn = true;
-    })
-    .catch((err) => {
-      isLoggedIn = false;
-    });
-  return isLoggedIn;
-};
+// const CheckLogin = async (): Promise<Boolean> => {
+//   const terminologyServiceApi = useTerminologyServiceApi();
+//   let isLoggedIn = false;
+//   await terminologyServiceApi
+//     .checkLogin()
+//     .then(() => {
+//       isLoggedIn = true;
+//     })
+//     .catch((err) => {
+//       isLoggedIn = false;
+//     });
+//   return isLoggedIn;
+// };
 
-export const translateEditorContent = async (
+export const useTranslateCqlToElm = async (
   cql: string
+): Promise<ElmTranslation> => {
+  return await useTranslateCql(cql);
+};
+
+export const useValidateCodes = async (
+  customCqlCodes: CustomCqlCode[],
+  loggedInUMLS: boolean
 ): Promise<ElmTranslationError[]> => {
-  const translationResults = await getElmTranslation(cql);
-  const elmTranslationErrors: ElmTranslationError[] =
-    getElmTranslationErrors(translationResults);
-  return elmTranslationErrors;
+  return await useValidateCustomeCqlCodes(customCqlCodes, loggedInUMLS);
 };
 
-const getElmTranslation = async (cql: string): Promise<ElmTranslation> => {
-  const translationResults = await validateElmTranslation(cql);
-  return translationResults;
-};
-
-const getElmTranslationErrors = (
-  translationResults: ElmTranslation
-): ElmTranslationError[] => {
-  let translationErrorsArray: ElmTranslationError[] = [];
-  const elmTranslationErrors: ElmTranslationError[] =
-    translationResults?.errorExceptions
-      ? translationResults?.errorExceptions
-      : [];
-
-  if (elmTranslationErrors && elmTranslationErrors.length > 0) {
-    elmTranslationErrors.forEach((elmError) => {
-      elmError.errorType = "ELMTranslation";
-      translationErrorsArray.push(elmError);
-    });
-  }
-  return translationErrorsArray;
+export const validateValueSets = async (
+  valuesetsArray: ElmValueSet[],
+  loggedInUMLS: boolean
+): Promise<ElmTranslationError[]> => {
+  return await getValueSetErrors(valuesetsArray, loggedInUMLS);
 };
 
 export default MadieAceEditor;

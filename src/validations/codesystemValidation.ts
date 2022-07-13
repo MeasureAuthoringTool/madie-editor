@@ -1,9 +1,4 @@
-import {
-  CqlAntlr,
-  CqlCode,
-  CqlCodeSystem,
-} from "@madie/cql-antlr-parser/dist/src";
-import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
+import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
 import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
 
@@ -18,32 +13,6 @@ export interface CustomCqlCode extends Omit<CqlCode, "codeSystem"> {
   valid?: boolean;
   errorMessage?: string;
 }
-
-export const getCustomCqlCodes = (cql: string): CustomCqlCode[] => {
-  // using Antlr to get cqlCodes & cqlCodeSystems
-  // Constructs a list of CustomCqlCode objects, which are validated in terminology service
-  const cqlResult: CqlResult = new CqlAntlr(cql).parse();
-  return cqlResult?.codes?.map((code) => {
-    return {
-      ...code,
-      codeSystem: cqlResult.codeSystems?.find(
-        (codeSys) => codeSys.name === code.codeSystem
-      ),
-    };
-  });
-};
-
-const ValidateCodes = async (
-  customCqlCodes: CustomCqlCode[] //, loggedInUMLS: boolean
-): Promise<ElmTranslationError[]> => {
-  const terminologyServiceApi = useTerminologyServiceApi();
-  const [validatedCodes] = await Promise.all([
-    await terminologyServiceApi.validateCodes(customCqlCodes),
-  ]);
-  const codeSystemCqlErrors: ElmTranslationError[] =
-    mapCodeSystemErrorsToTranslationErrors(validatedCodes);
-  return codeSystemCqlErrors;
-};
 
 const mapCodeSystemErrorsToTranslationErrors = (
   cqlCodes: CustomCqlCode[]
@@ -77,4 +46,17 @@ const getCqlErrors = (cqlObj, errorSeverity, errorType) => {
   };
 };
 
-export default ValidateCodes;
+const useValidateCustomeCqlCodes = async (
+  customCqlCodes: CustomCqlCode[],
+  loggedInUMLS: boolean
+): Promise<ElmTranslationError[]> => {
+  const terminologyServiceApi = useTerminologyServiceApi();
+  const [validatedCodes] = await Promise.all([
+    await terminologyServiceApi.validateCodes(customCqlCodes, loggedInUMLS),
+  ]);
+  const codeSystemCqlErrors: ElmTranslationError[] =
+    mapCodeSystemErrorsToTranslationErrors(validatedCodes);
+  return codeSystemCqlErrors;
+};
+
+export default useValidateCustomeCqlCodes;

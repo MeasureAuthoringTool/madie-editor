@@ -5,7 +5,7 @@ import {
   ElmTranslationError,
 } from "../api/useElmTranslationServiceApi";
 import { FHIRValueSet } from "../api/useTerminologyServiceApi";
-import getValueSetErrors from "./valuesetValidation";
+import useGetValueSetErrors from "./valuesetValidation";
 
 const mockServiceConfig: ServiceConfig = {
   elmTranslationService: {
@@ -58,8 +58,9 @@ describe("Value Set validation", () => {
       }
     });
 
-    const valuesetErrors: ElmTranslationError[] = await getValueSetErrors(
-      elmValueset
+    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+      elmValueset,
+      true
     );
     expect(valuesetErrors.length).toBe(0);
   });
@@ -74,7 +75,10 @@ describe("Value Set validation", () => {
       }
     });
 
-    const valuesetErrors: ElmTranslationError[] = await getValueSetErrors(null);
+    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+      null,
+      true
+    );
     expect(valuesetErrors === undefined).toBeTruthy();
   });
 
@@ -92,8 +96,17 @@ describe("Value Set validation", () => {
       }
     });
 
-    const valuesetErrors: ElmTranslationError[] = await getValueSetErrors(
-      elmValueset
+    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+      elmValueset,
+      true
+    );
+    expect(valuesetErrors.length).toBe(1);
+  });
+
+  it("get value set when user is not logged in to UMLS", async () => {
+    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+      elmValueset,
+      false
     );
     expect(valuesetErrors.length).toBe(1);
   });

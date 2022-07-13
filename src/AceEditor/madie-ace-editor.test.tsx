@@ -3,7 +3,9 @@ import { act, render, screen } from "@testing-library/react";
 import MadieAceEditor, {
   mapParserErrorsToAceAnnotations,
   mapParserErrorsToAceMarkers,
-  translateEditorContent,
+  useTranslateCqlToElm,
+  useValidateCodes,
+  validateValueSets,
 } from "./madie-ace-editor";
 import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/theme-monokai";
@@ -13,14 +15,14 @@ import {
   ElmTranslation,
   ElmTranslationError,
   ElmTranslationLibrary,
+  ElmValueSet,
 } from "../api/useElmTranslationServiceApi";
-import { FHIRValueSet } from "../api/useTerminologyServiceApi";
+import { FHIRValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
 import { ServiceConfig } from "../api/useServiceConfig";
 import {
   useTerminologyServiceApi,
   TerminologyServiceApi,
 } from "@madie/madie-util";
-
 import axios from "axios";
 
 const elmTranslationLibraryWithValueSets: ElmTranslationLibrary = {
@@ -220,7 +222,8 @@ describe("MadieAceEditor component", () => {
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
       const parseError = await screen.findByText(
-        "1 issues were found with CQL...Please log in to UMLS"
+        //"1 issues were found with CQL...Please log in to UMLS"
+        "1 issues were found with CQL..."
       );
       expect(parseError).toBeInTheDocument();
     });
@@ -261,7 +264,8 @@ describe("MadieAceEditor component", () => {
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
       const parseError = await screen.findByText(
-        "2 issues were found with CQL...Please log in to UMLS"
+        //"2 issues were found with CQL...Please log in to UMLS"
+        "2 issues were found with CQL..."
       );
       expect(parseError).toBeInTheDocument();
     });
@@ -423,7 +427,7 @@ describe("MadieAceEditor component", () => {
     });
   });
 
-  describe("translateEditorContent", () => {
+  describe("translateCqlToElm", () => {
     beforeEach(() => {
       (useTerminologyServiceApi as jest.Mock).mockImplementation(() => {
         return {
@@ -436,7 +440,7 @@ describe("MadieAceEditor component", () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
-    test("translateEditorContent no errors", async () => {
+    test("translateCqlToElm no errors", async () => {
       mockedAxios.put.mockImplementation((args) => {
         if (
           args &&
@@ -448,12 +452,11 @@ describe("MadieAceEditor component", () => {
           });
         }
       });
-      const elmTranslationErrors: ElmTranslationError[] =
-        await translateEditorContent("test");
-      expect(elmTranslationErrors.length).toBe(0);
+      const elmTranslation: ElmTranslation = await useTranslateCqlToElm("test");
+      expect(elmTranslation.errorExceptions.length).toBe(0);
     });
 
-    test("translateEditorContent has translation errors", async () => {
+    test("translateCqlToElm had errors", async () => {
       const translationErrors = [
         {
           startLine: 4,
@@ -497,9 +500,131 @@ describe("MadieAceEditor component", () => {
           });
         }
       });
+      const elmTranslation: ElmTranslation = await useTranslateCqlToElm("test");
+      expect(elmTranslation.errorExceptions.length).toBe(2);
+    });
+  });
+
+  describe("validateCodes", () => {
+    const customCqlCodesWithCodeSystemValid: CustomCqlCode[] = [
+      {
+        codeId: "'P'",
+        codeSystem: {
+          oid: "'https://terminology.hl7.org/CodeSystem/v3-ActPriority'",
+          hits: 0,
+          version: "'HL7V3.0_2021-03'",
+          text:
+            "codesystem 'ActPriority:HL7V3.0_2021-03':" +
+            " 'https://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03'",
+          name: '"ActPriority:HL7V3.0_2021-03"',
+          start: {
+            line: 9,
+            position: 0,
+          },
+          stop: {
+            line: 9,
+            position: 121,
+          },
+          errorMessage: "",
+          valid: true,
+        },
+        hits: 0,
+        text: "code 'preop': 'P' from 'ActPriority:HL7V3.0_2021-03' display 'preop'",
+        name: '"preop"',
+        start: {
+          line: 11,
+          position: 0,
+        },
+        stop: {
+          line: 11,
+          position: 67,
+        },
+        errorMessage: "invalid code",
+        valid: false,
+      },
+    ];
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("validateCodes when user not logged in UMLS", async () => {
+      const codesystemErrors: ElmTranslationError[] = await useValidateCodes(
+        customCqlCodesWithCodeSystemValid,
+        false
+      );
+      expect(codesystemErrors.length).toBe(2);
+    });
+
+    it("validateCodes has errors", async () => {
+      mockedAxios.put.mockImplementation((args) => {
+        if (
+          args &&
+          args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+        ) {
+          return Promise.resolve({
+            data: customCqlCodesWithCodeSystemValid,
+            status: 200,
+          });
+        }
+      });
+      const codesystemErrors: ElmTranslationError[] = await useValidateCodes(
+        customCqlCodesWithCodeSystemValid,
+        true
+      );
+      expect(codesystemErrors.length).toBe(1);
+    });
+  });
+
+  describe("validateValueSets", () => {
+    const elmValuesets: ElmValueSet[] = [
+      {
+        localId: 1,
+        locator: "25:1-25:97",
+        name: "ONC Administrative Sex",
+        id: "ValueSet/2.16.840.1.113762.1.4.",
+      },
+    ];
+    const fhirValueset: FHIRValueSet = {
+      resourceType: "ValueSet",
+      id: "1-96",
+      url: "http://testurl.com",
+      status: "active",
+      errorMsg: "",
+    };
+
+    it("validateValueSets has validation errors", async () => {
+      mockedAxios.get.mockImplementation((args) => {
+        if (
+          args &&
+          args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+        ) {
+          return Promise.reject({
+            data: null,
+            status: 404,
+            error: { message: "Not found!" },
+          });
+        }
+      });
       const elmTranslationErrors: ElmTranslationError[] =
-        await translateEditorContent("test");
-      expect(elmTranslationErrors.length).toBe(2);
+        await validateValueSets(elmValuesets, true);
+      expect(elmTranslationErrors.length).toBe(1);
+    });
+
+    it("validateValueSets has no validation errors", async () => {
+      mockedAxios.get.mockImplementation((args) => {
+        if (
+          args &&
+          args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+        ) {
+          return Promise.resolve({
+            data: fhirValueset,
+            status: 200,
+          });
+        }
+      });
+      const elmTranslationErrors: ElmTranslationError[] =
+        await validateValueSets(elmValuesets, true);
+      expect(elmTranslationErrors.length).toBe(0);
     });
   });
 
@@ -583,7 +708,7 @@ describe("MadieAceEditor component", () => {
         jest.advanceTimersByTime(600);
       });
       const parseError = await screen.findByText(
-        "6 issues were found with CQL..."
+        "2 issues were found with CQL..."
       );
       expect(parseError).toBeInTheDocument();
     });
@@ -686,7 +811,7 @@ describe("MadieAceEditor component", () => {
       jest.advanceTimersByTime(600);
     });
     const parseError = await screen.findByText(
-      "4 issues were found with CQL...Please log in to UMLS"
+      "2 issues were found with CQL..."
     );
     expect(parseError).toBeInTheDocument();
   });

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
-import ValidateCodes, { getCustomCqlCodes } from "./codesystemValidation";
+import useValidateCustomeCqlCodes from "./codesystemValidation";
 import { CustomCqlCode } from "../api/useTerminologyServiceApi";
 
 const customCqlCodes: CustomCqlCode[] = [
@@ -118,12 +118,6 @@ const customCqlCodesWithCodeSystemInvalid: CustomCqlCode[] = [
   },
 ];
 
-const cql =
-  "code \"Congenital absence of cervix (disorder)\": '37687000' from \"SNOMEDCT:2017-09\" display 'Congenital absence of cervix (disorder)'";
-const cql2 =
-  "codesystem \"ActPriority:HL7V3.0_2021-03\": 'http://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03'" +
-  "code \"preop\": 'p' from \"ActPriority:HL7V3.0_2021-03\" display 'preop'";
-
 const mockServiceConfig: ServiceConfig = {
   elmTranslationService: {
     baseUrl: "elm-translator.com",
@@ -143,6 +137,9 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("Code System validation", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it("should retrieve the service url", async () => {
     const actual = await useServiceConfig();
     expect(actual).toBe(mockServiceConfig);
@@ -161,9 +158,8 @@ describe("Code System validation", () => {
       }
     });
 
-    const codesystemErrors: ElmTranslationError[] = await ValidateCodes(
-      customCqlCodes
-    );
+    const codesystemErrors: ElmTranslationError[] =
+      await useValidateCustomeCqlCodes(customCqlCodes, true);
     expect(codesystemErrors.length).toBe(0);
   });
 
@@ -180,9 +176,8 @@ describe("Code System validation", () => {
       }
     });
 
-    const codesystemErrors: ElmTranslationError[] = await ValidateCodes(
-      customCqlCodes
-    );
+    const codesystemErrors: ElmTranslationError[] =
+      await useValidateCustomeCqlCodes(customCqlCodes, true);
     expect(codesystemErrors.length).toBe(2);
   });
 
@@ -199,28 +194,17 @@ describe("Code System validation", () => {
       }
     });
 
-    const codesystemErrors: ElmTranslationError[] = await ValidateCodes(
-      customCqlCodes
-    );
+    const codesystemErrors: ElmTranslationError[] =
+      await useValidateCustomeCqlCodes(customCqlCodes, true);
     expect(codesystemErrors.length).toBe(2);
   });
 
-  it("getCustomCqlCodes input cql does not have code system", () => {
-    const result: CustomCqlCode[] = getCustomCqlCodes(cql);
-    expect(result).not.toBeNull();
-    expect(result.length).toBe(1);
-    expect(JSON.stringify(result).includes("codeSystem")).toBeFalsy();
-  });
-
-  it("getCustomCqlCodes input cql is null", () => {
-    const result: CustomCqlCode[] = getCustomCqlCodes("test");
-    expect(result.length).toBe(0);
-  });
-
-  it("getCustomCqlCodes input cql has valid code system", () => {
-    const result: CustomCqlCode[] = getCustomCqlCodes(cql2);
-    expect(result).not.toBeNull();
-    expect(result.length).toBe(1);
-    expect(JSON.stringify(result).includes("codeSystem")).toBeTruthy();
+  it("Code System validation when user is not logged in to UMLS", async () => {
+    const codesystemErrors: ElmTranslationError[] =
+      await useValidateCustomeCqlCodes(customCqlCodes, false);
+    codesystemErrors.forEach((error) => {
+      expect(error.message).toBe("Please Login to UMLS");
+    });
+    expect(codesystemErrors.length).toBe(2);
   });
 });

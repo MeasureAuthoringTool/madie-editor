@@ -4,15 +4,17 @@ import {
 } from "../api/useElmTranslationServiceApi";
 import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
 
-const validateValueSets = async (
-  valuesetsArray: ElmValueSet[]
-): Promise<ElmTranslationError[]> => {
-  const valuesetsErrors = await GetValueSetErrors(valuesetsArray);
-  return valuesetsErrors;
-};
+// const validateValueSets = async (
+//   valuesetsArray: ElmValueSet[],
+//   loggedInUMLS: boolean
+// ): Promise<ElmTranslationError[]> => {
+//   const valuesetsErrors = await getValueSetErrors(valuesetsArray, loggedInUMLS);
+//   return valuesetsErrors;
+// };
 
-const GetValueSetErrors = async (
-  valuesetsArray: ElmValueSet[]
+const useGetValueSetErrors = async (
+  valuesetsArray: ElmValueSet[],
+  loggedInUMLS: boolean
 ): Promise<ElmTranslationError[]> => {
   const terminologyServiceApi = useTerminologyServiceApi();
   const valuesetsErrorArray: ElmTranslationError[] = [];
@@ -21,7 +23,7 @@ const GetValueSetErrors = async (
       valuesetsArray.map(async (valueSet) => {
         const oid = getOid(valueSet);
         await terminologyServiceApi
-          .getValueSet(oid, valueSet.locator)
+          .getValueSet(oid, valueSet.locator, loggedInUMLS)
           .then((response) => {
             if (response.errorMsg) {
               const vsErrorForElmTranslationError: ElmTranslationError =
@@ -60,7 +62,8 @@ const processValueSetErrorForElmTranslationError = (
     message: vsError,
     targetIncludeLibraryId: "",
     targetIncludeLibraryVersionId: "",
-    type: "ValueSet",
+    //type: "ValueSet",
+    type: "VSAC",
   };
 };
 
@@ -93,4 +96,4 @@ const getEndChar = (locator: string): number => {
   return Number(endLine);
 };
 
-export default validateValueSets;
+export default useGetValueSetErrors;

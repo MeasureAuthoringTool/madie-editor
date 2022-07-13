@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
-import { processCodeSystemErrors } from "../validations/editorUtil";
 import { useOktaTokens } from "@madie/madie-util";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 
@@ -27,8 +26,22 @@ export type FHIRValueSet = {
 export class TerminologyServiceApi {
   constructor(private getAccessToken: () => string) {}
 
-  async getValueSet(oid: string, locator: string): Promise<FHIRValueSet> {
+  async getValueSet(
+    oid: string,
+    locator: string,
+    loggedInUMLS: boolean
+  ): Promise<FHIRValueSet> {
     let fhirValueset: FHIRValueSet = null;
+    if (!loggedInUMLS) {
+      fhirValueset = {
+        resourceType: "ValueSet",
+        id: oid,
+        url: locator,
+        status: "unauthorized",
+        errorMsg: "Please log in to UMLS",
+      };
+      return fhirValueset;
+    }
     const baseUrl = await GetServiceUrl();
     const resp = await axios
       .get(`${baseUrl}/vsac/valueset`, {
@@ -60,8 +73,16 @@ export class TerminologyServiceApi {
   }
 
   async validateCodes(
-    customCqlCodes: CustomCqlCode[]
+    customCqlCodes: CustomCqlCode[],
+    loggedInUMLS: boolean
   ): Promise<CustomCqlCode[]> {
+    if (!loggedInUMLS) {
+      return processCodeSystemErrors(
+        customCqlCodes,
+        "Please Login to UMLS",
+        false
+      );
+    }
     const baseUrl = await GetServiceUrl();
     try {
       const response = await axios.put(
@@ -91,6 +112,27 @@ export class TerminologyServiceApi {
     }
   }
 }
+
+const processCodeSystemErrors = (
+  cqlCodes: CustomCqlCode[],
+  errorMessage: string,
+  valid: boolean
+): CustomCqlCode[] => {
+  return cqlCodes.map((code) => {
+    return {
+      ...code,
+      errorMessage: errorMessage,
+      valid: valid,
+      ...(code.codeSystem && {
+        codeSystem: {
+          ...code.codeSystem,
+          errorMessage: errorMessage,
+          valid: valid,
+        },
+      }),
+    };
+  });
+};
 
 export const GetServiceUrl = async () => {
   const config: ServiceConfig = await useServiceConfig();
