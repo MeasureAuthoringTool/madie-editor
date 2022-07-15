@@ -24,7 +24,7 @@ export type FHIRValueSet = {
 };
 
 export class TerminologyServiceApi {
-  constructor(private getAccessToken: () => string) {}
+  constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async getValueSet(
     oid: string,
@@ -42,9 +42,8 @@ export class TerminologyServiceApi {
       };
       return fhirValueset;
     }
-    const baseUrl = await GetServiceUrl();
-    const resp = await axios
-      .get(`${baseUrl}/vsac/valueset`, {
+    await axios
+      .get(`${this.baseUrl}/vsac/valueset`, {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
           "Content-Type": "text/plain",
@@ -83,10 +82,9 @@ export class TerminologyServiceApi {
         false
       );
     }
-    const baseUrl = await GetServiceUrl();
     try {
       const response = await axios.put(
-        `${baseUrl}/vsac/validations/codes`,
+        `${this.baseUrl}/vsac/validations/codes`,
         customCqlCodes,
         {
           headers: {
@@ -134,14 +132,9 @@ const processCodeSystemErrors = (
   });
 };
 
-export const GetServiceUrl = async () => {
+export default async function useTerminologyServiceApi(): Promise<TerminologyServiceApi> {
   const config: ServiceConfig = await useServiceConfig();
   const serviceUrl: string = config?.terminologyService?.baseUrl;
-
-  return serviceUrl;
-};
-
-export default function useTerminologyServiceApi(): TerminologyServiceApi {
   const { getAccessToken } = useOktaTokens();
-  return new TerminologyServiceApi(getAccessToken);
+  return new TerminologyServiceApi(serviceUrl, getAccessToken);
 }

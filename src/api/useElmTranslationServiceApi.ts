@@ -40,17 +40,12 @@ export type ElmTranslation = {
 };
 
 export class ElmTranslationServiceApi {
-  constructor(private getAccessToken: () => string) {}
+  //constructor(private getAccessToken: () => string) {}
+  constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async translateCqlToElm(cql: string): Promise<ElmTranslation> {
-    let baseUrl = null;
-    try {
-      baseUrl = await GetServiceUrl();
-    } catch (error) {
-      console.error(error);
-    }
-    if (baseUrl) {
-      const resp = await axios.put(`${baseUrl}/cql/translator/cql`, cql, {
+    if (this.baseUrl) {
+      const resp = await axios.put(`${this.baseUrl}/cql/translator/cql`, cql, {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
           "Content-Type": "text/plain",
@@ -80,13 +75,9 @@ export class ElmTranslationServiceApi {
   }
 }
 
-export const GetServiceUrl = async () => {
+export default async function useElmTranslationServiceApi(): Promise<ElmTranslationServiceApi> {
   const config: ServiceConfig = await useServiceConfig();
   const serviceUrl: string = config?.elmTranslationService?.baseUrl;
-  return serviceUrl;
-};
-
-export default function useElmTranslationServiceApi(): ElmTranslationServiceApi {
   const { getAccessToken } = useOktaTokens();
-  return new ElmTranslationServiceApi(getAccessToken);
+  return new ElmTranslationServiceApi(serviceUrl, getAccessToken);
 }

@@ -3,7 +3,6 @@ import AceEditor from "react-ace";
 import * as _ from "lodash";
 import tw from "twin.macro";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
-
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
@@ -13,13 +12,16 @@ import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import {
   ElmTranslation,
   ElmTranslationError,
-  ElmValueSet,
 } from "../api/useElmTranslationServiceApi";
-import useTranslateCql from "../validations/elmTranslateValidation";
-import useValidateCustomeCqlCodes from "../validations/codesystemValidation";
+import TranslateCql from "../validations/elmTranslateValidation";
+import ValidateCustomCqlCodes, {
+  getCustomCqlCodes,
+  mapCodeSystemErrorsToTranslationErrors,
+} from "../validations/codesystemValidation";
 import { CustomCqlCode } from "../api/useTerminologyServiceApi";
-import getValueSetErrors from "../validations/valuesetValidation";
-
+import GetValueSetErrors from "../validations/valuesetValidation";
+import CheckLogin from "../validations/umlsLogin";
+import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
 import "./madie-custom.css";
 
 export interface EditorPropsType {
@@ -103,6 +105,9 @@ const MadieAceEditor = ({
 
   const aceRef = useRef<AceEditor>(null);
 
+  const [testAnnotations, setTestAnnotations] =
+    useState<Ace.Annotation[]>(inboundAnnotations);
+
   const customSetAnnotations = (annotations, editor) => {
     editor.getSession().setAnnotations(annotations);
     setEditorAnnotations(annotations);
@@ -160,7 +165,6 @@ const MadieAceEditor = ({
     const cqlMode = new CqlMode();
     // @ts-ignore
     aceRef?.current?.editor?.getSession()?.setMode(cqlMode);
-
     return () => {
       if (debouncedParse) {
         debouncedParse.cancel();
@@ -214,38 +218,51 @@ const MadieAceEditor = ({
   );
 };
 
-// const CheckLogin = async (): Promise<Boolean> => {
-//   const terminologyServiceApi = useTerminologyServiceApi();
-//   let isLoggedIn = false;
-//   await terminologyServiceApi
-//     .checkLogin()
-//     .then(() => {
-//       isLoggedIn = true;
-//     })
-//     .catch((err) => {
-//       isLoggedIn = false;
-//     });
-//   return isLoggedIn;
-// };
-
-export const useTranslateCqlToElm = async (
+export const useGetAllErrors = async (
   cql: string
-): Promise<ElmTranslation> => {
-  return await useTranslateCql(cql);
-};
-
-export const useValidateCodes = async (
-  customCqlCodes: CustomCqlCode[],
-  loggedInUMLS: boolean
 ): Promise<ElmTranslationError[]> => {
-  return await useValidateCustomeCqlCodes(customCqlCodes, loggedInUMLS);
-};
+  if (cql && cql.trim().length > 0) {
+    const cqlResult: CqlResult = new CqlAntlr(cql).parse();
+    const customCqlCodes: CustomCqlCode[] = getCustomCqlCodes(cql, cqlResult);
+    const isLoggedInUMLS = await Promise.resolve(CheckLogin());
+    const [validatedCodes, translationResults, valuesetsErrors] =
+      await Promise.all([
+        ValidateCustomCqlCodes(customCqlCodes, isLoggedInUMLS.valueOf()),
+        TranslateCql(cql),
+        GetValueSetErrors(cqlResult.valueSets, isLoggedInUMLS.valueOf()),
+      ]);
+    const codeSystemCqlErrors =
+      mapCodeSystemErrorsToTranslationErrors(validatedCodes);
 
-export const validateValueSets = async (
-  valuesetsArray: ElmValueSet[],
-  loggedInUMLS: boolean
-): Promise<ElmTranslationError[]> => {
-  return await getValueSetErrors(valuesetsArray, loggedInUMLS);
+    let allErrorsArray: ElmTranslationError[] =
+      setErrorsToElmTranslationError(translationResults);
+
+    codeSystemCqlErrors.forEach((codeError) => {
+      allErrorsArray.push(codeError);
+    });
+
+    if (valuesetsErrors && valuesetsErrors.length > 0) {
+      valuesetsErrors.map((valueSet) => {
+        allErrorsArray.push(valueSet);
+      });
+    }
+    return allErrorsArray;
+  }
+  return null;
+};
+const setErrorsToElmTranslationError = (
+  translationResults: ElmTranslation
+): ElmTranslationError[] => {
+  let allErrorsArray: ElmTranslationError[] = [];
+  const translationErrors: ElmTranslationError[] =
+    translationResults?.errorExceptions
+      ? translationResults?.errorExceptions
+      : [];
+  translationErrors.forEach((translationError) => {
+    translationError.errorType = "ELM";
+    allErrorsArray.push(translationError);
+  });
+  return allErrorsArray;
 };
 
 export default MadieAceEditor;

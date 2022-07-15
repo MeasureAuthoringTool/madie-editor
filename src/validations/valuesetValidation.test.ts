@@ -1,11 +1,9 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
-import {
-  ElmValueSet,
-  ElmTranslationError,
-} from "../api/useElmTranslationServiceApi";
+import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
 import { FHIRValueSet } from "../api/useTerminologyServiceApi";
 import useGetValueSetErrors from "./valuesetValidation";
+import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
 
 const mockServiceConfig: ServiceConfig = {
   elmTranslationService: {
@@ -22,12 +20,20 @@ jest.mock("../api/useServiceConfig", () => {
   };
 });
 
-const elmValueset: ElmValueSet[] = [
+const cqlValueset: CqlValueSet[] = [
   {
-    localId: 1,
-    locator: "25:1-25:97",
-    name: "ONC Administrative Sex",
-    id: "ValueSet/2.16.840.1.113762.1.4.",
+    text: "valueset \"ONC Administrative Sex\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1'",
+    start: {
+      line: 13,
+      position: 0,
+    },
+    stop: {
+      line: 13,
+      position: 96,
+    },
+    name: '"ONC Administrative Sex"',
+    url: "'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1'",
+    hits: 0,
   },
 ];
 
@@ -59,7 +65,7 @@ describe("Value Set validation", () => {
     });
 
     const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
-      elmValueset,
+      cqlValueset,
       true
     );
     expect(valuesetErrors.length).toBe(0);
@@ -97,7 +103,7 @@ describe("Value Set validation", () => {
     });
 
     const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
-      elmValueset,
+      cqlValueset,
       true
     );
     expect(valuesetErrors.length).toBe(1);
@@ -105,7 +111,7 @@ describe("Value Set validation", () => {
 
   it("get value set when user is not logged in to UMLS", async () => {
     const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
-      elmValueset,
+      cqlValueset,
       false
     );
     expect(valuesetErrors.length).toBe(1);

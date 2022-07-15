@@ -1,5 +1,5 @@
 import * as React from "react";
-import useElmTranslationServiceApi, {
+import {
   ElmTranslationServiceApi,
   ElmTranslation,
 } from "./useElmTranslationServiceApi";
@@ -33,22 +33,28 @@ const mockGetAccessToken = jest.fn().mockImplementation(() => {
   return Promise.resolve("test.jwt");
 });
 
-jest.mock("@madie/madie-util", () => {
-  return {
-    useOktaTokens: () => {
-      return mockGetAccessToken();
-    },
-  };
-});
-
 describe("useELMTranslationServiceApi", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("useTerminologyServiceApi returns TerminologyServiceApi", () => {
-    const actual: ElmTranslationServiceApi = useElmTranslationServiceApi();
-    expect(actual).toBeTruthy();
+  it("Error when service config url is null", async () => {
+    const resp = {
+      data: { json: JSON.stringify(elmTranslationWithNoErrors) },
+      status: 404,
+    };
+    mockedAxios.put.mockRejectedValueOnce(resp);
+    const elmTranslationService: ElmTranslationServiceApi =
+      new ElmTranslationServiceApi(null, mockGetAccessToken);
+
+    try {
+      const translate = await elmTranslationService.translateCqlToElm("test");
+      expect(mockedAxios.get).toBeCalledTimes(1);
+      expect(mockedAxios.put).toBeCalledTimes(1);
+      expect(translate).toBeFalsy();
+    } catch (error) {
+      expect(error).not.toBeNull();
+    }
   });
 
   it("translateCqlToElm failure", async () => {
@@ -58,12 +64,15 @@ describe("useELMTranslationServiceApi", () => {
     };
     mockedAxios.put.mockRejectedValueOnce(resp);
     const elmTranslationService: ElmTranslationServiceApi =
-      useElmTranslationServiceApi();
+      new ElmTranslationServiceApi("test", mockGetAccessToken);
+
     try {
       const translate = await elmTranslationService.translateCqlToElm("test");
       expect(mockedAxios.get).toBeCalledTimes(1);
       expect(mockedAxios.put).toBeCalledTimes(1);
       expect(translate).toBeFalsy();
-    } catch (error) {}
+    } catch (error) {
+      expect(error).not.toBeNull();
+    }
   });
 });

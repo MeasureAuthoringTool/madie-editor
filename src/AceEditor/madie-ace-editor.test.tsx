@@ -3,9 +3,7 @@ import { act, render, screen } from "@testing-library/react";
 import MadieAceEditor, {
   mapParserErrorsToAceAnnotations,
   mapParserErrorsToAceMarkers,
-  useTranslateCqlToElm,
-  useValidateCodes,
-  validateValueSets,
+  useGetAllErrors,
 } from "./madie-ace-editor";
 import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/theme-monokai";
@@ -222,7 +220,6 @@ describe("MadieAceEditor component", () => {
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
       const parseError = await screen.findByText(
-        //"1 issues were found with CQL...Please log in to UMLS"
         "1 issues were found with CQL..."
       );
       expect(parseError).toBeInTheDocument();
@@ -264,7 +261,6 @@ describe("MadieAceEditor component", () => {
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
       const parseError = await screen.findByText(
-        //"2 issues were found with CQL...Please log in to UMLS"
         "2 issues were found with CQL..."
       );
       expect(parseError).toBeInTheDocument();
@@ -424,207 +420,6 @@ describe("MadieAceEditor component", () => {
           type: "text",
         },
       ]);
-    });
-  });
-
-  describe("translateCqlToElm", () => {
-    beforeEach(() => {
-      (useTerminologyServiceApi as jest.Mock).mockImplementation(() => {
-        return {
-          checkLogin: jest
-            .fn()
-            .mockResolvedValueOnce({ status: 200, data: true }),
-        } as unknown as TerminologyServiceApi;
-      });
-    });
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test("translateCqlToElm no errors", async () => {
-      mockedAxios.put.mockImplementation((args) => {
-        if (
-          args &&
-          args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
-        ) {
-          return Promise.resolve({
-            data: { json: JSON.stringify(elmTranslationWithNoErrors) },
-            status: 200,
-          });
-        }
-      });
-      const elmTranslation: ElmTranslation = await useTranslateCqlToElm("test");
-      expect(elmTranslation.errorExceptions.length).toBe(0);
-    });
-
-    test("translateCqlToElm had errors", async () => {
-      const translationErrors = [
-        {
-          startLine: 4,
-          startChar: 19,
-          endLine: 19,
-          endChar: 23,
-          errorSeverity: "Error",
-          errorType: null,
-          message: "Test error 123",
-          targetIncludeLibraryId: "TestLibrary_QICore",
-          targetIncludeLibraryVersionId: "5.0.000",
-          type: null,
-        },
-        {
-          startLine: 24,
-          startChar: 7,
-          endLine: 24,
-          endChar: 15,
-          errorSeverity: "Warning",
-          errorType: null,
-          message: "Test Warning 456",
-          targetIncludeLibraryId: "TestLibrary_QICore",
-          targetIncludeLibraryVersionId: "5.0.000",
-          type: null,
-        },
-      ];
-
-      const elmTranslationWithErrors: ElmTranslation = {
-        externalErrors: [],
-        errorExceptions: translationErrors,
-        library: null,
-      };
-      mockedAxios.put.mockImplementation((args) => {
-        if (
-          args &&
-          args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
-        ) {
-          return Promise.resolve({
-            data: { json: JSON.stringify(elmTranslationWithErrors) },
-            status: 200,
-          });
-        }
-      });
-      const elmTranslation: ElmTranslation = await useTranslateCqlToElm("test");
-      expect(elmTranslation.errorExceptions.length).toBe(2);
-    });
-  });
-
-  describe("validateCodes", () => {
-    const customCqlCodesWithCodeSystemValid: CustomCqlCode[] = [
-      {
-        codeId: "'P'",
-        codeSystem: {
-          oid: "'https://terminology.hl7.org/CodeSystem/v3-ActPriority'",
-          hits: 0,
-          version: "'HL7V3.0_2021-03'",
-          text:
-            "codesystem 'ActPriority:HL7V3.0_2021-03':" +
-            " 'https://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03'",
-          name: '"ActPriority:HL7V3.0_2021-03"',
-          start: {
-            line: 9,
-            position: 0,
-          },
-          stop: {
-            line: 9,
-            position: 121,
-          },
-          errorMessage: "",
-          valid: true,
-        },
-        hits: 0,
-        text: "code 'preop': 'P' from 'ActPriority:HL7V3.0_2021-03' display 'preop'",
-        name: '"preop"',
-        start: {
-          line: 11,
-          position: 0,
-        },
-        stop: {
-          line: 11,
-          position: 67,
-        },
-        errorMessage: "invalid code",
-        valid: false,
-      },
-    ];
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it("validateCodes when user not logged in UMLS", async () => {
-      const codesystemErrors: ElmTranslationError[] = await useValidateCodes(
-        customCqlCodesWithCodeSystemValid,
-        false
-      );
-      expect(codesystemErrors.length).toBe(2);
-    });
-
-    it("validateCodes has errors", async () => {
-      mockedAxios.put.mockImplementation((args) => {
-        if (
-          args &&
-          args.startsWith(mockServiceConfig.terminologyService.baseUrl)
-        ) {
-          return Promise.resolve({
-            data: customCqlCodesWithCodeSystemValid,
-            status: 200,
-          });
-        }
-      });
-      const codesystemErrors: ElmTranslationError[] = await useValidateCodes(
-        customCqlCodesWithCodeSystemValid,
-        true
-      );
-      expect(codesystemErrors.length).toBe(1);
-    });
-  });
-
-  describe("validateValueSets", () => {
-    const elmValuesets: ElmValueSet[] = [
-      {
-        localId: 1,
-        locator: "25:1-25:97",
-        name: "ONC Administrative Sex",
-        id: "ValueSet/2.16.840.1.113762.1.4.",
-      },
-    ];
-    const fhirValueset: FHIRValueSet = {
-      resourceType: "ValueSet",
-      id: "1-96",
-      url: "http://testurl.com",
-      status: "active",
-      errorMsg: "",
-    };
-
-    it("validateValueSets has validation errors", async () => {
-      mockedAxios.get.mockImplementation((args) => {
-        if (
-          args &&
-          args.startsWith(mockServiceConfig.terminologyService.baseUrl)
-        ) {
-          return Promise.reject({
-            data: null,
-            status: 404,
-            error: { message: "Not found!" },
-          });
-        }
-      });
-      const elmTranslationErrors: ElmTranslationError[] =
-        await validateValueSets(elmValuesets, true);
-      expect(elmTranslationErrors.length).toBe(1);
-    });
-
-    it("validateValueSets has no validation errors", async () => {
-      mockedAxios.get.mockImplementation((args) => {
-        if (
-          args &&
-          args.startsWith(mockServiceConfig.terminologyService.baseUrl)
-        ) {
-          return Promise.resolve({
-            data: fhirValueset,
-            status: 200,
-          });
-        }
-      });
-      const elmTranslationErrors: ElmTranslationError[] =
-        await validateValueSets(elmValuesets, true);
-      expect(elmTranslationErrors.length).toBe(0);
     });
   });
 
@@ -814,5 +609,184 @@ describe("MadieAceEditor component", () => {
       "2 issues were found with CQL..."
     );
     expect(parseError).toBeInTheDocument();
+  });
+});
+
+describe("validate cql", () => {
+  beforeEach(() => {
+    (useTerminologyServiceApi as jest.Mock).mockImplementation(() => {
+      return {
+        checkLogin: jest
+          .fn()
+          .mockResolvedValueOnce({ status: 200, data: true }),
+      } as unknown as TerminologyServiceApi;
+    });
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("validate cql has validation errors", async () => {
+    const editorContent: string =
+      "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000' \n" +
+      "using QICore version '4.1.0' \n" +
+      "include FHIRHelpers version '4.0.1' \n" +
+      "codesystem \"ActPriority:HL7V3.0_2021-03\": 'http://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03' \n" +
+      "code \"preop\": 'p' from \"ActPriority:HL7V3.0_2021-03\" display 'preop' \n" +
+      'valueset "ONC Administrative Sex": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
+
+    const elmTransaltionErrors: ElmTranslationError[] = [
+      {
+        startLine: 24,
+        startChar: 7,
+        endLine: 24,
+        endChar: 15,
+        errorSeverity: "Warning",
+        errorType: "",
+        message: "Test Warning 456",
+        targetIncludeLibraryId: "TestLibrary_QICore",
+        targetIncludeLibraryVersionId: "5.0.000",
+        type: "",
+      },
+    ];
+    const elmTranslationWithTransaltionError: ElmTranslation = {
+      externalErrors: [],
+      errorExceptions: elmTransaltionErrors,
+      library: elmTranslationLibraryWithValueSets,
+    };
+
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.reject({
+          data: fhirValuesetWithError,
+          status: 404,
+          error: { message: "Not found!" },
+        });
+      }
+    });
+    mockedAxios.put.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.reject({
+          data: null,
+          status: 404,
+          error: { message: "Invalid code!" },
+        });
+      } else if (
+        args &&
+        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            json: JSON.stringify(elmTranslationWithTransaltionError),
+          },
+          status: 200,
+        });
+      }
+    });
+    const elmTranslationErrors: ElmTranslationError[] = await useGetAllErrors(
+      editorContent
+    );
+    expect(elmTranslationErrors.length).toBe(4);
+  });
+
+  it("validate cql has no errors", async () => {
+    const editorContent: string =
+      "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000' \n" +
+      "using QICore version '4.1.0' \n";
+
+    const fhirValueset: FHIRValueSet = {
+      resourceType: "ValueSet",
+      id: "1-96",
+      url: "http://testurl.com",
+      status: "active",
+      errorMsg: "",
+    };
+    const customCqlCodesValid: CustomCqlCode[] = [
+      {
+        codeId: "'P'",
+        codeSystem: {
+          oid: "'https://terminology.hl7.org/CodeSystem/v3-ActPriority'",
+          hits: 0,
+          version: "'HL7V3.0_2021-03'",
+          text:
+            "codesystem 'ActPriority:HL7V3.0_2021-03':" +
+            " 'https://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03'",
+          name: '"ActPriority:HL7V3.0_2021-03"',
+          start: {
+            line: 9,
+            position: 0,
+          },
+          stop: {
+            line: 9,
+            position: 121,
+          },
+          errorMessage: "",
+          valid: true,
+        },
+        hits: 0,
+        text: "code 'preop': 'P' from 'ActPriority:HL7V3.0_2021-03' display 'preop'",
+        name: '"preop"',
+        start: {
+          line: 11,
+          position: 0,
+        },
+        stop: {
+          line: 11,
+          position: 67,
+        },
+        errorMessage: "",
+        valid: true,
+      },
+    ];
+
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: fhirValueset,
+          status: 200,
+        });
+      }
+    });
+    mockedAxios.put.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: customCqlCodesValid,
+          status: 200,
+        });
+      } else if (
+        args &&
+        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            json: JSON.stringify(elmTranslationWithNoErrors),
+          },
+          status: 200,
+        });
+      }
+    });
+    const elmTranslationErrors: ElmTranslationError[] = await useGetAllErrors(
+      editorContent
+    );
+    expect(elmTranslationErrors.length).toBe(0);
+  });
+
+  it("validate cql null input", async () => {
+    const elmTranslationErrors: ElmTranslationError[] = await useGetAllErrors(
+      ""
+    );
+    expect(elmTranslationErrors).toBeNull();
   });
 });

@@ -4,16 +4,14 @@ import useElmTranslationServiceApi, {
 } from "../api/useElmTranslationServiceApi";
 import * as _ from "lodash";
 
-const useTranslateCql = async (cql: string): Promise<ElmTranslation> => {
-  const elmTranslationServiceApi = useElmTranslationServiceApi();
+const TranslateCql = async (cql: string): Promise<ElmTranslation> => {
+  const elmTranslationServiceApi = await useElmTranslationServiceApi();
+  let translationResults = null;
   if (cql && cql.trim().length > 0) {
-    const [translationResults] = await Promise.all([
-      await elmTranslationServiceApi.translateCqlToElm(cql),
-    ]);
+    translationResults = await elmTranslationServiceApi.translateCqlToElm(cql);
     return translationResults;
-  } else {
   }
   return null;
 };
 
-export default useTranslateCql;
+export default TranslateCql;

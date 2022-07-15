@@ -1,35 +1,26 @@
-import {
-  ElmTranslationError,
-  ElmValueSet,
-} from "../api/useElmTranslationServiceApi";
+import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
 import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
+import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
 
-// const validateValueSets = async (
-//   valuesetsArray: ElmValueSet[],
-//   loggedInUMLS: boolean
-// ): Promise<ElmTranslationError[]> => {
-//   const valuesetsErrors = await getValueSetErrors(valuesetsArray, loggedInUMLS);
-//   return valuesetsErrors;
-// };
-
-const useGetValueSetErrors = async (
-  valuesetsArray: ElmValueSet[],
+const GetValueSetErrors = async (
+  valuesetsArray: CqlValueSet[],
   loggedInUMLS: boolean
 ): Promise<ElmTranslationError[]> => {
-  const terminologyServiceApi = useTerminologyServiceApi();
+  const terminologyServiceApi = await useTerminologyServiceApi();
   const valuesetsErrorArray: ElmTranslationError[] = [];
   if (valuesetsArray) {
     await Promise.allSettled(
       valuesetsArray.map(async (valueSet) => {
-        const oid = getOid(valueSet);
+        const oid = getOidFromCqlValueSet(valueSet);
+        const locator = getLocatorFromCqlValueSet(valueSet);
         await terminologyServiceApi
-          .getValueSet(oid, valueSet.locator, loggedInUMLS)
+          .getValueSet(oid, locator, loggedInUMLS)
           .then((response) => {
             if (response.errorMsg) {
               const vsErrorForElmTranslationError: ElmTranslationError =
                 processValueSetErrorForElmTranslationError(
                   response.errorMsg.toString(),
-                  valueSet.locator
+                  locator
                 );
               valuesetsErrorArray.push(vsErrorForElmTranslationError);
             }
@@ -39,9 +30,19 @@ const useGetValueSetErrors = async (
     return valuesetsErrorArray;
   }
 };
-
-const getOid = (valueSet: ElmValueSet): string => {
-  return valueSet.id.split("ValueSet/")[1];
+const getOidFromCqlValueSet = (valueSet: CqlValueSet): string => {
+  return valueSet.url?.split("ValueSet/")[1].replace("'", "");
+};
+const getLocatorFromCqlValueSet = (valueSet: CqlValueSet): string => {
+  return (
+    valueSet.start.line +
+    ":" +
+    valueSet.start.position +
+    "-" +
+    valueSet.stop.line +
+    ":" +
+    valueSet.stop.position
+  );
 };
 
 const processValueSetErrorForElmTranslationError = (
@@ -62,8 +63,7 @@ const processValueSetErrorForElmTranslationError = (
     message: vsError,
     targetIncludeLibraryId: "",
     targetIncludeLibraryVersionId: "",
-    //type: "ValueSet",
-    type: "VSAC",
+    type: "ValueSet",
   };
 };
 
@@ -96,4 +96,4 @@ const getEndChar = (locator: string): number => {
   return Number(endLine);
 };
 
-export default useGetValueSetErrors;
+export default GetValueSetErrors;
