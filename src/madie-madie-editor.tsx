@@ -7,6 +7,8 @@ import MadieAceEditor, {
   parseEditorContent,
 } from "./AceEditor/madie-ace-editor";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
+import { ElmTranslationError } from "./api/useElmTranslationServiceApi";
+import { useGetAllErrors } from "../src/validations/editorValidation";
 
 const lifecycles = singleSpaReact({
   React,
@@ -20,6 +22,12 @@ const lifecycles = singleSpaReact({
 
 export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
+
+export type { ElmTranslationError };
+export const validateContent: (
+  content: string
+) => Promise<ElmTranslationError[]> = useGetAllErrors;
+
 export type { EditorPropsType as MadieEditorPropsType };
 
 export const { bootstrap, mount, unmount } = lifecycles;
