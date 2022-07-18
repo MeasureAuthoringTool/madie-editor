@@ -2,7 +2,7 @@ import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
 import { FHIRValueSet } from "../api/useTerminologyServiceApi";
-import useGetValueSetErrors from "./valuesetValidation";
+import GetValueSetErrors from "./valuesetValidation";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
 
 const mockServiceConfig: ServiceConfig = {
@@ -64,7 +64,7 @@ describe("Value Set validation", () => {
       }
     });
 
-    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+    const valuesetErrors: ElmTranslationError[] = await GetValueSetErrors(
       cqlValueset,
       true
     );
@@ -81,7 +81,7 @@ describe("Value Set validation", () => {
       }
     });
 
-    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+    const valuesetErrors: ElmTranslationError[] = await GetValueSetErrors(
       null,
       true
     );
@@ -102,7 +102,7 @@ describe("Value Set validation", () => {
       }
     });
 
-    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+    const valuesetErrors: ElmTranslationError[] = await GetValueSetErrors(
       cqlValueset,
       true
     );
@@ -110,7 +110,7 @@ describe("Value Set validation", () => {
   });
 
   it("get value set when user is not logged in to UMLS", async () => {
-    const valuesetErrors: ElmTranslationError[] = await useGetValueSetErrors(
+    const valuesetErrors: ElmTranslationError[] = await GetValueSetErrors(
       cqlValueset,
       false
     );

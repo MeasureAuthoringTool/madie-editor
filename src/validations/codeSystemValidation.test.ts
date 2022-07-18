@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
-import useValidateCustomeCqlCodes, {
+import ValidateCustomCqlCodes, {
   getCustomCqlCodes,
   mapCodeSystemErrorsToTranslationErrors,
 } from "./codesystemValidation";
@@ -167,8 +167,10 @@ describe("Code System validation", () => {
       }
     });
 
-    const codesystemValidations: CustomCqlCode[] =
-      await useValidateCustomeCqlCodes(customCqlCodes, true);
+    const codesystemValidations: CustomCqlCode[] = await ValidateCustomCqlCodes(
+      customCqlCodes,
+      true
+    );
     codesystemValidations.forEach((codesystem) => {
       expect(codesystem.valid).toBeTruthy();
     });
@@ -187,7 +189,7 @@ describe("Code System validation", () => {
       }
     });
 
-    const codesystemErrors: CustomCqlCode[] = await useValidateCustomeCqlCodes(
+    const codesystemErrors: CustomCqlCode[] = await ValidateCustomCqlCodes(
       customCqlCodes,
       true
     );
@@ -207,7 +209,7 @@ describe("Code System validation", () => {
       }
     });
 
-    const codesystemErrors: CustomCqlCode[] = await useValidateCustomeCqlCodes(
+    const codesystemErrors: CustomCqlCode[] = await ValidateCustomCqlCodes(
       customCqlCodes,
       true
     );
@@ -215,7 +217,7 @@ describe("Code System validation", () => {
   });
 
   it("Code System validation when user is not logged in to UMLS", async () => {
-    const codesystemErrors: CustomCqlCode[] = await useValidateCustomeCqlCodes(
+    const codesystemErrors: CustomCqlCode[] = await ValidateCustomCqlCodes(
       customCqlCodes,
       false
     );

@@ -5,10 +5,10 @@ import Root from "./root.component";
 import MadieAceEditor, {
   EditorPropsType,
   parseEditorContent,
-  useGetAllErrors,
 } from "./AceEditor/madie-ace-editor";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/useElmTranslationServiceApi";
+import { useGetAllErrors } from "../src/validations/editorValidation";
 
 const lifecycles = singleSpaReact({
   React,

@@ -4,7 +4,7 @@ import {
   useTerminologyServiceApi,
   TerminologyServiceApi,
 } from "@madie/madie-util";
-import useCheckLogin from "./umlsLogin";
+import CheckLogin from "./umlsLogin";
 
 const mockServiceConfig: ServiceConfig = {
   elmTranslationService: {
@@ -40,7 +40,7 @@ describe("UMLS Login test", () => {
           .mockResolvedValueOnce({ status: 200, data: true }),
       } as unknown as TerminologyServiceApi;
     });
-    const loggedIn = await useCheckLogin();
+    const loggedIn = await CheckLogin();
     expect(loggedIn.valueOf).toBeTruthy();
   });
 
@@ -52,7 +52,7 @@ describe("UMLS Login test", () => {
           .mockRejectedValueOnce({ status: 401, data: false }),
       } as unknown as TerminologyServiceApi;
     });
-    const loggedIn = await useCheckLogin();
+    const loggedIn = await CheckLogin();
     expect(loggedIn.valueOf()).toBeFalsy();
   });
 });

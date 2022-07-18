@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import { ElmTranslation } from "../api/useElmTranslationServiceApi";
-import useTranslateCql from "./elmTranslateValidation";
+import TranslateCql from "./elmTranslateValidation";
 
 const elmTranslationWithNoErrors: ElmTranslation = {
   externalErrors: [],
@@ -78,7 +78,7 @@ describe("ELM Translation validation", () => {
       }
     });
 
-    const elmErrors: ElmTranslation = await useTranslateCql("test");
+    const elmErrors: ElmTranslation = await TranslateCql("test");
     expect(elmErrors.errorExceptions.length).toBe(0);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
@@ -96,7 +96,7 @@ describe("ELM Translation validation", () => {
       }
     });
 
-    const elmErrors: ElmTranslation = await useTranslateCql("test");
+    const elmErrors: ElmTranslation = await TranslateCql("test");
     expect(elmErrors.errorExceptions.length).toBe(2);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
@@ -114,7 +114,7 @@ describe("ELM Translation validation", () => {
       }
     });
     try {
-      const elmErrors: ElmTranslation = await useTranslateCql("test");
+      const elmErrors: ElmTranslation = await TranslateCql("test");
       expect(elmErrors).toBeNull();
     } catch (error) {
       expect(error.status).toBe(500);
@@ -122,7 +122,7 @@ describe("ELM Translation validation", () => {
   });
 
   it("translate CQL to ELM no input CQL", async () => {
-    const elmErrors: ElmTranslation = await useTranslateCql(null);
+    const elmErrors: ElmTranslation = await TranslateCql(null);
     expect(elmErrors).toBeNull();
   });
 
@@ -139,7 +139,7 @@ describe("ELM Translation validation", () => {
       }
     });
     try {
-      const elmErrors: ElmTranslation = await useTranslateCql("test");
+      const elmErrors: ElmTranslation = await TranslateCql("test");
       expect(elmErrors).toBeNull();
     } catch (error) {}
   });
