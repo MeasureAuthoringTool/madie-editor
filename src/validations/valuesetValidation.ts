@@ -31,7 +31,11 @@ const GetValueSetErrors = async (
   }
 };
 const getOidFromCqlValueSet = (valueSet: CqlValueSet): string => {
-  return valueSet.url?.split("ValueSet/")[1].replace("'", "");
+  const oid = valueSet.url?.split("ValueSet/")[1];
+  if (oid) {
+    return oid.replace("'", "");
+  }
+  return oid;
 };
 const getLocatorFromCqlValueSet = (valueSet: CqlValueSet): string => {
   return (
