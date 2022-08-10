@@ -37,6 +37,37 @@ const cqlValueset: CqlValueSet[] = [
   },
 ];
 
+const invalidValueSets: CqlValueSet[] = [
+  {
+    text: "valueset \"HPV Test\": ''",
+    start: {
+      line: 9,
+      position: 0,
+    },
+    stop: {
+      line: 9,
+      position: 22,
+    },
+    name: '"HPV Test"',
+    url: "''",
+    hits: 0,
+  },
+  {
+    text: "valueset \"ONC Administrative Sex\": 'ValueSet/1.2.3.4'",
+    start: {
+      line: 11,
+      position: 0,
+    },
+    stop: {
+      line: 11,
+      position: 29,
+    },
+    name: '"ONC Administrative Sex"',
+    url: "'ValueSet/1.2.3.4'",
+    hits: 0,
+  },
+];
+
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -97,16 +128,22 @@ describe("Value Set validation", () => {
         return Promise.reject({
           data: null,
           status: 404,
-          error: { message: "Not found!" },
+          message: "Value set not found",
         });
       }
     });
 
     const valuesetErrors: ElmTranslationError[] = await GetValueSetErrors(
-      cqlValueset,
+      invalidValueSets,
       true
     );
-    expect(valuesetErrors.length).toBe(1);
+    expect(valuesetErrors.length).toBe(2);
+    expect(valuesetErrors[0].message).toEqual(
+      "Value set not found for oid = undefined location = 9:0-9:22"
+    );
+    expect(valuesetErrors[1].message).toEqual(
+      "Value set not found for oid = 1.2.3.4 location = 11:0-11:29"
+    );
   });
 
   it("get value set when user is not logged in to UMLS", async () => {
