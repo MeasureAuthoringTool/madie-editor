@@ -15,12 +15,13 @@ import "./madie-custom.css";
 
 export interface EditorPropsType {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];
   height?: string;
   readOnly?: boolean;
+  validationsEnabled?: boolean;
 }
 
 export const parseEditorContent = (content): CqlError[] => {
@@ -74,6 +75,7 @@ const MadieAceEditor = ({
   inboundAnnotations,
   inboundErrorMarkers,
   readOnly = false,
+  validationsEnabled = true,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<any>();
   const [editorAnnotations, setEditorAnnotations] = useState<Ace.Annotation[]>(
@@ -114,17 +116,19 @@ const MadieAceEditor = ({
   };
 
   useEffect(() => {
-    const iann = inboundAnnotations || [];
-    const allAnnotations = [...iann, ...parserAnnotations];
-    if (editor) {
-      customSetAnnotations(allAnnotations, editor);
-    } else {
-      console.warn("Editor is not set! Cannot set annotations!", editor);
+    if (validationsEnabled) {
+      const iann = inboundAnnotations || [];
+      const allAnnotations = [...iann, ...parserAnnotations];
+      if (editor) {
+        customSetAnnotations(allAnnotations, editor);
+      } else {
+        console.warn("Editor is not set! Cannot set annotations!", editor);
+      }
     }
   }, [parserAnnotations, inboundAnnotations, editor]);
 
   useEffect(() => {
-    if (editor) {
+    if (editor && validationsEnabled) {
       let session = editor.getSession();
       // Remove previous error markers to prevent duplicates
       // (Ace renders each dup as a new element)
@@ -146,14 +150,14 @@ const MadieAceEditor = ({
     aceRef?.current?.editor?.getSession()?.setMode(cqlMode);
 
     return () => {
-      if (debouncedParse) {
+      if (debouncedParse && validationsEnabled) {
         debouncedParse.cancel();
       }
     };
   }, [debouncedParse]);
 
   useEffect(() => {
-    if (!_.isNil(value) && editor) {
+    if (!_.isNil(value) && editor && validationsEnabled) {
       setParsing(true);
       debouncedParse(value, editor);
     }
@@ -193,7 +197,7 @@ const MadieAceEditor = ({
         name="ace-editor-wrapper"
         enableBasicAutocompletion={true}
       />
-      <FooterDiv>{renderFooterMsg()}</FooterDiv>
+      {validationsEnabled && <FooterDiv>{renderFooterMsg()}</FooterDiv>}
     </div>
   );
 };
