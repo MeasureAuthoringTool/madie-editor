@@ -1,4 +1,4 @@
-import { AllErrorsResult, useGetAllErrors } from "./editorValidation";
+import { ValidationResult, useGetAllErrors } from "./editorValidation";
 import axios from "axios";
 import { ServiceConfig } from "../api/useServiceConfig";
 import { FHIRValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
@@ -135,7 +135,7 @@ describe("Editor Validation Test", () => {
   });
 
   it("validate cql null input", async () => {
-    const errorsResult: AllErrorsResult = await useGetAllErrors("");
+    const errorsResult: ValidationResult = await useGetAllErrors("");
     expect(errorsResult).toBeNull();
   });
 
@@ -176,7 +176,7 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const errorsResult: AllErrorsResult = await useGetAllErrors(editorContent);
+    const errorsResult: ValidationResult = await useGetAllErrors(editorContent);
     expect(errorsResult?.errors.length).toBe(0);
   });
 

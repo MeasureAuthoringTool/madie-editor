@@ -9,7 +9,7 @@ import MadieAceEditor, {
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/useElmTranslationServiceApi";
 import {
-  AllErrorsResult,
+  ValidationResult,
   useGetAllErrors,
 } from "../src/validations/editorValidation";
 
@@ -27,7 +27,7 @@ export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 
 export type { ElmTranslationError };
-export const validateContent: (content: string) => Promise<AllErrorsResult> =
+export const validateContent: (content: string) => Promise<ValidationResult> =
   useGetAllErrors;
 
 export type { EditorPropsType as MadieEditorPropsType };
