@@ -1,4 +1,4 @@
-import { useGetAllErrors } from "./editorValidation";
+import { AllErrorsResult, useGetAllErrors } from "./editorValidation";
 import axios from "axios";
 import { ServiceConfig } from "../api/useServiceConfig";
 import { FHIRValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
@@ -135,10 +135,8 @@ describe("Editor Validation Test", () => {
   });
 
   it("validate cql null input", async () => {
-    const elmTranslationErrors: ElmTranslationError[] = await useGetAllErrors(
-      ""
-    );
-    expect(elmTranslationErrors).toBeNull();
+    const errorsResult: AllErrorsResult = await useGetAllErrors("");
+    expect(errorsResult).toBeNull();
   });
 
   it("Validate editor content has no error", async () => {
@@ -178,10 +176,8 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const elmTranslationErrors: ElmTranslationError[] = await useGetAllErrors(
-      editorContent
-    );
-    expect(elmTranslationErrors.length).toBe(0);
+    const errorsResult: AllErrorsResult = await useGetAllErrors(editorContent);
+    expect(errorsResult?.errors.length).toBe(0);
   });
 
   it("validate cql has validation errors", async () => {
@@ -233,10 +229,8 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const elmTranslationErrors: ElmTranslationError[] = await useGetAllErrors(
-      editorContent
-    );
-    expect(elmTranslationErrors.length).toBe(4);
+    const errorsResult = await useGetAllErrors(editorContent);
+    expect(errorsResult.errors.length).toBe(4);
   });
 
   it("Translation result has null error exception", async () => {
@@ -288,9 +282,8 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const elmTranslationErrors: ElmTranslationError[] = await useGetAllErrors(
-      editorContent
-    );
-    expect(elmTranslationErrors.length).toBe(3);
+
+    const errorsResult = await useGetAllErrors(editorContent);
+    expect(errorsResult.errors.length).toBe(3);
   });
 });
