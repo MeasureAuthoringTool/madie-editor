@@ -13,9 +13,14 @@ import TranslateCql from "../validations/elmTranslateValidation";
 import CheckLogin from "../validations/umlsLogin";
 import GetValueSetErrors from "../validations/valuesetValidation";
 
+export interface ValidationResult {
+  translation: ElmTranslation;
+  errors: ElmTranslationError[];
+}
+
 export const useGetAllErrors = async (
   cql: string
-): Promise<ElmTranslationError[]> => {
+): Promise<ValidationResult> => {
   if (cql && cql.trim().length > 0) {
     const cqlResult: CqlResult = new CqlAntlr(cql).parse();
     const customCqlCodes: CustomCqlCode[] = getCustomCqlCodes(cql, cqlResult);
@@ -41,7 +46,10 @@ export const useGetAllErrors = async (
         allErrorsArray.push(valueSet);
       });
     }
-    return allErrorsArray;
+    return {
+      translation: translationResults,
+      errors: allErrorsArray,
+    };
   }
   return null;
 };
