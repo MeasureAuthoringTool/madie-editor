@@ -37,7 +37,7 @@ export const synchingEditorCqlContent: (
   libraryName: string,
   existingCqlLibraryName: string,
   versionString: string,
-  placeCalled: string
+  triggeredFrom: string
 ) => any = parsingEditorCqlContent;
 
 export type { EditorPropsType as MadieEditorPropsType };

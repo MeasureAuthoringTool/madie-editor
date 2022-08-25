@@ -345,7 +345,7 @@ describe("map parser errors to ace markers", () => {
   });
 });
 
-describe("", () => {
+describe("synching the cql library name and version ", () => {
   test("replacing the error containing library content line to actual library content ", async () => {
     const expectValue = "library Test version '0.0.000'";
     const inSyncCql = await parsingEditorCqlContent(
@@ -400,7 +400,7 @@ describe("", () => {
     expect(inSyncCql).toEqual(expectValue);
   });
 
-  test("MeasureInformation3", async () => {
+  test("generated Cql has no change in cql library name  when library content is missing in the cql", async () => {
     const inSyncCql = await parsingEditorCqlContent(
       "",
       "test",
