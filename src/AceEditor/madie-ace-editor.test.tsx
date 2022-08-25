@@ -3,6 +3,7 @@ import { act, render, screen } from "@testing-library/react";
 import MadieAceEditor, {
   mapParserErrorsToAceAnnotations,
   mapParserErrorsToAceMarkers,
+  parsingEditorCqlContent,
 } from "./madie-ace-editor";
 
 import "ace-builds/src-noconflict/mode-java";
@@ -341,5 +342,74 @@ describe("map parser errors to ace markers", () => {
         type: "text",
       },
     ]);
+  });
+});
+
+describe("", () => {
+  test("replacing the error containing library content line to actual library content ", async () => {
+    const expectValue = "library Test version '0.0.000'";
+    const inSyncCql = await parsingEditorCqlContent(
+      "library Test versionsdwds '0.0.000'",
+      "library Test version '0.0.000'",
+      "Test",
+      "",
+      "0.0.000",
+      "measureEditor"
+    );
+    expect(inSyncCql).toEqual(expectValue);
+  });
+
+  test("not replacing the cql when there are errors in the cql library content ", async () => {
+    const inSyncCql = await parsingEditorCqlContent(
+      "test",
+      "library Test version '0.0.000'",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual("test");
+  });
+
+  test("generated Cql has updated cql library name", async () => {
+    const expectValue = "library Testing version '0.0.000'";
+    const inSyncCql = await parsingEditorCqlContent(
+      "",
+      "library Test version '0.0.000'",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "measureInformation"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+
+  test("generated Cql has no change in cql library name when other contents in the measureninformation are saved", async () => {
+    const expectValue = "library Test version '0.0.000'";
+    const inSyncCql = await parsingEditorCqlContent(
+      "",
+      "library Test version '0.0.000'",
+      "Test",
+      "Test",
+      "0.0.000",
+      "measureInformation"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+
+  test("MeasureInformation3", async () => {
+    const inSyncCql = await parsingEditorCqlContent(
+      "",
+      "test",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "measureInformation"
+    );
+
+    expect(inSyncCql).toEqual("test");
   });
 });
