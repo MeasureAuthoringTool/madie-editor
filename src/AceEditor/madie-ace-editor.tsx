@@ -68,7 +68,10 @@ export const parsingEditorCqlContent = async (
   versionString,
   triggeredFrom
 ) => {
-  if (triggeredFrom !== "measureInformation") {
+  if (
+    triggeredFrom === "measureEditor" ||
+    triggeredFrom === "updateCqlLibrary"
+  ) {
     const parsedEditorCql = editorVal ? await parsingCql(editorVal) : "";
     const parsedExistingLibraryCqlContentStatement = existingCql
       ? await parsingCql(existingCql)
