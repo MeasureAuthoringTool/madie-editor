@@ -33,6 +33,77 @@ export const parseEditorContent = (content): CqlError[] => {
   return errors;
 };
 
+const parsingCql = async (editorVal) => {
+  const parsedCql = new CqlAntlr(editorVal).parse();
+  const cqlArrayToBeFiltered = editorVal.split("\n");
+  if (parsedCql?.library) {
+    const libraryContentIndex =
+      parsedCql?.library && parsedCql?.library.start.line - 1;
+    const libraryContentStatement = cqlArrayToBeFiltered[libraryContentIndex];
+    return {
+      libraryContentStatement,
+      cqlArrayToBeFiltered,
+      libraryContentIndex,
+    };
+  }
+  return "";
+};
+
+const synchingCqlLibraryName = (
+  parsedEditorCql,
+  libraryName,
+  versionString
+) => {
+  parsedEditorCql.cqlArrayToBeFiltered[
+    parsedEditorCql.libraryContentIndex
+  ] = `library ${libraryName} version '${versionString}'`;
+  return parsedEditorCql.cqlArrayToBeFiltered.join("\n");
+};
+
+export const parsingEditorCqlContent = async (
+  editorVal,
+  existingCql,
+  libraryName,
+  existingCqlLibraryName,
+  versionString,
+  triggeredFrom
+) => {
+  if (
+    triggeredFrom === "measureEditor" ||
+    triggeredFrom === "updateCqlLibrary"
+  ) {
+    const parsedEditorCql = editorVal ? await parsingCql(editorVal) : "";
+    const parsedExistingLibraryCqlContentStatement = existingCql
+      ? await parsingCql(existingCql)
+      : "";
+    if (
+      parsedEditorCql &&
+      parsedEditorCql?.libraryContentStatement !==
+        parsedExistingLibraryCqlContentStatement
+    ) {
+      return synchingCqlLibraryName(
+        parsedEditorCql,
+        libraryName,
+        versionString
+      );
+    }
+    return editorVal;
+  } else {
+    if (existingCql && existingCqlLibraryName !== libraryName) {
+      const parsedEditorCql = await parsingCql(existingCql);
+      if (parsedEditorCql) {
+        return synchingCqlLibraryName(
+          parsedEditorCql,
+          libraryName,
+          versionString
+        );
+      }
+      return existingCql;
+    }
+    return existingCql;
+  }
+};
+
 export const mapParserErrorsToAceAnnotations = (
   errors: CqlError[]
 ): Ace.Annotation[] => {

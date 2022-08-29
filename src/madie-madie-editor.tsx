@@ -5,6 +5,7 @@ import Root from "./root.component";
 import MadieAceEditor, {
   EditorPropsType,
   parseEditorContent,
+  parsingEditorCqlContent,
 } from "./AceEditor/madie-ace-editor";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/useElmTranslationServiceApi";
@@ -29,6 +30,15 @@ export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 export type { ElmTranslationError };
 export const validateContent: (content: string) => Promise<ValidationResult> =
   useGetAllErrors;
+
+export const synchingEditorCqlContent: (
+  editorVal: string,
+  existingCql: string,
+  libraryName: string,
+  existingCqlLibraryName: string,
+  versionString: string,
+  triggeredFrom: string
+) => any = parsingEditorCqlContent;
 
 export type { EditorPropsType as MadieEditorPropsType };
 
