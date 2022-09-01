@@ -34,6 +34,17 @@ export const parseEditorContent = (content): CqlError[] => {
 };
 
 const parsingCql = async (editorVal) => {
+  //TODO: post MVP, move to ANTLR Parser, possibly the listener?
+  //look at/use enterConceptDefinition
+  const conceptToRemove = editorVal.match(/^concept .*/gm);
+  if (conceptToRemove) {
+    conceptToRemove.map((conceptLine) => {
+      editorVal = editorVal.replace(
+        conceptLine,
+        "/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/"
+      );
+    });
+  }
   const parsedCql = new CqlAntlr(editorVal).parse();
   const cqlArrayToBeFiltered = editorVal.split("\n");
   if (parsedCql?.library) {
