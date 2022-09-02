@@ -15,6 +15,11 @@ export type ElmTranslationError = {
   type: string;
 };
 
+export interface ElmTranslationExternalError extends ElmTranslationError {
+  libraryId: string;
+  libraryVersion: string;
+}
+
 export type ElmTranslationLibrary = {
   annotation: any[];
   contexts: any;
@@ -35,12 +40,11 @@ export type ElmValueSet = {
 
 export type ElmTranslation = {
   errorExceptions: ElmTranslationError[];
-  externalErrors: any[];
+  externalErrors: ElmTranslationExternalError[];
   library: ElmTranslationLibrary;
 };
 
 export class ElmTranslationServiceApi {
-  //constructor(private getAccessToken: () => string) {}
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async translateCqlToElm(cql: string): Promise<ElmTranslation> {
