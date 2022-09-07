@@ -1,6 +1,7 @@
 import {
   ElmTranslation,
   ElmTranslationError,
+  ElmTranslationExternalError,
 } from "../api/useElmTranslationServiceApi";
 import { CustomCqlCode } from "../api/useTerminologyServiceApi";
 import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
@@ -16,6 +17,7 @@ import GetValueSetErrors from "../validations/valuesetValidation";
 export interface ValidationResult {
   translation: ElmTranslation;
   errors: ElmTranslationError[];
+  externalErrors: ElmTranslationExternalError[];
 }
 
 export const useGetAllErrors = async (
@@ -35,7 +37,18 @@ export const useGetAllErrors = async (
       mapCodeSystemErrorsToTranslationErrors(validatedCodes);
 
     let allErrorsArray: ElmTranslationError[] =
-      setErrorsToElmTranslationError(translationResults);
+      updateErrorTypeForTranslationErrors(translationResults);
+
+    // Filter out external errors for include error type
+    // find will return the first found object
+    let externalErrors: ElmTranslationExternalError[] = [];
+    if (translationResults?.externalErrors?.length > 0) {
+      const includeLibraryError: ElmTranslationExternalError =
+        translationResults.externalErrors.find(
+          (externalErrors) => externalErrors.errorType === "include"
+        );
+      externalErrors.push(includeLibraryError);
+    }
 
     codeSystemCqlErrors.forEach((codeError) => {
       allErrorsArray.push(codeError);
@@ -47,23 +60,23 @@ export const useGetAllErrors = async (
       });
     }
     return {
+      externalErrors: externalErrors,
       translation: translationResults,
       errors: allErrorsArray,
     };
   }
   return null;
 };
-const setErrorsToElmTranslationError = (
+const updateErrorTypeForTranslationErrors = (
   translationResults: ElmTranslation
 ): ElmTranslationError[] => {
   let allErrorsArray: ElmTranslationError[] = [];
-  const translationErrors: ElmTranslationError[] =
-    translationResults?.errorExceptions
-      ? translationResults?.errorExceptions
-      : [];
-  translationErrors.forEach((translationError) => {
-    translationError.errorType = "ELM";
-    allErrorsArray.push(translationError);
+
+  if (translationResults.errorExceptions) {
+    allErrorsArray = translationResults.errorExceptions;
+  }
+  allErrorsArray.forEach((error) => {
+    error.errorType = "ELM";
   });
   return allErrorsArray;
 };
