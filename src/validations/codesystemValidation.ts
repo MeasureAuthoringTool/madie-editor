@@ -69,11 +69,7 @@ const ValidateCustomCqlCodes = async (
 ): Promise<CustomCqlCode[]> => {
   const terminologyServiceApi = await useTerminologyServiceApi();
 
-  const result = terminologyServiceApi.validateCodes(
-    customCqlCodes,
-    loggedInUMLS
-  );
-  return result;
+  return terminologyServiceApi.validateCodes(customCqlCodes, loggedInUMLS);
 };
 
 export default ValidateCustomCqlCodes;

@@ -10,6 +10,7 @@ import {
   useTerminologyServiceApi,
   TerminologyServiceApi,
 } from "@madie/madie-util";
+import { ElmTranslationExternalError } from "@madie/madie-editor";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -119,6 +120,23 @@ const elmTranslationWithNoErrors: ElmTranslation = {
   errorExceptions: [],
   library: elmTranslationLibraryWithValueSets,
 };
+const cqlToElmExternalErrors: ElmTranslationExternalError[] = [
+  {
+    libraryId: "SupplementalDataElements",
+    libraryVersion: "1.0.000",
+    startLine: 14,
+    startChar: 1,
+    endLine: 14,
+    endChar: 52,
+    message:
+      "Could not resolve reference to library QICoreCommon, version 1.0.000 because version 2.0.000 is already loaded.",
+    errorType: "include",
+    errorSeverity: "Error",
+    targetIncludeLibraryId: "QICoreCommon",
+    targetIncludeLibraryVersionId: "1.0.000",
+    type: "CqlToElmError",
+  },
+];
 
 describe("Editor Validation Test", () => {
   beforeEach(() => {
@@ -285,5 +303,28 @@ describe("Editor Validation Test", () => {
 
     const errorsResult = await useGetAllErrors(editorContent);
     expect(errorsResult.errors.length).toBe(3);
+  });
+
+  it("Should return elm translation external errors", async () => {
+    const elmTranslationWithExternalErrors: ElmTranslation = {
+      externalErrors: cqlToElmExternalErrors,
+      errorExceptions: [],
+      library: elmTranslationLibraryWithValueSets,
+    };
+    mockedAxios.put.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            json: JSON.stringify(elmTranslationWithExternalErrors),
+          },
+          status: 200,
+        });
+      }
+    });
+    const errorsResult = await useGetAllErrors("Library FHIR version 1.0.000");
+    expect(errorsResult.externalErrors.length).toBe(1);
   });
 });
