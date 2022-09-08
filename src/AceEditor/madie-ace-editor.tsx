@@ -36,7 +36,7 @@ export const parseEditorContent = (content): CqlError[] => {
 const parsingCql = async (editorVal) => {
   //TODO: post MVP, move to ANTLR Parser, possibly the listener?
   //look at/use enterConceptDefinition
-  const conceptToRemove = editorVal.match(/^concept .*/gm);
+  const conceptToRemove = editorVal.match(/^\s*concept .*/gm);
   if (conceptToRemove) {
     conceptToRemove.map((conceptLine) => {
       editorVal = editorVal.replace(

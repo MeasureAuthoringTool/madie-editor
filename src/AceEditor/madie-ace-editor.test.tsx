@@ -413,3 +413,51 @@ describe("synching the cql library name and version ", () => {
     expect(inSyncCql).toEqual("test");
   });
 });
+describe("ParsingCQL Function, Kill Concept Declaration", () => {
+  it("Replace concept declaration with comment", async () => {
+    const expectValue = `library Testing version '0.0.000'
+/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const inSyncCql = await parsingEditorCqlContent(
+      `library MesTest2 version '0.0.000'
+  concept lalala`,
+      "",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+  it('Only replaces concept declaration, not just lines that contain the word "concept"', async () => {
+    const expectValue = `library Testing version '0.0.000'
+I want to decalre a concept lalala`;
+    const inSyncCql = await parsingEditorCqlContent(
+      `library MesTest2 version '0.0.000'
+I want to decalre a concept lalala`,
+      "",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+
+  it("Replace concept declaration with comment even with a LOT of spaces", async () => {
+    const expectValue = `library Testing version '0.0.000'
+/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const inSyncCql = await parsingEditorCqlContent(
+      `library MesTest2 version '0.0.000'
+                    concept lalala`,
+      "",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+});
