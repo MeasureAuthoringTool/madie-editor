@@ -22,6 +22,9 @@ export interface EditorPropsType {
   height?: string;
   readOnly?: boolean;
   validationsEnabled?: boolean;
+
+  // conditional props used to pass up annotations outside of the editor
+  setOutboundAnnotations?: Function;
 }
 
 export const parseEditorContent = (content): CqlError[] => {
@@ -158,6 +161,8 @@ const MadieAceEditor = ({
   inboundErrorMarkers,
   readOnly = false,
   validationsEnabled = true,
+
+  setOutboundAnnotations,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<any>();
   const [editorAnnotations, setEditorAnnotations] = useState<Ace.Annotation[]>(
@@ -166,6 +171,7 @@ const MadieAceEditor = ({
   const [parserAnnotations, setParserAnnotations] = useState<Ace.Annotation[]>(
     []
   );
+
   const [parseErrorMarkers, setParseErrorMarkers] = useState<Ace.MarkerLike[]>(
     []
   );
@@ -174,6 +180,10 @@ const MadieAceEditor = ({
 
   const customSetAnnotations = (annotations, editor) => {
     editor.getSession().setAnnotations(annotations);
+    // pass all the annotations we have out
+    if (setOutboundAnnotations) {
+      setOutboundAnnotations(annotations);
+    }
     setEditorAnnotations(annotations);
   };
 
