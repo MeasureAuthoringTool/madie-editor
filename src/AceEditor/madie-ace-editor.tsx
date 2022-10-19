@@ -271,7 +271,7 @@ const MadieAceEditor = ({
     // This is to set aria-label on textarea for accessibility
     aceRef.current.editor.container
       .getElementsByClassName("ace_text-input")[0]
-      .setAttribute("aria-label", "cql editor aria label");
+      .setAttribute("aria-label", "Cql editor");
   });
 
   return (
