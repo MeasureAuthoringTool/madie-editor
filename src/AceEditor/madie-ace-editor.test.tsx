@@ -4,6 +4,7 @@ import MadieAceEditor, {
   mapParserErrorsToAceAnnotations,
   mapParserErrorsToAceMarkers,
   parsingEditorCqlContent,
+  setCommandEnabled,
 } from "./madie-ace-editor";
 
 import "ace-builds/src-noconflict/mode-java";
@@ -229,6 +230,34 @@ describe("MadieAceEditor component", () => {
 
     render(<MadieAceEditor {...props} />);
     expect(screen.getByRole("textbox")).toHaveAttribute("readonly");
+  });
+
+  it("should add/remove commands", () => {
+    const aceEditor = {
+      commands: {
+        byName: {
+          indent: {
+            bindKey: "tab",
+            enabled: true,
+          },
+          outdent: {
+            bindKey: "shift+tab",
+            enabled: true,
+          },
+        },
+        addCommand: (command) =>
+          (aceEditor.commands.byName[command] = {
+            bindKey: command.bindKey,
+            enabled: command.enabled,
+          }),
+      },
+    };
+
+    setCommandEnabled(aceEditor, "indent", false);
+    expect(aceEditor.commands.byName["indent"].bindKey).toBeNull();
+
+    setCommandEnabled(aceEditor, "indent", true);
+    expect(aceEditor.commands.byName["indent"].bindKey).not.toBeNull();
   });
 });
 
