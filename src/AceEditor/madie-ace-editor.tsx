@@ -150,6 +150,18 @@ export const mapParserErrorsToAceMarkers = (errors: CqlError[]) => {
   return markers;
 };
 
+var originalCommands;
+export const setCommandEnabled = (editor, name, enabled) => {
+  var command = editor.commands.byName[name];
+  var bindKeyOriginal;
+  if (!originalCommands) {
+    originalCommands = JSON.parse(JSON.stringify(editor.commands));
+  }
+  var bindKeyOriginal = originalCommands.byName[name].bindKey;
+  command.bindKey = enabled ? bindKeyOriginal : null;
+  editor.commands.addCommand(command);
+};
+
 const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
 // console.log('iace', IAceEditorProps)
 const MadieAceEditor = ({
@@ -164,7 +176,7 @@ const MadieAceEditor = ({
 
   setOutboundAnnotations,
 }: EditorPropsType) => {
-  const [editor, setEditor] = useState<any>();
+  const [editor, setEditor] = useState<Ace.Editor>();
   const [editorAnnotations, setEditorAnnotations] = useState<Ace.Annotation[]>(
     []
   );
@@ -177,6 +189,20 @@ const MadieAceEditor = ({
   );
   const [isParsing, setParsing] = useState<boolean>(undefined);
   const aceRef = useRef<AceEditor>(null);
+
+  aceRef?.current?.editor?.on("focus", function () {
+    setCommandEnabled(editor, "indent", true);
+    setCommandEnabled(editor, "outdent", true);
+  });
+
+  aceRef?.current?.editor?.commands.addCommand({
+    name: "escape",
+    bindKey: { win: "Esc", mac: "Esc" },
+    exec: function () {
+      setCommandEnabled(editor, "indent", false);
+      setCommandEnabled(editor, "outdent", false);
+    },
+  });
 
   const customSetAnnotations = (annotations, editor) => {
     editor.getSession().setAnnotations(annotations);
