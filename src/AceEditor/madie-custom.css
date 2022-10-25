@@ -2,3 +2,7 @@
   border-bottom: 0.2em dotted red;
   position: absolute;
 }
+
+.ace_gutter-cell{
+  color: #B0B0B0;
+}
