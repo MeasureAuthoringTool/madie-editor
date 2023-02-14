@@ -293,7 +293,7 @@ const MadieAceEditor = ({
         <span>{editorAnnotations.length} issues were found with CQL...</span>
       );
     } else {
-      return <span>Parsing complete, CQL is valid</span>;
+      return <span data-testId="success-debounce"></span>;
     }
   };
 

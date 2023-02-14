@@ -101,9 +101,8 @@ describe("MadieAceEditor component", () => {
       const parsingMessage = await screen.findByText("Parsing...");
       expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
-      const parseSuccess = await screen.findByText(
-        "Parsing complete, CQL is valid"
-      );
+      const parseSuccess = await screen.findByTestId("success-debounce");
+
       expect(parseSuccess).toBeInTheDocument();
     });
   });
@@ -122,9 +121,7 @@ describe("MadieAceEditor component", () => {
 
     await act(async () => {
       const { rerender } = render(<MadieAceEditor {...props} />);
-      const parseSuccess = await screen.findByText(
-        "Parsing complete, CQL is valid"
-      );
+      const parseSuccess = await screen.findByTestId("success-debounce");
       expect(parseSuccess).toBeInTheDocument();
 
       const aceEditorInput = await screen.findByRole("textbox");
@@ -163,9 +160,7 @@ describe("MadieAceEditor component", () => {
 
     await act(async () => {
       const { rerender } = render(<MadieAceEditor {...props} />);
-      const parseSuccess = await screen.findByText(
-        "Parsing complete, CQL is valid"
-      );
+      const parseSuccess = await screen.findByTestId("success-debounce");
       expect(parseSuccess).toBeInTheDocument();
 
       const aceEditorInput = await screen.findByRole("textbox");
@@ -197,18 +192,14 @@ describe("MadieAceEditor component", () => {
     await act(async () => {
       const { rerender } = render(<MadieAceEditor {...props} />);
       const aceEditorInput = await screen.findByRole("textbox");
-      const parseSuccess = await screen.findByText(
-        "Parsing complete, CQL is valid"
-      );
+      const parseSuccess = await screen.findByTestId("success-debounce");
       expect(parseSuccess).toBeInTheDocument();
       props.value = "library MATGlobalCommonFunctionsFHIR4 version '6.1.000'";
       rerender(<MadieAceEditor {...props} />);
       // const parsingMessage = screen.getByText("Parsing...");
       // expect(parsingMessage).toBeInTheDocument();
       jest.advanceTimersByTime(600);
-      const parseSuccess2 = await screen.findByText(
-        "Parsing complete, CQL is valid"
-      );
+      const parseSuccess2 = await screen.findByTestId("success-debounce");
       expect(parseSuccess2).toBeInTheDocument();
 
       // const library = await screen.findByText(/library/i);
