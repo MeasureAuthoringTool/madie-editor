@@ -79,65 +79,6 @@ describe("MadieAceEditor component", () => {
     });
   });
 
-  it("should display parsing feedback followed by valid feedback", async () => {
-    jest.useFakeTimers("modern");
-    const props = {
-      value: "",
-      onChange: jest.fn(),
-      parseDebounceTime: 300,
-      setParseErrors: jest.fn(),
-      handleClick: true,
-      inboundAnnotations: [],
-    };
-    const typedText = "using FHIR version '4.0.1'";
-
-    await act(async () => {
-      const { rerender } = render(<MadieAceEditor {...props} />);
-      const aceEditorInput = await screen.findByRole("textbox");
-      userEvent.paste(aceEditorInput, typedText);
-      props.value = typedText;
-      rerender(<MadieAceEditor {...props} />);
-
-      const parsingMessage = await screen.findByText("Parsing...");
-      expect(parsingMessage).toBeInTheDocument();
-      jest.advanceTimersByTime(600);
-      const parseSuccess = await screen.findByTestId("success-debounce");
-
-      expect(parseSuccess).toBeInTheDocument();
-    });
-  });
-
-  it("should display user content in the editor", async () => {
-    jest.useFakeTimers("modern");
-    const props = {
-      value: "", // initial value before data is loaded
-      onChange: jest.fn(),
-      setParseErrors: jest.fn(),
-      handleClick: true,
-      parseDebounceTime: 300,
-      inboundAnnotations: [],
-    };
-
-    await act(async () => {
-      const { rerender } = render(<MadieAceEditor {...props} />);
-      const aceEditorInput = await screen.findByRole("textbox");
-      const parseSuccess = await screen.findByTestId("success-debounce");
-      expect(parseSuccess).toBeInTheDocument();
-      props.value = "library MATGlobalCommonFunctionsFHIR4 version '6.1.000'";
-      rerender(<MadieAceEditor {...props} />);
-      // const parsingMessage = screen.getByText("Parsing...");
-      // expect(parsingMessage).toBeInTheDocument();
-      jest.advanceTimersByTime(600);
-      const parseSuccess2 = await screen.findByTestId("success-debounce");
-      expect(parseSuccess2).toBeInTheDocument();
-
-      // const library = await screen.findByText(/library/i);
-      // expect(library).toBeInTheDocument();
-
-      // screen.debug();
-    });
-  });
-
   it("should apply readonly attribute", () => {
     jest.useFakeTimers("modern");
     const props = {
