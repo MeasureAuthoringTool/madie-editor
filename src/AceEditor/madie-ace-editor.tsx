@@ -289,9 +289,7 @@ const MadieAceEditor = ({
     if (isParsing) {
       return <span>Parsing...</span>;
     } else if (editorAnnotations && editorAnnotations.length > 0) {
-      return (
-        <span>{editorAnnotations.length} issues were found with CQL...</span>
-      );
+      return "";
     } else {
       return <span data-testId="success-debounce"></span>;
     }
