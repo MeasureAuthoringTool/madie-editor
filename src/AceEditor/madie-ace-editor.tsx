@@ -162,7 +162,6 @@ export const setCommandEnabled = (editor, name, enabled) => {
   editor.commands.addCommand(command);
 };
 
-const FooterDiv = tw.div`border border-gray-300 sm:text-sm`;
 // console.log('iace', IAceEditorProps)
 const MadieAceEditor = ({
   value,
@@ -285,18 +284,6 @@ const MadieAceEditor = ({
     }
   }, [value, editor, debouncedParse]);
 
-  const renderFooterMsg = () => {
-    if (isParsing) {
-      return <span>Parsing...</span>;
-    } else if (editorAnnotations && editorAnnotations.length > 0) {
-      return (
-        <span>{editorAnnotations.length} issues were found with CQL...</span>
-      );
-    } else {
-      return <span data-testId="success-debounce"></span>;
-    }
-  };
-
   useEffect(() => {
     // This is to set aria-label on textarea for accessibility
     aceRef.current.editor.container
@@ -326,7 +313,6 @@ const MadieAceEditor = ({
         name="ace-editor-wrapper"
         enableBasicAutocompletion={true}
       />
-      {validationsEnabled && <FooterDiv>{renderFooterMsg()}</FooterDiv>}
     </div>
   );
 };
