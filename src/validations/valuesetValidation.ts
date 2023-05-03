@@ -4,14 +4,15 @@ import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
 
 const GetValueSetErrors = async (
   valuesetsArray: CqlValueSet[],
-  loggedInUMLS: boolean
+  loggedInUMLS: boolean,
+  model: string
 ): Promise<ElmTranslationError[]> => {
   const terminologyServiceApi = await useTerminologyServiceApi();
   const valuesetsErrorArray: ElmTranslationError[] = [];
   if (valuesetsArray) {
     await Promise.allSettled(
       valuesetsArray.map(async (valueSet) => {
-        const oid = getOidFromCqlValueSet(valueSet);
+        const oid = getOidFromCqlValueSet(valueSet, model);
         const locator = getLocatorFromCqlValueSet(valueSet);
         await terminologyServiceApi
           .getValueSet(oid, locator, loggedInUMLS)
@@ -30,13 +31,23 @@ const GetValueSetErrors = async (
     return valuesetsErrorArray;
   }
 };
-const getOidFromCqlValueSet = (valueSet: CqlValueSet): string => {
-  const oid = valueSet.url?.split("ValueSet/")[1];
+
+const getOidFromCqlValueSet = (
+  valueSet: CqlValueSet,
+  model: string
+): string => {
+  let oid: string;
+  if (model === "QDM") {
+    oid = valueSet.url?.split(/urn:oid:/)[1];
+  } else {
+    oid = valueSet.url?.split("ValueSet/")[1];
+  }
   if (oid) {
     return oid.replace("'", "");
   }
-  return oid;
+  return valueSet.url;
 };
+
 const getLocatorFromCqlValueSet = (valueSet: CqlValueSet): string => {
   return (
     valueSet.start.line +
