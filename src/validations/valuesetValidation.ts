@@ -38,7 +38,7 @@ const getOidFromCqlValueSet = (
 ): string => {
   let oid: string;
   if (model === "QDM") {
-    oid = valueSet.url?.split(/urn:oid:/)[1];
+    oid = valueSet.url?.split("urn:oid:")[1];
   } else {
     oid = valueSet.url?.split("ValueSet/")[1];
   }
