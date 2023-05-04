@@ -1,6 +1,7 @@
 import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
 import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
+import { getOidFromString } from "@madie/madie-util";
 
 const GetValueSetErrors = async (
   valuesetsArray: CqlValueSet[],
@@ -36,12 +37,7 @@ const getOidFromCqlValueSet = (
   valueSet: CqlValueSet,
   model: string
 ): string => {
-  let oid: string;
-  if (model === "QDM") {
-    oid = valueSet.url?.split("urn:oid:")[1];
-  } else {
-    oid = valueSet.url?.split("ValueSet/")[1];
-  }
+  let oid = getOidFromString(valueSet?.url, model);
   if (oid) {
     return oid.replace("'", "");
   }

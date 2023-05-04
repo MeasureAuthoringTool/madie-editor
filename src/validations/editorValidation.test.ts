@@ -33,6 +33,7 @@ jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
   }),
+  getOidFromString: () => "oid",
 }));
 
 const fhirValueset: ValueSet = {
