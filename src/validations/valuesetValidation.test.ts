@@ -24,7 +24,7 @@ jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
   }),
-  getOidFromString: () => "1.2.3.4",
+  getOidFromString: (oid) => oid.split("ValueSet/")[1],
 }));
 
 const cqlValueset: CqlValueSet[] = [
@@ -150,7 +150,7 @@ describe("Value Set validation", () => {
     );
     expect(valuesetErrors.length).toBe(2);
     expect(valuesetErrors[0].message).toEqual(
-      "Value set not found for oid = 1.2.3.4 location = 9:0-9:22"
+      "Value set not found for oid = '' location = 9:0-9:22"
     );
     expect(valuesetErrors[1].message).toEqual(
       "Value set not found for oid = 1.2.3.4 location = 11:0-11:29"
