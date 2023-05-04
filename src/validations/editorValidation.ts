@@ -29,9 +29,18 @@ export const useGetAllErrors = async (
     const isLoggedInUMLS = await Promise.resolve(CheckLogin());
     const [validatedCodes, translationResults, valuesetsErrors] =
       await Promise.all([
-        ValidateCustomCqlCodes(customCqlCodes, isLoggedInUMLS.valueOf()),
+        ValidateCustomCqlCodes(
+          customCqlCodes,
+          isLoggedInUMLS.valueOf(),
+          cqlResult?.using?.name
+        ),
+
         TranslateCql(cql),
-        GetValueSetErrors(cqlResult.valueSets, isLoggedInUMLS.valueOf()),
+        GetValueSetErrors(
+          cqlResult.valueSets,
+          isLoggedInUMLS.valueOf(),
+          cqlResult?.using?.name
+        ),
       ]);
     const codeSystemCqlErrors =
       mapCodeSystemErrorsToTranslationErrors(validatedCodes);

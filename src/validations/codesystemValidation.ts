@@ -12,6 +12,7 @@ export interface CustomCqlCodeSystem extends CqlCodeSystem {
 export interface CustomCqlCode extends Omit<CqlCode, "codeSystem"> {
   codeSystem: CustomCqlCodeSystem;
   valid?: boolean;
+  model?: string;
   errorMessage?: string;
 }
 
@@ -65,11 +66,16 @@ export const getCustomCqlCodes = (
 
 const ValidateCustomCqlCodes = async (
   customCqlCodes: CustomCqlCode[],
-  loggedInUMLS: boolean
+  loggedInUMLS: boolean,
+  model: string
 ): Promise<CustomCqlCode[]> => {
   const terminologyServiceApi = await useTerminologyServiceApi();
 
-  return terminologyServiceApi.validateCodes(customCqlCodes, loggedInUMLS);
+  return terminologyServiceApi.validateCodes(
+    customCqlCodes,
+    loggedInUMLS,
+    model
+  );
 };
 
 export default ValidateCustomCqlCodes;

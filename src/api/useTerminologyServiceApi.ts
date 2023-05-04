@@ -15,7 +15,7 @@ export interface CustomCqlCode extends Omit<CqlCode, "codeSystem"> {
   errorMessage?: string;
 }
 
-export type FHIRValueSet = {
+export type ValueSet = {
   resourceType: string;
   id: string;
   url: string;
@@ -30,17 +30,17 @@ export class TerminologyServiceApi {
     oid: string,
     locator: string,
     loggedInUMLS: boolean
-  ): Promise<FHIRValueSet> {
-    let fhirValueset: FHIRValueSet = null;
+  ): Promise<ValueSet> {
+    let valueset: ValueSet = null;
     if (!loggedInUMLS) {
-      fhirValueset = {
+      valueset = {
         resourceType: "ValueSet",
         id: oid,
         url: locator,
         status: "unauthorized",
         errorMsg: "Please log in to UMLS",
       };
-      return fhirValueset;
+      return valueset;
     }
     await axios
       .get(`${this.baseUrl}/vsac/valueset`, {
@@ -54,13 +54,13 @@ export class TerminologyServiceApi {
         timeout: 15000,
       })
       .then((resp) => {
-        fhirValueset = resp.data;
-        fhirValueset = { ...fhirValueset, status: resp.statusText };
+        valueset = resp.data;
+        valueset = { ...valueset, status: resp.statusText };
       })
       .catch((error) => {
         const message =
           error.message + " for oid = " + oid + " location = " + locator;
-        fhirValueset = {
+        valueset = {
           resourceType: "ValueSet",
           id: oid,
           url: locator,
@@ -68,12 +68,13 @@ export class TerminologyServiceApi {
           errorMsg: message,
         };
       });
-    return fhirValueset;
+    return valueset;
   }
 
   async validateCodes(
     customCqlCodes: CustomCqlCode[],
-    loggedInUMLS: boolean
+    loggedInUMLS: boolean,
+    model: string
   ): Promise<CustomCqlCode[]> {
     if (!loggedInUMLS) {
       return processCodeSystemErrors(
@@ -84,7 +85,7 @@ export class TerminologyServiceApi {
     }
     try {
       const response = await axios.put(
-        `${this.baseUrl}/vsac/validations/codes`,
+        `${this.baseUrl}/vsac/validations/codes?model=${model}`,
         customCqlCodes,
         {
           headers: {
