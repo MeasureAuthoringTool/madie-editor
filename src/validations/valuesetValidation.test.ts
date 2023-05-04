@@ -46,7 +46,7 @@ const cqlValueset: CqlValueSet[] = [
 
 const invalidValueSets: CqlValueSet[] = [
   {
-    text: "valueset \"HPV Test\": '1.2.3.4'",
+    text: "valueset \"HPV Test\": ''",
     start: {
       line: 9,
       position: 0,
