@@ -9,6 +9,11 @@ declare module "@madie/madie-util" {
     getIdTokenObj: () => any;
   };
 
+  export function getOidFromString(
+    oidString: string,
+    dataModel: string
+  ): string;
+
   export class TerminologyServiceApi {
     constructor(baseUrl: string, getAccessToken: () => string);
     checkLogin(): Promise<Boolean>;

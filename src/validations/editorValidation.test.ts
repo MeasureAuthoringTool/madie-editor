@@ -1,10 +1,11 @@
 import { ValidationResult, useGetAllErrors } from "./editorValidation";
 import axios from "axios";
 import { ServiceConfig } from "../api/useServiceConfig";
-import { FHIRValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
+import { ValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
 import {
   ElmTranslation,
   ElmTranslationError,
+  ElmTranslationLibrary,
 } from "../api/useElmTranslationServiceApi";
 import {
   useTerminologyServiceApi,
@@ -32,9 +33,10 @@ jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
   }),
+  getOidFromString: () => "oid",
 }));
 
-const fhirValueset: FHIRValueSet = {
+const fhirValueset: ValueSet = {
   resourceType: "ValueSet",
   id: "1-96",
   url: "http://testurl.com",
