@@ -5,6 +5,7 @@ import Root from "./root.component";
 import MadieAceEditor, {
   EditorPropsType,
   parseEditorContent,
+  isUsingStatementEmpty,
   parsingEditorCqlContent,
 } from "./AceEditor/madie-ace-editor";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
@@ -13,6 +14,7 @@ import {
   ValidationResult,
   useGetAllErrors,
 } from "../src/validations/editorValidation";
+import { ParsedCql } from "./model/ParsedCql";
 
 const lifecycles = singleSpaReact({
   React,
@@ -37,8 +39,13 @@ export const synchingEditorCqlContent: (
   libraryName: string,
   existingCqlLibraryName: string,
   versionString: string,
+  usingName: string,
+  usingVersion: string,
   triggeredFrom: string
 ) => any = parsingEditorCqlContent;
+
+export const isUsingEmpty: (editorVal: string) => boolean =
+  isUsingStatementEmpty;
 
 export type { EditorPropsType as MadieEditorPropsType };
 

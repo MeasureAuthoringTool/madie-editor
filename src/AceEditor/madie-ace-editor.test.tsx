@@ -235,15 +235,17 @@ describe("map parser errors to ace markers", () => {
   });
 });
 
-describe("synching the cql library name and version ", () => {
+describe("synching the cql", () => {
   test("replacing the error containing library content line to actual library content ", async () => {
     const expectValue = "library Test version '0.0.000'";
     const inSyncCql = await parsingEditorCqlContent(
-      "library Test versionsdwds '0.0.000'",
+      "library Test versionsdwds '0.0.000''",
       "library Test version '0.0.000'",
       "Test",
       "",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureEditor"
     );
     expect(inSyncCql).toEqual(expectValue);
@@ -252,14 +254,31 @@ describe("synching the cql library name and version ", () => {
   test("not replacing the cql when there are errors in the cql library content ", async () => {
     const inSyncCql = await parsingEditorCqlContent(
       "test",
-      "library Test version '0.0.000'",
+      "library Test version '0.0.000'\nusing QICORE version '4.1.1",
       "Testing",
       "Test",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureEditor"
     );
 
     expect(inSyncCql).toEqual("test");
+  });
+
+  test("replacing the error containing using content line to actual using content ", async () => {
+    const expectValue = "using QICORE version '4.1.1'";
+    const inSyncCql = await parsingEditorCqlContent(
+      "using QIasdf version '4.1.1'",
+      "",
+      "Test",
+      "",
+      "0.0.000",
+      "QICORE",
+      "4.1.1",
+      "measureEditor"
+    );
+    expect(inSyncCql).toEqual(expectValue);
   });
 
   test("generated Cql has updated cql library name", async () => {
@@ -270,6 +289,8 @@ describe("synching the cql library name and version ", () => {
       "Testing",
       "Test",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureInformation"
     );
 
@@ -284,6 +305,8 @@ describe("synching the cql library name and version ", () => {
       "Test",
       "Test",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureInformation"
     );
 
@@ -297,6 +320,8 @@ describe("synching the cql library name and version ", () => {
       "Testing",
       "Test",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureInformation"
     );
 
@@ -314,6 +339,8 @@ describe("ParsingCQL Function, Kill Concept Declaration", () => {
       "Testing",
       "Test",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureEditor"
     );
 
@@ -329,6 +356,8 @@ I want to decalre a concept lalala`,
       "Testing",
       "Test",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureEditor"
     );
 
@@ -345,6 +374,63 @@ I want to decalre a concept lalala`,
       "Testing",
       "Test",
       "0.0.000",
+      "QICORE",
+      "4.1.1",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+});
+
+describe("isUsingStatementEmpty", () => {
+  test("Replace concept declaration with comment", async () => {
+    const expectValue = `library Testing version '0.0.000'
+/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const inSyncCql = await parsingEditorCqlContent(
+      `library MesTest2 version '0.0.000'
+  concept lalala`,
+      "",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "QICORE",
+      "4.1.1",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+  it('Only replaces concept declaration, not just lines that contain the word "concept"', async () => {
+    const expectValue = `library Testing version '0.0.000'
+I want to decalre a concept lalala`;
+    const inSyncCql = await parsingEditorCqlContent(
+      `library MesTest2 version '0.0.000'
+I want to decalre a concept lalala`,
+      "",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "QICORE",
+      "4.1.1",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
+
+  it("Replace concept declaration with comment even with a LOT of spaces", async () => {
+    const expectValue = `library Testing version '0.0.000'
+/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const inSyncCql = await parsingEditorCqlContent(
+      `library MesTest2 version '0.0.000'
+                    concept lalala`,
+      "",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "QICORE",
+      "4.1.1",
       "measureEditor"
     );
 
