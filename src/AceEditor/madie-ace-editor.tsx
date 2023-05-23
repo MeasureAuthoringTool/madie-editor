@@ -12,6 +12,7 @@ import { Ace, Range } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 
 import "./madie-custom.css";
+import { ParsedCql, Statement } from "../model/ParsedCql";
 
 export interface EditorPropsType {
   value: string;
@@ -36,7 +37,7 @@ export const parseEditorContent = (content): CqlError[] => {
   return errors;
 };
 
-const parsingCql = async (editorVal) => {
+const parsingCql = (editorVal): ParsedCql => {
   //TODO: post MVP, move to ANTLR Parser, possibly the listener?
   //look at/use enterConceptDefinition
   const conceptToRemove = editorVal.match(/^\s*concept .*/gm);
@@ -50,27 +51,59 @@ const parsingCql = async (editorVal) => {
   }
   const parsedCql = new CqlAntlr(editorVal).parse();
   const cqlArrayToBeFiltered = editorVal.split("\n");
+  const libraryContent = parsingLibrary(parsedCql, cqlArrayToBeFiltered);
+  const usingContent = parsingUsing(parsedCql, cqlArrayToBeFiltered);
+  return {
+    cqlArrayToBeFiltered,
+    libraryContent,
+    usingContent,
+  };
+};
+
+const parsingLibrary = (parsedCql, cqlArrayToBeFiltered): Statement => {
   if (parsedCql?.library) {
     const libraryContentIndex =
       parsedCql?.library && parsedCql?.library.start.line - 1;
     const libraryContentStatement = cqlArrayToBeFiltered[libraryContentIndex];
     return {
-      libraryContentStatement,
-      cqlArrayToBeFiltered,
-      libraryContentIndex,
+      statement: libraryContentStatement,
+      index: libraryContentIndex,
     };
   }
-  return "";
 };
 
-const synchingCqlLibraryName = (
+const parsingUsing = (parsedCql, cqlArrayToBeFiltered): Statement => {
+  if (parsedCql?.using) {
+    const usingContentIndex =
+      parsedCql?.using && parsedCql?.using.start.line - 1;
+    const usingContentStatement = cqlArrayToBeFiltered[usingContentIndex];
+    return {
+      statement: usingContentStatement,
+      index: usingContentIndex,
+    };
+  }
+};
+
+const synchingCql = (
   parsedEditorCql,
   libraryName,
-  versionString
+  versionString,
+  usingName,
+  usingVersion
 ) => {
-  parsedEditorCql.cqlArrayToBeFiltered[
-    parsedEditorCql.libraryContentIndex
-  ] = `library ${libraryName} version '${versionString}'`;
+  if (parsedEditorCql) {
+    if (parsedEditorCql.libraryContent) {
+      parsedEditorCql.cqlArrayToBeFiltered[
+        parsedEditorCql.libraryContent?.index
+      ] = `library ${libraryName} version '${versionString}'`;
+    }
+
+    if (parsedEditorCql.usingContent) {
+      parsedEditorCql.cqlArrayToBeFiltered[
+        parsedEditorCql.usingContent?.index
+      ] = `using ${usingName} version '${usingVersion}'`;
+    }
+  }
   return parsedEditorCql.cqlArrayToBeFiltered.join("\n");
 };
 
@@ -80,6 +113,8 @@ export const parsingEditorCqlContent = async (
   libraryName,
   existingCqlLibraryName,
   versionString,
+  usingName,
+  usingVersion,
   triggeredFrom
 ) => {
   if (
@@ -87,35 +122,38 @@ export const parsingEditorCqlContent = async (
     triggeredFrom === "updateCqlLibrary"
   ) {
     const parsedEditorCql = editorVal ? await parsingCql(editorVal) : "";
-    const parsedExistingLibraryCqlContentStatement = existingCql
-      ? await parsingCql(existingCql)
-      : "";
-    if (
-      parsedEditorCql &&
-      parsedEditorCql?.libraryContentStatement !==
-        parsedExistingLibraryCqlContentStatement
-    ) {
-      return synchingCqlLibraryName(
-        parsedEditorCql,
-        libraryName,
-        versionString
-      );
-    }
-    return editorVal;
+
+    return synchingCql(
+      parsedEditorCql,
+      libraryName,
+      versionString,
+      usingName,
+      usingVersion
+    );
   } else {
     if (existingCql && existingCqlLibraryName !== libraryName) {
       const parsedEditorCql = await parsingCql(existingCql);
       if (parsedEditorCql) {
-        return synchingCqlLibraryName(
+        return synchingCql(
           parsedEditorCql,
           libraryName,
-          versionString
+          versionString,
+          usingName,
+          usingVersion
         );
       }
       return existingCql;
     }
     return existingCql;
   }
+};
+
+export const isUsingStatementEmpty = (editorVal): boolean => {
+  const parsedCql = parsingCql(editorVal);
+  if (parsedCql.usingContent === undefined) {
+    return true;
+  }
+  return false;
 };
 
 export const mapParserErrorsToAceAnnotations = (
