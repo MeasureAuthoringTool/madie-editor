@@ -101,7 +101,7 @@ const synchingCql = (
     if (parsedEditorCql.usingContent) {
       parsedEditorCql.cqlArrayToBeFiltered[
         parsedEditorCql.usingContent?.index
-      ] = `using ${usingName} version '${usingVersion}'`;
+      ] = `using ${usingName.replace("-", "")} version '${usingVersion}'`;
     }
   }
   return parsedEditorCql.cqlArrayToBeFiltered.join("\n");
