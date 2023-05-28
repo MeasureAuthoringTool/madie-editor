@@ -104,7 +104,7 @@ const synchingCql = (
       ] = `using ${usingName.replace("-", "")} version '${usingVersion}'`;
     }
   }
-  return parsedEditorCql.cqlArrayToBeFiltered.join("\n");
+  return parsedEditorCql?.cqlArrayToBeFiltered?.join("\n");
 };
 
 export const parsingEditorCqlContent = async (
