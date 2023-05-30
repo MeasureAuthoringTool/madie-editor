@@ -30,9 +30,11 @@ export interface EditorPropsType {
 
 export const parseEditorContent = (content): CqlError[] => {
   let errors: CqlError[] = [];
-  const parseOutput = new CqlAntlr(content).parse();
-  if (parseOutput.errors && parseOutput.errors.length > 0) {
-    errors = parseOutput.errors;
+  if (content) {
+    const parseOutput = new CqlAntlr(content).parse();
+    if (parseOutput.errors && parseOutput.errors.length > 0) {
+      errors = parseOutput.errors;
+    }
   }
   return errors;
 };
