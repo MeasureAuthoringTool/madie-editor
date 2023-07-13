@@ -451,4 +451,20 @@ I want to decalre a concept lalala`,
 
     expect(inSyncCql).toEqual(expectValue);
   });
+
+  it("Blank cql will return a blank string", async () => {
+    const expectValue = "";
+    const inSyncCql = await parsingEditorCqlContent(
+      "",
+      "",
+      "Testing",
+      "Test",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+
+    expect(inSyncCql).toEqual(expectValue);
+  });
 });
