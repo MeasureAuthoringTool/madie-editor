@@ -244,7 +244,7 @@ describe("synching the cql", () => {
       "Test",
       "",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -254,11 +254,11 @@ describe("synching the cql", () => {
   test("not replacing the cql when there are errors in the cql library content ", async () => {
     const inSyncCql = await parsingEditorCqlContent(
       "test",
-      "library Test version '0.0.000'\nusing QICORE version '4.1.1",
+      "library Test version '0.0.000'\nusing QI-Core version '4.1.1",
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -267,14 +267,29 @@ describe("synching the cql", () => {
   });
 
   test("replacing the error containing using content line to actual using content ", async () => {
-    const expectValue = "using QICORE version '4.1.1'";
+    const expectValue = "using QICore version '4.1.1'";
     const inSyncCql = await parsingEditorCqlContent(
       "using QIasdf version '4.1.1'",
       "",
       "Test",
       "",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+    expect(inSyncCql).toEqual(expectValue);
+  });
+
+  test("replacing the error containing using content line to actual using content with FHIR ", async () => {
+    const expectValue = "using FHIR version '4.0.1'";
+    const inSyncCql = await parsingEditorCqlContent(
+      "using FHIR version '4.0.1'",
+      "",
+      "Test",
+      "",
+      "0.0.000",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -289,7 +304,7 @@ describe("synching the cql", () => {
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureInformation"
     );
@@ -305,7 +320,7 @@ describe("synching the cql", () => {
       "Test",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureInformation"
     );
@@ -320,7 +335,7 @@ describe("synching the cql", () => {
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureInformation"
     );
@@ -339,7 +354,7 @@ describe("ParsingCQL Function, Kill Concept Declaration", () => {
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -356,7 +371,7 @@ I want to decalre a concept lalala`,
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -374,7 +389,7 @@ I want to decalre a concept lalala`,
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -394,7 +409,7 @@ describe("isUsingStatementEmpty", () => {
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -411,7 +426,7 @@ I want to decalre a concept lalala`,
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
@@ -429,7 +444,7 @@ I want to decalre a concept lalala`,
       "Testing",
       "Test",
       "0.0.000",
-      "QICORE",
+      "QI-Core",
       "4.1.1",
       "measureEditor"
     );
