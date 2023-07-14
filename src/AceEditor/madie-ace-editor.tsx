@@ -87,7 +87,7 @@ const parsingUsing = (parsedCql, cqlArrayToBeFiltered): Statement => {
 };
 
 const synchingCql = (
-  parsedEditorCql,
+  parsedEditorCql: ParsedCql | "",
   libraryName,
   versionString,
   usingName,
@@ -101,12 +101,20 @@ const synchingCql = (
     }
 
     if (parsedEditorCql.usingContent) {
+      if (usingName === "QI-Core") {
+        if (parsedEditorCql.usingContent?.statement.includes("FHIR")) {
+          usingName = "FHIR";
+          usingVersion = "4.0.1";
+        }
+      }
+
       parsedEditorCql.cqlArrayToBeFiltered[
         parsedEditorCql.usingContent?.index
       ] = `using ${usingName.replace("-", "")} version '${usingVersion}'`;
     }
+    return parsedEditorCql?.cqlArrayToBeFiltered?.join("\n");
   }
-  return parsedEditorCql?.cqlArrayToBeFiltered?.join("\n");
+  return parsedEditorCql;
 };
 
 export const parsingEditorCqlContent = async (
