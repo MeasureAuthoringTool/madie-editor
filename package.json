@@ -81,7 +81,7 @@
     "react-dom": "^17.0.2",
     "single-spa": "^5.9.3",
     "single-spa-react": "^4.6.1",
-    "axios": "^0.26.0"
+    "axios": "^1.6.2"
   },
   "types": "dist/madie-madie-editor.d.ts",
   "browserslist": [
