@@ -4,5 +4,16 @@
 }
 
 .ace_gutter-cell {
-  color: #b0b0b0;
+  color: #9c9c9c;
+}
+
+.ace_comment {
+  color: #9c9c9c !important;
+}
+
+.ace-monokai .ace_entity.ace_name.ace_tag,
+.ace-monokai .ace_keyword,
+.ace-monokai .ace_meta.ace_tag,
+.ace-monokai .ace_storage {
+  color: #fb4b8c !important;
 }
