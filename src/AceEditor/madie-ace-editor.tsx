@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
 import * as _ from "lodash";
-import tw from "twin.macro";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
 import "ace-builds/src-noconflict/mode-sql";

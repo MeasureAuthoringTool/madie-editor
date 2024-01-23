@@ -1,10 +1,18 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { mergeWithRules } = require("webpack-merge");
 const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
-const path = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const orgName = "madie";
+
+const merge = mergeWithRules({
+  module: {
+    rules: {
+      test: "match",
+      use: "replace",
+    },
+  },
+  plugins: "append",
+});
 
 module.exports = (webpackConfigEnv, argv) => {
   const defaultConfig = singleSpaDefaults({
@@ -19,70 +27,10 @@ module.exports = (webpackConfigEnv, argv) => {
   // This must be updated for any single-spa applications or utilities,
   // or any other package to be loaded externally
   const externalsConfig = {
-    externals: [
-      "@madie/root-config",
-      "@madie/madie-layout",
-      "@madie/madie-auth",
-      "@madie/madie-util",
-    ],
+    externals: ["@madie/madie-util"],
   };
 
-  // We need to override the css loading rule from the parent configuration
-  // so that we can add postcss-loader to the chain
-  const newCssRule = {
-    module: {
-      rules: [
-        {
-          test: /\.css$/i,
-          include: [/node_modules/, /src/],
-          use: [
-            "style-loader",
-            "css-loader", // uses modules: true, which I think we want. Parent does not
-            "postcss-loader",
-          ],
-        },
-      ],
-    },
-    devServer: {
-      static: [
-        {
-          directory: path.join(__dirname, "local-dev-env"),
-          publicPath: "/importmap",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-root/dist/"
-          ),
-          publicPath: "/",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-layout/dist/"
-          ),
-          publicPath: "/madie-layout",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-auth/dist/"
-          ),
-          publicPath: "/madie-auth",
-        },
-      ],
-    },
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: path.join(
-          __dirname,
-          "node_modules/@madie/madie-root/dist/index.html"
-        ),
-      }),
-    ],
-  };
-
-  // node polyfills
+  // We need node polyfills to understand antlr4ts
   const polyfillConfig = {
     resolve: {
       fallback: {
@@ -92,13 +40,5 @@ module.exports = (webpackConfigEnv, argv) => {
     plugins: [new NodePolyfillPlugin()],
   };
 
-  return mergeWithRules({
-    module: {
-      rules: {
-        test: "match",
-        use: "replace",
-      },
-    },
-    plugins: "append",
-  })(defaultConfig, newCssRule, polyfillConfig, externalsConfig);
+  return merge(defaultConfig, polyfillConfig, externalsConfig);
 };
