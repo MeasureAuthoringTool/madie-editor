@@ -4,6 +4,16 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const orgName = "madie";
 
+const merge = mergeWithRules({
+  module: {
+    rules: {
+      test: "match",
+      use: "replace",
+    },
+  },
+  plugins: "append",
+});
+
 module.exports = (webpackConfigEnv, argv) => {
   const defaultConfig = singleSpaDefaults({
     orgName,
@@ -30,13 +40,5 @@ module.exports = (webpackConfigEnv, argv) => {
     plugins: [new NodePolyfillPlugin()],
   };
 
-  return mergeWithRules({
-    module: {
-      rules: {
-        test: "match",
-        use: "replace",
-      },
-    },
-    plugins: "append",
-  })(defaultConfig, polyfillConfig, externalsConfig);
+  return merge(defaultConfig, polyfillConfig, externalsConfig);
 };
