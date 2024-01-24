@@ -75,7 +75,7 @@
     "react-ace": "^10.0.0",
     "react-dom": "^17.0.2",
     "single-spa": "^5.9.3",
-    "single-spa-react": "^4.6.1"
+    "single-spa-react": "^5.1.4"
   },
   "types": "dist/madie-madie-editor.d.ts",
   "browserslist": [
