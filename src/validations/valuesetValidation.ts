@@ -15,6 +15,19 @@ const GetValueSetErrors = async (
       valuesetsArray.map(async (valueSet) => {
         const oid = getOidFromCqlValueSet(valueSet, model);
         const locator = getLocatorFromCqlValueSet(valueSet);
+        if (model === "QICore") {
+          const splitValuesetUrl = valueSet?.url?.split("ValueSet/");
+          if (
+            splitValuesetUrl &&
+            splitValuesetUrl[0] !== "'http://cts.nlm.nih.gov/fhir/"
+          ) {
+            const errorString = processValueSetErrorForElmTranslationError(
+              `"valueset url(${valueSet.url}) is not in the correct format"`,
+              locator
+            );
+            valuesetsErrorArray.push(errorString);
+          }
+        }
         await terminologyServiceApi
           .getValueSet(oid, locator, loggedInUMLS)
           .then((response) => {

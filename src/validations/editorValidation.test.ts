@@ -207,7 +207,7 @@ describe("Editor Validation Test", () => {
       "include FHIRHelpers version '4.0.1' \n" +
       "codesystem \"ActPriority:HL7V3.0_2021-03\": 'http://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03' \n" +
       "code \"preop\": 'p' from \"ActPriority:HL7V3.0_2021-03\" display 'preop' \n" +
-      'valueset "ONC Administrative Sex": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
+      'valueset "ONC Administrative Sex": "http://cts.nlm.nih.gov/fhirother/ValueSet/2.16.840.1.113762.1.4.1" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
 
     const elmTranslationWithValuesetError: ElmTranslation = {
       externalErrors: [],
