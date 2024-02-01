@@ -21,11 +21,12 @@ const GetValueSetErrors = async (
             splitValuesetUrl &&
             splitValuesetUrl[0] !== "'http://cts.nlm.nih.gov/fhir/"
           ) {
-            const errorString = processValueSetErrorForElmTranslationError(
-              `"valueset url(${valueSet.url}) is not in the correct format"`,
-              locator
-            );
-            valuesetsErrorArray.push(errorString);
+            const invalidValuesetUrlError =
+              processValueSetErrorForElmTranslationError(
+                `"${valueSet.url} is not a valid URL"`,
+                locator
+              );
+            valuesetsErrorArray.push(invalidValuesetUrlError);
           }
         }
         await terminologyServiceApi
