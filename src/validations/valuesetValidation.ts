@@ -16,10 +16,10 @@ const GetValueSetErrors = async (
         const oid = getOidFromCqlValueSet(valueSet, model);
         const locator = getLocatorFromCqlValueSet(valueSet);
         if (model === "QICore") {
-          const splitValuesetUrl = valueSet?.url?.split("ValueSet/");
+          const valuesetUrlWithoutOid = valueSet?.url?.split("ValueSet/");
           if (
-            splitValuesetUrl &&
-            splitValuesetUrl[0] !== "'http://cts.nlm.nih.gov/fhir/"
+            valuesetUrlWithoutOid &&
+            valuesetUrlWithoutOid[0] !== "'http://cts.nlm.nih.gov/fhir/"
           ) {
             const invalidValuesetUrlError =
               processValueSetErrorForElmTranslationError(
