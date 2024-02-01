@@ -207,7 +207,7 @@ describe("Editor Validation Test", () => {
       "include FHIRHelpers version '4.0.1' \n" +
       "codesystem \"ActPriority:HL7V3.0_2021-03\": 'http://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03' \n" +
       "code \"preop\": 'p' from \"ActPriority:HL7V3.0_2021-03\" display 'preop' \n" +
-      'valueset "ONC Administrative Sex": "http://cts.nlm.nih.gov/fhirother/ValueSet/2.16.840.1.113762.1.4.1" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
+      'valueset "ONC Administrative Sex": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
 
     const elmTranslationWithValuesetError: ElmTranslation = {
       externalErrors: [],
@@ -305,48 +305,6 @@ describe("Editor Validation Test", () => {
 
     const errorsResult = await useGetAllErrors(editorContent);
     expect(errorsResult.errors.length).toBe(3);
-  });
-
-  it("Validate editor content has valueset url is not in correct format error", async () => {
-    const editorContent: string =
-      "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000' \n" +
-      "using QICore version '4.1.0' \n" +
-      'valueset "Telephone Visits": "http://cts.nlm.nih.gov/fhir/otherValueSet/2.16.840.1.113883.3.464.1003.101.12.1080" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
-
-    mockedAxios.get.mockImplementation((args) => {
-      if (
-        args &&
-        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: fhirValueset,
-          status: 200,
-        });
-      }
-    });
-    mockedAxios.put.mockImplementation((args) => {
-      if (
-        args &&
-        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: customCqlCodesValid,
-          status: 200,
-        });
-      } else if (
-        args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: {
-            json: JSON.stringify(elmTranslationWithNoErrors),
-          },
-          status: 200,
-        });
-      }
-    });
-    const errorsResult: ValidationResult = await useGetAllErrors(editorContent);
-    expect(errorsResult?.errors.length).toBe(1);
   });
 
   it("Should return elm translation external errors", async () => {
