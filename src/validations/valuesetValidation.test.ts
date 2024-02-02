@@ -44,6 +44,23 @@ const cqlValueset: CqlValueSet[] = [
   },
 ];
 
+const qdmCqlValuesetWithIncorrectUrl: CqlValueSet[] = [
+  {
+    text: "valueset \"Falls Screening\": 'urn:oid:2.16.840.1.113883.3.464.1003.118.12.1028'",
+    start: {
+      line: 41,
+      position: 0,
+    },
+    stop: {
+      line: 41,
+      position: 77,
+    },
+    name: '"Falls Screening"',
+    url: "'otherurn:oid:2.16.840.1.113883.3.464.1003.118.12.1028'",
+    hits: 0,
+  },
+];
+
 const invalidValueSets: CqlValueSet[] = [
   {
     text: "valueset \"HPV Test\": ''",
@@ -111,7 +128,7 @@ describe("Value Set validation", () => {
     expect(valuesetErrors.length).toBe(0);
   });
 
-  it("get value set url is not in correct format error ", async () => {
+  it("get value set url is not in correct format error for QICore ", async () => {
     mockedAxios.get.mockImplementation((args) => {
       if (
         args &&
@@ -125,6 +142,24 @@ describe("Value Set validation", () => {
       cqlValueset,
       true,
       "QICore"
+    );
+    expect(valuesetErrors.length).toBe(1);
+  });
+
+  it("get value set url is not in correct format error for QDM ", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.resolve({ data: fhirValueset });
+      }
+    });
+
+    const valuesetErrors: ElmTranslationError[] = await GetValueSetErrors(
+      qdmCqlValuesetWithIncorrectUrl,
+      true,
+      "QDM"
     );
     expect(valuesetErrors.length).toBe(1);
   });

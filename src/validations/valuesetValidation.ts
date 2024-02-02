@@ -15,20 +15,12 @@ const GetValueSetErrors = async (
       valuesetsArray.map(async (valueSet) => {
         const oid = getOidFromCqlValueSet(valueSet, model);
         const locator = getLocatorFromCqlValueSet(valueSet);
-        if (model === "QICore") {
-          const valuesetUrlWithoutOid = valueSet?.url?.split("ValueSet/");
-          if (
-            valuesetUrlWithoutOid &&
-            valuesetUrlWithoutOid[0] !== "'http://cts.nlm.nih.gov/fhir/"
-          ) {
-            const invalidValuesetUrlError =
-              processValueSetErrorForElmTranslationError(
-                `"${valueSet.url} is not a valid URL"`,
-                locator
-              );
-            valuesetsErrorArray.push(invalidValuesetUrlError);
-          }
+
+        const valueSetUrlErrors = validateValuesetUrl(model, valueSet, locator);
+        if (valueSetUrlErrors) {
+          valuesetsErrorArray.push(valueSetUrlErrors);
         }
+
         await terminologyServiceApi
           .getValueSet(oid, locator, loggedInUMLS)
           .then((response) => {
@@ -44,6 +36,34 @@ const GetValueSetErrors = async (
       })
     );
     return valuesetsErrorArray;
+  }
+};
+
+const validateValuesetUrl = (model, valueSet, locator) => {
+  if (model === "QICore") {
+    const valuesetUrlWithoutOid = valueSet?.url?.split("ValueSet/");
+    if (
+      valuesetUrlWithoutOid &&
+      valuesetUrlWithoutOid[0] !== "'http://cts.nlm.nih.gov/fhir/"
+    ) {
+      const invalidValuesetUrlError =
+        processValueSetErrorForElmTranslationError(
+          `"${valueSet.url} is not a valid URL. Fhir URL should start with 'http://cts.nlm.nih.gov/fhir/ValueSet/'"`,
+          locator
+        );
+      return invalidValuesetUrlError;
+    }
+  }
+  if (model === "QDM") {
+    const valuesetUrlWithoutOid = valueSet?.url?.split("oid:");
+    if (valuesetUrlWithoutOid && valuesetUrlWithoutOid[0] !== "'urn:") {
+      const invalidValuesetUrlError =
+        processValueSetErrorForElmTranslationError(
+          `"${valueSet.url} is not a valid URL. QDM URL should start with 'urn:oid:'"`,
+          locator
+        );
+      return invalidValuesetUrlError;
+    }
   }
 };
 
