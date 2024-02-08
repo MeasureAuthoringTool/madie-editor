@@ -62,7 +62,7 @@
     "webpack-config-single-spa-react-ts": "^4.0.3",
     "webpack-dev-server": "^4.7.4",
     "webpack-merge": "^5.8.0",
-    "@testing-library/user-event": "^13.5.0"
+    "@testing-library/user-event": "^14.5.2"
   },
   "dependencies": {
     "@madie/cql-antlr-parser": "^1.0.1",
