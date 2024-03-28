@@ -6,11 +6,11 @@ export interface NavTabProps {
   setActiveTab: (value: string) => void;
 }
 
-export default function RightPanelNavTabs(props: NavTabProps) {
+export default function TerminologySectionNavTabs(props: NavTabProps) {
   const { activeTab, setActiveTab } = props;
   return (
     <Tabs
-      id="right-panel-navs"
+      id="terminology-panel-navs"
       value={activeTab}
       onChange={(e, v) => {
         setActiveTab(v);

@@ -3,7 +3,7 @@ import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import "./CqlEditorWithTerminology.scss";
-import RightPanel from "../rightPanel/RightPanel";
+import TerminologySection from "../terminologySection/TerminologySection";
 
 const CqlEditorWithTerminology = ({
   value,
@@ -38,7 +38,7 @@ const CqlEditorWithTerminology = ({
           </div>
         </Allotment.Pane>
         <Allotment.Pane>
-          <RightPanel />
+          <TerminologySection />
         </Allotment.Pane>
       </Allotment>
     </div>
