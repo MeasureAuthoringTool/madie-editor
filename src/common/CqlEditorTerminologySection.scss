@@ -1,0 +1,29 @@
+.cql-editor-tab-heading {
+  display: flex;
+  flex-direction: column;
+  > .heading-row {
+    display: flex;
+    border-bottom: solid 1px #8c8c8c;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    > .header {
+      color: #125496;
+    }
+    > .chevron-display {
+      color: #0073c8;
+      transition: all 0.2s ease;
+      &.open {
+        transform: rotate(90deg);
+      }
+    }
+  }
+  > .growing-div {
+    flex-direction: column;
+    &.open {
+      margin-top: 35px;
+    }
+  }
+}
