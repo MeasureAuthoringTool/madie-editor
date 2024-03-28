@@ -6,7 +6,8 @@
     "declarationMap": true,
     "jsx": "react-jsx",
     "target": "es6",
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true
   },
   "files": ["src/madie-madie-editor.tsx"],
   "include": ["src/**/*"],
