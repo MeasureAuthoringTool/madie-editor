@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import "./CqlEditorTerminologySection.scss";
+import "./TerminologySection.scss";
 
-interface CqlEditorTerminologySectionProps {
+interface TerminologySectionProps {
   title: string;
   children?: any;
 }
 
-const CqlEditorTerminologySection = (
-  props: CqlEditorTerminologySectionProps
-) => {
+const TerminologySection = (props: TerminologySectionProps) => {
   const { title, children } = props;
   const [open, setOpen] = useState(true);
   const chevronClass = open ? "chevron-display open" : "chevron-display";
@@ -17,8 +15,8 @@ const CqlEditorTerminologySection = (
 
   return (
     <div
-      className="cql-editor-tab-heading"
-      data-testid={`cql-editor-${props.title}-sub-heading`}
+      className="terminology-section-tab-heading"
+      data-testid={`terminology-section-${props.title}-sub-heading`}
     >
       <div
         onClick={() => {
@@ -39,7 +37,7 @@ const CqlEditorTerminologySection = (
 
       <div className={growingDivClass}>
         {open && (
-          <div data-testid={`cql-editor-header-content-${title}`}>
+          <div data-testid={`terminology-section-sub-header-content-${title}`}>
             {children}
           </div>
         )}
@@ -48,4 +46,4 @@ const CqlEditorTerminologySection = (
   );
 };
 
-export default CqlEditorTerminologySection;
+export default TerminologySection;

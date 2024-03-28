@@ -1,5 +1,5 @@
 import React from "react";
-import TerminologySection from "../../../../common/CqlEditorTerminologySection";
+import TerminologySection from "../../../../common/TerminologySection";
 
 export default function AppliedSubTabSection() {
   return (

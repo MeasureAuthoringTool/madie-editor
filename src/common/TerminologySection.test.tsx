@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { TestCase } from "@madie/madie-models";
 
-import CqlEditorTerminologySection from "./CqlEditorTerminologySection";
+import TerminologySection from "./TerminologySection";
 
 const { findByText, findByTestId } = screen;
 const testcase: TestCase = {
@@ -16,15 +16,15 @@ const testcase: TestCase = {
 describe("TabHeadings", () => {
   test("TabHeading does in fact exist with specified text", async () => {
     const title = "FakeTitle";
-    render(<CqlEditorTerminologySection title={title} />);
+    render(<TerminologySection title={title} />);
     const foundTitle = await findByText(title);
     expect(foundTitle).toBeInTheDocument();
   });
 
   test("Tab Headings display descriptions when clicked on, hides after", async () => {
     const title = "Code(s)";
-    const expectedId = `cql-editor-header-content-${title}`;
-    render(<CqlEditorTerminologySection title={title} />);
+    const expectedId = `terminology-section-sub-header-content-${title}`;
+    render(<TerminologySection title={title} />);
     const foundTitle = await findByText(title);
     // open
     expect(foundTitle).toBeInTheDocument();
