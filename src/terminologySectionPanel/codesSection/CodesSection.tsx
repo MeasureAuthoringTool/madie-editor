@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CodesSectionNavTabs from "./CodesSectionNavTabs";
-import CodeSubTabSection from "./codesSubTabs/codeSubTab/CodeSubTabSection";
-import AppliedSubTabSection from "./codesSubTabs/appliedSubTab/AppliedSubTabSection";
+import CodeSubSection from "./codesSubSection/codeSubSection/CodeSubSection";
+import AppliedSubSection from "./codesSubSection/appliedSubSection/AppliedSubSection";
 
 export default function CodesSection() {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
@@ -10,8 +10,8 @@ export default function CodesSection() {
       <CodesSectionNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <div style={{ marginTop: "20px" }}>
         {activeTab === "codeSystems" && "Code Systems Section"}
-        {activeTab === "code" && <CodeSubTabSection />}
-        {activeTab === "applied" && <AppliedSubTabSection />}
+        {activeTab === "code" && <CodeSubSection />}
+        {activeTab === "applied" && <AppliedSubSection />}
       </div>
     </>
   );

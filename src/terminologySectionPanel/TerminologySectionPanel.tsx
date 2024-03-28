@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { IconButton } from "@mui/material";
-import ValueSetsSection from "./valueSetsTab/ValueSetsSection";
 import TerminologySectionPanelNavTabs from "./TerminologySectionPanelNavTabs";
-import DefinitionsSection from "./definitionsTab/DefinitionsSection";
-import CodesSection from "./codesTab/CodesSection";
+import ValueSetsSection from "./valueSetsSection/ValueSetsSection";
+import CodesSection from "./codesSection/CodesSection";
+import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 
 export default function TerminologySectionPanel() {
   const [activeTab, setActiveTab] = useState<string>("valueSets");
