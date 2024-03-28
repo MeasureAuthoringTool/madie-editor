@@ -8,6 +8,7 @@ import MadieAceEditor, {
   isUsingStatementEmpty,
   parsingEditorCqlContent,
 } from "./AceEditor/madie-ace-editor";
+import CqlEditorWithTerminology from "./cqlEditorWithTerminology/CqlEditorWithTerminology";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/useElmTranslationServiceApi";
 import {
@@ -26,6 +27,8 @@ const lifecycles = singleSpaReact({
   },
 });
 
+export const MadieTerminologyEditor: FC<EditorPropsType> =
+  CqlEditorWithTerminology;
 export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 
