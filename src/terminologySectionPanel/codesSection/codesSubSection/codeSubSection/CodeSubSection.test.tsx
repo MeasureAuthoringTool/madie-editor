@@ -55,10 +55,10 @@ describe("CodeSub Section component", () => {
     });
 
     expect(codeTextInput.value).toBe("Code1");
-
     expect(getByTestId("code-list-updated-date")).toBeInTheDocument();
-    expect(getByTestId("clear-codes-btn")).toBeEnabled();
     expect(getByTestId("codes-search-btn")).toBeEnabled();
+    fireEvent.click(getByTestId("codes-search-btn"));
+    expect(getByTestId("clear-codes-btn")).toBeEnabled();
   });
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
