@@ -61,7 +61,7 @@ describe("CodeSub Section component", () => {
     expect(getByTestId("codes-search-btn")).toBeEnabled();
   });
 
-  it("clear button should be disabled until a chnage is made in one of the search criteria", () => {
+  it("clear button should be disabled until a change is made in one of the search criteria", () => {
     const { getByTestId } = render(<CodeSubSection />);
 
     const clearButton = getByTestId("clear-codes-btn");
