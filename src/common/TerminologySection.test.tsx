@@ -24,7 +24,13 @@ describe("TabHeadings", () => {
   test("Tab Headings display descriptions when clicked on, hides after", async () => {
     const title = "Code(s)";
     const expectedId = `terminology-section-sub-header-content-${title}`;
-    render(<TerminologySection title={title} />);
+    const setShowHeaderContent = jest.fn();
+    render(
+      <TerminologySection
+        title={title}
+        setShowHeaderContent={setShowHeaderContent}
+      />
+    );
     const foundTitle = await findByText(title);
     // open
     expect(foundTitle).toBeInTheDocument();
