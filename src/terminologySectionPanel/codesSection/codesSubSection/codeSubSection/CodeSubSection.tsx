@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import CodeSection from "./CodeSection";
 import ResultsSection from "./ResultsSection";
 import { useFormik } from "formik";
-import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
 import "./CodeSubSection.scss";
+import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
 
 export default function CodeSubSection() {
   const [showResultsTable, setShowResultsTable] = useState(false);
