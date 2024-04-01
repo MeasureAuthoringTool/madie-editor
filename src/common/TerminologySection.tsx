@@ -6,10 +6,16 @@ interface TerminologySectionProps {
   title: string;
   children?: any;
   showHeaderContent?: boolean;
+  setShowHeaderContent?: Function;
 }
 
 const TerminologySection = (props: TerminologySectionProps) => {
-  const { title, children, showHeaderContent = true } = props;
+  const {
+    title,
+    children,
+    showHeaderContent = true,
+    setShowHeaderContent,
+  } = props;
   const [open, setOpen] = useState(showHeaderContent);
   const chevronClass = open ? "chevron-display open" : "chevron-display";
   const growingDivClass = open ? "growing-div open" : "growing-div";
@@ -26,12 +32,14 @@ const TerminologySection = (props: TerminologySectionProps) => {
       <div
         onClick={() => {
           setOpen(!open);
+          setShowHeaderContent(!showHeaderContent);
         }}
         tabIndex={0}
         role="button"
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             setOpen(!open);
+            setShowHeaderContent(!showHeaderContent);
           }
         }}
         className="heading-row"

@@ -13,7 +13,10 @@ export default function CodeSubSection() {
   return (
     <>
       <CodeSection handleFormSubmit={handleFormSubmit} />
-      <ResultsSection showResultsTable={showResultsTable} />
+      <ResultsSection
+        showResultsTable={showResultsTable}
+        setShowResultsTable={setShowResultsTable}
+      />
     </>
   );
 }
