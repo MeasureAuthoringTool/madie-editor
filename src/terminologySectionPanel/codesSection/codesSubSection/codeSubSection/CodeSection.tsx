@@ -9,8 +9,22 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import TerminologySection from "../../../../common/TerminologySection";
+import { useFormik } from "formik";
+import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
 
-export default function CodeSection({ formik }) {
+export default function CodeSection({ handleFormSubmit }) {
+  const formik = useFormik({
+    initialValues: {
+      codeSystem: "",
+      codeSystemVersion: "",
+      code: "",
+    },
+    validationSchema: CodeSubSectionSchemaValidator,
+    onSubmit: (values) => {
+      handleFormSubmit(values);
+    },
+  });
+
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -96,6 +110,7 @@ export default function CodeSection({ formik }) {
                   variant="outline"
                   data-testid="clear-codes-btn"
                   disabled={!formik.dirty}
+                  tw="mr-4"
                 >
                   Clear
                 </Button>
@@ -103,7 +118,6 @@ export default function CodeSection({ formik }) {
                   type="submit"
                   data-testid="codes-search-btn"
                   disabled={!(formik.isValid && formik.dirty)}
-                  tw="ml-4"
                 >
                   Search
                 </Button>

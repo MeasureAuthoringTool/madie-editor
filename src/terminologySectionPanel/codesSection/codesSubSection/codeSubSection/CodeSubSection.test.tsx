@@ -23,14 +23,9 @@ describe("CodeSub Section component", () => {
 
     const codeSystemSelect = getByTestId("code-system-selector");
     const codeSystemSelectInput = getByTestId("code-system-selector-input");
-    const codeSystemSelectDropdown = within(codeSystemSelect).getByRole(
-      "button"
-    ) as HTMLInputElement;
 
     expect(getByTestId("clear-codes-btn")).toBeDisabled();
     expect(getByTestId("codes-search-btn")).toBeDisabled();
-
-    userEvent.click(codeSystemSelectDropdown);
 
     fireEvent.change(codeSystemSelectInput, {
       target: { value: "Code1" },

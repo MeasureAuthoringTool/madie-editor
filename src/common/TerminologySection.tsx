@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./TerminologySection.scss";
 
 interface TerminologySectionProps {
   title: string;
   children?: any;
+  showHeaderContent?: boolean;
 }
 
 const TerminologySection = (props: TerminologySectionProps) => {
-  const { title, children } = props;
-  const [open, setOpen] = useState(true);
+  const { title, children, showHeaderContent = true } = props;
+  const [open, setOpen] = useState(showHeaderContent);
   const chevronClass = open ? "chevron-display open" : "chevron-display";
   const growingDivClass = open ? "growing-div open" : "growing-div";
+
+  useEffect(() => {
+    setOpen(showHeaderContent);
+  }, [showHeaderContent]);
 
   return (
     <div
