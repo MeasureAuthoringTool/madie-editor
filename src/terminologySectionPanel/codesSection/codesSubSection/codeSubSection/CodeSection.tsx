@@ -12,7 +12,7 @@ import TerminologySection from "../../../../common/TerminologySection";
 import { useFormik } from "formik";
 import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
 
-export default function CodeSection({ handleFormSubmit }) {
+export default function CodeSection({ handleFormSubmit, canEdit }) {
   const formik = useFormik({
     initialValues: {
       codeSystem: "",
@@ -66,6 +66,7 @@ export default function CodeSection({ handleFormSubmit }) {
                     }}
                     onChange={formik.handleChange}
                     name="codeSystem"
+                    disabled={canEdit}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -82,7 +83,7 @@ export default function CodeSection({ handleFormSubmit }) {
                     }}
                     onChange={formik.handleChange}
                     name="codeSystemVersion"
-                    disabled={!formik.values.codeSystem}
+                    disabled={!formik.values.codeSystem || canEdit}
                   />
                 </div>
               </div>
@@ -101,7 +102,7 @@ export default function CodeSection({ handleFormSubmit }) {
                   InputProps={searchInputProps}
                   onChange={formik.handleChange}
                   name="code"
-                  disabled={!formik.values.codeSystem}
+                  disabled={!formik.values.codeSystem || canEdit}
                 />
               </div>
 
@@ -109,7 +110,7 @@ export default function CodeSection({ handleFormSubmit }) {
                 <Button
                   variant="outline"
                   data-testid="clear-codes-btn"
-                  disabled={!formik.dirty}
+                  disabled={!formik.dirty || canEdit}
                   tw="mr-4"
                 >
                   Clear
@@ -117,7 +118,7 @@ export default function CodeSection({ handleFormSubmit }) {
                 <Button
                   type="submit"
                   data-testid="codes-search-btn"
-                  disabled={!(formik.isValid && formik.dirty)}
+                  disabled={!(formik.isValid && formik.dirty) || canEdit}
                 >
                   Search
                 </Button>
