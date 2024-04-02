@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import {
@@ -12,7 +12,9 @@ import TerminologySection from "../../../../common/TerminologySection";
 import { useFormik } from "formik";
 import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
 import { MenuItem as MuiMenuItem } from "@mui/material";
-
+import { uniq } from "lodash";
+import moment from "moment";
+import { MenuItem } from "@mui/material";
 const codeSystemVersionOptions = [
   {
     label: "version 1",
@@ -40,14 +42,32 @@ interface CodeSectionProps {
   canEdit: boolean;
 }
 
-export default function CodeSection({
-  handleFormSubmit,
-  canEdit,
-}: CodeSectionProps) {
+interface MenuObj {
+  value: string;
+  label: string;
+}
+
+export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit }) {
+  // if we open tab before information has arrived, we need to trigger a useEffect
+  const [codeSystems, setCodeSystems] = useState(allCodeSystems);
+  const [titles, setTitles] = useState([]);
+  useEffect(() => {
+    if (allCodeSystems?.length) {
+      const filteredTitles = uniq(allCodeSystems.map((t) => t.title)).map(
+        (title) => ({
+          value: title,
+          label: title,
+        })
+      );
+      setTitles(filteredTitles);
+      setCodeSystems(allCodeSystems);
+    }
+  }, [allCodeSystems, setCodeSystems]);
+
   const formik = useFormik({
     initialValues: {
-      codeSystem: "",
-      codeSystemVersion: "",
+      title: "",
+      version: "",
       code: "",
     },
     validationSchema: CodeSubSectionSchemaValidator,
@@ -55,13 +75,47 @@ export default function CodeSection({
       handleFormSubmit(values);
     },
   });
-
+  const [availableVersions, setAvailableVersions] = useState([]);
+  useEffect(() => {
+    if (formik.values.title) {
+      setAvailableVersions(
+        codeSystems
+          .filter((c) => c.title === formik.values.title)
+          .sort((a, b) => {
+            const dateA = new Date(a.lastUpdatedUpstream);
+            const dateB = new Date(b.lastUpdatedUpstream);
+            return dateA.getTime() - dateB.getTime();
+          })
+          .map((cs) => ({
+            value: cs.version,
+            label: cs.version,
+          }))
+      );
+    }
+  }, [formik.values.title]);
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
         <SearchIcon />
       </InputAdornment>
     ),
+  };
+
+  const renderMenuItems = (options: MenuObj[]) => {
+    return [
+      <MenuItem key="-" value="">
+        -
+      </MenuItem>,
+      ...options.map(({ value, label }) => (
+        <MenuItem
+          key={`${label}-option`}
+          value={value}
+          data-testid={`${label}-option`}
+        >
+          {label}
+        </MenuItem>
+      )),
+    ];
   };
 
   return (
@@ -75,7 +129,13 @@ export default function CodeSection({
               className="code-list-updated-date"
             >
               List updated:
-              <span className="updated-date">03/12/2024</span>
+              <span className="updated-date">
+                {`${
+                  codeSystems?.length
+                    ? moment(codeSystems[0]?.lastUpdated).format("L")
+                    : ""
+                }`}
+              </span>
             </div>
             <form onSubmit={formik.handleSubmit}>
               <div tw="flex md:flex-wrap">
@@ -95,15 +155,11 @@ export default function CodeSection({
                     SelectDisplayProps={{
                       "aria-required": "true",
                     }}
+                    options={renderMenuItems(titles)}
                     onChange={formik.handleChange}
                     value={formik.values.codeSystem}
                     name="codeSystem"
                     disabled={!canEdit}
-                    options={Object.values(codeSystemOptions).map((opt) => (
-                      <MuiMenuItem key={opt.label} value={opt.value}>
-                        {opt.label}
-                      </MuiMenuItem>
-                    ))}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -119,16 +175,9 @@ export default function CodeSection({
                     SelectDisplayProps={{
                       "aria-required": "true",
                     }}
+                    options={renderMenuItems(availableVersions)}
                     onChange={formik.handleChange}
-                    value={formik.values.codeSystemVersion}
-                    disabled={!formik.values.codeSystem || !canEdit}
-                    options={Object.values(codeSystemVersionOptions).map(
-                      (opt) => (
-                        <MuiMenuItem key={opt.label} value={opt.value}>
-                          {opt.label}
-                        </MuiMenuItem>
-                      )
-                    )}
+                    disabled={!formik.values.title || !canEdit}
                   />
                 </div>
               </div>
@@ -148,7 +197,7 @@ export default function CodeSection({
                   onChange={formik.handleChange}
                   value={formik.values.code}
                   name="code"
-                  disabled={!formik.values.codeSystem || !canEdit}
+                  disabled={!formik.values.title}
                 />
               </div>
 
