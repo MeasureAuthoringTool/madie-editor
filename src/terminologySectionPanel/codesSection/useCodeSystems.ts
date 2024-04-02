@@ -8,13 +8,13 @@ export function useCodeSystems() {
   // const [loading, setLoading] = useState(true); maybe add later since this call is slow
 
   useEffect(() => {
-    const fetchCodeSystems = async () => {
+    const useFetchCodeSystems = async () => {
       const terminologyService = await useTerminologyServiceApi();
       const fetchedCodeSystems = await terminologyService.getAllCodeSystems();
       setCodeSystems(fetchedCodeSystems);
       // setLoading(false); possibly add later
     };
-    fetchCodeSystems();
+    useFetchCodeSystems();
   }, []);
 
   return { codeSystems };
