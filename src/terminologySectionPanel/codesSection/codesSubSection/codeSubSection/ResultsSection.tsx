@@ -28,32 +28,26 @@ export default function ResultsSection({
     () => [
       {
         header: "",
-        cell: (row) => row.renderValue(),
         accessorKey: "active/inactive",
       },
       {
         header: "Code",
-        cell: (row) => row.renderValue(),
         accessorKey: "code",
       },
       {
         header: "Description",
-        cell: (row) => row.renderValue(),
         accessorKey: "group",
       },
       {
         header: "Code System",
-        cell: (row) => row.renderValue(),
         accessorKey: "title",
       },
       {
         header: "System Version",
-        cell: (row) => row.renderValue(),
         accessorKey: "description",
       },
       {
         header: "",
-        cell: (row) => row.renderValue(),
         accessorKey: "apply",
       },
     ],
