@@ -1,6 +1,6 @@
 import React from "react";
 import CodeSubSection from "./CodeSubSection";
-import { fireEvent, render, within } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 describe("CodeSub Section component", () => {
