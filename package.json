@@ -72,6 +72,7 @@
     "@mui/lab": "^5.0.0-alpha.73",
     "@mui/material": "^5.2.6",
     "@mui/styles": "^5.5.1",
+    "@tanstack/react-table": "^8.10.3",
     "allotment": "^1.20.0",
     "axios": "^1.6.2",
     "formik": "^2.4.5",
