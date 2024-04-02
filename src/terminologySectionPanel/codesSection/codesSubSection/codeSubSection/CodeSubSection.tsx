@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CodeSection from "./CodeSection";
 import ResultsSection from "./ResultsSection";
 import "./CodeSubSection.scss";

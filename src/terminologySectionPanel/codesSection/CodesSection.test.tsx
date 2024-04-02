@@ -8,7 +8,25 @@ import {
 } from "@testing-library/react";
 import * as React from "react";
 import CodesSection from "./CodesSection";
+import { useServiceConfig } from "../../api/useServiceConfig";
+import axios from "axios";
 
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const mockConfig: ServiceConfig = {
+  elmTranslationService: {
+    baseUrl: "elm.com",
+  },
+  terminologyService: {
+    baseUrl: "terminology.com",
+  },
+};
+jest.mock("../../api/useServiceConfig", () => {
+  return {
+    useServiceConfig: jest.fn(() => Promise.resolve(mockConfig)),
+  };
+});
 const renderEditor = () => {
   return render(<CodesSection />);
 };

@@ -6,8 +6,26 @@ import {
   waitFor,
 } from "@testing-library/react";
 import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
+import axios from "axios";
 import React from "react";
+import { useServiceConfig } from "../api/useServiceConfig";
 
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const mockConfig: ServiceConfig = {
+  elmTranslationService: {
+    baseUrl: "elm.com",
+  },
+  terminologyService: {
+    baseUrl: "terminology.com",
+  },
+};
+jest.mock("../api/useServiceConfig", () => {
+  return {
+    useServiceConfig: jest.fn(() => Promise.resolve(mockConfig)),
+  };
+});
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),

@@ -11,12 +11,13 @@ import useTerminologyServiceApi, {
 export default function CodesSection({ canEdit }) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
   const [allCodeSystems, setAllCodeSystems] = useState<CodeSystem[]>([]);
-  const getCodeSystems = async () => {
-    const terminologyService = await useTerminologyServiceApi();
-    const codeSystems = await terminologyService.getAllCodeSystems();
-    setAllCodeSystems(codeSystems);
-  };
+
   useEffect(() => {
+    const getCodeSystems = async () => {
+      const terminologyService = await useTerminologyServiceApi();
+      const codeSystems = await terminologyService.getAllCodeSystems();
+      setAllCodeSystems(codeSystems);
+    };
     getCodeSystems();
   }, []);
   return (
