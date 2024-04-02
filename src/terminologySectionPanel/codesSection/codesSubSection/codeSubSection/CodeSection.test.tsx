@@ -5,7 +5,7 @@ import CodeSection from "./CodeSection";
 const handleFormSubmit = jest.fn();
 const readOnly = false;
 
-describe("CodeSub Section component", () => {
+describe("Code Section component", () => {
   it("should display all the fields in the Code(s) section", () => {
     const { getByTestId } = render(
       <CodeSection canEdit={readOnly} handleFormSubmit={handleFormSubmit} />

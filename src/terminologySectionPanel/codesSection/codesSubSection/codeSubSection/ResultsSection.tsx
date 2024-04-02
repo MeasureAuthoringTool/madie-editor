@@ -75,8 +75,7 @@ export default function ResultsSection({
         children={
           <table
             tw="min-w-full"
-            data-testid="test-case-tbl"
-            className="tcl-table"
+            data-testid="codes-results-tbl"
             style={{
               borderBottom: "solid 1px #8c8c8c",
               borderSpacing: "0 2em !important",
