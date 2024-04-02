@@ -3,7 +3,7 @@ import { fireEvent, render } from "@testing-library/react";
 import CodeSection from "./CodeSection";
 
 const handleFormSubmit = jest.fn();
-const readOnly = false;
+const readOnly = true;
 
 describe("Code Section component", () => {
   it("should display all the fields in the Code(s) section", () => {
@@ -69,7 +69,7 @@ describe("Code Section component", () => {
 
   it("all the code form fields should be disable when user is not the owner or shared user", () => {
     const { getByTestId } = render(
-      <CodeSection canEdit={true} handleFormSubmit={handleFormSubmit} />
+      <CodeSection canEdit={false} handleFormSubmit={handleFormSubmit} />
     );
 
     const codeSystemSelect = getByTestId("code-system-selector-input");

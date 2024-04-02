@@ -66,7 +66,7 @@ export default function CodeSection({ handleFormSubmit, canEdit }) {
                     }}
                     onChange={formik.handleChange}
                     name="codeSystem"
-                    disabled={canEdit}
+                    disabled={!canEdit}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -83,7 +83,7 @@ export default function CodeSection({ handleFormSubmit, canEdit }) {
                     }}
                     onChange={formik.handleChange}
                     name="codeSystemVersion"
-                    disabled={!formik.values.codeSystem || canEdit}
+                    disabled={!formik.values.codeSystem || !canEdit}
                   />
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default function CodeSection({ handleFormSubmit, canEdit }) {
                   InputProps={searchInputProps}
                   onChange={formik.handleChange}
                   name="code"
-                  disabled={!formik.values.codeSystem || canEdit}
+                  disabled={!formik.values.codeSystem || !canEdit}
                 />
               </div>
 
@@ -110,7 +110,7 @@ export default function CodeSection({ handleFormSubmit, canEdit }) {
                 <Button
                   variant="outline"
                   data-testid="clear-codes-btn"
-                  disabled={!formik.dirty || canEdit}
+                  disabled={!formik.dirty || !canEdit}
                   tw="mr-4"
                 >
                   Clear
@@ -118,7 +118,7 @@ export default function CodeSection({ handleFormSubmit, canEdit }) {
                 <Button
                   type="submit"
                   data-testid="codes-search-btn"
-                  disabled={!(formik.isValid && formik.dirty) || canEdit}
+                  disabled={!(formik.isValid && formik.dirty) || !canEdit}
                 >
                   Search
                 </Button>
