@@ -14,11 +14,10 @@ export default function ResultsSection({
   setShowResultsTable,
 }) {
   type TCRow = {
-    status: any;
-    group: string;
-    title: string;
+    code: string;
     description: string;
-    action: any;
+    codeSystem: string;
+    systemVersion: string;
   };
 
   const [data, setData] = useState<TCRow[]>([]);
@@ -36,15 +35,15 @@ export default function ResultsSection({
       },
       {
         header: "Description",
-        accessorKey: "group",
+        accessorKey: "description",
       },
       {
         header: "Code System",
-        accessorKey: "title",
+        accessorKey: "codeSystem",
       },
       {
         header: "System Version",
-        accessorKey: "description",
+        accessorKey: "systemVersion",
       },
       {
         header: "",
