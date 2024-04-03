@@ -6,7 +6,7 @@ import ValueSetsSection from "./valueSetsSection/ValueSetsSection";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 
-export default function TerminologySectionPanel() {
+export default function TerminologySectionPanel({ canEdit }) {
   const [activeTab, setActiveTab] = useState<string>("valueSets");
 
   return (
@@ -23,7 +23,7 @@ export default function TerminologySectionPanel() {
       </div>
       <div className="panel-content">
         {activeTab === "valueSets" && <ValueSetsSection />}
-        {activeTab === "codes" && <CodesSection />}
+        {activeTab === "codes" && <CodesSection canEdit={canEdit} />}
         {activeTab === "definitions" && <DefinitionsSection />}
       </div>
     </div>

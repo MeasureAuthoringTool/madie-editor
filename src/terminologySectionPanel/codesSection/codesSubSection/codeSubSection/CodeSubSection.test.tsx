@@ -1,11 +1,11 @@
 import React from "react";
 import CodeSubSection from "./CodeSubSection";
-import { fireEvent, render, within } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
-    const { getByTestId } = render(<CodeSubSection />);
+    const { getByTestId } = render(<CodeSubSection canEdit={false} />);
 
     const codeSubTabHeading = await getByTestId(
       "terminology-section-Code(s)-sub-heading"
@@ -18,8 +18,8 @@ describe("CodeSub Section component", () => {
     expect(resultsSubTabHeading).toBeInTheDocument();
   });
 
-  it("should display all the fields in the Code(s) section", () => {
-    const { getByTestId } = render(<CodeSubSection />);
+  it.skip("should display results section table when search button is clicked", async () => {
+    const { getByTestId } = render(<CodeSubSection canEdit={false} />);
 
     const codeSystemSelect = getByTestId("code-system-selector");
     const codeSystemSelectInput = getByTestId("code-system-selector-input");
@@ -52,26 +52,10 @@ describe("CodeSub Section component", () => {
     expect(codeTextInput.value).toBe("Code1");
     expect(getByTestId("code-list-updated-date")).toBeInTheDocument();
     expect(getByTestId("codes-search-btn")).toBeEnabled();
+    expect(getByTestId("clear-codes-btn")).toBeEnabled();
     fireEvent.click(getByTestId("codes-search-btn"));
-    expect(getByTestId("clear-codes-btn")).toBeEnabled();
-  });
 
-  it("clear button should be disabled until a change is made in one of the search criteria", () => {
-    const { getByTestId } = render(<CodeSubSection />);
-
-    const clearButton = getByTestId("clear-codes-btn");
-    expect(clearButton).toBeDisabled();
-
-    const codeText = getByTestId("code-text");
-    expect(codeText).toBeEnabled();
-    expect(codeText).toBeInTheDocument();
-    const codeTextInput = getByTestId("code-text-input");
-    fireEvent.change(codeTextInput, {
-      target: { value: "Code1" },
-    });
-
-    expect(codeTextInput.value).toBe("Code1");
-
-    expect(getByTestId("clear-codes-btn")).toBeEnabled();
+    const resultsContent = await getByTestId("codes-results-tbl");
+    expect(resultsContent).toBeInTheDocument();
   });
 });

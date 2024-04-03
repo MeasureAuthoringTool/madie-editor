@@ -3,7 +3,7 @@ import CodeSection from "./CodeSection";
 import ResultsSection from "./ResultsSection";
 import "./CodeSubSection.scss";
 
-export default function CodeSubSection() {
+export default function CodeSubSection({ canEdit }) {
   const [showResultsTable, setShowResultsTable] = useState(false);
 
   const handleFormSubmit = (values) => {
@@ -12,7 +12,7 @@ export default function CodeSubSection() {
 
   return (
     <>
-      <CodeSection handleFormSubmit={handleFormSubmit} />
+      <CodeSection handleFormSubmit={handleFormSubmit} canEdit={canEdit} />
       <ResultsSection
         showResultsTable={showResultsTable}
         setShowResultsTable={setShowResultsTable}
