@@ -150,9 +150,7 @@ export class TerminologyServiceApi {
           },
         }
       );
-      if (response.status === 200) {
-        return response.data;
-      }
+      return response.data;
     } catch (err) {
       console.error("Error retrieving getAllCodeSystems: ", err);
     }
