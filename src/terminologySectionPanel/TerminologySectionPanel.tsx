@@ -28,5 +28,4 @@ export default function TerminologySectionPanel({ canEdit }) {
       </div>
     </div>
   );
-};
-
+}

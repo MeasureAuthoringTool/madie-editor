@@ -14,27 +14,6 @@ import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSe
 import { uniq } from "lodash";
 import moment from "moment";
 import { MenuItem } from "@mui/material";
-const codeSystemVersionOptions = [
-  {
-    label: "version 1",
-    value: "version 1",
-  },
-  {
-    label: "version 2",
-    value: "version 2",
-  },
-];
-
-const codeSystemOptions = [
-  {
-    label: "Code System 1",
-    value: "Code System 1",
-  },
-  {
-    label: "Code System 2",
-    value: "Code System 2",
-  },
-];
 
 interface CodeSectionProps {
   handleFormSubmit: Function;
@@ -46,7 +25,11 @@ interface MenuObj {
   label: string;
 }
 
-export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit }) {
+export default function CodeSection({
+  handleFormSubmit,
+  allCodeSystems,
+  canEdit,
+}) {
   // if we open tab before information has arrived, we need to trigger a useEffect
   const [codeSystems, setCodeSystems] = useState(allCodeSystems);
   const [titles, setTitles] = useState([]);
@@ -153,7 +136,6 @@ export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit 
                       "aria-required": "true",
                     }}
                     options={renderMenuItems(titles)}
-                    name="codeSystem"
                     disabled={!canEdit}
                     {...formik.getFieldProps("title")}
                   />
@@ -161,7 +143,6 @@ export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit 
                 <div tw="flex-grow pl-5">
                   <Select
                     required
-                    name="codeSystemVersion"
                     label="Code System Version"
                     id={"code-system-version-selector"}
                     inputProps={{
@@ -196,7 +177,6 @@ export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit 
                   disabled={!formik.values.title}
                 />
               </div>
-
               <div tw="float-right">
                 <Button
                   variant="outline"

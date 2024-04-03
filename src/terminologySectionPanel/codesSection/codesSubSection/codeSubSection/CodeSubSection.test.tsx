@@ -3,58 +3,15 @@ import CodeSubSection from "./CodeSubSection";
 import { fireEvent, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useCodeSystems } from "../../useCodeSystems";
-
+import { mockedCodeSystems } from "../../../mockedCodeSystems";
 jest.mock("../../useCodeSystems");
 jest.mock("axios");
 
-const mockCodeSystems = [
-  {
-    id: "1",
-    title: "Code1",
-    version: "1.0",
-    lastUpdatedUpstream: new Date(1999, 10, 1),
-    lastUpdated: Date.now(),
-  },
-  {
-    id: "2",
-    title: "Code1",
-    version: "2.0",
-    lastUpdatedUpstream: new Date(2000, 10, 1),
-    lastUpdated: Date.now(),
-  },
-  {
-    id: "3",
-    title: "Code2",
-    version: "1.0",
-    lastUpdatedUpstream: new Date(1999, 10, 1),
-    lastUpdated: Date.now(),
-  },
-  {
-    id: "4",
-    title: "Code2",
-    version: "2.0",
-    lastUpdatedUpstream: new Date(2000, 10, 1),
-    lastUpdated: Date.now(),
-  },
-  {
-    id: "5",
-    title: "code3",
-    version: "1.0",
-    lastUpdatedUpstream: new Date(1999, 10, 1),
-    lastUpdated: Date.now(),
-  },
-  {
-    id: "6",
-    title: "code3",
-    version: "2.0",
-    lastUpdatedUpstream: new Date(2001, 10, 1),
-    lastUpdated: Date.now(),
-  },
-];
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
-    const { getByTestId } = render(<CodeSubSection canEdit={false} allCodeSystems={mockCodeSystems} />);
-
+    const { getByTestId } = render(
+      <CodeSubSection canEdit={false} allCodeSystems={mockedCodeSystems} />
+    );
 
     const codeSubTabHeading = await getByTestId(
       "terminology-section-Code(s)-sub-heading"
@@ -67,9 +24,9 @@ describe("CodeSub Section component", () => {
     expect(resultsSubTabHeading).toBeInTheDocument();
   });
 
-  it("should display all the fields in the Code(s) section", () => {
-    const { getByTestId } = render(
-      <CodeSubSection canEdit={true} allCodeSystems={mockCodeSystems} />
+  it("should display all the fields in the Code(s) section", async () => {
+    const { getByTestId, findByTestId } = render(
+      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
     );
 
     const codeSystemSelect = getByTestId("code-system-selector");
@@ -111,13 +68,13 @@ describe("CodeSub Section component", () => {
     expect(getByTestId("clear-codes-btn")).toBeEnabled();
     fireEvent.click(getByTestId("codes-search-btn"));
 
-    const resultsContent = await getByTestId("codes-results-tbl");
+    const resultsContent = await findByTestId("codes-results-tbl");
     expect(resultsContent).toBeInTheDocument();
   });
-  
+
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
     const { getByTestId } = render(
-      <CodeSubSection allCodeSystems={mockCodeSystems} />
+      <CodeSubSection allCodeSystems={mockedCodeSystems} canEdit={true} />
     );
 
     const clearButton = getByTestId("clear-codes-btn");

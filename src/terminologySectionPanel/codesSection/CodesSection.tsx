@@ -15,7 +15,7 @@ export default function CodesSection({ canEdit }) {
       <div tw="mt-4">
         {activeTab === "codeSystems" && "Code Systems Section"}
         {activeTab === "code" && (
-          <CodeSubSection allCodeSystems={codeSystems} canEdit={canEdit}/>
+          <CodeSubSection allCodeSystems={codeSystems} canEdit={canEdit} />
         )}
         {activeTab === "applied" && <AppliedSubSection />}
       </div>
