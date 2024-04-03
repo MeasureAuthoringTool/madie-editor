@@ -95,7 +95,7 @@ export default function CodeSection(props: CodeSectionProps) {
                     onChange={formik.handleChange}
                     value={formik.values.codeSystem}
                     name="codeSystem"
-                    disabled={props.canEdit}
+                    disabled={!props.canEdit}
                     options={Object.values(codeSystemOptions).map((opt) => (
                       <MuiMenuItem key={opt.label} value={opt.value}>
                         {opt.label}
@@ -118,7 +118,7 @@ export default function CodeSection(props: CodeSectionProps) {
                     }}
                     onChange={formik.handleChange}
                     value={formik.values.codeSystemVersion}
-                    disabled={!formik.values.codeSystem || props.canEdit}
+                    disabled={!formik.values.codeSystem || !props.canEdit}
                     options={Object.values(codeSystemVersionOptions).map(
                       (opt) => (
                         <MuiMenuItem key={opt.label} value={opt.value}>
@@ -145,7 +145,7 @@ export default function CodeSection(props: CodeSectionProps) {
                   onChange={formik.handleChange}
                   value={formik.values.code}
                   name="code"
-                  disabled={!formik.values.codeSystem || props.canEdit}
+                  disabled={!formik.values.codeSystem || !props.canEdit}
                 />
               </div>
 
@@ -153,7 +153,7 @@ export default function CodeSection(props: CodeSectionProps) {
                 <Button
                   variant="outline"
                   data-testid="clear-codes-btn"
-                  disabled={!formik.dirty || props.canEdit}
+                  disabled={!formik.dirty || !props.canEdit}
                   tw="mr-4"
                 >
                   Clear
@@ -161,7 +161,7 @@ export default function CodeSection(props: CodeSectionProps) {
                 <Button
                   type="submit"
                   data-testid="codes-search-btn"
-                  disabled={!(formik.isValid && formik.dirty) || props.canEdit}
+                  disabled={!(formik.isValid && formik.dirty) || !props.canEdit}
                 >
                   Search
                 </Button>
