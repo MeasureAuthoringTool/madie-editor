@@ -40,7 +40,10 @@ interface CodeSectionProps {
   canEdit: boolean;
 }
 
-export default function CodeSection(props: CodeSectionProps) {
+export default function CodeSection({
+  handleFormSubmit,
+  canEdit,
+}: CodeSectionProps) {
   const formik = useFormik({
     initialValues: {
       codeSystem: "",
@@ -49,7 +52,7 @@ export default function CodeSection(props: CodeSectionProps) {
     },
     validationSchema: CodeSubSectionSchemaValidator,
     onSubmit: (values) => {
-      props.handleFormSubmit(values);
+      handleFormSubmit(values);
     },
   });
 
@@ -95,7 +98,7 @@ export default function CodeSection(props: CodeSectionProps) {
                     onChange={formik.handleChange}
                     value={formik.values.codeSystem}
                     name="codeSystem"
-                    disabled={!props.canEdit}
+                    disabled={!canEdit}
                     options={Object.values(codeSystemOptions).map((opt) => (
                       <MuiMenuItem key={opt.label} value={opt.value}>
                         {opt.label}
@@ -118,7 +121,7 @@ export default function CodeSection(props: CodeSectionProps) {
                     }}
                     onChange={formik.handleChange}
                     value={formik.values.codeSystemVersion}
-                    disabled={!formik.values.codeSystem || !props.canEdit}
+                    disabled={!formik.values.codeSystem || !canEdit}
                     options={Object.values(codeSystemVersionOptions).map(
                       (opt) => (
                         <MuiMenuItem key={opt.label} value={opt.value}>
@@ -145,7 +148,7 @@ export default function CodeSection(props: CodeSectionProps) {
                   onChange={formik.handleChange}
                   value={formik.values.code}
                   name="code"
-                  disabled={!formik.values.codeSystem || !props.canEdit}
+                  disabled={!formik.values.codeSystem || !canEdit}
                 />
               </div>
 
@@ -153,7 +156,7 @@ export default function CodeSection(props: CodeSectionProps) {
                 <Button
                   variant="outline"
                   data-testid="clear-codes-btn"
-                  disabled={!formik.dirty || !props.canEdit}
+                  disabled={!formik.dirty || !canEdit}
                   tw="mr-4"
                 >
                   Clear
@@ -161,7 +164,7 @@ export default function CodeSection(props: CodeSectionProps) {
                 <Button
                   type="submit"
                   data-testid="codes-search-btn"
-                  disabled={!(formik.isValid && formik.dirty) || !props.canEdit}
+                  disabled={!(formik.isValid && formik.dirty) || !canEdit}
                 >
                   Search
                 </Button>
