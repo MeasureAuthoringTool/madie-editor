@@ -8,13 +8,14 @@ export function useCodeSystems() {
   // const [loading, setLoading] = useState(true); maybe add later since this call is slow
 
   useEffect(() => {
-    const useFetchCodeSystems = async () => {
+    // eslint-disable-next-line
+    const fetchCodeSystems = async () => {
       const terminologyService = await useTerminologyServiceApi();
       const fetchedCodeSystems = await terminologyService.getAllCodeSystems();
       setCodeSystems(fetchedCodeSystems);
       // setLoading(false); possibly add later
     };
-    useFetchCodeSystems();
+    fetchCodeSystems();
   }, []);
 
   return { codeSystems };
