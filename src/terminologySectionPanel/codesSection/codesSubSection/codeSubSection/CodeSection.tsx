@@ -11,7 +11,6 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import TerminologySection from "../../../../common/TerminologySection";
 import { useFormik } from "formik";
 import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
-import { MenuItem as MuiMenuItem } from "@mui/material";
 import { uniq } from "lodash";
 import moment from "moment";
 import { MenuItem } from "@mui/material";
@@ -78,19 +77,20 @@ export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit 
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
     if (formik.values.title) {
+      const availableVersions = codeSystems
+        .filter((c) => c.title === formik.values.title)
+        .sort((a, b) => {
+          const dateA = new Date(a.lastUpdatedUpstream);
+          const dateB = new Date(b.lastUpdatedUpstream);
+          return dateB.getTime() - dateA.getTime();
+        });
       setAvailableVersions(
-        codeSystems
-          .filter((c) => c.title === formik.values.title)
-          .sort((a, b) => {
-            const dateA = new Date(a.lastUpdatedUpstream);
-            const dateB = new Date(b.lastUpdatedUpstream);
-            return dateA.getTime() - dateB.getTime();
-          })
-          .map((cs) => ({
-            value: cs.version,
-            label: cs.version,
-          }))
+        availableVersions.map((cs) => ({
+          value: cs.version,
+          label: cs.version,
+        }))
       );
+      formik.setFieldValue("version", availableVersions[0].version);
     }
   }, [formik.values.title]);
   const searchInputProps = {
@@ -103,9 +103,6 @@ export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit 
 
   const renderMenuItems = (options: MenuObj[]) => {
     return [
-      <MenuItem key="-" value="">
-        -
-      </MenuItem>,
       ...options.map(({ value, label }) => (
         <MenuItem
           key={`${label}-option`}
@@ -156,10 +153,9 @@ export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit 
                       "aria-required": "true",
                     }}
                     options={renderMenuItems(titles)}
-                    onChange={formik.handleChange}
-                    value={formik.values.codeSystem}
                     name="codeSystem"
                     disabled={!canEdit}
+                    {...formik.getFieldProps("title")}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -176,8 +172,8 @@ export default function CodeSection({ handleFormSubmit, allCodeSystems, canEdit 
                       "aria-required": "true",
                     }}
                     options={renderMenuItems(availableVersions)}
-                    onChange={formik.handleChange}
                     disabled={!formik.values.title || !canEdit}
+                    {...formik.getFieldProps("version")}
                   />
                 </div>
               </div>

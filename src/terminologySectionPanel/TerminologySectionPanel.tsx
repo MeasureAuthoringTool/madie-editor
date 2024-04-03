@@ -7,7 +7,6 @@ import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 
 export default function TerminologySectionPanel({ canEdit }) {
-const TerminologySectionPanel = () => {
   const [activeTab, setActiveTab] = useState<string>("valueSets");
 
   return (
@@ -31,4 +30,3 @@ const TerminologySectionPanel = () => {
   );
 };
 
-export default TerminologySectionPanel;

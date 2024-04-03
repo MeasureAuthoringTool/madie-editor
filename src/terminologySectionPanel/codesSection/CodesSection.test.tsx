@@ -8,9 +8,12 @@ import {
 } from "@testing-library/react";
 import * as React from "react";
 import CodesSection from "./CodesSection";
-import { useServiceConfig } from "../../api/useServiceConfig";
 import axios from "axios";
+import { useServiceConfig } from "../../api/useServiceConfig";
+import { useCodeSystems } from "./useCodeSystems";
+import useTerminologyServiceApi from "../../api/useTerminologyServiceApi";
 
+jest.mock("./useCodeSystems");
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -26,6 +29,19 @@ jest.mock("../../api/useServiceConfig", () => {
   return {
     useServiceConfig: jest.fn(() => Promise.resolve(mockConfig)),
   };
+});
+
+const mockCodeSystems = [
+  { id: "1", title: "code0", version: Date.now().toString() },
+  { id: "2", title: "code1", version: Date.now().toString() },
+  { id: "3", title: "code3", version: Date.now().toString() },
+];
+
+const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<
+  typeof useCodeSystems
+>;
+mockUseCodeSystems.mockReturnValue({
+  codeSystems: mockCodeSystems,
 });
 const renderEditor = () => {
   return render(<CodesSection />);
@@ -83,6 +99,8 @@ describe("CodesSection", () => {
     const resultsSectionHeading = await screen.findByText("Results");
     expect(codesSectionHeading).toBeInTheDocument();
     expect(resultsSectionHeading).toBeInTheDocument();
+    const listUpdated = await screen.findByText("List updated:");
+    expect(listUpdated).toBeInTheDocument();
   });
 
   it("should render code applied tab section", async () => {

@@ -9,7 +9,6 @@ import { useCodeSystems } from "./useCodeSystems";
 export default function CodesSection({ canEdit }) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
   const { codeSystems } = useCodeSystems();
-
   return (
     <>
       <CodesSectionNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
