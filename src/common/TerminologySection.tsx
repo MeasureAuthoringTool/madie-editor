@@ -38,7 +38,7 @@ const TerminologySection = (props: TerminologySectionProps) => {
         }}
         tabIndex={0}
         role="button"
-        onKeyPress={(e) => {
+        onKeyDown={(e) => {
           if (e.key === "Enter") {
             setOpen(!open);
             if (setShowHeaderContent) {
