@@ -13,7 +13,6 @@ import { useFeatureFlags } from "@madie/madie-util";
 
 jest.mock("axios");
 jest.mock("@madie/madie-util", () => ({
-  useOktaTokens: jest.fn(() => {}),
   useFeatureFlags: jest.fn(() => {
     return {
       QDMValueSetSearch: true,
