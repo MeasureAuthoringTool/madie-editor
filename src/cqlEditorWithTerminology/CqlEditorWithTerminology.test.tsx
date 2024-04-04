@@ -8,9 +8,22 @@ import {
 import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
 import axios from "axios";
 import React from "react";
-import { useServiceConfig } from "../api/useServiceConfig";
+import { ServiceConfig } from "../api/useServiceConfig";
+import { useFeatureFlags } from "@madie/madie-util";
 
 jest.mock("axios");
+jest.mock("@madie/madie-util", () => ({
+  useOktaTokens: jest.fn(() => {}),
+  useFeatureFlags: jest.fn(() => {
+    return {
+      QDMValueSetSearch: true,
+    };
+  }),
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
+  getOidFromString: () => "oid",
+}));
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockConfig: ServiceConfig = {

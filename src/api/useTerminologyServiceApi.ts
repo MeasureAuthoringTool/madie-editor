@@ -121,25 +121,6 @@ export class TerminologyServiceApi {
     }
   }
 
-  // uncomment if you need a way to request all the codeSystems from terminology.
-  // async updateCodeSystems(): Promise<any> {
-  //   try {
-  //     const response = await axios.get(
-  //       `${this.baseUrl}/terminology/update-code-systems`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${this.getAccessToken()}`,
-  //         },
-  //       }
-  //     );
-  //     if (response.status === 200) {
-  //       return response.data;
-  //     }
-  //   } catch (err) {
-  //     console.error("Error retrieving getAllCodeSystems: ", err);
-  //   }
-  // }
-
   async getAllCodeSystems(): Promise<CodeSystem[]> {
     try {
       const response = await axios.get(

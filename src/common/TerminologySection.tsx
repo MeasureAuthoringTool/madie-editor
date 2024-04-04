@@ -32,14 +32,18 @@ const TerminologySection = (props: TerminologySectionProps) => {
       <div
         onClick={() => {
           setOpen(!open);
-          setShowHeaderContent(!showHeaderContent);
+          if (setShowHeaderContent) {
+            setShowHeaderContent(!showHeaderContent);
+          }
         }}
         tabIndex={0}
         role="button"
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             setOpen(!open);
-            setShowHeaderContent(!showHeaderContent);
+            if (setShowHeaderContent) {
+              setShowHeaderContent(!showHeaderContent);
+            }
           }
         }}
         className="heading-row"

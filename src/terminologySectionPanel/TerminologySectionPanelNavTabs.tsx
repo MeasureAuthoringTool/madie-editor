@@ -1,13 +1,15 @@
 import React from "react";
 import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
-
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
+  canEdit: boolean;
+  QDMValueSetSearch: boolean;
 }
 
 export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab } = props;
+  const { activeTab, setActiveTab, canEdit, QDMValueSetSearch } = props;
+
   return (
     <Tabs
       id="terminology-section-panel-navs"
@@ -17,14 +19,16 @@ export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
       }}
       type="D"
     >
-      <Tab
-        tabIndex={0}
-        aria-label="Value Sets"
-        type="B"
-        label="Value Sets"
-        data-testid="valueSets-tab"
-        value="valueSets"
-      />
+      {QDMValueSetSearch && canEdit && (
+        <Tab
+          tabIndex={0}
+          aria-label="Value Sets"
+          type="B"
+          label="Value Sets"
+          data-testid="valueSets-tab"
+          value="valueSets"
+        />
+      )}
       <Tab
         tabIndex={0}
         aria-label="Codes"

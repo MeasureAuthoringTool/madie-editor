@@ -14,10 +14,12 @@ import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSe
 import { uniq } from "lodash";
 import moment from "moment";
 import { MenuItem } from "@mui/material";
+import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
 
 interface CodeSectionProps {
   handleFormSubmit: Function;
   canEdit: boolean;
+  allCodeSystems: CodeSystem[];
 }
 
 interface MenuObj {
@@ -29,7 +31,7 @@ export default function CodeSection({
   handleFormSubmit,
   allCodeSystems,
   canEdit,
-}) {
+}: CodeSectionProps) {
   // if we open tab before information has arrived, we need to trigger a useEffect
   const [codeSystems, setCodeSystems] = useState(allCodeSystems);
   const [titles, setTitles] = useState([]);

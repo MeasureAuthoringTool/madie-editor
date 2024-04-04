@@ -60,7 +60,7 @@ export default function ResultsSection({
   });
 
   return (
-    <div style={{ marginTop: "30px" }}>
+    <div>
       <TerminologySection
         title="Results"
         showHeaderContent={showResultsTable}

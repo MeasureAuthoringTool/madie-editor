@@ -1,7 +1,6 @@
 import React from "react";
 import CodeSubSection from "./CodeSubSection";
 import { fireEvent, render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { useCodeSystems } from "../../useCodeSystems";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
 jest.mock("../../useCodeSystems");
@@ -9,14 +8,14 @@ jest.mock("axios");
 
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, findByTestId } = render(
       <CodeSubSection canEdit={false} allCodeSystems={mockedCodeSystems} />
     );
 
-    const codeSubTabHeading = await getByTestId(
+    const codeSubTabHeading = await findByTestId(
       "terminology-section-Code(s)-sub-heading"
     );
-    const resultsSubTabHeading = await getByTestId(
+    const resultsSubTabHeading = await findByTestId(
       "terminology-section-Results-sub-heading"
     );
 
@@ -29,8 +28,12 @@ describe("CodeSub Section component", () => {
       <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
     );
 
-    const codeSystemSelect = getByTestId("code-system-selector");
-    const codeSystemSelectInput = getByTestId("code-system-selector-input");
+    const codeSystemSelect = getByTestId(
+      "code-system-selector"
+    ) as HTMLInputElement;
+    const codeSystemSelectInput = getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
 
     expect(getByTestId("clear-codes-btn")).toBeDisabled();
     expect(getByTestId("codes-search-btn")).toBeDisabled();
@@ -41,12 +44,14 @@ describe("CodeSub Section component", () => {
     expect(codeSystemSelectInput.value).toBe("Code2");
     expect(codeSystemSelect).toBeInTheDocument();
 
-    const codeSystemVersionSelect = getByTestId("code-system-version-selector");
+    const codeSystemVersionSelect = getByTestId(
+      "code-system-version-selector"
+    ) as HTMLInputElement;
     expect(codeSystemVersionSelect).toBeEnabled();
     expect(codeSystemVersionSelect).toBeInTheDocument();
     const codeSystemVersionSelectInput = getByTestId(
       "code-system-version-selector-input"
-    );
+    ) as HTMLInputElement;
     expect(codeSystemVersionSelectInput).toBeInTheDocument();
     expect(codeSystemVersionSelectInput.value).toBe("2.0");
     fireEvent.change(codeSystemSelectInput, {
@@ -57,7 +62,7 @@ describe("CodeSub Section component", () => {
     const codeText = getByTestId("code-text");
     expect(codeText).toBeEnabled();
     expect(codeText).toBeInTheDocument();
-    const codeTextInput = getByTestId("code-text-input");
+    const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
     fireEvent.change(codeTextInput, {
       target: { value: "Code1" },
     });
@@ -83,7 +88,7 @@ describe("CodeSub Section component", () => {
     const codeText = getByTestId("code-text");
     expect(codeText).toBeEnabled();
     expect(codeText).toBeInTheDocument();
-    const codeTextInput = getByTestId("code-text-input");
+    const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
     fireEvent.change(codeTextInput, {
       target: { value: "Code1" },
     });

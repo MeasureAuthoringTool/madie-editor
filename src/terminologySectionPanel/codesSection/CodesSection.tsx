@@ -6,7 +6,11 @@ import CodeSubSection from "./codesSubSection/codeSubSection/CodeSubSection";
 import AppliedSubSection from "./codesSubSection/appliedSubSection/AppliedSubSection";
 import { useCodeSystems } from "./useCodeSystems";
 
-export default function CodesSection({ canEdit }) {
+interface CodesSectionProps {
+  canEdit: boolean;
+}
+
+export default function CodesSection({ canEdit }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
   const { codeSystems } = useCodeSystems();
   return (
