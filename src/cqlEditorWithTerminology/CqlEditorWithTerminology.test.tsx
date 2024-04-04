@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react";
 import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
 import axios from "axios";
-import React from "react";
+import * as React from "react";
 import { ServiceConfig } from "../api/useServiceConfig";
 import { useFeatureFlags } from "@madie/madie-util";
 

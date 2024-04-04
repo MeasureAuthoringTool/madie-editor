@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { IconButton } from "@mui/material";
 import TerminologySectionPanelNavTabs from "./TerminologySectionPanelNavTabs";

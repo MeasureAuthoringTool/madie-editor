@@ -8,14 +8,9 @@ import {
 } from "@testing-library/react";
 import * as React from "react";
 import CodesSection from "./CodesSection";
-import axios from "axios";
-import { useServiceConfig } from "../../api/useServiceConfig";
 import { useCodeSystems } from "./useCodeSystems";
-import useTerminologyServiceApi from "../../api/useTerminologyServiceApi";
 
 jest.mock("./useCodeSystems");
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockConfig: ServiceConfig = {
   elmTranslationService: {
@@ -44,7 +39,7 @@ mockUseCodeSystems.mockReturnValue({
   codeSystems: mockCodeSystems,
 });
 const renderEditor = () => {
-  return render(<CodesSection />);
+  return render(<CodesSection canEdit={true} />);
 };
 
 describe("CodesSection", () => {
