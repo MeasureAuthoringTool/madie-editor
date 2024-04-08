@@ -1,6 +1,7 @@
 .terminology-section-tab-heading {
   display: flex;
   flex-direction: column;
+  margin-bottom: 30px;
 
   > .heading-row {
     display: flex;
@@ -13,6 +14,8 @@
 
     > .header {
       color: #125496;
+      font-weight: 500;
+      font-size: 18px;
     }
 
     > .chevron-display {

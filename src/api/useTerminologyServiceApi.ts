@@ -23,6 +23,16 @@ export type ValueSet = {
   errorMsg: string;
 };
 
+export interface CodeSystem {
+  id: string;
+  lastUpdated: string;
+  lastUpdatedUpstream?: string;
+  name?: string;
+  title?: string;
+  version?: string;
+  versionId?: string;
+}
+
 export class TerminologyServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
@@ -108,6 +118,22 @@ export class TerminologyServiceApi {
         "Unable to validate code, Please contact HelpDesk",
         false
       );
+    }
+  }
+
+  async getAllCodeSystems(): Promise<CodeSystem[]> {
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/terminology/get-code-systems`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("Error retrieving getAllCodeSystems: ", err);
     }
   }
 }

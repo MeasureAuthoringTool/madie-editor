@@ -1,13 +1,19 @@
 declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
 
+  interface FeatureFlags {
+    QDMValueSetSearch: boolean;
+  }
+
   export const useOktaTokens: (storageKey?: string) => {
     getAccessToken: () => any;
     getAccessTokenObj: () => any;
     getUserName: () => any;
     getIdToken: () => any;
     getIdTokenObj: () => any;
+    useFeatureFlags: () => any;
   };
+  export function useFeatureFlags(): FeatureFlags;
 
   export function getOidFromString(
     oidString: string,

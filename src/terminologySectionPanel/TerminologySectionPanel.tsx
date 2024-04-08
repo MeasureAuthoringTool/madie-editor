@@ -5,16 +5,23 @@ import TerminologySectionPanelNavTabs from "./TerminologySectionPanelNavTabs";
 import ValueSetsSection from "./valueSetsSection/ValueSetsSection";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
+import { useFeatureFlags } from "@madie/madie-util";
 
 export default function TerminologySectionPanel({ canEdit }) {
-  const [activeTab, setActiveTab] = useState<string>("valueSets");
+  const featureFlags = useFeatureFlags();
+  const { QDMValueSetSearch } = featureFlags;
+  const [activeTab, setActiveTab] = useState<string>(
+    QDMValueSetSearch ? "valueSets" : "codes"
+  );
 
   return (
     <div className="right-panel">
       <div className="tab-container">
         <TerminologySectionPanelNavTabs
+          canEdit={canEdit}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          QDMValueSetSearch={QDMValueSetSearch}
         />
         <div className="spacer" />
         <IconButton>

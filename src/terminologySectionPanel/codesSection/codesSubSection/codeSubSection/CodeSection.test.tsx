@@ -2,6 +2,7 @@ import * as React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import CodeSection from "./CodeSection";
 import userEvent from "@testing-library/user-event";
+import { mockedCodeSystems } from "../../../mockedCodeSystems";
 
 const readOnly = true;
 const handleFormSubmitMock = jest.fn();
@@ -9,7 +10,11 @@ const handleFormSubmitMock = jest.fn();
 describe("Code Section component", () => {
   it("should display all the fields in the Code(s) section", async () => {
     render(
-      <CodeSection canEdit={readOnly} handleFormSubmit={handleFormSubmitMock} />
+      <CodeSection
+        canEdit={readOnly}
+        allCodeSystems={mockedCodeSystems}
+        handleFormSubmit={handleFormSubmitMock}
+      />
     );
 
     const searchButton = screen.getByRole("button", { name: "Search" });
@@ -24,20 +29,20 @@ describe("Code Section component", () => {
     expect(codeSystemSelect).toBeEnabled();
     userEvent.click(codeSystemSelect);
     const codeSystemOptions = await screen.findAllByRole("option");
-    expect(codeSystemOptions.length).toEqual(2);
+    expect(codeSystemOptions.length).toEqual(3);
     userEvent.click(codeSystemOptions[0]);
-    expect(codeSystemSelect).toHaveTextContent("Code System 1");
-
+    expect(codeSystemSelect).toHaveTextContent("Code1");
     // Selecting a Code System Version
     const codeSystemVersionSelect = screen.getByRole("combobox", {
       name: "Code System Version",
     });
+    expect(codeSystemVersionSelect).toHaveTextContent("2.0");
     expect(codeSystemVersionSelect).toBeEnabled();
     userEvent.click(codeSystemVersionSelect);
     const codeSystemVersionOptions = await screen.findAllByRole("option");
     expect(codeSystemVersionOptions.length).toEqual(2);
     userEvent.click(codeSystemVersionOptions[1]);
-    expect(codeSystemVersionSelect).toHaveTextContent("version 2");
+    expect(codeSystemVersionSelect).toHaveTextContent("1.0");
 
     // Selecting a code
     const codeText = screen.getByTestId("code-text");
@@ -56,8 +61,8 @@ describe("Code Section component", () => {
     userEvent.click(searchButton);
     await waitFor(() => {
       expect(handleFormSubmitMock).toHaveBeenCalledWith({
-        codeSystem: "Code System 1",
-        codeSystemVersion: "version 2",
+        title: "Code1",
+        version: "1.0",
         code: "Code",
       });
     });

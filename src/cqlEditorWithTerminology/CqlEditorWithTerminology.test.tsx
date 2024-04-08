@@ -6,8 +6,38 @@ import {
   waitFor,
 } from "@testing-library/react";
 import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
-import React from "react";
+import axios from "axios";
+import * as React from "react";
+import { ServiceConfig } from "../api/useServiceConfig";
+import { useFeatureFlags } from "@madie/madie-util";
 
+jest.mock("axios");
+jest.mock("@madie/madie-util", () => ({
+  useFeatureFlags: jest.fn(() => {
+    return {
+      QDMValueSetSearch: true,
+    };
+  }),
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
+  getOidFromString: () => "oid",
+}));
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const mockConfig: ServiceConfig = {
+  elmTranslationService: {
+    baseUrl: "elm.com",
+  },
+  terminologyService: {
+    baseUrl: "terminology.com",
+  },
+};
+jest.mock("../api/useServiceConfig", () => {
+  return {
+    useServiceConfig: jest.fn(() => Promise.resolve(mockConfig)),
+  };
+});
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
