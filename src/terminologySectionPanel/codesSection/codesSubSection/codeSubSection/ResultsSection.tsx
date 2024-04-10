@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import TerminologySection from "../../../../common/TerminologySection";
@@ -8,21 +8,28 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import { Code } from "../../../../api/useTerminologyServiceApi";
+
+type ResultSectionProps = {
+  showResultsTable: boolean;
+  setShowResultsTable: any;
+  code: Code;
+};
+
+type TCRow = {
+  name: string;
+  display: string;
+  codeSystem: string;
+  version: string;
+};
+const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
 export default function ResultsSection({
   showResultsTable,
   setShowResultsTable,
-}) {
-  type TCRow = {
-    code: string;
-    description: string;
-    codeSystem: string;
-    systemVersion: string;
-  };
-
-  const [data, setData] = useState<TCRow[]>([]);
-
-  const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
+  code,
+}: ResultSectionProps) {
+  const data = [code];
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
       {
@@ -31,11 +38,11 @@ export default function ResultsSection({
       },
       {
         header: "Code",
-        accessorKey: "code",
+        accessorKey: "name",
       },
       {
         header: "Description",
-        accessorKey: "description",
+        accessorKey: "display",
       },
       {
         header: "Code System",
@@ -43,7 +50,7 @@ export default function ResultsSection({
       },
       {
         header: "System Version",
-        accessorKey: "systemVersion",
+        accessorKey: "version",
       },
       {
         header: "",
@@ -71,7 +78,6 @@ export default function ResultsSection({
             data-testid="codes-results-tbl"
             style={{
               borderBottom: "solid 1px #8c8c8c",
-              borderSpacing: "0 2em !important",
             }}
           >
             <thead tw="bg-slate">
@@ -90,6 +96,28 @@ export default function ResultsSection({
                 </tr>
               ))}
             </thead>
+            <tbody>
+              {!code ? (
+                <tr>
+                  <td colSpan={columns.length} tw="text-center p-2">
+                    No Results were found
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} data-test-id={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} tw="p-2">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
           </table>
         }
       />

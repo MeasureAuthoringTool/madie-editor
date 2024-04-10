@@ -33,6 +33,14 @@ export interface CodeSystem {
   versionId?: string;
 }
 
+export interface Code {
+  name: string;
+  display: string;
+  codeSystem: string;
+  version: string;
+  codeSystemOid: string;
+}
+
 export class TerminologyServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
@@ -134,6 +142,33 @@ export class TerminologyServiceApi {
       return response.data;
     } catch (err) {
       console.error("Error retrieving getAllCodeSystems: ", err);
+    }
+  }
+
+  async getCodeDetails(
+    code: string,
+    codeSystem: string,
+    version: string
+  ): Promise<Code> {
+    try {
+      const response = await axios.get(`${this.baseUrl}/terminology/code`, {
+        params: { code: code, codeSystem: codeSystem, version: version },
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      });
+      return response.data;
+    } catch (err) {
+      console.error("Error retrieving code details: ", err);
+      if (err.response.status === 404) {
+        throw new Error(
+          `Code ${code} not found for code system ${code} and version ${version} in VSAC.
+          Please make sure code exists for selected code system and version`
+        );
+      }
+      throw new Error(
+        "An issue occurred while retrieving the code from VSAC. Please try again. If issue continues, please contact helpdesk."
+      );
     }
   }
 }
