@@ -48,7 +48,7 @@ export default function CodeSection({
 
   const formik = useFormik({
     initialValues: {
-      codeSystem: "",
+      codeSystemName: "",
       version: "",
       code: "",
     },
@@ -59,9 +59,9 @@ export default function CodeSection({
   });
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
-    if (formik.values.codeSystem) {
+    if (formik.values.codeSystemName) {
       const availableVersions = allCodeSystems
-        .filter((c) => c.name === formik.values.codeSystem)
+        .filter((c) => c.name === formik.values.codeSystemName)
         .sort((a, b) => {
           const dateA = new Date(a.lastUpdatedUpstream);
           const dateB = new Date(b.lastUpdatedUpstream);
@@ -75,7 +75,7 @@ export default function CodeSection({
       );
       formik.setFieldValue("version", availableVersions[0].version);
     }
-  }, [formik.values.codeSystem]);
+  }, [formik.values.codeSystemName]);
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -137,7 +137,7 @@ export default function CodeSection({
                     }}
                     options={renderMenuItems(titles)}
                     disabled={!canEdit}
-                    {...formik.getFieldProps("codeSystem")}
+                    {...formik.getFieldProps("codeSystemName")}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -153,7 +153,7 @@ export default function CodeSection({
                       "aria-required": "true",
                     }}
                     options={renderMenuItems(availableVersions)}
-                    disabled={!formik.values.codeSystem || !canEdit}
+                    disabled={!formik.values.codeSystemName || !canEdit}
                     {...formik.getFieldProps("version")}
                   />
                 </div>
@@ -174,7 +174,7 @@ export default function CodeSection({
                   onChange={formik.handleChange}
                   value={formik.values.code}
                   name="code"
-                  disabled={!formik.values.codeSystem}
+                  disabled={!formik.values.codeSystemName}
                 />
               </div>
               <div tw="float-right">

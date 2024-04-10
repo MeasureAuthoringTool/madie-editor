@@ -30,20 +30,20 @@ export default function CodeSubSection({
   const handleFormSubmit = async (values) => {
     // eslint-disable-next-line
     const terminologyService = await useTerminologyServiceApi();
-    if (values && values.code && values.codeSystem && values.version) {
+    if (values && values.code && values.codeSystemName && values.version) {
       try {
         const code = await terminologyService.getCodeDetails(
           values.code,
-          values.codeSystem,
+          values.codeSystemName,
           values.version
         );
         setCode(code);
-        setShowResultsTable(true);
       } catch (error) {
         setCode(undefined);
         setToastMessage(error.message);
         setToastOpen(error.message);
       }
+      setShowResultsTable(true);
     }
   };
 
