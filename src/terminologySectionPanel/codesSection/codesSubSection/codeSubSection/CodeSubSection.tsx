@@ -60,7 +60,7 @@ export default function CodeSubSection({
         code={code}
       />
       <Toast
-        toastKey="library-cql-editor-toast"
+        toastKey="fetch-code-toast"
         toastType={"danger"}
         testId="fetch-code-error-message"
         open={toastOpen}
