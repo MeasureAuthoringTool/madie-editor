@@ -31,7 +31,7 @@ describe("Code Section component", () => {
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions.length).toEqual(3);
     userEvent.click(codeSystemOptions[0]);
-    expect(codeSystemSelect).toHaveTextContent("Code1");
+    expect(codeSystemSelect).toHaveTextContent("System1");
     // Selecting a Code System Version
     const codeSystemVersionSelect = screen.getByRole("combobox", {
       name: "Code System Version",
@@ -61,7 +61,7 @@ describe("Code Section component", () => {
     userEvent.click(searchButton);
     await waitFor(() => {
       expect(handleFormSubmitMock).toHaveBeenCalledWith({
-        codeSystemName: "Code1",
+        codeSystemName: "System1",
         version: "1.0",
         code: "Code",
       });

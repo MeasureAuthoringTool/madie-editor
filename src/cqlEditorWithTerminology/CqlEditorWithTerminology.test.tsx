@@ -9,7 +9,6 @@ import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
 import axios from "axios";
 import * as React from "react";
 import { ServiceConfig } from "../api/useServiceConfig";
-import { useFeatureFlags } from "@madie/madie-util";
 
 jest.mock("axios");
 jest.mock("@madie/madie-util", () => ({
@@ -23,7 +22,6 @@ jest.mock("@madie/madie-util", () => ({
   }),
   getOidFromString: () => "oid",
 }));
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockConfig: ServiceConfig = {
   elmTranslationService: {

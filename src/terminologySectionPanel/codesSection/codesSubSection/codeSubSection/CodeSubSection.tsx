@@ -39,9 +39,15 @@ export default function CodeSubSection({
         );
         setCode(code);
       } catch (error) {
-        setCode(undefined);
-        setToastMessage(error.message);
-        setToastOpen(error.message);
+        if (error.response?.status === 404) {
+          setCode(undefined);
+        } else {
+          console.error(error);
+          setToastMessage(
+            "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
+          );
+          setToastOpen(true);
+        }
       }
       setShowResultsTable(true);
     }

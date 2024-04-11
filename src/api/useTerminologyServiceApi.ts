@@ -150,26 +150,13 @@ export class TerminologyServiceApi {
     codeSystem: string,
     version: string
   ): Promise<Code> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/terminology/code`, {
-        params: { code: code, codeSystem: codeSystem, version: version },
-        headers: {
-          Authorization: `Bearer ${this.getAccessToken()}`,
-        },
-      });
-      return response.data;
-    } catch (err) {
-      console.error("Error retrieving code details: ", err);
-      if (err.response.status === 404) {
-        throw new Error(
-          `Code ${code} not found for code system ${codeSystem} and version ${version} in VSAC.
-          Please make sure code exists for selected code system and version`
-        );
-      }
-      throw new Error(
-        "An issue occurred while retrieving the code from VSAC. Please try again. If issue continues, please contact helpdesk."
-      );
-    }
+    const response = await axios.get(`${this.baseUrl}/terminology/code`, {
+      params: { code: code, codeSystem: codeSystem, version: version },
+      headers: {
+        Authorization: `Bearer ${this.getAccessToken()}`,
+      },
+    });
+    return response.data;
   }
 }
 

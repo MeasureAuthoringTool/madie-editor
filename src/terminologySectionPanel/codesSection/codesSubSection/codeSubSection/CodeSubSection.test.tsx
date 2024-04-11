@@ -4,6 +4,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
 import axios from "axios";
+import { Code } from "../../../../api/useTerminologyServiceApi";
 
 jest.mock("../../useCodeSystems");
 jest.mock("axios");
@@ -39,9 +40,22 @@ describe("CodeSub Section component", () => {
     expect(resultsSubTabHeading).toBeInTheDocument();
   });
 
-  it("should display all the fields in the Code(s) section", async () => {
-    mockedAxios.get = jest.fn().mockResolvedValueOnce({ data: mockConfig });
+  it("should display code details for selected code, system, version filters", async () => {
+    const mockCode: Code = {
+      name: "Code2",
+      display: "this is test code",
+      codeSystem: "System2",
+      version: "2.0",
+    };
 
+    mockedAxios.get.mockImplementation((url) => {
+      if (url === "/env-config/serviceConfig.json") {
+        return Promise.resolve({ data: mockConfig });
+      }
+      if (url === `${mockConfig.terminologyService.baseUrl}/terminology/code`) {
+        return Promise.resolve({ data: mockCode });
+      }
+    });
     const { getByTestId, findByTestId } = render(
       <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
     );
@@ -57,9 +71,9 @@ describe("CodeSub Section component", () => {
     expect(getByTestId("codes-search-btn")).toBeDisabled();
 
     fireEvent.change(codeSystemSelectInput, {
-      target: { value: "Code2" },
+      target: { value: "System2" },
     });
-    expect(codeSystemSelectInput.value).toBe("Code2");
+    expect(codeSystemSelectInput.value).toBe("System2");
     expect(codeSystemSelect).toBeInTheDocument();
 
     const codeSystemVersionSelect = getByTestId(
@@ -82,17 +96,86 @@ describe("CodeSub Section component", () => {
     expect(codeText).toBeInTheDocument();
     const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
     fireEvent.change(codeTextInput, {
-      target: { value: "Code1" },
+      target: { value: "System1" },
     });
 
-    expect(codeTextInput.value).toBe("Code1");
+    expect(codeTextInput.value).toBe("System1");
     expect(getByTestId("code-list-updated-date")).toBeInTheDocument();
     expect(getByTestId("codes-search-btn")).toBeEnabled();
     expect(getByTestId("clear-codes-btn")).toBeEnabled();
     fireEvent.click(getByTestId("codes-search-btn"));
 
-    const resultsContent = await findByTestId("codes-results-tbl");
-    expect(resultsContent).toBeInTheDocument();
+    const resultTable = await findByTestId("codes-results-tbl");
+    const tableRow = resultTable.querySelector("tbody").children[0];
+    expect(tableRow.children[1].textContent).toEqual(mockCode.name);
+    expect(tableRow.children[2].textContent).toEqual(mockCode.display);
+    expect(tableRow.children[3].textContent).toEqual(mockCode.codeSystem);
+    expect(tableRow.children[4].textContent).toEqual(mockCode.version);
+  });
+
+  it("should display no results found in result table if code not found", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url === "/env-config/serviceConfig.json") {
+        return Promise.resolve({ data: mockConfig });
+      }
+      if (url === `${mockConfig.terminologyService.baseUrl}/terminology/code`) {
+        return Promise.resolve({ response: { status: 404 } });
+      }
+    });
+    const { getByTestId, findByTestId } = render(
+      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+    );
+    const codeSystemSelectInput = getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+
+    fireEvent.change(codeSystemSelectInput, {
+      target: { value: "System2" },
+    });
+    fireEvent.change(codeSystemSelectInput, {
+      target: { value: "1.0" },
+    });
+    const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
+    fireEvent.change(codeTextInput, {
+      target: { value: "System1" },
+    });
+    fireEvent.click(getByTestId("codes-search-btn"));
+    const resultTable = await findByTestId("codes-results-tbl");
+    const tableRow = resultTable.querySelector("tbody").children[0];
+    expect(tableRow.children[0].textContent).toEqual("No Results were found");
+  });
+
+  it("should display error toast for non 404 errors", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url === "/env-config/serviceConfig.json") {
+        return Promise.resolve({ data: mockConfig });
+      }
+      if (url === `${mockConfig.terminologyService.baseUrl}/terminology/code`) {
+        return Promise.reject({ response: { status: 500 } });
+      }
+    });
+    const { getByTestId, findByTestId } = render(
+      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+    );
+    const codeSystemSelectInput = getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+
+    fireEvent.change(codeSystemSelectInput, {
+      target: { value: "System2" },
+    });
+    fireEvent.change(codeSystemSelectInput, {
+      target: { value: "1.0" },
+    });
+    const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
+    fireEvent.change(codeTextInput, {
+      target: { value: "System1" },
+    });
+    fireEvent.click(getByTestId("codes-search-btn"));
+    const errorMessage = await findByTestId("fetch-code-error-message");
+    expect(errorMessage.textContent).toEqual(
+      "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
+    );
   });
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
@@ -108,11 +191,9 @@ describe("CodeSub Section component", () => {
     expect(codeText).toBeInTheDocument();
     const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
     fireEvent.change(codeTextInput, {
-      target: { value: "Code1" },
+      target: { value: "System1" },
     });
-
-    expect(codeTextInput.value).toBe("Code1");
-
+    expect(codeTextInput.value).toBe("System1");
     expect(getByTestId("clear-codes-btn")).toBeEnabled();
   });
 });
