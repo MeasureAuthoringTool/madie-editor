@@ -38,7 +38,7 @@ export interface Code {
   display: string;
   codeSystem: string;
   version: string;
-  codeSystemOid: string;
+  codeSystemOid?: string;
 }
 
 export class TerminologyServiceApi {
