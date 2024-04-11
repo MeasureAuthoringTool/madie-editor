@@ -9,6 +9,7 @@ import {
 import * as React from "react";
 import CodesSection from "./CodesSection";
 import { useCodeSystems } from "./useCodeSystems";
+import { ServiceConfig } from "../../api/useServiceConfig";
 
 jest.mock("./useCodeSystems");
 
@@ -27,9 +28,24 @@ jest.mock("../../api/useServiceConfig", () => {
 });
 
 const mockCodeSystems = [
-  { id: "1", title: "code0", version: Date.now().toString() },
-  { id: "2", title: "code1", version: Date.now().toString() },
-  { id: "3", title: "code3", version: Date.now().toString() },
+  {
+    id: "1",
+    title: "code0",
+    version: Date.now().toString(),
+    lastUpdated: Date.now().toString(),
+  },
+  {
+    id: "2",
+    title: "code1",
+    version: Date.now().toString(),
+    lastUpdated: Date.now().toString(),
+  },
+  {
+    id: "3",
+    title: "code3",
+    version: Date.now().toString(),
+    lastUpdated: Date.now().toString(),
+  },
 ];
 
 const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<

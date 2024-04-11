@@ -1,14 +1,30 @@
-import React from "react";
+import * as React from "react";
 import CodeSubSection from "./CodeSubSection";
 import { fireEvent, render } from "@testing-library/react";
-import { useCodeSystems } from "../../useCodeSystems";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
+import { ServiceConfig } from "../../../../api/useServiceConfig";
+import axios from "axios";
+
 jest.mock("../../useCodeSystems");
 jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+jest.mock("@madie/madie-util", () => ({
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
+}));
+const mockConfig: ServiceConfig = {
+  elmTranslationService: {
+    baseUrl: "elm.com",
+  },
+  terminologyService: {
+    baseUrl: "terminology.com",
+  },
+};
 
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
-    const { getByTestId, findByTestId } = render(
+    const { findByTestId } = render(
       <CodeSubSection canEdit={false} allCodeSystems={mockedCodeSystems} />
     );
 
@@ -24,6 +40,8 @@ describe("CodeSub Section component", () => {
   });
 
   it("should display all the fields in the Code(s) section", async () => {
+    mockedAxios.get = jest.fn().mockResolvedValueOnce({ data: mockConfig });
+
     const { getByTestId, findByTestId } = render(
       <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
     );
