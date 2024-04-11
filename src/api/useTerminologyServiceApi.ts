@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
@@ -145,18 +145,17 @@ export class TerminologyServiceApi {
     }
   }
 
-  async getCodeDetails(
+  getCodeDetails(
     code: string,
     codeSystem: string,
     version: string
-  ): Promise<Code> {
-    const response = await axios.get(`${this.baseUrl}/terminology/code`, {
+  ): Promise<AxiosResponse<Code>> {
+    return axios.get<Code>(`${this.baseUrl}/terminology/code`, {
       params: { code: code, codeSystem: codeSystem, version: version },
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
       },
     });
-    return response.data;
   }
 }
 

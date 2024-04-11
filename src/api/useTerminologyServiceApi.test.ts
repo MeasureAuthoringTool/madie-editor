@@ -54,15 +54,14 @@ describe("TerminologyServiceApi test", () => {
         }
       });
       const service: TerminologyServiceApi = await useTerminologyServiceApi();
-      const code: Code = await service.getCodeDetails(
-        mockCode.name,
-        mockCode.codeSystem,
-        mockCode.version
-      );
-      expect(code.name).toEqual(mockCode.name);
-      expect(code.display).toEqual(mockCode.display);
-      expect(code.codeSystem).toEqual(mockCode.codeSystem);
-      expect(code.version).toEqual(mockCode.version);
+      service
+        .getCodeDetails(mockCode.name, mockCode.codeSystem, mockCode.version)
+        .then((response) => {
+          expect(response.data.name).toEqual(mockCode.name);
+          expect(response.data.display).toEqual(mockCode.display);
+          expect(response.data.codeSystem).toEqual(mockCode.codeSystem);
+          expect(response.data.version).toEqual(mockCode.version);
+        });
     });
   });
 });

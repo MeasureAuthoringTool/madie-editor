@@ -31,25 +31,23 @@ export default function CodeSubSection({
     // eslint-disable-next-line
     const terminologyService = await useTerminologyServiceApi();
     if (values && values.code && values.codeSystemName && values.version) {
-      try {
-        const code = await terminologyService.getCodeDetails(
-          values.code,
-          values.codeSystemName,
-          values.version
-        );
-        setCode(code);
-      } catch (error) {
-        if (error.response?.status === 404) {
-          setCode(undefined);
-        } else {
-          console.error(error);
-          setToastMessage(
-            "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
-          );
-          setToastOpen(true);
-        }
-      }
-      setShowResultsTable(true);
+      terminologyService
+        .getCodeDetails(values.code, values.codeSystemName, values.version)
+        .then((response) => {
+          setCode(response.data);
+        })
+        .catch((error) => {
+          if (error.response?.status === 404) {
+            setCode(undefined);
+          } else {
+            console.error(error);
+            setToastMessage(
+              "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
+            );
+            setToastOpen(true);
+          }
+        })
+        .finally(() => setShowResultsTable(true));
     }
   };
 
