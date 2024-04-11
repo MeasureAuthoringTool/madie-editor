@@ -5,6 +5,7 @@ import { mockedCodeSystems } from "../../../mockedCodeSystems";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
 import axios from "axios";
 import { Code } from "../../../../api/useTerminologyServiceApi";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../../useCodeSystems");
 jest.mock("axios");
@@ -75,6 +76,17 @@ describe("CodeSub Section component", () => {
       target: { value: "System2" },
     });
     expect(codeSystemSelectInput.value).toBe("System2");
+  it("should display all the fields in the Code(s) section", async () => {
+    const { getByTestId, findByTestId, getByText, getByRole } = render(
+      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+    );
+
+    const codeSystemSelect = getByTestId("code-system-selector-dropdown");
+    const codeSystemSelectButton = getByRole("button", {
+      name: "Open",
+    });
+    userEvent.click(codeSystemSelectButton);
+    userEvent.click(getByText("Code2"));
     expect(codeSystemSelect).toBeInTheDocument();
 
     const codeSystemVersionSelect = getByTestId(
@@ -87,9 +99,11 @@ describe("CodeSub Section component", () => {
     ) as HTMLInputElement;
     expect(codeSystemVersionSelectInput).toBeInTheDocument();
     expect(codeSystemVersionSelectInput.value).toBe("2.0");
+    const codeSystemSelectInput = getByTestId("code-system-selector-input");
     fireEvent.change(codeSystemSelectInput, {
-      target: { value: "1.0" },
+      target: { value: "C" },
     });
+    userEvent.click(getByText("Code1"));
     expect(codeSystemVersionSelectInput.value).toBe("2.0");
 
     const codeText = getByTestId("code-text");
@@ -177,6 +191,10 @@ describe("CodeSub Section component", () => {
     expect(errorMessage.textContent).toEqual(
       "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
     );
+    const resultsContent = await findByTestId("codes-results-tbl");
+    expect(resultsContent).toBeInTheDocument();
+    fireEvent.click(getByTestId("clear-codes-btn"));
+    expect(getByTestId("code-system-selector-input").value).toBe("");
   });
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {

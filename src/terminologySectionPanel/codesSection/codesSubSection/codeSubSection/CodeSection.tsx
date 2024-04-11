@@ -15,6 +15,7 @@ import { uniq } from "lodash";
 import moment from "moment";
 import { MenuItem } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
+import MultipleSelectDropDown from "../../../ValueSets/Search/MultipleSelectDropDown";
 
 interface CodeSectionProps {
   handleFormSubmit: Function;
@@ -53,10 +54,13 @@ export default function CodeSection({
       code: "",
     },
     validationSchema: CodeSubSectionSchemaValidator,
+    enableReinitialize: true,
     onSubmit: (values) => {
       handleFormSubmit(values);
     },
   });
+  const { resetForm } = formik;
+
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
     if (formik.values.codeSystemName) {
@@ -74,6 +78,9 @@ export default function CodeSection({
         }))
       );
       formik.setFieldValue("version", availableVersions[0].version);
+    } else {
+      setAvailableVersions([]);
+      formik.setFieldValue("version", "");
     }
   }, [formik.values.codeSystemName]);
   const searchInputProps = {
@@ -118,26 +125,31 @@ export default function CodeSection({
               </span>
             </div>
             <form onSubmit={formik.handleSubmit}>
-              <div tw="flex md:flex-wrap">
+              <div
+                tw="flex md:flex-wrap"
+                style={{ display: "flex", alignItems: "flex-end" }}
+              >
                 <div tw="w-1/3">
-                  <Select
-                    required
-                    placeHolder={{
-                      name: "Select Code System",
-                      value: "",
+                  <MultipleSelectDropDown
+                    multipleSelect={false}
+                    placeholder="-"
+                    id="code-system-selector"
+                    label="Code Systems"
+                    setFieldValue={formik.setFieldValue}
+                    {...formik.getFieldProps("title")}
+                    value={{
+                      value: formik.values.title,
+                      label: formik.values.title,
                     }}
-                    label="Code System"
-                    id={"code-system-selector"}
-                    inputProps={{
-                      "data-testid": "code-system-selector-input",
-                    }}
-                    data-testid={"code-system-selector"}
-                    SelectDisplayProps={{
-                      "aria-required": "true",
-                    }}
-                    options={renderMenuItems(titles)}
                     disabled={!canEdit}
-                    {...formik.getFieldProps("codeSystemName")}
+                    onClose={undefined}
+                    disableCloseOnSelect={false}
+                    required={false}
+                    options={titles}
+                    onChange={(_event: any, selectedVal: MenuObj) => {
+                      formik.setFieldValue("title", selectedVal?.label || "");
+                    }}
+                    limitTags={1}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -183,6 +195,7 @@ export default function CodeSection({
                   data-testid="clear-codes-btn"
                   disabled={!formik.dirty || !canEdit}
                   tw="mr-4"
+                  onClick={resetForm}
                 >
                   Clear
                 </Button>

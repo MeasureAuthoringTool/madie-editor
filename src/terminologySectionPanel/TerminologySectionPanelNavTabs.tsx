@@ -19,7 +19,7 @@ export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
       }}
       type="D"
     >
-      {QDMValueSetSearch && canEdit && (
+      {QDMValueSetSearch && (
         <Tab
           tabIndex={0}
           aria-label="Value Sets"
@@ -27,6 +27,7 @@ export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
           label="Value Sets"
           data-testid="valueSets-tab"
           value="valueSets"
+          disabled={!canEdit}
         />
       )}
       <Tab

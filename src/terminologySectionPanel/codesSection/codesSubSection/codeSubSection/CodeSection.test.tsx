@@ -23,15 +23,33 @@ describe("Code Section component", () => {
     expect(clearButton).toBeDisabled();
 
     // Selecting a Code System
-    const codeSystemSelect = screen.getByRole("combobox", {
-      name: "Code System",
+    const codeSystemSelect = screen.getByTestId(
+      "code-system-selector-dropdown"
+    );
+
+    expect(codeSystemSelect).toBeInTheDocument();
+
+    const codeSystemSelectButton = screen.getByRole("button", {
+      name: "Open",
     });
+
+    userEvent.click(codeSystemSelectButton);
+
+    expect(screen.getByText("Code1")).toBeInTheDocument();
+    expect(screen.getByText("Code2")).toBeInTheDocument();
+
+    userEvent.type(codeSystemSelectButton, "Code1");
+
+    expect(screen.getByText("Code1")).toBeInTheDocument();
+    expect(screen.queryByText("Code2")).not.toBeInTheDocument();
     expect(codeSystemSelect).toBeEnabled();
     userEvent.click(codeSystemSelect);
+
     const codeSystemOptions = await screen.findAllByRole("option");
-    expect(codeSystemOptions.length).toEqual(3);
+    expect(codeSystemOptions.length).toEqual(1);
     userEvent.click(codeSystemOptions[0]);
     expect(codeSystemSelect).toHaveTextContent("System1");
+
     // Selecting a Code System Version
     const codeSystemVersionSelect = screen.getByRole("combobox", {
       name: "Code System Version",

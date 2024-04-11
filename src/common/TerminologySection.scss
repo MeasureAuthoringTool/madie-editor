@@ -1,7 +1,7 @@
 .terminology-section-tab-heading {
   display: flex;
   flex-direction: column;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 
   > .heading-row {
     display: flex;
@@ -32,7 +32,7 @@
     flex-direction: column;
 
     &.open {
-      margin-top: 10px;
+      padding-top: 24px;
     }
   }
 }
