@@ -15,7 +15,7 @@ import { uniq } from "lodash";
 import moment from "moment";
 import { MenuItem } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
-import MultipleSelectDropDown from "../../../ValueSets/Search/MultipleSelectDropDown";
+import ControlledAutoComplete from "../../../ValueSets/Search/ControlledAutoComplete";
 
 interface CodeSectionProps {
   handleFormSubmit: Function;
@@ -130,7 +130,7 @@ export default function CodeSection({
                 style={{ display: "flex", alignItems: "flex-end" }}
               >
                 <div tw="w-1/3">
-                  <MultipleSelectDropDown
+                  <ControlledAutoComplete
                     multipleSelect={false}
                     placeholder="-"
                     id="code-system-selector"

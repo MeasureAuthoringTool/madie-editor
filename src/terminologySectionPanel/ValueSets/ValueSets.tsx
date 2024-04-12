@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TerminologySection from "../../common/TerminologySection";
-import SelectSearchCategories from "./Search/SelectSearchCategories";
+import MultipleSelectDropDown from "./Search/ControlledAutoComplete";
 import { useFormik } from "formik";
 import SearchField from "./Search/SearchField";
 import { Button } from "@madie/madie-design-system/dist/react";
@@ -85,20 +85,26 @@ export default function ValueSets() {
     <form
       id="madie-editor-value-sets"
       data-testid="madie-editor-value-sets"
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
+      onSubmit={formik.handleSubmit}
     >
       <TerminologySection title="Search" showHeaderContent={true}>
-        <SelectSearchCategories
-          options={SEARCH_CATEGORIES}
-          formikFieldProps={formik.getFieldProps("searchCategories")}
-          handleChange={(_event: any, selectedVal: string | null, reason) => {
+        <MultipleSelectDropDown
+          formControl={formik.getFieldProps("searchCategories")}
+          onClose={undefined}
+          {...formik.getFieldProps("searchCategories")}
+          onChange={(_event: any, selectedVal: string | null, reason) => {
             if (reason === "removeOption") {
               formBlanker(selectedVal);
             }
             formik.setFieldValue("searchCategories", selectedVal);
           }}
+          id="search-by-category"
+          label="Search By Category"
+          required={false}
+          disabled={false}
+          options={SEARCH_CATEGORIES}
+          multipleSelect={true}
+          limitTags={8}
         />
         <div className="search-container">
           {groupedRows.map((group, index) => (

@@ -38,7 +38,7 @@ export const autoCompleteStyles = {
   width: "100%",
 };
 
-const MultipleSelectDropDown = ({
+const ControlledAutoComplete = ({
   id,
   label,
   placeHolder = "",
@@ -111,6 +111,8 @@ const MultipleSelectDropDown = ({
         }}
         renderInput={(params) => {
           const { inputProps } = params;
+          inputProps["aria-required"] = required;
+
           return (
             <TextField
               label={labelReadable}
@@ -128,7 +130,7 @@ const MultipleSelectDropDown = ({
   );
 };
 
-MultipleSelectDropDown.propTypes = {
+ControlledAutoComplete.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
   placeHolder: PropTypes.shape({
@@ -145,4 +147,4 @@ MultipleSelectDropDown.propTypes = {
   limitTags: PropTypes.number,
 };
 
-export default MultipleSelectDropDown;
+export default ControlledAutoComplete;

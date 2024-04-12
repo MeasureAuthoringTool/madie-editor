@@ -21,6 +21,11 @@
 
     > button {
       margin-left: 24px;
+
+      // overwrites weird qpp style rule that ties margin to buttons in forms.
+      &[type="submit"] {
+        margin-top: 0;
+      }
     }
   }
 }
