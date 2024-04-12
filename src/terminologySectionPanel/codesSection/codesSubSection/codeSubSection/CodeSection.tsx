@@ -32,25 +32,23 @@ export default function CodeSection({
   allCodeSystems,
   canEdit,
 }: CodeSectionProps) {
-  // if we open tab before information has arrived, we need to trigger a useEffect
-  const [codeSystems, setCodeSystems] = useState(allCodeSystems);
   const [titles, setTitles] = useState([]);
+  // if we open tab before information has arrived, we need to trigger a useEffect
   useEffect(() => {
     if (allCodeSystems?.length) {
-      const filteredTitles = uniq(allCodeSystems.map((t) => t.title)).map(
-        (title) => ({
-          value: title,
-          label: title,
+      const filteredTitles = uniq(allCodeSystems.map((t) => t.name)).map(
+        (name) => ({
+          value: name,
+          label: name,
         })
       );
       setTitles(filteredTitles);
-      setCodeSystems(allCodeSystems);
     }
-  }, [allCodeSystems, setCodeSystems]);
+  }, [allCodeSystems]);
 
   const formik = useFormik({
     initialValues: {
-      title: "",
+      codeSystemName: "",
       version: "",
       code: "",
     },
@@ -61,9 +59,9 @@ export default function CodeSection({
   });
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
-    if (formik.values.title) {
-      const availableVersions = codeSystems
-        .filter((c) => c.title === formik.values.title)
+    if (formik.values.codeSystemName) {
+      const availableVersions = allCodeSystems
+        .filter((c) => c.name === formik.values.codeSystemName)
         .sort((a, b) => {
           const dateA = new Date(a.lastUpdatedUpstream);
           const dateB = new Date(b.lastUpdatedUpstream);
@@ -77,7 +75,7 @@ export default function CodeSection({
       );
       formik.setFieldValue("version", availableVersions[0].version);
     }
-  }, [formik.values.title]);
+  }, [formik.values.codeSystemName]);
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -113,8 +111,8 @@ export default function CodeSection({
               List updated:
               <span className="updated-date">
                 {`${
-                  codeSystems?.length
-                    ? moment(codeSystems[0]?.lastUpdated).format("L")
+                  allCodeSystems?.length
+                    ? moment(allCodeSystems[0]?.lastUpdated).format("L")
                     : ""
                 }`}
               </span>
@@ -139,7 +137,7 @@ export default function CodeSection({
                     }}
                     options={renderMenuItems(titles)}
                     disabled={!canEdit}
-                    {...formik.getFieldProps("title")}
+                    {...formik.getFieldProps("codeSystemName")}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -155,7 +153,7 @@ export default function CodeSection({
                       "aria-required": "true",
                     }}
                     options={renderMenuItems(availableVersions)}
-                    disabled={!formik.values.title || !canEdit}
+                    disabled={!formik.values.codeSystemName || !canEdit}
                     {...formik.getFieldProps("version")}
                   />
                 </div>
@@ -176,7 +174,7 @@ export default function CodeSection({
                   onChange={formik.handleChange}
                   value={formik.values.code}
                   name="code"
-                  disabled={!formik.values.title}
+                  disabled={!formik.values.codeSystemName}
                 />
               </div>
               <div tw="float-right">

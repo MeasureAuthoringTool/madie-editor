@@ -31,7 +31,7 @@ describe("Code Section component", () => {
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions.length).toEqual(3);
     userEvent.click(codeSystemOptions[0]);
-    expect(codeSystemSelect).toHaveTextContent("Code1");
+    expect(codeSystemSelect).toHaveTextContent("System1");
     // Selecting a Code System Version
     const codeSystemVersionSelect = screen.getByRole("combobox", {
       name: "Code System Version",
@@ -61,7 +61,7 @@ describe("Code Section component", () => {
     userEvent.click(searchButton);
     await waitFor(() => {
       expect(handleFormSubmitMock).toHaveBeenCalledWith({
-        title: "Code1",
+        codeSystemName: "System1",
         version: "1.0",
         code: "Code",
       });
@@ -70,7 +70,11 @@ describe("Code Section component", () => {
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
     const { getByTestId } = render(
-      <CodeSection canEdit={readOnly} handleFormSubmit={handleFormSubmitMock} />
+      <CodeSection
+        canEdit={readOnly}
+        handleFormSubmit={handleFormSubmitMock}
+        allCodeSystems={[]}
+      />
     );
 
     const clearButton = getByTestId("clear-codes-btn");
@@ -79,7 +83,7 @@ describe("Code Section component", () => {
     const codeText = getByTestId("code-text");
     expect(codeText).toBeEnabled();
     expect(codeText).toBeInTheDocument();
-    const codeTextInput = getByTestId("code-text-input");
+    const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
     fireEvent.change(codeTextInput, {
       target: { value: "Code1" },
     });
@@ -91,7 +95,11 @@ describe("Code Section component", () => {
 
   it("all the code form fields should be disable when user is not the owner or shared user", () => {
     const { getByTestId } = render(
-      <CodeSection canEdit={false} handleFormSubmit={handleFormSubmitMock} />
+      <CodeSection
+        canEdit={false}
+        handleFormSubmit={handleFormSubmitMock}
+        allCodeSystems={[]}
+      />
     );
 
     const codeSystemSelect = getByTestId("code-system-selector-input");

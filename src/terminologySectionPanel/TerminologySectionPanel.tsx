@@ -23,10 +23,6 @@ export default function TerminologySectionPanel({ canEdit }) {
           setActiveTab={setActiveTab}
           QDMValueSetSearch={QDMValueSetSearch}
         />
-        <div className="spacer" />
-        <IconButton>
-          <KeyboardTabIcon className="back-icon" />
-        </IconButton>
       </div>
       <div className="panel-content">
         {activeTab === "valueSets" && <ValueSetsSection />}

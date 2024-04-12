@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
@@ -31,6 +31,15 @@ export interface CodeSystem {
   title?: string;
   version?: string;
   versionId?: string;
+}
+
+export interface Code {
+  name: string;
+  display: string;
+  codeSystem: string;
+  version: string;
+  active: boolean;
+  codeSystemOid?: string;
 }
 
 export class TerminologyServiceApi {
@@ -135,6 +144,19 @@ export class TerminologyServiceApi {
     } catch (err) {
       console.error("Error retrieving getAllCodeSystems: ", err);
     }
+  }
+
+  getCodeDetails(
+    code: string,
+    codeSystem: string,
+    version: string
+  ): Promise<AxiosResponse<Code>> {
+    return axios.get<Code>(`${this.baseUrl}/terminology/code`, {
+      params: { code: code, codeSystem: codeSystem, version: version },
+      headers: {
+        Authorization: `Bearer ${this.getAccessToken()}`,
+      },
+    });
   }
 }
 
