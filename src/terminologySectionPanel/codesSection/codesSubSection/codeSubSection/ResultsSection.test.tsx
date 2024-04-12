@@ -1,6 +1,7 @@
-import React from "react";
+import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import ResultsSection from "./ResultsSection";
+import { Code } from "../../../../api/useTerminologyServiceApi";
 
 const setShowResultsTable = jest.fn();
 
@@ -10,6 +11,7 @@ describe("Results Section component", () => {
       <ResultsSection
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
+        code={undefined}
       />
     );
 
@@ -18,10 +20,19 @@ describe("Results Section component", () => {
   });
 
   it("should display the results table", () => {
+    const mockCode: Code = {
+      name: "Code2",
+      display: "this is test code",
+      codeSystem: "System2",
+      active: true,
+      version: "2.0",
+    };
+
     render(
       <ResultsSection
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
+        code={mockCode}
       />
     );
 

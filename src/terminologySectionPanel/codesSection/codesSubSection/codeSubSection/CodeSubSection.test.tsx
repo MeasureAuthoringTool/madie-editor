@@ -45,6 +45,7 @@ describe("CodeSub Section component", () => {
       name: "Code2",
       display: "this is test code",
       codeSystem: "System2",
+      active: true,
       version: "2.0",
     };
 
