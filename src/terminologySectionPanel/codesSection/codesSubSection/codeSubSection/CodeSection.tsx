@@ -49,7 +49,7 @@ export default function CodeSection({
 
   const formik = useFormik({
     initialValues: {
-      codeSystemName: "",
+      title: "",
       version: "",
       code: "",
     },
@@ -63,9 +63,9 @@ export default function CodeSection({
 
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
-    if (formik.values.codeSystemName) {
+    if (formik.values.title) {
       const availableVersions = allCodeSystems
-        .filter((c) => c.name === formik.values.codeSystemName)
+        .filter((c) => c.name === formik.values.title)
         .sort((a, b) => {
           const dateA = new Date(a.lastUpdatedUpstream);
           const dateB = new Date(b.lastUpdatedUpstream);
@@ -82,7 +82,7 @@ export default function CodeSection({
       setAvailableVersions([]);
       formik.setFieldValue("version", "");
     }
-  }, [formik.values.codeSystemName]);
+  }, [formik.values.title]);
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -165,7 +165,7 @@ export default function CodeSection({
                       "aria-required": "true",
                     }}
                     options={renderMenuItems(availableVersions)}
-                    disabled={!formik.values.codeSystemName || !canEdit}
+                    disabled={!formik.values.title || !canEdit}
                     {...formik.getFieldProps("version")}
                   />
                 </div>
@@ -186,7 +186,7 @@ export default function CodeSection({
                   onChange={formik.handleChange}
                   value={formik.values.code}
                   name="code"
-                  disabled={!formik.values.codeSystemName}
+                  disabled={!formik.values.title}
                 />
               </div>
               <div tw="float-right">

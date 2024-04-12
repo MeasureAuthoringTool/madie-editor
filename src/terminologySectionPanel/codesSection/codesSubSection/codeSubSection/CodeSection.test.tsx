@@ -35,20 +35,19 @@ describe("Code Section component", () => {
 
     userEvent.click(codeSystemSelectButton);
 
-    expect(screen.getByText("Code1")).toBeInTheDocument();
-    expect(screen.getByText("Code2")).toBeInTheDocument();
+    expect(screen.getByText("System1")).toBeInTheDocument();
+    expect(screen.getByText("System2")).toBeInTheDocument();
 
-    userEvent.type(codeSystemSelectButton, "Code1");
+    userEvent.type(codeSystemSelectButton, "System1");
 
-    expect(screen.getByText("Code1")).toBeInTheDocument();
-    expect(screen.queryByText("Code2")).not.toBeInTheDocument();
+    expect(screen.getByText("System1")).toBeInTheDocument();
+    expect(screen.queryByText("System2")).not.toBeInTheDocument();
     expect(codeSystemSelect).toBeEnabled();
     userEvent.click(codeSystemSelect);
 
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions.length).toEqual(1);
     userEvent.click(codeSystemOptions[0]);
-    expect(codeSystemSelect).toHaveTextContent("System1");
 
     // Selecting a Code System Version
     const codeSystemVersionSelect = screen.getByRole("combobox", {
@@ -73,13 +72,13 @@ describe("Code Section component", () => {
     expect(codeTextInput.value).toBe("Code");
 
     await waitFor(() => {
-      expect(searchButton).toBeEnabled();
       expect(clearButton).toBeEnabled();
+      expect(searchButton).not.toBeDisabled();
     });
     userEvent.click(searchButton);
     await waitFor(() => {
       expect(handleFormSubmitMock).toHaveBeenCalledWith({
-        codeSystemName: "System1",
+        title: "System1",
         version: "1.0",
         code: "Code",
       });

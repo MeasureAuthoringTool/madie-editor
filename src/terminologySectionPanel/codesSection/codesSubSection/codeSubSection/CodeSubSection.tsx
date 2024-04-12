@@ -30,9 +30,9 @@ export default function CodeSubSection({
   const handleFormSubmit = async (values) => {
     // eslint-disable-next-line
     const terminologyService = await useTerminologyServiceApi();
-    if (values && values.code && values.codeSystemName && values.version) {
+    if (values && values.code && values.title && values.version) {
       terminologyService
-        .getCodeDetails(values.code, values.codeSystemName, values.version)
+        .getCodeDetails(values.code, values.title, values.version)
         .then((response) => {
           setCode(response.data);
         })
