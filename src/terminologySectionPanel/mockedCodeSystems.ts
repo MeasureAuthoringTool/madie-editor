@@ -5,7 +5,7 @@ export const mockedCodeSystems = [
     title: "System 1",
     version: "1.0",
     lastUpdatedUpstream: new Date(1999, 10, 1).toString(),
-    lastUpdated: Date.now().toString(),
+    lastUpdated: new Date(1999, 10, 1).toString(),
   },
   {
     id: "2",
@@ -13,7 +13,7 @@ export const mockedCodeSystems = [
     title: "System 1",
     version: "2.0",
     lastUpdatedUpstream: new Date(2000, 10, 1).toString(),
-    lastUpdated: Date.now().toString(),
+    lastUpdated: new Date(1999, 10, 1).toString(),
   },
   {
     id: "3",
@@ -21,7 +21,7 @@ export const mockedCodeSystems = [
     title: "System 2",
     version: "1.0",
     lastUpdatedUpstream: new Date(1999, 10, 1).toString(),
-    lastUpdated: Date.now().toString(),
+    lastUpdated: new Date(1999, 10, 1).toString(),
   },
   {
     id: "4",
@@ -37,7 +37,7 @@ export const mockedCodeSystems = [
     title: "System 3",
     version: "1.0",
     lastUpdatedUpstream: new Date(1999, 10, 1).toString(),
-    lastUpdated: Date.now().toString(),
+    lastUpdated: new Date(1999, 10, 1).toString(),
   },
   {
     id: "6",
@@ -45,6 +45,6 @@ export const mockedCodeSystems = [
     title: "System 3",
     version: "2.0",
     lastUpdatedUpstream: new Date(2001, 10, 1).toString(),
-    lastUpdated: Date.now().toString(),
+    lastUpdated: new Date(1999, 10, 1).toString(),
   },
 ];

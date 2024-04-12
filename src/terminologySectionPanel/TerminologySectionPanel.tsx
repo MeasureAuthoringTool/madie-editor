@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { IconButton } from "@mui/material";
 import TerminologySectionPanelNavTabs from "./TerminologySectionPanelNavTabs";
-import ValueSetsSection from "./valueSetsSection/ValueSetsSection";
+import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 import { useFeatureFlags } from "@madie/madie-util";

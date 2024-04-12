@@ -15,6 +15,7 @@ import { uniq } from "lodash";
 import moment from "moment";
 import { MenuItem } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
+import ControlledAutoComplete from "../../../ValueSets/Search/ControlledAutoComplete";
 
 interface CodeSectionProps {
   handleFormSubmit: Function;
@@ -48,20 +49,23 @@ export default function CodeSection({
 
   const formik = useFormik({
     initialValues: {
-      codeSystemName: "",
+      title: "",
       version: "",
       code: "",
     },
     validationSchema: CodeSubSectionSchemaValidator,
+    enableReinitialize: true,
     onSubmit: (values) => {
       handleFormSubmit(values);
     },
   });
+  const { resetForm } = formik;
+
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
-    if (formik.values.codeSystemName) {
+    if (formik.values.title) {
       const availableVersions = allCodeSystems
-        .filter((c) => c.name === formik.values.codeSystemName)
+        .filter((c) => c.name === formik.values.title)
         .sort((a, b) => {
           const dateA = new Date(a.lastUpdatedUpstream);
           const dateB = new Date(b.lastUpdatedUpstream);
@@ -74,8 +78,11 @@ export default function CodeSection({
         }))
       );
       formik.setFieldValue("version", availableVersions[0].version);
+    } else {
+      setAvailableVersions([]);
+      formik.setFieldValue("version", "");
     }
-  }, [formik.values.codeSystemName]);
+  }, [formik.values.title]);
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -118,26 +125,31 @@ export default function CodeSection({
               </span>
             </div>
             <form onSubmit={formik.handleSubmit}>
-              <div tw="flex md:flex-wrap">
+              <div
+                tw="flex md:flex-wrap"
+                style={{ display: "flex", alignItems: "flex-end" }}
+              >
                 <div tw="w-1/3">
-                  <Select
-                    required
-                    placeHolder={{
-                      name: "Select Code System",
-                      value: "",
+                  <ControlledAutoComplete
+                    multipleSelect={false}
+                    placeholder="-"
+                    id="code-system-selector"
+                    label="Code Systems"
+                    setFieldValue={formik.setFieldValue}
+                    {...formik.getFieldProps("title")}
+                    value={{
+                      value: formik.values.title,
+                      label: formik.values.title,
                     }}
-                    label="Code System"
-                    id={"code-system-selector"}
-                    inputProps={{
-                      "data-testid": "code-system-selector-input",
-                    }}
-                    data-testid={"code-system-selector"}
-                    SelectDisplayProps={{
-                      "aria-required": "true",
-                    }}
-                    options={renderMenuItems(titles)}
                     disabled={!canEdit}
-                    {...formik.getFieldProps("codeSystemName")}
+                    onClose={undefined}
+                    disableCloseOnSelect={false}
+                    required={false}
+                    options={titles}
+                    onChange={(_event: any, selectedVal: MenuObj) => {
+                      formik.setFieldValue("title", selectedVal?.label || "");
+                    }}
+                    limitTags={1}
                   />
                 </div>
                 <div tw="flex-grow pl-5">
@@ -153,7 +165,7 @@ export default function CodeSection({
                       "aria-required": "true",
                     }}
                     options={renderMenuItems(availableVersions)}
-                    disabled={!formik.values.codeSystemName || !canEdit}
+                    disabled={!formik.values.title || !canEdit}
                     {...formik.getFieldProps("version")}
                   />
                 </div>
@@ -174,7 +186,7 @@ export default function CodeSection({
                   onChange={formik.handleChange}
                   value={formik.values.code}
                   name="code"
-                  disabled={!formik.values.codeSystemName}
+                  disabled={!formik.values.title}
                 />
               </div>
               <div tw="float-right">
@@ -183,6 +195,7 @@ export default function CodeSection({
                   data-testid="clear-codes-btn"
                   disabled={!formik.dirty || !canEdit}
                   tw="mr-4"
+                  onClick={resetForm}
                 >
                   Clear
                 </Button>
