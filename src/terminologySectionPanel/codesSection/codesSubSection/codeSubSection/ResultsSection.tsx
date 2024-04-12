@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import TerminologySection from "../../../../common/TerminologySection";
 import {
   useReactTable,
@@ -9,6 +11,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { Code } from "../../../../api/useTerminologyServiceApi";
+import { IconButton, Tooltip } from "@mui/material";
 
 type ResultSectionProps = {
   showResultsTable: boolean;
@@ -34,7 +37,7 @@ export default function ResultsSection({
     () => [
       {
         header: "",
-        accessorKey: "active/inactive",
+        accessorKey: "active",
       },
       {
         header: "Code",
@@ -108,9 +111,25 @@ export default function ResultsSection({
                   <tr key={row.id} data-test-id={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} tw="p-2">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                        {cell.column.id === "active" ? (
+                          cell.getValue() ? (
+                            <Tooltip title="This code is active in this code system version">
+                              <IconButton>
+                                <CheckCircleIcon color="success" />
+                              </IconButton>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title="This code is inactive in this code system version">
+                              <IconButton>
+                                <DoDisturbOutlinedIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )
                         )}
                       </td>
                     ))}
