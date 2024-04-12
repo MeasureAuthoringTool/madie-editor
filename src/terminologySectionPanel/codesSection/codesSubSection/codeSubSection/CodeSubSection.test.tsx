@@ -155,10 +155,9 @@ describe("CodeSub Section component", () => {
         return Promise.resolve({ response: { status: 404 } });
       }
     });
-    const { getByTestId, findByTestId, getByRole, getByText, findAllByRole } =
-      render(
-        <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
-      );
+    const { getByTestId, findByTestId, getByRole, getByText } = render(
+      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+    );
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
     });
