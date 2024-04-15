@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import ResultsSection from "./ResultsSection";
-import { Code } from "../../../../api/useTerminologyServiceApi";
+import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 
 const setShowResultsTable = jest.fn();
 
@@ -24,7 +24,7 @@ describe("Results Section component", () => {
       name: "Code2",
       display: "this is test code",
       codeSystem: "System2",
-      active: true,
+      status: CodeStatus.ACTIVE,
       version: "2.0",
     };
 

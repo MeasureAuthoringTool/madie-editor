@@ -10,7 +10,7 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { Code } from "../../../../api/useTerminologyServiceApi";
+import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import { IconButton, Tooltip } from "@mui/material";
 
 type ResultSectionProps = {
@@ -37,7 +37,7 @@ export default function ResultsSection({
     () => [
       {
         header: "",
-        accessorKey: "active",
+        accessorKey: "status",
       },
       {
         header: "Code",
@@ -69,6 +69,29 @@ export default function ResultsSection({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const getCodeStatus = (status) => {
+    if (status == CodeStatus.ACTIVE) {
+      return (
+        <Tooltip title="This code is active in this code system version">
+          <IconButton>
+            <CheckCircleIcon color="success" />
+          </IconButton>
+        </Tooltip>
+      );
+    } else if (status == CodeStatus.INACTIVE) {
+      return (
+        <Tooltip title="This code is inactive in this code system version">
+          <IconButton>
+            <DoDisturbOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+      );
+    } else {
+      return <button className="sr-only">status not available</button>;
+    }
+  };
+
+  // @ts-ignore
   return (
     <div>
       <TerminologySection
@@ -111,26 +134,12 @@ export default function ResultsSection({
                   <tr key={row.id} data-test-id={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} tw="p-2">
-                        {cell.column.id === "active" ? (
-                          cell.getValue() ? (
-                            <Tooltip title="This code is active in this code system version">
-                              <IconButton>
-                                <CheckCircleIcon color="success" />
-                              </IconButton>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip title="This code is inactive in this code system version">
-                              <IconButton>
-                                <DoDisturbOutlinedIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )
-                        ) : (
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )
-                        )}
+                        {cell.column.id === "status"
+                          ? getCodeStatus(cell.getValue())
+                          : flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
                       </td>
                     ))}
                   </tr>

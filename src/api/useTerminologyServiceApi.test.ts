@@ -1,6 +1,7 @@
 import axios from "axios";
 import useTerminologyServiceApi, {
   Code,
+  CodeStatus,
   TerminologyServiceApi,
 } from "./useTerminologyServiceApi";
 import { ServiceConfig } from "./useServiceConfig";
@@ -27,7 +28,7 @@ const mockCode: Code = {
   name: "1963-8",
   display: "this is test code",
   codeSystem: "LOINC",
-  active: true,
+  status: CodeStatus.ACTIVE,
   version: "2.40",
 };
 

@@ -4,7 +4,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
 import axios from "axios";
-import { Code } from "../../../../api/useTerminologyServiceApi";
+import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../useCodeSystems");
@@ -27,7 +27,7 @@ const mockCode: Code = {
   name: "Code2",
   display: "this is test code",
   codeSystem: "System2",
-  active: true,
+  status: CodeStatus.ACTIVE,
   version: "2.0",
 };
 describe("CodeSub Section component", () => {
