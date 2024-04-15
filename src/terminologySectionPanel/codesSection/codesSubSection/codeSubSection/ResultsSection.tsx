@@ -91,7 +91,6 @@ export default function ResultsSection({
     }
   };
 
-  // @ts-ignore
   return (
     <div>
       <TerminologySection
