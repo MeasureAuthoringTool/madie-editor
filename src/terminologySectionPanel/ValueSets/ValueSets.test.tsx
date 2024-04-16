@@ -9,7 +9,7 @@ const { getByTestId, getByRole, getByText, queryByTestId, getByLabelText } =
   screen;
 describe("ValueSets Page", () => {
   it("Should not catch fire, should display all categories", () => {
-    render(<ValueSets />);
+    render(<ValueSets canEdit />);
     expect(getByTestId("madie-editor-value-sets")).toBeInTheDocument();
 
     expect(
@@ -23,7 +23,7 @@ describe("ValueSets Page", () => {
     ).toBeInTheDocument();
   });
   it("Should use a type ahead field to add and remove categories", async () => {
-    render(<ValueSets />);
+    render(<ValueSets canEdit />);
     const categoriesSelectButton = getByRole("button", {
       name: "Open",
     });
@@ -51,7 +51,7 @@ describe("ValueSets Page", () => {
   });
 
   it("Should enable submit button when a dynamic search field has text in it, should remove all values on clear", async () => {
-    render(<ValueSets />);
+    render(<ValueSets canEdit />);
     const categoriesSelectButton = getByRole("button", {
       name: "Open",
     });

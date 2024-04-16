@@ -27,7 +27,6 @@ export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
           label="Value Sets"
           data-testid="valueSets-tab"
           value="valueSets"
-          disabled={!canEdit}
         />
       )}
       <Tab

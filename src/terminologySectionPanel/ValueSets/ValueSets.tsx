@@ -23,7 +23,11 @@ SEARCH_CATEGORIES.forEach((obj) => {
   SEARCH_MAP[obj.value] = obj.label;
 });
 
-export default function ValueSets() {
+interface ValueSetsProps {
+  canEdit: boolean;
+}
+export default function ValueSets(props: ValueSetsProps) {
+  const { canEdit } = props;
   const handleSearch = () => {};
 
   const formik = useFormik({
@@ -101,7 +105,7 @@ export default function ValueSets() {
           id="search-by-category"
           label="Search By Category"
           required={false}
-          disabled={false}
+          disabled={!canEdit}
           options={SEARCH_CATEGORIES}
           multipleSelect={true}
           limitTags={8}

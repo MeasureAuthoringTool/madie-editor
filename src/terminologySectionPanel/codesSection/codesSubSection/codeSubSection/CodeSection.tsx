@@ -21,6 +21,7 @@ interface CodeSectionProps {
   handleFormSubmit: Function;
   canEdit: boolean;
   allCodeSystems: CodeSystem[];
+  blankResults: Function;
 }
 
 interface MenuObj {
@@ -32,6 +33,7 @@ export default function CodeSection({
   handleFormSubmit,
   allCodeSystems,
   canEdit,
+  blankResults,
 }: CodeSectionProps) {
   const [titles, setTitles] = useState([]);
   // if we open tab before information has arrived, we need to trigger a useEffect
@@ -195,7 +197,10 @@ export default function CodeSection({
                   data-testid="clear-codes-btn"
                   disabled={!formik.dirty || !canEdit}
                   tw="mr-4"
-                  onClick={resetForm}
+                  onClick={() => {
+                    resetForm();
+                    blankResults();
+                  }}
                 >
                   Clear
                 </Button>
