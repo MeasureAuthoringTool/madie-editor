@@ -78,7 +78,7 @@ describe("Results Section component", () => {
     );
   });
 
-  it("should display the results table for inactive code", () => {
+  it("should display the results table for a code with no status available", () => {
     renderResultsTable(
       { ...mockCode, status: CodeStatus.NA },
       "DoNotDisturbOnIcon"
