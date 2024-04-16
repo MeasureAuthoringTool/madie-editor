@@ -3,6 +3,7 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
+import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TerminologySection from "../../../../common/TerminologySection";
 import {
   useReactTable,
@@ -10,8 +11,8 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { Code } from "../../../../api/useTerminologyServiceApi";
-import { IconButton, Tooltip } from "@mui/material";
+import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
+import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 
 type ResultSectionProps = {
   showResultsTable: boolean;
@@ -37,7 +38,7 @@ export default function ResultsSection({
     () => [
       {
         header: "",
-        accessorKey: "active",
+        accessorKey: "status",
       },
       {
         header: "Code",
@@ -68,6 +69,28 @@ export default function ResultsSection({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const getCodeStatus = (status) => {
+    if (status == CodeStatus.ACTIVE) {
+      return (
+        <ToolTippedIcon tooltipMessage="This code is active in this code system version">
+          <CheckCircleIcon color="success" />
+        </ToolTippedIcon>
+      );
+    }
+    if (status == CodeStatus.INACTIVE) {
+      return (
+        <ToolTippedIcon tooltipMessage="This code is inactive in this code system version">
+          <DoDisturbOutlinedIcon />
+        </ToolTippedIcon>
+      );
+    }
+    return (
+      <ToolTippedIcon tooltipMessage="Code status unavailable">
+        <DoNotDisturbOnIcon />
+      </ToolTippedIcon>
+    );
+  };
 
   return (
     <div>
@@ -111,26 +134,12 @@ export default function ResultsSection({
                   <tr key={row.id} data-test-id={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} tw="p-2">
-                        {cell.column.id === "active" ? (
-                          cell.getValue() ? (
-                            <Tooltip title="This code is active in this code system version">
-                              <IconButton>
-                                <CheckCircleIcon color="success" />
-                              </IconButton>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip title="This code is inactive in this code system version">
-                              <IconButton>
-                                <DoDisturbOutlinedIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )
-                        ) : (
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )
-                        )}
+                        {cell.column.id === "status"
+                          ? getCodeStatus(cell.getValue())
+                          : flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
                       </td>
                     ))}
                   </tr>

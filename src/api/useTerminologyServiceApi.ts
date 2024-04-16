@@ -33,12 +33,17 @@ export interface CodeSystem {
   versionId?: string;
 }
 
+export enum CodeStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  NA = "NA",
+}
 export interface Code {
   name: string;
   display: string;
   codeSystem: string;
   version: string;
-  active: boolean;
+  status: CodeStatus;
   codeSystemOid?: string;
 }
 
