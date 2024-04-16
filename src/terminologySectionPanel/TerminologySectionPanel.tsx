@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
-import { IconButton } from "@mui/material";
 import TerminologySectionPanelNavTabs from "./TerminologySectionPanelNavTabs";
 import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
@@ -25,7 +23,7 @@ export default function TerminologySectionPanel({ canEdit }) {
         />
       </div>
       <div className="panel-content">
-        {activeTab === "valueSets" && <ValueSetsSection />}
+        {activeTab === "valueSets" && <ValueSetsSection canEdit={canEdit} />}
         {activeTab === "codes" && <CodesSection canEdit={canEdit} />}
         {activeTab === "definitions" && <DefinitionsSection />}
       </div>

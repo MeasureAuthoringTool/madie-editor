@@ -51,12 +51,18 @@ export default function CodeSubSection({
     }
   };
 
+  const blankResults = () => {
+    setShowResultsTable(false);
+    setCode(undefined);
+  };
+
   return (
     <>
       <CodeSection
         handleFormSubmit={handleFormSubmit}
         allCodeSystems={allCodeSystems}
         canEdit={canEdit}
+        blankResults={blankResults}
       />
       <ResultsSection
         showResultsTable={showResultsTable}
