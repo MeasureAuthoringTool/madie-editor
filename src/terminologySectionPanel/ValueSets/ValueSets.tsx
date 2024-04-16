@@ -105,7 +105,7 @@ export default function ValueSets(props: ValueSetsProps) {
           id="search-by-category"
           label="Search By Category"
           required={false}
-          disabled={canEdit}
+          disabled={!canEdit}
           options={SEARCH_CATEGORIES}
           multipleSelect={true}
           limitTags={8}
