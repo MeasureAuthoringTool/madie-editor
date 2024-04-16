@@ -3,6 +3,7 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
+import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TerminologySection from "../../../../common/TerminologySection";
 import {
   useReactTable,
@@ -11,7 +12,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
-import { IconButton, Tooltip } from "@mui/material";
+import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 
 type ResultSectionProps = {
   showResultsTable: boolean;
@@ -72,22 +73,23 @@ export default function ResultsSection({
   const getCodeStatus = (status) => {
     if (status == CodeStatus.ACTIVE) {
       return (
-        <Tooltip title="This code is active in this code system version">
-          <IconButton>
-            <CheckCircleIcon color="success" />
-          </IconButton>
-        </Tooltip>
+        <ToolTippedIcon tooltipMessage="This code is active in this code system version">
+          <CheckCircleIcon color="success" />
+        </ToolTippedIcon>
       );
     }
     if (status == CodeStatus.INACTIVE) {
       return (
-        <Tooltip title="This code is inactive in this code system version">
-          <IconButton>
-            <DoDisturbOutlinedIcon />
-          </IconButton>
-        </Tooltip>
+        <ToolTippedIcon tooltipMessage="This code is inactive in this code system version">
+          <DoDisturbOutlinedIcon />
+        </ToolTippedIcon>
       );
     }
+    return (
+      <ToolTippedIcon tooltipMessage="Code status unavailable">
+        <DoNotDisturbOnIcon />
+      </ToolTippedIcon>
+    );
   };
 
   return (
