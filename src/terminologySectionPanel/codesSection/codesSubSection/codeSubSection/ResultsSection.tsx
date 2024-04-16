@@ -78,7 +78,8 @@ export default function ResultsSection({
           </IconButton>
         </Tooltip>
       );
-    } else if (status == CodeStatus.INACTIVE) {
+    }
+    if (status == CodeStatus.INACTIVE) {
       return (
         <Tooltip title="This code is inactive in this code system version">
           <IconButton>
@@ -86,8 +87,6 @@ export default function ResultsSection({
           </IconButton>
         </Tooltip>
       );
-    } else {
-      return <button className="sr-only">status not available</button>;
     }
   };
 
