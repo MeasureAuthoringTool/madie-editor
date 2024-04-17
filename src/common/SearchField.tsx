@@ -13,9 +13,14 @@ interface FormikFieldProps {
 interface SearchFieldProps {
   fieldProps: FormikFieldProps;
   label: string;
+  prefix: string;
 }
 
-const SearchField: React.FC<SearchFieldProps> = ({ fieldProps, label }) => {
+const SearchField: React.FC<SearchFieldProps> = ({
+  fieldProps,
+  label,
+  prefix,
+}) => {
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -24,12 +29,13 @@ const SearchField: React.FC<SearchFieldProps> = ({ fieldProps, label }) => {
     ),
   };
   const { name } = fieldProps;
+  const ammendedLabel = `${prefix} ${label}`;
   return (
     <TextField
       required={false}
       {...fieldProps}
       id={fieldProps.name}
-      label={`Search ${label}`}
+      label={ammendedLabel}
       inputProps={{
         "data-testid": `${name}-text-input`,
       }}
