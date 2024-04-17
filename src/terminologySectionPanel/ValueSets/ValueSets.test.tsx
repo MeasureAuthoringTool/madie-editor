@@ -10,7 +10,7 @@ const { getByTestId, getByRole, getByText, queryByTestId, getByLabelText } =
 describe("ValueSets Page", () => {
   it("Should not catch fire, should display all categories", () => {
     render(<ValueSets canEdit />);
-    expect(getByTestId("madie-editor-value-sets")).toBeInTheDocument();
+    expect(getByTestId("madie-editor-search")).toBeInTheDocument();
 
     expect(
       getByTestId("terminology-section-Search-sub-heading")

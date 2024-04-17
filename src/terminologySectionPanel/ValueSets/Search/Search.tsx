@@ -85,8 +85,8 @@ export default function Search(props: SearchProps) {
   };
   return (
     <form
-      id="madie-editor-value-sets"
-      data-testid="madie-editor-value-sets"
+      id="madie-editor-search"
+      data-testid="madie-editor-search"
       onSubmit={formik.handleSubmit}
     >
       {" "}

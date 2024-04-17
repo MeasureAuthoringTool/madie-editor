@@ -78,8 +78,8 @@ const Filter = (props) => {
 
   return (
     <form
-      id="madie-editor-value-sets"
-      data-testid="madie-editor-value-sets"
+      id="madie-editor-filter"
+      data-testid="madie-editor-filter"
       onSubmit={formik.handleSubmit}
     >
       <ControlledAutoComplete
