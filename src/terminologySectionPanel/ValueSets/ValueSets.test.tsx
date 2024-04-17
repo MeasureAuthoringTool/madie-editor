@@ -22,7 +22,7 @@ describe("ValueSets Page", () => {
       getByTestId("terminology-section-Results-sub-heading")
     ).toBeInTheDocument();
   });
-  it("Should use a type ahead field to add and remove categories", async () => {
+  it("Should use a type ahead field to add and remove search categories", async () => {
     render(<ValueSets canEdit />);
     const categoriesSelectButton = getByRole("button", {
       name: "Open",
@@ -72,6 +72,70 @@ describe("ValueSets Page", () => {
     await waitFor(() => {
       expect(queryByTestId("code-text-input")).not.toBeInTheDocument();
       expect(getByTestId("clear-valuesets-btn")).not.toBeEnabled();
+    });
+  });
+
+  it("Should enable submit button when a dynamic Filter field has text in it, should remove all values on clear", async () => {
+    render(<ValueSets canEdit />);
+    const filterRow = getByTestId("terminology-section-Filter-sub-heading");
+    const openRow = within(filterRow).getByRole("button");
+
+    userEvent.click(openRow);
+
+    const filterSelectButton = within(filterRow).getByRole("button", {
+      name: "Open",
+    });
+    userEvent.click(filterSelectButton);
+    userEvent.click(getByText("Author"));
+    const filterInput = (await screen.findByRole("textbox", {
+      name: "Filter by Author",
+    })) as HTMLInputElement;
+    expect(filterInput).toBeInTheDocument();
+    userEvent.clear(filterInput);
+    userEvent.type(filterInput, "test");
+    expect(filterInput.value).toEqual("test");
+    await waitFor(() => {
+      expect(getByTestId("valuesets-filter-btn")).toBeEnabled();
+      expect(getByTestId("clear-filters-btn")).toBeEnabled();
+    });
+    userEvent.click(getByTestId("clear-filters-btn"));
+    await waitFor(() => {
+      expect(queryByTestId("author-text-input")).not.toBeInTheDocument();
+      expect(getByTestId("clear-filters-btn")).not.toBeEnabled();
+    });
+  });
+
+  it("Should use a type ahead field to add and remove filters", async () => {
+    render(<ValueSets canEdit />);
+    const filterRow = getByTestId("terminology-section-Filter-sub-heading");
+    const openRow = within(filterRow).getByRole("button");
+
+    userEvent.click(openRow);
+
+    const filterSelectButton = within(filterRow).getByRole("button", {
+      name: "Open",
+    });
+    userEvent.click(filterSelectButton);
+    userEvent.click(getByText("Author"));
+    userEvent.click(filterSelectButton);
+    userEvent.click(getByText("Title"));
+    userEvent.click(filterSelectButton);
+    userEvent.click(getByText("Status"));
+    expect(getByTestId("author-text-input")).toBeInTheDocument();
+    expect(getByTestId("title-text-input")).toBeInTheDocument();
+    expect(getByTestId("status-text-input")).toBeInTheDocument();
+
+    const deleteCodeButton = getByRole("button", { name: "Author" });
+    const deleteIcon = within(deleteCodeButton).getByTestId("CancelIcon");
+    userEvent.click(deleteIcon);
+    await waitFor(() => {
+      expect(queryByTestId("author-text-input")).not.toBeInTheDocument();
+    });
+    const clearButton = getByLabelText("Clear");
+    userEvent.click(clearButton);
+    await waitFor(() => {
+      expect(queryByTestId("title-text-input")).not.toBeInTheDocument();
+      expect(queryByTestId("status-text-input")).not.toBeInTheDocument();
     });
   });
 });
