@@ -89,7 +89,6 @@ export default function Search(props: SearchProps) {
       data-testid="madie-editor-search"
       onSubmit={formik.handleSubmit}
     >
-      {" "}
       <ControlledAutoComplete
         formControl={formik.getFieldProps("searchCategories")}
         onClose={undefined}
