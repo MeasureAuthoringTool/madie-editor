@@ -15,7 +15,7 @@ import { uniq } from "lodash";
 import moment from "moment";
 import { MenuItem } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
-import ControlledAutoComplete from "../../../ValueSets/Search/ControlledAutoComplete";
+import ControlledAutoComplete from "../../../../common/ControlledAutoComplete";
 
 interface CodeSectionProps {
   handleFormSubmit: Function;
