@@ -17,11 +17,11 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Popover } from "@madie/madie-design-system/dist/react";
 
-
 type ResultSectionProps = {
   showResultsTable: boolean;
   setShowResultsTable: any;
   code: Code;
+  handleChange;
 };
 
 type TCRow = {
@@ -36,21 +36,24 @@ export default function ResultsSection({
   showResultsTable,
   setShowResultsTable,
   code,
+  handleChange,
 }: ResultSectionProps) {
-
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
 
   const handleOpen = async (
+    selectedId,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     setOptionsOpen(true);
-      console.log("AnchorEl", event.currentTarget);
+    setSelectedReferenceId(selectedId);
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setOptionsOpen(true);
+    setOptionsOpen(false);
+    setSelectedReferenceId(null);
     setAnchorEl(null);
   };
 
@@ -82,12 +85,10 @@ export default function ResultsSection({
         accessorKey: "apply",
         cell: (row: any) => (
           <div className="inline-flex gap-x-2">
-            
             <button
               className="action-button"
               onClick={(e) => {
-                console.log("Cell", row.cell.id);
-                handleOpen(e);
+                handleOpen(row.cell.row.id, e);
               }}
               tw="text-blue-600 hover:text-blue-900"
               data-testid={`select-action-${row.cell.id}`}
@@ -98,31 +99,6 @@ export default function ResultsSection({
                 <ExpandMoreIcon />
               </div>
             </button>
-            <Popover
-              optionsOpen={optionsOpen}
-              anchorEl={anchorEl}
-              handleClose={handleClose}
-              canEdit={true}
-              editViewSelectOptionProps={{
-                label: "Apply",
-                toImplementFunction: () => {
-                  // handleClick(selectedReferenceId, "edit");
-                  setOptionsOpen(false);
-                },
-                dataTestId: `edit-measure-reference-`,
-              }}
-              otherSelectOptionProps={[
-                {
-                  label: "Delete",
-                  toImplementFunction: () => {
-                    //handleClick(selectedReferenceId, "delete");
-                    setOptionsOpen(false);
-                  },
-                  dataTestId: `delete-measure-reference-`,
-                },
-              ]}
-
-            />
           </div>
         ),
       },
@@ -135,7 +111,14 @@ export default function ResultsSection({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+  const handleApplyCode = () => {
+    const id = selectedReferenceId;
 
+    const code = table.getRow(id).original;
+
+    handleChange(code);
+    setOptionsOpen(false);
+  };
   const getCodeStatus = (status) => {
     if (status == CodeStatus.ACTIVE) {
       return (
@@ -212,6 +195,30 @@ export default function ResultsSection({
                 ))
               )}
             </tbody>
+            <Popover
+              optionsOpen={optionsOpen}
+              anchorEl={anchorEl}
+              handleClose={handleClose}
+              canEdit={true}
+              editViewSelectOptionProps={{
+                label: "Apply",
+                toImplementFunction: () => {
+                  handleApplyCode();
+                  setOptionsOpen(false);
+                },
+                dataTestId: `edit-measure-reference-`,
+              }}
+              otherSelectOptionProps={[
+                {
+                  label: "Delete",
+                  toImplementFunction: () => {
+                    //handleClick(selectedReferenceId, "delete");
+                    setOptionsOpen(false);
+                  },
+                  dataTestId: `delete-measure-reference-`,
+                },
+              ]}
+            />
           </table>
         }
       />

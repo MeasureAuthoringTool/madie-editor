@@ -1,5 +1,12 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import {
+  findByTestId,
+  render,
+  screen,
+  waitFor,
+  act,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import ResultsSection from "./ResultsSection";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 
@@ -65,6 +72,19 @@ describe("Results Section component", () => {
 
     const resultsContent = getByTestId("codes-results-tbl");
     expect(resultsContent).toBeInTheDocument();
+  });
+
+  it("should display the apply button in Results", async () => {
+    renderResultsTable(mockCode, "CheckCircleIcon");
+    screen.debug();
+    const resultsContent = screen.getByTestId("codes-results-tbl");
+    expect(resultsContent).toBeInTheDocument();
+    let applyBtn;
+    await act(async () => {
+      applyBtn = await findByTestId(resultsContent, "select-action-0_apply");
+      expect(applyBtn).toBeDefined();
+      userEvent.click(applyBtn);
+    });
   });
 
   it("should display the results table for active code", () => {

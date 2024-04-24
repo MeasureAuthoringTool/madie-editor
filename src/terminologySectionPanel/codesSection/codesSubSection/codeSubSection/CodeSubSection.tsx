@@ -11,11 +11,13 @@ import { Toast } from "@madie/madie-design-system/dist/react";
 interface CodeSectionProps {
   canEdit: boolean;
   allCodeSystems: CodeSystem[];
+  handleChange: string;
 }
 
 export default function CodeSubSection({
   canEdit,
   allCodeSystems,
+  handleChange,
 }: CodeSectionProps) {
   const [code, setCode] = useState<Code>();
   const [showResultsTable, setShowResultsTable] = useState(false);
@@ -68,6 +70,7 @@ export default function CodeSubSection({
         showResultsTable={showResultsTable}
         setShowResultsTable={setShowResultsTable}
         code={code}
+        handleChange={handleChange}
       />
       <Toast
         toastKey="fetch-code-toast"
