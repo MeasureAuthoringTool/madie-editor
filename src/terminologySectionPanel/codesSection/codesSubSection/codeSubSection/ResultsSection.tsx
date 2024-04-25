@@ -1,6 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
+import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TerminologySection from "../../../../common/TerminologySection";
 import {
   useReactTable,
@@ -8,34 +11,42 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
+import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
+
+type ResultSectionProps = {
+  showResultsTable: boolean;
+  setShowResultsTable: any;
+  code: Code;
+};
+
+type TCRow = {
+  name: string;
+  display: string;
+  codeSystem: string;
+  version: string;
+};
+const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
 export default function ResultsSection({
   showResultsTable,
   setShowResultsTable,
-}) {
-  type TCRow = {
-    code: string;
-    description: string;
-    codeSystem: string;
-    systemVersion: string;
-  };
-
-  const [data, setData] = useState<TCRow[]>([]);
-
-  const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
+  code,
+}: ResultSectionProps) {
+  const data = [code];
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
       {
         header: "",
-        accessorKey: "active/inactive",
+        accessorKey: "status",
       },
       {
         header: "Code",
-        accessorKey: "code",
+        accessorKey: "name",
       },
       {
         header: "Description",
-        accessorKey: "description",
+        accessorKey: "display",
       },
       {
         header: "Code System",
@@ -43,7 +54,7 @@ export default function ResultsSection({
       },
       {
         header: "System Version",
-        accessorKey: "systemVersion",
+        accessorKey: "version",
       },
       {
         header: "",
@@ -59,8 +70,30 @@ export default function ResultsSection({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const getCodeStatus = (status) => {
+    if (status == CodeStatus.ACTIVE) {
+      return (
+        <ToolTippedIcon tooltipMessage="This code is active in this code system version">
+          <CheckCircleIcon color="success" />
+        </ToolTippedIcon>
+      );
+    }
+    if (status == CodeStatus.INACTIVE) {
+      return (
+        <ToolTippedIcon tooltipMessage="This code is inactive in this code system version">
+          <DoDisturbOutlinedIcon />
+        </ToolTippedIcon>
+      );
+    }
+    return (
+      <ToolTippedIcon tooltipMessage="Code status unavailable">
+        <DoNotDisturbOnIcon />
+      </ToolTippedIcon>
+    );
+  };
+
   return (
-    <div style={{ marginTop: "30px" }}>
+    <div>
       <TerminologySection
         title="Results"
         showHeaderContent={showResultsTable}
@@ -71,7 +104,6 @@ export default function ResultsSection({
             data-testid="codes-results-tbl"
             style={{
               borderBottom: "solid 1px #8c8c8c",
-              borderSpacing: "0 2em !important",
             }}
           >
             <thead tw="bg-slate">
@@ -90,6 +122,30 @@ export default function ResultsSection({
                 </tr>
               ))}
             </thead>
+            <tbody>
+              {!code ? (
+                <tr>
+                  <td colSpan={columns.length} tw="text-center p-2">
+                    No Results were found
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} data-test-id={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} tw="p-2">
+                        {cell.column.id === "status"
+                          ? getCodeStatus(cell.getValue())
+                          : flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
           </table>
         }
       />

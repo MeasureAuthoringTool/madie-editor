@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from "react";
 import TerminologySection from "../../../../common/TerminologySection";
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
 

@@ -2,6 +2,7 @@ import * as React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import CodeSection from "./CodeSection";
 import userEvent from "@testing-library/user-event";
+import { mockedCodeSystems } from "../../../mockedCodeSystems";
 
 const readOnly = true;
 const handleFormSubmitMock = jest.fn();
@@ -9,7 +10,11 @@ const handleFormSubmitMock = jest.fn();
 describe("Code Section component", () => {
   it("should display all the fields in the Code(s) section", async () => {
     render(
-      <CodeSection canEdit={readOnly} handleFormSubmit={handleFormSubmitMock} />
+      <CodeSection
+        canEdit={readOnly}
+        allCodeSystems={mockedCodeSystems}
+        handleFormSubmit={handleFormSubmitMock}
+      />
     );
 
     const searchButton = screen.getByRole("button", { name: "Search" });
@@ -18,26 +23,43 @@ describe("Code Section component", () => {
     expect(clearButton).toBeDisabled();
 
     // Selecting a Code System
-    const codeSystemSelect = screen.getByRole("combobox", {
-      name: "Code System",
+    const codeSystemSelect = screen.getByTestId(
+      "code-system-selector-dropdown"
+    );
+
+    expect(codeSystemSelect).toBeInTheDocument();
+
+    const codeSystemSelectButton = screen.getByRole("button", {
+      name: "Open",
     });
+
+    userEvent.click(codeSystemSelectButton);
+
+    expect(screen.getByText("System1")).toBeInTheDocument();
+    expect(screen.getByText("System2")).toBeInTheDocument();
+
+    userEvent.type(codeSystemSelectButton, "System1");
+
+    expect(screen.getByText("System1")).toBeInTheDocument();
+    expect(screen.queryByText("System2")).not.toBeInTheDocument();
     expect(codeSystemSelect).toBeEnabled();
     userEvent.click(codeSystemSelect);
+
     const codeSystemOptions = await screen.findAllByRole("option");
-    expect(codeSystemOptions.length).toEqual(2);
+    expect(codeSystemOptions.length).toEqual(1);
     userEvent.click(codeSystemOptions[0]);
-    expect(codeSystemSelect).toHaveTextContent("Code System 1");
 
     // Selecting a Code System Version
     const codeSystemVersionSelect = screen.getByRole("combobox", {
       name: "Code System Version",
     });
+    expect(codeSystemVersionSelect).toHaveTextContent("2.0");
     expect(codeSystemVersionSelect).toBeEnabled();
     userEvent.click(codeSystemVersionSelect);
     const codeSystemVersionOptions = await screen.findAllByRole("option");
     expect(codeSystemVersionOptions.length).toEqual(2);
     userEvent.click(codeSystemVersionOptions[1]);
-    expect(codeSystemVersionSelect).toHaveTextContent("version 2");
+    expect(codeSystemVersionSelect).toHaveTextContent("1.0");
 
     // Selecting a code
     const codeText = screen.getByTestId("code-text");
@@ -50,14 +72,14 @@ describe("Code Section component", () => {
     expect(codeTextInput.value).toBe("Code");
 
     await waitFor(() => {
-      expect(searchButton).toBeEnabled();
       expect(clearButton).toBeEnabled();
+      expect(searchButton).not.toBeDisabled();
     });
     userEvent.click(searchButton);
     await waitFor(() => {
       expect(handleFormSubmitMock).toHaveBeenCalledWith({
-        codeSystem: "Code System 1",
-        codeSystemVersion: "version 2",
+        title: "System1",
+        version: "1.0",
         code: "Code",
       });
     });
@@ -65,7 +87,11 @@ describe("Code Section component", () => {
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
     const { getByTestId } = render(
-      <CodeSection canEdit={readOnly} handleFormSubmit={handleFormSubmitMock} />
+      <CodeSection
+        canEdit={readOnly}
+        handleFormSubmit={handleFormSubmitMock}
+        allCodeSystems={[]}
+      />
     );
 
     const clearButton = getByTestId("clear-codes-btn");
@@ -74,7 +100,7 @@ describe("Code Section component", () => {
     const codeText = getByTestId("code-text");
     expect(codeText).toBeEnabled();
     expect(codeText).toBeInTheDocument();
-    const codeTextInput = getByTestId("code-text-input");
+    const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
     fireEvent.change(codeTextInput, {
       target: { value: "Code1" },
     });
@@ -86,7 +112,11 @@ describe("Code Section component", () => {
 
   it("all the code form fields should be disable when user is not the owner or shared user", () => {
     const { getByTestId } = render(
-      <CodeSection canEdit={false} handleFormSubmit={handleFormSubmitMock} />
+      <CodeSection
+        canEdit={false}
+        handleFormSubmit={handleFormSubmitMock}
+        allCodeSystems={[]}
+      />
     );
 
     const codeSystemSelect = getByTestId("code-system-selector-input");

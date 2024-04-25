@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
@@ -22,6 +22,30 @@ export type ValueSet = {
   status: string;
   errorMsg: string;
 };
+
+export interface CodeSystem {
+  id: string;
+  lastUpdated: string;
+  lastUpdatedUpstream?: string;
+  name?: string;
+  title?: string;
+  version?: string;
+  versionId?: string;
+}
+
+export enum CodeStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  NA = "NA",
+}
+export interface Code {
+  name: string;
+  display: string;
+  codeSystem: string;
+  version: string;
+  status: CodeStatus;
+  codeSystemOid?: string;
+}
 
 export class TerminologyServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -109,6 +133,35 @@ export class TerminologyServiceApi {
         false
       );
     }
+  }
+
+  async getAllCodeSystems(): Promise<CodeSystem[]> {
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/terminology/get-code-systems`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("Error retrieving getAllCodeSystems: ", err);
+    }
+  }
+
+  getCodeDetails(
+    code: string,
+    codeSystem: string,
+    version: string
+  ): Promise<AxiosResponse<Code>> {
+    return axios.get<Code>(`${this.baseUrl}/terminology/code`, {
+      params: { code: code, codeSystem: codeSystem, version: version },
+      headers: {
+        Authorization: `Bearer ${this.getAccessToken()}`,
+      },
+    });
   }
 }
 

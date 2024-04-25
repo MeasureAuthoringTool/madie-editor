@@ -1,0 +1,31 @@
+#madie-editor-search,
+#madie-editor-filter {
+  .search-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    column-gap: 24px;
+
+    > .search-row {
+      display: flex;
+      flex-direction: row;
+      column-gap: 24px;
+      margin-bottom: 24px;
+    }
+  }
+
+  .row-end {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: end;
+
+    > button {
+      margin-left: 24px;
+
+      &[type="submit"] {
+        margin-top: 0;
+      }
+    }
+  }
+}

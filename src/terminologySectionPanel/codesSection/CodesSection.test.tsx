@@ -8,9 +8,54 @@ import {
 } from "@testing-library/react";
 import * as React from "react";
 import CodesSection from "./CodesSection";
+import { useCodeSystems } from "./useCodeSystems";
+import { ServiceConfig } from "../../api/useServiceConfig";
 
+jest.mock("./useCodeSystems");
+
+const mockConfig: ServiceConfig = {
+  elmTranslationService: {
+    baseUrl: "elm.com",
+  },
+  terminologyService: {
+    baseUrl: "terminology.com",
+  },
+};
+jest.mock("../../api/useServiceConfig", () => {
+  return {
+    useServiceConfig: jest.fn(() => Promise.resolve(mockConfig)),
+  };
+});
+
+const mockCodeSystems = [
+  {
+    id: "1",
+    title: "code0",
+    version: Date.now().toString(),
+    lastUpdated: Date.now().toString(),
+  },
+  {
+    id: "2",
+    title: "code1",
+    version: Date.now().toString(),
+    lastUpdated: Date.now().toString(),
+  },
+  {
+    id: "3",
+    title: "code3",
+    version: Date.now().toString(),
+    lastUpdated: Date.now().toString(),
+  },
+];
+
+const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<
+  typeof useCodeSystems
+>;
+mockUseCodeSystems.mockReturnValue({
+  codeSystems: mockCodeSystems,
+});
 const renderEditor = () => {
-  return render(<CodesSection />);
+  return render(<CodesSection canEdit={true} />);
 };
 
 describe("CodesSection", () => {
@@ -65,6 +110,8 @@ describe("CodesSection", () => {
     const resultsSectionHeading = await screen.findByText("Results");
     expect(codesSectionHeading).toBeInTheDocument();
     expect(resultsSectionHeading).toBeInTheDocument();
+    const listUpdated = await screen.findByText("List updated:");
+    expect(listUpdated).toBeInTheDocument();
   });
 
   it("should render code applied tab section", async () => {

@@ -10,6 +10,7 @@
     "skipLibCheck": true
   },
   "files": ["src/madie-madie-editor.tsx"],
+  "types": ["node", "jest", "@testing-library/jest-dom"],
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test*"]
 }
