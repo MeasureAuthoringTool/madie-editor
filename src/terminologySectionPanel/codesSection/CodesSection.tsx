@@ -3,7 +3,7 @@ import "twin.macro";
 import "styled-components/macro";
 import CodesSectionNavTabs from "./CodesSectionNavTabs";
 import CodeSubSection from "./codesSubSection/codeSubSection/CodeSubSection";
-import AppliedSubSection from "./codesSubSection/appliedSubSection/AppliedSubSection";
+import SavedCodesSubSection from "./codesSubSection/savedCodesSubSection/SavedCodesSubSection";
 
 export default function CodesSection({ canEdit }) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
@@ -13,7 +13,7 @@ export default function CodesSection({ canEdit }) {
       <div tw="mt-4">
         {activeTab === "codeSystems" && "Code Systems Section"}
         {activeTab === "code" && <CodeSubSection canEdit={canEdit} />}
-        {activeTab === "applied" && <AppliedSubSection />}
+        {activeTab === "savedCodes" && <SavedCodesSubSection />}
       </div>
     </>
   );
