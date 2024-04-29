@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import queryString from "query-string";
 import TerminologySection from "../../../../common/TerminologySection";
 import {
   ColumnDef,
