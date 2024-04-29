@@ -123,10 +123,10 @@ describe("CodesSection", () => {
     });
     expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
 
-    const savedCodesSectionButton = await screen.findByRole("button");
-    const savedCodesSectionHeading = within(savedCodesSectionButton).getByText(
-      "Saved Codes"
-    );
+    const savedCodesSectionButton = await screen.findAllByRole("button");
+    const savedCodesSectionHeading = within(
+      savedCodesSectionButton[0]
+    ).getByText("Saved Codes");
     expect(savedCodesSectionHeading).toBeInTheDocument();
   });
 });
