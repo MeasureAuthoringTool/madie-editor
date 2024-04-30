@@ -76,7 +76,7 @@ export default function CodeSection({
       setAvailableVersions(
         availableVersions.map((cs) => ({
           value: cs.version,
-          label: cs.version,
+          label: cs.displayVersion,
         }))
       );
       formik.setFieldValue("version", availableVersions[0].version);
@@ -165,6 +165,16 @@ export default function CodeSection({
                     data-testid={"code-system-version-selector"}
                     SelectDisplayProps={{
                       "aria-required": "true",
+                    }}
+                    renderValue={(val) => {
+                      if (val) {
+                        // we want to show the user the display label.
+                        const version = availableVersions.find(
+                          (el) => el.value === val
+                        );
+                        return version.label;
+                      }
+                      return val;
                     }}
                     options={renderMenuItems(availableVersions)}
                     disabled={!formik.values.title || !canEdit}
