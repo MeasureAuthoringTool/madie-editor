@@ -48,17 +48,10 @@ describe("CodeSub Section component", () => {
   });
 
   it("should display code details for selected code, system, version filters", async () => {
-    const {
-      getByTestId,
-      findByTestId,
-      getByText,
-      getByRole,
-      queryByText,
-      findByRole,
-      findAllByRole,
-    } = render(
-      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
-    );
+    const { getByTestId, getByText, getByRole, queryByText, findAllByRole } =
+      render(
+        <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+      );
     const codeSystemSelect = getByTestId("code-system-selector-dropdown");
 
     expect(codeSystemSelect).toBeInTheDocument();
