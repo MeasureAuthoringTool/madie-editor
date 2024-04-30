@@ -63,7 +63,7 @@ describe("CodesSection", () => {
     renderEditor();
     const codeSystems = await screen.findByText("Code Systems");
     const code = await screen.findByText("Code");
-    const applied = await screen.findByText("Applied");
+    const savedCodes = await screen.findByText("Saved Codes");
 
     expect(codeSystems).toHaveAttribute("aria-selected", "true");
     act(() => {
@@ -74,10 +74,10 @@ describe("CodesSection", () => {
     });
 
     act(() => {
-      fireEvent.click(applied);
+      fireEvent.click(savedCodes);
     });
     await waitFor(() => {
-      expect(applied).toHaveAttribute("aria-selected", "true");
+      expect(savedCodes).toHaveAttribute("aria-selected", "true");
     });
     act(() => {
       fireEvent.click(codeSystems);
@@ -114,18 +114,19 @@ describe("CodesSection", () => {
     expect(listUpdated).toBeInTheDocument();
   });
 
-  it("should render code applied tab section", async () => {
+  it("should render saved codes tab section", async () => {
     renderEditor();
-    const appliedSubTab = await screen.findByText("Applied");
-    expect(appliedSubTab).toBeInTheDocument();
+    const savedCodesSubTab = await screen.findByText("Saved Codes");
+    expect(savedCodesSubTab).toBeInTheDocument();
     act(() => {
-      fireEvent.click(appliedSubTab);
+      fireEvent.click(savedCodesSubTab);
     });
-    expect(appliedSubTab).toHaveAttribute("aria-selected", "true");
+    expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
 
-    const appliedSectionButton = await screen.findByRole("button");
-    const appliedSectionHeading =
-      within(appliedSectionButton).getByText("Applied");
-    expect(appliedSectionHeading).toBeInTheDocument();
+    const savedCodesSectionButton = await screen.findAllByRole("button");
+    const savedCodesSectionHeading = within(
+      savedCodesSectionButton[0]
+    ).getByText("Saved Codes");
+    expect(savedCodesSectionHeading).toBeInTheDocument();
   });
 });

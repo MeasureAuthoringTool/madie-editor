@@ -3,7 +3,7 @@ import "twin.macro";
 import "styled-components/macro";
 import CodesSectionNavTabs from "./CodesSectionNavTabs";
 import CodeSubSection from "./codesSubSection/codeSubSection/CodeSubSection";
-import AppliedSubSection from "./codesSubSection/appliedSubSection/AppliedSubSection";
+import SavedCodesSubSection from "./codesSubSection/savedCodesSubSection/SavedCodesSubSection";
 import { useCodeSystems } from "./useCodeSystems";
 
 interface CodesSectionProps {
@@ -21,7 +21,7 @@ export default function CodesSection({ canEdit }: CodesSectionProps) {
         {activeTab === "code" && (
           <CodeSubSection allCodeSystems={codeSystems} canEdit={canEdit} />
         )}
-        {activeTab === "applied" && <AppliedSubSection />}
+        {activeTab === "savedCodes" && <SavedCodesSubSection />}
       </div>
     </>
   );
