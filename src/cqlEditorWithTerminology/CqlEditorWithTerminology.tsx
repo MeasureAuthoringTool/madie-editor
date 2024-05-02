@@ -38,7 +38,7 @@ const CqlEditorWithTerminology = ({
           </div>
         </Allotment.Pane>
         <Allotment.Pane>
-          <TerminologySectionPanel canEdit={!readOnly} />
+          <TerminologySectionPanel canEdit={!readOnly} editorValue={value} />
         </Allotment.Pane>
       </Allotment>
     </div>

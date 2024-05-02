@@ -8,17 +8,38 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  Pagination,
+  MadieSpinner,
+  Toast,
+} from "@madie/madie-design-system/dist/react";
+import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
+import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
+import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
+import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import useTerminologyServiceApi, {
+  Code,
+  CodeStatus,
+} from "../../../../api/useTerminologyServiceApi";
+import _ from "lodash";
 
-export default function SavedCodesSubSection() {
+export default function SavedCodesSubSection({ editorValue }) {
   type TCRow = {
-    code: string;
-    description: string;
+    name: string;
+    display: string;
     codeSystem: string;
-    systemVersion: string;
+    version: string;
   };
 
-  const [data, setData] = useState<TCRow[]>([]);
+  const [data, setData] = useState<Code[]>();
+  const [toastOpen, setToastOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const onToastClose = () => {
+    setToastMessage("");
+    setToastOpen(false);
+  };
+  const [loading, setLoading] = useState<boolean>(false);
 
   //currently we are using random data numbers
   // TODO: integrate with actual data
@@ -73,15 +94,15 @@ export default function SavedCodesSubSection() {
     () => [
       {
         header: "",
-        accessorKey: "active/inactive",
+        accessorKey: "status",
       },
       {
         header: "Code",
-        accessorKey: "code",
+        accessorKey: "name",
       },
       {
         header: "Description",
-        accessorKey: "description",
+        accessorKey: "display",
       },
       {
         header: "Code System",
@@ -89,7 +110,7 @@ export default function SavedCodesSubSection() {
       },
       {
         header: "System Version",
-        accessorKey: "systemVersion",
+        accessorKey: "version",
       },
       {
         header: "",
@@ -104,6 +125,68 @@ export default function SavedCodesSubSection() {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  useEffect(() => {
+    if (editorValue) {
+      setLoading(true);
+      const parsedCql = new CqlAntlr(editorValue).parse();
+      if (parsedCql.codes) {
+        const codesList = parsedCql.codes.map((code) => {
+          const { codeId, codeSystem } = code;
+          return {
+            code: codeId.replace(/['"]+/g, ""),
+            codeSystem: codeSystem.replace(/['"]+/g, ""),
+            version: "",
+          };
+        });
+        RetrieveCodeDetailsList(codesList);
+      }
+    }
+  }, [editorValue]);
+
+  const RetrieveCodeDetailsList = async (codesList) => {
+    const terminologyService = await useTerminologyServiceApi();
+    terminologyService
+      .getCodeDetailsList(codesList)
+      .then((response) => {
+        setData(response.data.filter((code) => code !== null));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        if (error.response?.status === 404) {
+          setData(undefined);
+        } else {
+          console.error(error);
+          setToastMessage(
+            "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
+          );
+          setToastOpen(true);
+        }
+      });
+  };
+
+  const getCodeStatus = (status) => {
+    if (status == CodeStatus.ACTIVE) {
+      return (
+        <ToolTippedIcon tooltipMessage="This code is active in this code system version">
+          <CheckCircleIcon color="success" />
+        </ToolTippedIcon>
+      );
+    }
+    if (status == CodeStatus.INACTIVE) {
+      return (
+        <ToolTippedIcon tooltipMessage="This code is inactive in this code system version">
+          <DoDisturbOutlinedIcon />
+        </ToolTippedIcon>
+      );
+    }
+    return (
+      <ToolTippedIcon tooltipMessage="Code status unavailable">
+        <DoNotDisturbOnIcon />
+      </ToolTippedIcon>
+    );
+  };
 
   return (
     <div>
@@ -134,8 +217,47 @@ export default function SavedCodesSubSection() {
                 </tr>
               ))}
             </thead>
+            <tbody>
+              {!loading ? (
+                _.isEmpty(data) ? (
+                  <tr>
+                    <td colSpan={columns.length} tw="text-center p-2">
+                      No Results were found
+                    </td>
+                  </tr>
+                ) : (
+                  table.getRowModel().rows.map((row) => (
+                    <tr key={row.id} data-test-id={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} tw="p-2">
+                          {cell.column.id === "status"
+                            ? getCodeStatus(cell.getValue())
+                            : flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )
+              ) : (
+                <div>
+                  <MadieSpinner style={{ height: 50, width: 50 }} />
+                </div>
+              )}
+            </tbody>
           </table>
         }
+      />
+      <Toast
+        toastKey="fetch-code-toast"
+        toastType={"danger"}
+        testId="fetch-code-error-message"
+        open={toastOpen}
+        message={toastMessage}
+        onClose={onToastClose}
+        autoHideDuration={8000}
       />
       <div className="pagination-container">
         <Pagination

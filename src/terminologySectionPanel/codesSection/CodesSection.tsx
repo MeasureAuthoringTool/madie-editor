@@ -8,9 +8,13 @@ import { useCodeSystems } from "./useCodeSystems";
 
 interface CodesSectionProps {
   canEdit: boolean;
+  editorValue: string;
 }
 
-export default function CodesSection({ canEdit }: CodesSectionProps) {
+export default function CodesSection({
+  canEdit,
+  editorValue,
+}: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
   const { codeSystems } = useCodeSystems();
   return (
@@ -21,7 +25,9 @@ export default function CodesSection({ canEdit }: CodesSectionProps) {
         {activeTab === "code" && (
           <CodeSubSection allCodeSystems={codeSystems} canEdit={canEdit} />
         )}
-        {activeTab === "savedCodes" && <SavedCodesSubSection />}
+        {activeTab === "savedCodes" && (
+          <SavedCodesSubSection editorValue={editorValue} />
+        )}
       </div>
     </>
   );
