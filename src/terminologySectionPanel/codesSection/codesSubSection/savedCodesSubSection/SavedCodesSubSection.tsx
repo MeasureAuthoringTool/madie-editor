@@ -32,7 +32,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     version: string;
   };
 
-  const [data, setData] = useState<Code[]>();
+  const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const onToastClose = () => {
@@ -44,8 +44,9 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   //currently we are using random data numbers
   // TODO: integrate with actual data
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [totalItems, setTotalItems] = useState<number>(5);
+  const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
+  const [visibleCodes, setVisibleCodes] = useState<Code[]>([]);
 
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
@@ -60,12 +61,12 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   };
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
-    setCurrentPage(0);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
     managePagination();
-  }, [currentPage, currentLimit]);
+  }, [codes, currentPage, currentLimit]);
 
   //loading of codes
   useEffect(() => {
@@ -89,20 +90,26 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   const managePagination = useCallback(() => {
     if (totalItems < currentLimit) {
       setOffset(0);
-      setVisibleItems(totalItems);
-      setTotalItems(totalItems);
+      setVisibleCodes(codes && [...codes]);
+      setVisibleItems(codes?.length);
+      setTotalItems(codes?.length);
       setTotalPages(1);
     } else {
       const start = (currentPage - 1) * currentLimit;
+      const end = start + currentLimit;
+      const newVisibleCodes = [...codes].slice(start, end);
       setOffset(start);
-      setVisibleItems(currentLimit);
-      setTotalItems(totalItems);
-      setTotalPages(Math.ceil(totalItems / currentLimit));
+      setVisibleCodes(newVisibleCodes);
+      setVisibleItems(newVisibleCodes?.length);
+      setTotalItems(codes?.length);
+      setTotalPages(Math.ceil(codes?.length / currentLimit));
     }
   }, [
     currentLimit,
     currentPage,
+    codes,
     setOffset,
+    setVisibleCodes,
     setVisibleItems,
     setTotalItems,
     setTotalPages,
@@ -140,7 +147,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   );
 
   const table = useReactTable({
-    data,
+    data: visibleCodes,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -150,13 +157,13 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     terminologyService
       .getCodeDetailsList(codesList)
       .then((response) => {
-        setData(response.data.filter((code) => code !== null));
+        setCodes(response.data.filter((code) => code !== null));
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
         if (error.response?.status === 404) {
-          setData(undefined);
+          setCodes(undefined);
         } else {
           console.error(error);
           setToastMessage(
@@ -220,7 +227,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
             </thead>
             <tbody>
               {!loading ? (
-                _.isEmpty(data) ? (
+                _.isEmpty(codes) ? (
                   <tr>
                     <td colSpan={columns.length} tw="text-center p-2">
                       No Results were found
