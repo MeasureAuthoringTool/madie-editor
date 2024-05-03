@@ -8,6 +8,7 @@ import TerminologySectionPanel from "../terminologySectionPanel/TerminologySecti
 const CqlEditorWithTerminology = ({
   value,
   onChange,
+  onTerminologyChange,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -38,7 +39,10 @@ const CqlEditorWithTerminology = ({
           </div>
         </Allotment.Pane>
         <Allotment.Pane>
-          <TerminologySectionPanel canEdit={!readOnly} />
+          <TerminologySectionPanel
+            canEdit={!readOnly}
+            handleChange={onTerminologyChange}
+          />
         </Allotment.Pane>
       </Allotment>
     </div>
