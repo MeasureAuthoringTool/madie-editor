@@ -1,5 +1,6 @@
 import axios from "axios";
-import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
+import useServiceConfig from "./useServiceConfig";
+import { ServiceConfig } from "./ServiceContext";
 import { useOktaTokens } from "@madie/madie-util";
 
 export type ElmTranslationError = {
@@ -79,8 +80,8 @@ export class ElmTranslationServiceApi {
   }
 }
 
-export default async function useElmTranslationServiceApi(): Promise<ElmTranslationServiceApi> {
-  const config: ServiceConfig = await useServiceConfig();
+export default function useElmTranslationServiceApi(): ElmTranslationServiceApi {
+  const config: ServiceConfig = useServiceConfig();
   const serviceUrl: string = config?.elmTranslationService?.baseUrl;
   const { getAccessToken } = useOktaTokens();
   return new ElmTranslationServiceApi(serviceUrl, getAccessToken);

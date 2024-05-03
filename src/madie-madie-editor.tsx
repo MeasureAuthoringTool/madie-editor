@@ -16,6 +16,7 @@ import {
   useGetAllErrors,
 } from "../src/validations/editorValidation";
 import { ParsedCql } from "./model/ParsedCql";
+import Home from "./Home";
 
 const lifecycles = singleSpaReact({
   React,
@@ -26,6 +27,8 @@ const lifecycles = singleSpaReact({
     return null;
   },
 });
+
+export const MadieHome: FC = Home;
 
 export const MadieTerminologyEditor: FC<EditorPropsType> =
   CqlEditorWithTerminology;

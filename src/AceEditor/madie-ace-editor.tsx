@@ -210,7 +210,7 @@ export const setCommandEnabled = (editor, name, enabled) => {
   editor.commands.addCommand(command);
 };
 
-// console.log('iace', IAceEditorProps)
+// root component, not just editor
 const MadieAceEditor = ({
   value,
   onChange,
