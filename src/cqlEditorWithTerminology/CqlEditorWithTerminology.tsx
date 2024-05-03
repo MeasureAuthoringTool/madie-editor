@@ -15,6 +15,7 @@ const CqlEditorWithTerminology = ({
   readOnly = false,
   validationsEnabled = true,
   setOutboundAnnotations,
+  measureStoreCql,
 }: EditorPropsType) => {
   return (
     <div className="allotment-wrapper">
@@ -38,7 +39,10 @@ const CqlEditorWithTerminology = ({
           </div>
         </Allotment.Pane>
         <Allotment.Pane>
-          <TerminologySectionPanel canEdit={!readOnly} editorValue={value} />
+          <TerminologySectionPanel
+            canEdit={!readOnly}
+            measureStoreCql={measureStoreCql}
+          />
         </Allotment.Pane>
       </Allotment>
     </div>

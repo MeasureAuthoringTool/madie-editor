@@ -5,7 +5,7 @@ import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 import { useFeatureFlags } from "@madie/madie-util";
 
-export default function TerminologySectionPanel({ canEdit, editorValue }) {
+export default function TerminologySectionPanel({ canEdit, measureStoreCql }) {
   const featureFlags = useFeatureFlags();
   const { QDMValueSetSearch } = featureFlags;
   const [activeTab, setActiveTab] = useState<string>(
@@ -25,7 +25,7 @@ export default function TerminologySectionPanel({ canEdit, editorValue }) {
       <div className="panel-content">
         {activeTab === "valueSets" && <ValueSetsSection canEdit={canEdit} />}
         {activeTab === "codes" && (
-          <CodesSection canEdit={canEdit} editorValue={editorValue} />
+          <CodesSection canEdit={canEdit} measureStoreCql={measureStoreCql} />
         )}
         {activeTab === "definitions" && <DefinitionsSection />}
       </div>

@@ -24,7 +24,7 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 
-export default function SavedCodesSubSection({ editorValue }) {
+export default function SavedCodesSubSection({ measureStoreCql }) {
   type TCRow = {
     name: string;
     display: string;
@@ -126,44 +126,45 @@ export default function SavedCodesSubSection({ editorValue }) {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  //loading of codes
   useEffect(() => {
-    if (editorValue) {
-      setLoading(true);
-      const parsedCql = new CqlAntlr(editorValue).parse();
-      if (parsedCql.codes) {
-        const codesList = parsedCql.codes.map((code) => {
-          const { codeId, codeSystem } = code;
-          return {
-            code: codeId.replace(/['"]+/g, ""),
-            codeSystem: codeSystem.replace(/['"]+/g, ""),
-            version: "",
-          };
-        });
-        RetrieveCodeDetailsList(codesList);
-      }
+    if (measureStoreCql) {
+      RetrieveCodeDetailsList(measureStoreCql);
     }
-  }, [editorValue]);
+  }, [measureStoreCql]);
 
-  const RetrieveCodeDetailsList = async (codesList) => {
-    const terminologyService = await useTerminologyServiceApi();
-    terminologyService
-      .getCodeDetailsList(codesList)
-      .then((response) => {
-        setData(response.data.filter((code) => code !== null));
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        if (error.response?.status === 404) {
-          setData(undefined);
-        } else {
-          console.error(error);
-          setToastMessage(
-            "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
-          );
-          setToastOpen(true);
-        }
+  const RetrieveCodeDetailsList = async (editorValue) => {
+    setLoading(true);
+    const parsedCql = new CqlAntlr(editorValue).parse();
+    if (parsedCql.codes) {
+      const codesList = parsedCql.codes.map((code) => {
+        const { codeId, codeSystem } = code;
+        return {
+          code: codeId.replace(/['"]+/g, ""),
+          codeSystem: codeSystem.replace(/['"]+/g, ""),
+          version: "",
+        };
       });
+      const terminologyService = await useTerminologyServiceApi();
+      terminologyService
+        .getCodeDetailsList(codesList)
+        .then((response) => {
+          setData(response.data.filter((code) => code !== null));
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          if (error.response?.status === 404) {
+            setData(undefined);
+          } else {
+            console.error(error);
+            setToastMessage(
+              "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
+            );
+            setToastOpen(true);
+          }
+        });
+    }
   };
 
   const getCodeStatus = (status) => {

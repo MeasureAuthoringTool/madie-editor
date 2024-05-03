@@ -8,12 +8,12 @@ import { useCodeSystems } from "./useCodeSystems";
 
 interface CodesSectionProps {
   canEdit: boolean;
-  editorValue: string;
+  measureStoreCql: string;
 }
 
 export default function CodesSection({
   canEdit,
-  editorValue,
+  measureStoreCql,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
   const { codeSystems } = useCodeSystems();
@@ -26,7 +26,7 @@ export default function CodesSection({
           <CodeSubSection allCodeSystems={codeSystems} canEdit={canEdit} />
         )}
         {activeTab === "savedCodes" && (
-          <SavedCodesSubSection editorValue={editorValue} />
+          <SavedCodesSubSection measureStoreCql={measureStoreCql} />
         )}
       </div>
     </>
