@@ -5,6 +5,15 @@ declare module "@madie/madie-util" {
     QDMValueSetSearch: boolean;
   }
 
+  export const measureStore: {
+    subscribe: (
+      setMeasureState: React.Dispatch<React.SetStateAction<Measure>>
+    ) => import("rxjs").Subscription;
+    updateMeasure: (measure: Measure | null) => void;
+    initialState: null;
+    state: Measure;
+  };
+
   export const useOktaTokens: (storageKey?: string) => {
     getAccessToken: () => any;
     getAccessTokenObj: () => any;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
@@ -15,7 +15,26 @@ const CqlEditorWithTerminology = ({
   readOnly = false,
   validationsEnabled = true,
   setOutboundAnnotations,
+  measureStoreCql,
 }: EditorPropsType) => {
+  // const [handleFormSubmit, setHandleFormSubmit] = useState<boolean>(false);
+
+  // const handleEventReceived = (event) => {
+  //   if (event && event.type === "submitButtonClicked") {
+  //     setHandleFormSubmit(true);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   // Subscribe to the custom event
+  //   window.addEventListener("submitButtonClicked", handleEventReceived);
+
+  //   // Cleanup
+  //   return () => {
+  //     window.removeEventListener("submitButtonClicked", handleEventReceived);
+  //   };
+  // }, []);
+
   return (
     <div className="allotment-wrapper">
       <Allotment defaultSizes={[175, 125]} vertical={false}>
@@ -38,7 +57,13 @@ const CqlEditorWithTerminology = ({
           </div>
         </Allotment.Pane>
         <Allotment.Pane>
-          <TerminologySectionPanel canEdit={!readOnly} editorValue={value} />
+          <TerminologySectionPanel
+            canEdit={!readOnly}
+            //editorValue={value}
+            // handleFormSubmit={handleFormSubmit}
+            // setHandleFormSubmit={setHandleFormSubmit}
+            measureStoreCql={measureStoreCql}
+          />
         </Allotment.Pane>
       </Allotment>
     </div>

@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import TerminologySection from "../../../../common/TerminologySection";
 import {
   ColumnDef,
@@ -23,8 +29,15 @@ import useTerminologyServiceApi, {
   CodeStatus,
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
+import { measureStore } from "@madie/madie-util";
+//import { Measure  } from "@madie/madie-models";
 
-export default function SavedCodesSubSection({ editorValue }) {
+export default function SavedCodesSubSection({
+  //editorValue,
+  // handleFormSubmit,
+  // setHandleFormSubmit,
+  measureStoreCql,
+}) {
   type TCRow = {
     name: string;
     display: string;
@@ -40,6 +53,9 @@ export default function SavedCodesSubSection({ editorValue }) {
     setToastOpen(false);
   };
   const [loading, setLoading] = useState<boolean>(false);
+  const [measure, setMeasure] = useState(measureStore.state);
+
+  console.log(measure);
 
   //currently we are using random data numbers
   // TODO: integrate with actual data
@@ -126,44 +142,53 @@ export default function SavedCodesSubSection({ editorValue }) {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  //initial loading of codes
   useEffect(() => {
-    if (editorValue) {
-      setLoading(true);
-      const parsedCql = new CqlAntlr(editorValue).parse();
-      if (parsedCql.codes) {
-        const codesList = parsedCql.codes.map((code) => {
-          const { codeId, codeSystem } = code;
-          return {
-            code: codeId.replace(/['"]+/g, ""),
-            codeSystem: codeSystem.replace(/['"]+/g, ""),
-            version: "",
-          };
-        });
-        RetrieveCodeDetailsList(codesList);
-      }
+    if (measureStoreCql) {
+      RetrieveCodeDetailsList(measureStoreCql);
     }
-  }, [editorValue]);
+  }, [measureStoreCql]);
 
-  const RetrieveCodeDetailsList = async (codesList) => {
-    const terminologyService = await useTerminologyServiceApi();
-    terminologyService
-      .getCodeDetailsList(codesList)
-      .then((response) => {
-        setData(response.data.filter((code) => code !== null));
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        if (error.response?.status === 404) {
-          setData(undefined);
-        } else {
-          console.error(error);
-          setToastMessage(
-            "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
-          );
-          setToastOpen(true);
-        }
+  //load codes when save button is clicked
+  // useEffect(() => {
+  //   if (handleFormSubmit) {
+  //     RetrieveCodeDetailsList(measureStoreCql);
+  //   }
+  // }, [handleFormSubmit]);
+
+  const RetrieveCodeDetailsList = async (editorValue) => {
+    setLoading(true);
+    const parsedCql = new CqlAntlr(editorValue).parse();
+    if (parsedCql.codes) {
+      const codesList = parsedCql.codes.map((code) => {
+        const { codeId, codeSystem } = code;
+        return {
+          code: codeId.replace(/['"]+/g, ""),
+          codeSystem: codeSystem.replace(/['"]+/g, ""),
+          version: "",
+        };
       });
+      const terminologyService = await useTerminologyServiceApi();
+      terminologyService
+        .getCodeDetailsList(codesList)
+        .then((response) => {
+          setData(response.data.filter((code) => code !== null));
+          setLoading(false);
+          // setHandleFormSubmit(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          if (error.response?.status === 404) {
+            setData(undefined);
+          } else {
+            console.error(error);
+            setToastMessage(
+              "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
+            );
+            setToastOpen(true);
+          }
+        });
+    }
   };
 
   const getCodeStatus = (status) => {
