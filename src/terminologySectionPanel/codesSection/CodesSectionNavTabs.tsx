@@ -40,11 +40,11 @@ export default function CodesSectionNavTabs(props: NavTabProps) {
         />
         <Tab
           tabIndex={0}
-          aria-label="Applied"
+          aria-label="Saved Codes"
           type="B"
-          label="Applied"
-          data-testid="applied-tab"
-          value="applied"
+          label="Saved Codes"
+          data-testid="savedCodes-tab"
+          value="savedCodes"
         />
       </Tabs>
     </div>

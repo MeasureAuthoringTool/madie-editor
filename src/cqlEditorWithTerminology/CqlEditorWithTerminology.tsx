@@ -18,7 +18,7 @@ const CqlEditorWithTerminology = ({
   setOutboundAnnotations,
 }: EditorPropsType) => {
   return (
-    <div className="allotment-wrapper">
+    <div className="allotment-wrapper" id="cql-editor-with-terminology">
       <Allotment defaultSizes={[175, 125]} vertical={false}>
         <Allotment.Pane>
           <div style={{ borderWidth: "24px", borderColor: "#ededed" }} />
