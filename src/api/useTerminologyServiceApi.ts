@@ -164,7 +164,7 @@ export class TerminologyServiceApi {
     });
   }
 
-  async getCodeDetailsList(codesList): Promise<AxiosResponse<Code[]>> {
+  async getCodesListDetails(codesList): Promise<AxiosResponse<Code[]>> {
     return await axios.post<any>(
       `${this.baseUrl}/terminology/codesList`,
       codesList,
