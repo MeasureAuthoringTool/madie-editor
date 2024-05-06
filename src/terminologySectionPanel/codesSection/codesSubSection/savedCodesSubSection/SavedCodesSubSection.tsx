@@ -12,6 +12,7 @@ import {
   Pagination,
   MadieSpinner,
   Toast,
+  MadieAlert,
 } from "@madie/madie-design-system/dist/react";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
@@ -35,6 +36,8 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
+  const [showCqlHasErrorsAlert, setShowCqlHasErrorsAlert] =
+    useState<boolean>(false);
   const onToastClose = () => {
     setToastMessage("");
     setToastOpen(false);
@@ -68,7 +71,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     managePagination();
   }, [codes, currentPage, currentLimit]);
 
-  //loading of codes
+  //load codes when actual measure cql is changed
   useEffect(() => {
     if (measureStoreCql) {
       setLoading(true);
@@ -157,7 +160,15 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     terminologyService
       .getCodeDetailsList(codesList)
       .then((response) => {
-        setCodes(response.data.filter((code) => code !== null));
+        setCodes(
+          response.data.filter((code) => {
+            if (code === null) {
+              setShowCqlHasErrorsAlert(true);
+              return false;
+            }
+            return true;
+          })
+        );
         setLoading(false);
       })
       .catch((error) => {
@@ -201,61 +212,82 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
       <TerminologySection
         title="Saved Codes"
         children={
-          <table
-            tw="min-w-full"
-            data-testid="saved-codes-tbl"
-            style={{
-              borderBottom: "solid 1px #8c8c8c",
-              borderSpacing: "0 2em !important",
-            }}
-          >
-            <thead tw="bg-slate">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TH key={header.id} scope="col">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TH>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {!loading ? (
-                _.isEmpty(codes) ? (
-                  <tr>
-                    <td colSpan={columns.length} tw="text-center p-2">
-                      No Results were found
-                    </td>
+          <>
+            {showCqlHasErrorsAlert && (
+              <MadieAlert
+                type="warning"
+                content={
+                  <div aria-live="polite" role="alert">
+                    {
+                      <div>
+                        <div tw="font-medium">
+                          Your Measure CQL contains errors. Due to that, your
+                          saved codes table and CQL may not be consistent.
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+                canClose={false}
+              />
+            )}
+
+            <table
+              tw="min-w-full"
+              data-testid="saved-codes-tbl"
+              style={{
+                borderBottom: "solid 1px #8c8c8c",
+                borderSpacing: "0 2em !important",
+              }}
+            >
+              <thead tw="bg-slate">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TH key={header.id} scope="col">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TH>
+                    ))}
                   </tr>
-                ) : (
-                  table.getRowModel().rows.map((row) => (
-                    <tr key={row.id} data-test-id={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} tw="p-2">
-                          {cell.column.id === "status"
-                            ? getCodeStatus(cell.getValue())
-                            : flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                        </td>
-                      ))}
+                ))}
+              </thead>
+              <tbody>
+                {!loading ? (
+                  _.isEmpty(codes) ? (
+                    <tr>
+                      <td colSpan={columns.length} tw="text-center p-2">
+                        No Results were found
+                      </td>
                     </tr>
-                  ))
-                )
-              ) : (
-                <div>
-                  <MadieSpinner style={{ height: 50, width: 50 }} />
-                </div>
-              )}
-            </tbody>
-          </table>
+                  ) : (
+                    table.getRowModel().rows.map((row) => (
+                      <tr key={row.id} data-test-id={row.id}>
+                        {row.getVisibleCells().map((cell) => (
+                          <td key={cell.id} tw="p-2">
+                            {cell.column.id === "status"
+                              ? getCodeStatus(cell.getValue())
+                              : flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  )
+                ) : (
+                  <div>
+                    <MadieSpinner style={{ height: 50, width: 50 }} />
+                  </div>
+                )}
+              </tbody>
+            </table>
+          </>
         }
       />
       <Toast
