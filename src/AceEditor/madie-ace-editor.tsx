@@ -17,6 +17,7 @@ import { ParsedCql, Statement } from "../model/ParsedCql";
 export interface EditorPropsType {
   value: string;
   onChange?: (value: string) => void;
+  onTerminologyChange?: (code: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];
