@@ -78,11 +78,18 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
       const parsedCql = new CqlAntlr(measureStoreCql).parse();
       if (parsedCql.codes) {
         const codesList = parsedCql.codes.map((code) => {
-          const { codeId, codeSystem } = code;
+          const matchedCodeSystem = parsedCql?.codeSystems.find(
+            (codeSystem) =>
+              codeSystem?.name?.replace(/['"]+/g, "") ===
+              code?.codeSystem?.replace(/['"]+/g, "")
+          );
+          const version = matchedCodeSystem?.version?.replace(/['"]+/g, "");
+          const oid = matchedCodeSystem?.oid;
           return {
-            code: codeId.replace(/['"]+/g, ""),
-            codeSystem: codeSystem.replace(/['"]+/g, ""),
-            version: "",
+            code: code?.codeId.replace(/['"]+/g, ""),
+            codeSystem: code?.codeSystem.replace(/['"]+/g, ""),
+            version: version && version.split(":").pop(),
+            oid: oid,
           };
         });
         RetrieveCodeDetailsList(codesList);
