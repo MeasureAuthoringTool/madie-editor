@@ -168,7 +168,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
       .getCodesListDetails(codesList)
       .then((response) => {
         setCodes(
-          response.data.filter((code) => {
+          response?.data?.filter((code) => {
             if (code === null) {
               setShowCqlHasErrorsAlert(true);
               return false;
