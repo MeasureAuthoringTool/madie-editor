@@ -2,7 +2,7 @@ import * as React from "react";
 import axios from "axios";
 import { render, screen } from "@testing-library/react";
 import SavedCodesSubSection from "./SavedCodesSubSection";
-import { mockMeasureStoreCql } from "./MockMeasureStoreCql";
+import { mockMeasureStoreCql } from "../../../__mocks__/MockMeasureStoreCql";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
 import useTerminologyServiceApi, {
   Code,
