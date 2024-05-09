@@ -76,7 +76,7 @@ export default function CodeSection({
       setAvailableVersions(
         availableVersions.map((cs) => ({
           value: cs.version,
-          label: cs.displayVersion,
+          label: cs.qdmDisplayVersion,
         }))
       );
       formik.setFieldValue("version", availableVersions[0].version);
