@@ -53,13 +53,13 @@ describe("Code Section component", () => {
     const codeSystemVersionSelect = screen.getByRole("combobox", {
       name: "Code System Version",
     });
-    expect(codeSystemVersionSelect).toHaveTextContent("2.0");
+    expect(codeSystemVersionSelect).toHaveTextContent("HL7V3.0_2019-02");
     expect(codeSystemVersionSelect).toBeEnabled();
     userEvent.click(codeSystemVersionSelect);
     const codeSystemVersionOptions = await screen.findAllByRole("option");
     expect(codeSystemVersionOptions.length).toEqual(2);
     userEvent.click(codeSystemVersionOptions[1]);
-    expect(codeSystemVersionSelect).toHaveTextContent("1.0");
+    expect(codeSystemVersionSelect).toHaveTextContent("HL7V3.0_2019-12");
 
     // Selecting a code
     const codeText = screen.getByTestId("code-text");
