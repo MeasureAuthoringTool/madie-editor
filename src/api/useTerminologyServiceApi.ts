@@ -44,6 +44,7 @@ export interface Code {
   display: string;
   codeSystem: string;
   version: string;
+  svsVersion: string;
   status: CodeStatus;
   codeSystemOid?: string;
 }
