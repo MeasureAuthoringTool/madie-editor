@@ -4,11 +4,7 @@ import { render, screen } from "@testing-library/react";
 import SavedCodesSubSection from "./SavedCodesSubSection";
 import { mockMeasureStoreCql } from "../../../__mocks__/MockMeasureStoreCql";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
-import useTerminologyServiceApi, {
-  Code,
-  CodeStatus,
-  TerminologyServiceApi,
-} from "../../../../api/useTerminologyServiceApi";
+import { TerminologyServiceApi } from "../../../../api/useTerminologyServiceApi";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -44,7 +40,7 @@ const mockeCodeDetailsList = {
 };
 
 const mockTerminologyServiceApi = {
-  getCodesListDetails: jest.fn().mockResolvedValue(mockeCodeDetailsList),
+  getCodesAndCodeSystems: jest.fn().mockResolvedValue(mockeCodeDetailsList),
 } as unknown as TerminologyServiceApi;
 
 jest.mock("../../../../api/useTerminologyServiceApi", () =>
@@ -101,8 +97,8 @@ describe("Saved Codes section component", () => {
       <SavedCodesSubSection measureStoreCql={mockMeasureStoreCql} />
     );
 
-    expect(mockTerminologyServiceApi.getCodesListDetails).toHaveBeenCalledWith(
-      mockCodeList
-    );
+    expect(
+      mockTerminologyServiceApi.getCodesAndCodeSystems
+    ).toHaveBeenCalledWith(mockCodeList);
   });
 });

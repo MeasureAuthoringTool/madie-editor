@@ -164,9 +164,9 @@ export class TerminologyServiceApi {
     });
   }
 
-  async getCodesListDetails(codesList): Promise<AxiosResponse<Code[]>> {
+  async getCodesAndCodeSystems(codesList): Promise<AxiosResponse<Code[]>> {
     return await axios.post<any>(
-      `${this.baseUrl}/terminology/codesList`,
+      `${this.baseUrl}/terminology/codes`,
       codesList,
       {
         headers: {

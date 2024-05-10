@@ -107,15 +107,14 @@ describe("TerminologyServiceApi test", () => {
       });
       mockedAxios.post.mockImplementation((url) => {
         if (
-          url ===
-          `${mockConfig.terminologyService.baseUrl}/terminology/codesList`
+          url === `${mockConfig.terminologyService.baseUrl}/terminology/codes`
         ) {
           return Promise.resolve({ data: mockeCodeDetailsList });
         }
       });
 
       const service: TerminologyServiceApi = await useTerminologyServiceApi();
-      service.getCodesListDetails(mockCodeList).then((response) => {
+      service.getCodesAndCodeSystems(mockCodeList).then((response) => {
         expect(response.data).toEqual(mockeCodeDetailsList);
         expect(response.data).toHaveLength(2);
       });

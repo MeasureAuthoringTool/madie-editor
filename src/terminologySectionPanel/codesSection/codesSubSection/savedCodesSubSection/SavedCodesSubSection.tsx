@@ -165,7 +165,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   const RetrieveCodeDetailsList = async (codesList) => {
     const terminologyService = await useTerminologyServiceApi();
     terminologyService
-      .getCodesListDetails(codesList)
+      .getCodesAndCodeSystems(codesList)
       .then((response) => {
         setCodes(
           response?.data?.filter((code) => {
