@@ -30,6 +30,7 @@ export interface CodeSystem {
   name?: string;
   title?: string;
   version?: string;
+  qdmDisplayVersion?: string;
   versionId?: string;
 }
 
