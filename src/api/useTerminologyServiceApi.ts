@@ -44,6 +44,7 @@ export interface Code {
   display: string;
   codeSystem: string;
   version: string;
+  svsVersion: string;
   status: CodeStatus;
   codeSystemOid?: string;
 }
@@ -163,6 +164,18 @@ export class TerminologyServiceApi {
         Authorization: `Bearer ${this.getAccessToken()}`,
       },
     });
+  }
+
+  async getCodesAndCodeSystems(codesList): Promise<AxiosResponse<Code[]>> {
+    return await axios.post<any>(
+      `${this.baseUrl}/terminology/codes`,
+      codesList,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      }
+    );
   }
 }
 

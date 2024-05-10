@@ -24,6 +24,7 @@ export interface EditorPropsType {
   height?: string;
   readOnly?: boolean;
   validationsEnabled?: boolean;
+  measureStoreCql?: string;
 
   // conditional props used to pass up annotations outside of the editor
   setOutboundAnnotations?: Function;
