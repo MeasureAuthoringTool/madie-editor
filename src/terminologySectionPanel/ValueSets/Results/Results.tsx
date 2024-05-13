@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { Button } from "@madie/madie-design-system/dist/react";
+import { Button, Pagination } from "@madie/madie-design-system/dist/react";
 import {
   useReactTable,
   ColumnDef,
@@ -11,7 +11,6 @@ import {
 import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import "./Results.scss";
-import { Pagination } from "@madie/madie-design-system/dist/react";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105

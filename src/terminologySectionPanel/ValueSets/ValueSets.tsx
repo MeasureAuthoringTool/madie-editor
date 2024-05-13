@@ -33,6 +33,7 @@ export default function ValueSets(props: ValueSetsProps) {
         console.log(values[value]);
       }
     });
+    // @ts-ignore
     const terminologyService = await useTerminologyServiceApi();
     terminologyService
       .searchValueSets(nonEmptyValues)
