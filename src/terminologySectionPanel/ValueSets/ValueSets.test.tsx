@@ -1,9 +1,43 @@
 import React from "react";
+import axios from "axios";
 import { expect, describe, it } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/dom";
 import ValueSets from "./ValueSets";
+import { act } from "react-dom/test-utils";
+import { ServiceConfig } from "../../api/useServiceConfig";
+import { TerminologyServiceApi } from "../../api/useTerminologyServiceApi";
+
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const mockConfig: ServiceConfig = {
+  elmTranslationService: {
+    baseUrl: "elm.com",
+  },
+  terminologyService: {
+    baseUrl: "terminology.com",
+  },
+};
+
+const mockValueSet = {
+  codeSystem: "urn:oid:2.16.840.1.113762.1.4.1200.105",
+  name: "AtraumaticChestPainNonCardiac",
+  oid: "ValueSet/2.16.840.1.113762.1.4.1200.105-20201122/_history/4",
+  status: "ACTIVE",
+  steward: "Cliniwiz Steward",
+  title: "Atraumatic Chest Pain Non Cardiac",
+  url: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105",
+  version: "20201122",
+};
+const mockTerminologyServiceApi = {
+  searchValueSets: jest.fn().mockResolvedValue([mockValueSet]),
+} as unknown as TerminologyServiceApi;
+
+jest.mock("../../api/useTerminologyServiceApi", () =>
+  jest.fn(() => mockTerminologyServiceApi)
+);
 
 const { getByTestId, getByRole, getByText, queryByTestId, getByLabelText } =
   screen;
@@ -67,6 +101,16 @@ describe("ValueSets Page", () => {
     await waitFor(() => {
       expect(getByTestId("valuesets-search-btn")).toBeEnabled();
       expect(getByTestId("clear-valuesets-btn")).toBeEnabled();
+    });
+    act(() => {
+      userEvent.click(getByTestId("valuesets-search-btn"));
+    });
+    await waitFor(() => {
+      expect(getByTestId("madie-spinner")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("madie-editor-search-results")).toBeInTheDocument();
     });
     userEvent.click(getByTestId("clear-valuesets-btn"));
     await waitFor(() => {

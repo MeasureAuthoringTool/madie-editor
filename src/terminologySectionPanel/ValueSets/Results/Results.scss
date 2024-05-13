@@ -2,7 +2,6 @@ $header-size: 14px;
 $header-style: normal;
 $header-weight: 500;
 #value-sets-results-tbl {
-
   thead {
     background-color: #ededed;
     border-bottom: solid 1px #8c8c8c;
@@ -15,20 +14,20 @@ $header-weight: 500;
       text-align: left;
       background-color: #ededed;
     }
-  
+
     > tr > th:first-child {
       position: sticky !important;
       left: 0;
       z-index: 5;
     }
-  
+
     > tr > th:last-child {
       position: sticky !important;
       right: 0;
       z-index: 5;
     }
   }
-  
+
   tbody {
     tr > td:first-child {
       position: sticky;
@@ -36,14 +35,14 @@ $header-weight: 500;
       background-color: #fff;
       z-index: 5;
     }
-  
+
     tr > td:last-child {
       position: sticky;
       right: 0;
       background-color: #fff;
       z-index: 5;
     }
-  
+
     tr > td {
       padding: 16px;
       border-bottom: 1px solid #8c8c8c;
@@ -73,7 +72,7 @@ $header-weight: 500;
           > .cheveron-container {
             padding: 7px 21px;
             border-right: solid 1px #0073c8;
-            >svg {
+            > svg {
               color: red;
             }
           }

@@ -168,7 +168,6 @@ export class TerminologyServiceApi {
           },
         }
       );
-      console.log("response is", response);
       return response.data;
     } catch (err) {
       console.error("Error retrieving getAllCodeSystems: ", err);

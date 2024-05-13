@@ -15,19 +15,11 @@ interface ValueSetsProps {
   canEdit: boolean;
 }
 
-// const dummyValueSet = {
-//   codeSystem: "urn:oid:2.16.840.1.113762.1.4.1200.105",
-//   name: "AtraumaticChestPainNonCardiac",
-//   oid: "ValueSet/2.16.840.1.113762.1.4.1200.105-20201122/_history/4",
-//   status: "ACTIVE",
-//   steward: "Cliniwiz Steward",
-//   title: "Atraumatic Chest Pain Non Cardiac",
-//   url: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105",
-//   version: "20201122",
-// };
 export default function ValueSets(props: ValueSetsProps) {
   const { canEdit } = props;
-  const [resultValueSets, setResultValuesSets] = useState<ValueSetForSearch[]>([]);
+  const [resultValueSets, setResultValuesSets] = useState<ValueSetForSearch[]>(
+    []
+  );
   const [resultsOpen, setResultsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -50,14 +42,14 @@ export default function ValueSets(props: ValueSetsProps) {
         setResultsOpen(true);
       })
       .catch((e) => {
+        console.error("Error retrieving value sets from vsac, : ", e);
         setLoading(false);
-        console.log("e is ", e);
       });
   };
   return (
     <div id="value-sets-right-panel">
       {loading && (
-        <div className="spinner-overlay">
+        <div className="spinner-overlay" data-testid="madie-spinner">
           <div className="spinner-container">
             <MadieSpinner />
           </div>

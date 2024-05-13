@@ -26,7 +26,6 @@ type TCRow = {
   codeSystem?: string;
   steward?: string;
   oid?: string;
-  // apply: string;
 };
 
 interface ResultsProps {
@@ -62,7 +61,7 @@ export default function Results(props: ResultsProps) {
             >
               <div className="action">Apply</div>
               <div className="chevron-container">
-                <ExpandMore sx={{ color: "#0073c8"}}/>
+                <ExpandMore sx={{ color: "#0073c8" }} />
               </div>
             </Button>
           </div>
@@ -130,22 +129,23 @@ export default function Results(props: ResultsProps) {
           </tbody>
         </table>
         {resultValueSets?.length > 0 && (
-        <div className="pagination-container">
-        <Pagination
-          totalItems={resultValueSets?.length || 0}
-          // visibleItems={visibleItems}
-          limitOptions={[5, 10, 25, 50]}
-          // offset={offset}
-          // handlePageChange={handlePageChange}
-          // handleLimitChange={handleLimitChange}
-          // page={currentPage}
-          // limit={currentLimit}
-          // count={totalPages}
-          shape="rounded"
-          // hideNextButton={!canGoNext}
-          // hidePrevButton={!canGoPrev}
-        />
-      </div>
+          <div className="pagination-container">
+            <Pagination
+              totalItems={resultValueSets?.length || 0}
+              limitOptions={[5, 10, 25, 50]}
+              // to fill in later.
+              // visibleItems={visibleItems}
+              // offset={offset}
+              // handlePageChange={handlePageChange}
+              // handleLimitChange={handleLimitChange}
+              // page={currentPage}
+              // limit={currentLimit}
+              // count={totalPages}
+              // hideNextButton={!canGoNext}
+              // hidePrevButton={!canGoPrev}
+              shape="rounded"
+            />
+          </div>
         )}
       </div>
     </div>
