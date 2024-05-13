@@ -49,6 +49,17 @@ export interface Code {
   codeSystemOid?: string;
 }
 
+export interface ValueSetForSearch {
+  codeSystem?: string;
+  name?: string;
+  oid?: string;
+  status?: string;
+  steward?: string;
+  title?: string;
+  url?: string;
+  version?: string;
+}
+
 export class TerminologyServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
@@ -134,6 +145,33 @@ export class TerminologyServiceApi {
         "Unable to validate code, Please contact HelpDesk",
         false
       );
+    }
+  }
+  // https://cts.nlm.nih.gov/fhir/ValueSet?usage=VSAC$covid
+  async searchValueSets(values): Promise<any> {
+    const keys = Object.keys(values);
+    let qString = "?";
+    for (let i = 0; i < keys.length; i++) {
+      if (i !== 0) {
+        qString = qString.concat("&");
+      }
+      const key = keys[i];
+      const value = values[key];
+      qString = qString.concat(`${key}=${value}`);
+    }
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/terminology/search-value-sets${qString}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      console.log("response is", response);
+      return response.data;
+    } catch (err) {
+      console.error("Error retrieving getAllCodeSystems: ", err);
     }
   }
 
