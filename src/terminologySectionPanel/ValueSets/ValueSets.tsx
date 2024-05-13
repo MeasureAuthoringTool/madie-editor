@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import TerminologySection from "../../common/TerminologySection";
 import Filter from "./Filter/Filter";
-import Search from "./Search/Search";
+import Search, { SEARCH_CATEGORIES } from "./Search/Search";
 import Results from "./Results/Results";
-import { SEARCH_CATEGORIES } from "./Search/Search";
 import useTerminologyServiceApi, {
   ValueSetForSearch,
 } from "../../api/useTerminologyServiceApi";
@@ -30,10 +29,9 @@ export default function ValueSets(props: ValueSetsProps) {
       // blank the value if it exists and it is still a search category
       if (values[value]) {
         nonEmptyValues[value] = values[value];
-        console.log(values[value]);
       }
     });
-    // @ts-ignore
+    // eslint-disable-next-line
     const terminologyService = await useTerminologyServiceApi();
     terminologyService
       .searchValueSets(nonEmptyValues)
