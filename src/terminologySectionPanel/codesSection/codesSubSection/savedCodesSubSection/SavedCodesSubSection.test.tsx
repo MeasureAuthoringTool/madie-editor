@@ -52,11 +52,15 @@ const mockCodeList = [
     code: "8462-4",
     codeSystem: "LOINC",
     oid: "'urn:oid:2.16.840.1.113883.6.1'",
+    suffix: null,
+    version: undefined,
   },
   {
     code: "8480-6",
     codeSystem: "LOINC",
     oid: "'urn:oid:2.16.840.1.113883.6.1'",
+    suffix: null,
+    version: undefined,
   },
 ];
 

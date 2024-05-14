@@ -29,14 +29,30 @@ import useTerminologyServiceApi, {
 import _ from "lodash";
 import EditCodeDetails from "../common/EditCodeDetails";
 
-export default function SavedCodesSubSection({ measureStoreCql }) {
-  type TCRow = {
-    name: string;
-    display: string;
-    codeSystem: string;
-    version: string;
-  };
+type TCRow = {
+  name: string;
+  display: string;
+  codeSystem: string;
+  version: string;
+};
 
+type CodesList = {
+  code: string;
+  codeSystem: string;
+  oid: string;
+  suffix: string;
+  version: string;
+};
+
+export type SelectedCodeDetails = TCRow & {
+  codeSystemOid?: string;
+  isVersionIncluded?: boolean;
+  status?: string;
+  suffix?: string;
+  svsVersion?: string;
+};
+
+export default function SavedCodesSubSection({ measureStoreCql }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -50,7 +66,9 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
-  const [selectedCodeDetails, setSelectedCodeDetails] = useState<TCRow>(null);
+  const [selectedCodeDetails, setSelectedCodeDetails] =
+    useState<SelectedCodeDetails>(null);
+  const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
   const [open, setOpen] = useState<boolean>(false);
 
   //currently we are using random data numbers
@@ -111,12 +129,23 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
             codeSystem: code?.codeSystem.replace(/['"]+/g, ""),
             version: version && version.split(":").pop(),
             oid: oid,
+            suffix: getCodeSystemSuffix(code?.codeSystem.replace(/['"]+/g, "")),
           };
         });
+        setParsedCodesList(codesList);
         RetrieveCodeDetailsList(codesList);
       }
     }
   }, [measureStoreCql]);
+
+  const getCodeSystemSuffix = (codeSystemName: string) => {
+    const pattern = /\((\d+)\)/;
+    const match = codeSystemName.match(pattern);
+    if (match) {
+      return match[1];
+    }
+    return null;
+  };
 
   const managePagination = useCallback(() => {
     if (totalItems < currentLimit) {
@@ -268,6 +297,19 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     console.log("Code is edited an applied");
   };
 
+  const handleEditCodeDetails = () => {
+    setOptionsOpen(false);
+    setOpen(true);
+    const selectedAntlrParsedCode = parsedCodesList.filter(
+      (code) => code.codeSystem === selectedCodeDetails.codeSystem
+    )[0];
+    setSelectedCodeDetails({
+      ...selectedCodeDetails,
+      suffix: selectedAntlrParsedCode?.suffix,
+      isVersionIncluded: selectedAntlrParsedCode?.version ? true : false,
+    });
+  };
+
   return (
     <div>
       <TerminologySection
@@ -364,8 +406,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
                   {
                     label: "Edit",
                     toImplementFunction: () => {
-                      setOptionsOpen(false);
-                      setOpen(true);
+                      handleEditCodeDetails();
                     },
                     dataTestId: `edit-code-${selectedReferenceId}`,
                   },

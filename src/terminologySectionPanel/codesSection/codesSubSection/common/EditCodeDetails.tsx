@@ -29,7 +29,9 @@ export default function EditCodeDetails({ selectedCodeDetails }) {
 
         <div tw="flex-grow pl-5">
           <p className="result-label">Code System Version</p>
-          <span className="result-value">{selectedCodeDetails?.version}</span>
+          <span className="result-value">
+            {selectedCodeDetails?.svsVersion}
+          </span>
         </div>
       </div>
 
@@ -42,6 +44,9 @@ export default function EditCodeDetails({ selectedCodeDetails }) {
             inputProps={{
               "data-testid": "suffix-max-length-input",
               disabled: false,
+              value: `${
+                selectedCodeDetails?.suffix ? selectedCodeDetails.suffix : ""
+              }`,
             }}
             sx={{
               borderRadius: "3px",
@@ -82,6 +87,7 @@ export default function EditCodeDetails({ selectedCodeDetails }) {
           <FormControlLabel
             control={
               <Checkbox
+                //onchange needs to implemented
                 //onChange={}
                 sx={{
                   color: "#717171",
@@ -89,6 +95,7 @@ export default function EditCodeDetails({ selectedCodeDetails }) {
                 name="includCodeSystemVersion"
                 id="include-code-system-version-checkbox"
                 data-testid="include-code-system-version-checkbox"
+                checked={selectedCodeDetails?.isVersionIncluded}
               />
             }
             label="Include Code System Version"
