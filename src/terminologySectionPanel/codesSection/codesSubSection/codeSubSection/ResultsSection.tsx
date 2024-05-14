@@ -43,7 +43,7 @@ export default function ResultsSection({
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
-  const [selectedCode, setSelectedCode] = useState<TCRow>(null);
+  const [selectedCodeDetails, setSelectedCodeDetails] = useState<TCRow>(null);
   const [open, setOpen] = useState<boolean>(false);
 
   const handleOpen = async (
@@ -130,7 +130,7 @@ export default function ResultsSection({
 
   const handleEditCode = (code: TCRow) => {
     setOpen(true);
-    setSelectedCode(code);
+    setSelectedCodeDetails(code);
   };
 
   const getCodeStatus = (status) => {
@@ -155,7 +155,7 @@ export default function ResultsSection({
     );
   };
 
-  const handleEditCodeApply = () => {
+  const handleDialogEditCodeApply = () => {
     // eslint-disable-next-line no-console
     console.log("Code is edited an applied");
   };
@@ -258,7 +258,7 @@ export default function ResultsSection({
                 open,
                 onClose: toggleOpen,
                 id: "edit-code-details-popup-dialog",
-                onSubmit: handleEditCodeApply,
+                onSubmit: handleDialogEditCodeApply,
               }}
               cancelButtonProps={{
                 cancelText: "Cancel",
@@ -270,7 +270,9 @@ export default function ResultsSection({
                 disabled: false,
               }}
               children={
-                selectedCode && <EditCodeDetails selectedCode={selectedCode} />
+                selectedCodeDetails && (
+                  <EditCodeDetails selectedCodeDetails={selectedCodeDetails} />
+                )
               }
             />
           </>

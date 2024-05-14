@@ -4,30 +4,32 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 import tw from "twin.macro";
 import "styled-components/macro";
 
-export default function EditCodeDetails({ selectedCode }) {
+export default function EditCodeDetails({ selectedCodeDetails }) {
   return (
     <div tw="flex flex-col">
-      <div tw="flex md:flex-wrap mt-4">
+      <div tw="flex mt-4">
         <div tw="w-1/3">
           <p className="result-label">Code</p>
-          <span className="result-value">{selectedCode?.name}</span>
+          <span className="result-value">{selectedCodeDetails?.name}</span>
         </div>
 
         <div tw="flex-grow pl-5">
           <p className="result-label">Code Description</p>
-          <span className="result-value">{"helo"}</span>
+          <span className="result-value">{selectedCodeDetails?.display}</span>
         </div>
       </div>
 
       <div tw="flex md:flex-wrap mt-4">
         <div tw="w-1/3">
           <p className="result-label">Code System</p>
-          <span className="result-value">{selectedCode?.codeSystem}</span>
+          <span className="result-value">
+            {selectedCodeDetails?.codeSystem}
+          </span>
         </div>
 
         <div tw="flex-grow pl-5">
           <p className="result-label">Code System Version</p>
-          <span className="result-value">{selectedCode?.version}</span>
+          <span className="result-value">{selectedCodeDetails?.version}</span>
         </div>
       </div>
 
@@ -76,7 +78,7 @@ export default function EditCodeDetails({ selectedCode }) {
             size="small"
           />
         </div>
-        <div tw="flex-grow pl-5 mt-6">
+        <div tw="flex-grow pl-5 mt-2">
           <FormControlLabel
             control={
               <Checkbox
@@ -94,6 +96,7 @@ export default function EditCodeDetails({ selectedCode }) {
               color: "#515151",
               textTransform: "none",
               fontFamily: "Rubik",
+              marginTop: "6px",
             }}
           />
         </div>

@@ -13,17 +13,21 @@ import {
   MadieSpinner,
   Toast,
   MadieAlert,
+  Popover,
+  MadieDialog,
 } from "@madie/madie-design-system/dist/react";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useTerminologyServiceApi, {
   Code,
   CodeStatus,
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
+import EditCodeDetails from "../common/EditCodeDetails";
 
 export default function SavedCodesSubSection({ measureStoreCql }) {
   type TCRow = {
@@ -43,6 +47,11 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     setToastOpen(false);
   };
   const [loading, setLoading] = useState<boolean>(false);
+  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
+  const [selectedCodeDetails, setSelectedCodeDetails] = useState<TCRow>(null);
+  const [open, setOpen] = useState<boolean>(false);
 
   //currently we are using random data numbers
   // TODO: integrate with actual data
@@ -65,6 +74,18 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
+  };
+
+  const handleOpen = async (
+    selectedId,
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setOptionsOpen(true);
+    setSelectedReferenceId(selectedId);
+    setAnchorEl(event.currentTarget);
+    const id = selectedId;
+    const code = table.getRow(id).original;
+    setSelectedCodeDetails(code);
   };
 
   useEffect(() => {
@@ -151,6 +172,24 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
       {
         header: "",
         accessorKey: "apply",
+        cell: (row: any) => (
+          <div className="inline-flex gap-x-2">
+            <button
+              className="action-button"
+              onClick={(e) => {
+                handleOpen(row.cell.row.id, e);
+              }}
+              tw="text-blue-600 hover:text-blue-900"
+              data-testid={`select-action-${row.cell.id}`}
+              aria-label={`select-action-${row.cell.id}`}
+            >
+              <div className="action">Select</div>
+              <div className="chevron-container">
+                <ExpandMoreIcon />
+              </div>
+            </button>
+          </div>
+        ),
       },
     ],
     []
@@ -212,6 +251,21 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
         <DoNotDisturbOnIcon />
       </ToolTippedIcon>
     );
+  };
+
+  const handleClose = () => {
+    setOptionsOpen(false);
+    setSelectedReferenceId(null);
+    setAnchorEl(null);
+  };
+
+  const toggleOpen = () => {
+    setOpen(!open);
+  };
+
+  const handleDialogEditCodeApply = () => {
+    // eslint-disable-next-line no-console
+    console.log("Code is edited an applied");
   };
 
   return (
@@ -293,7 +347,56 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
                   </div>
                 )}
               </tbody>
+
+              <Popover
+                optionsOpen={optionsOpen}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                canEdit={true}
+                editViewSelectOptionProps={{
+                  label: "Remove",
+                  toImplementFunction: () => {
+                    setOptionsOpen(false);
+                  },
+                  dataTestId: `remove-code-${selectedReferenceId}`,
+                }}
+                otherSelectOptionProps={[
+                  {
+                    label: "Edit",
+                    toImplementFunction: () => {
+                      setOptionsOpen(false);
+                      setOpen(true);
+                    },
+                    dataTestId: `edit-code-${selectedReferenceId}`,
+                  },
+                ]}
+              />
             </table>
+
+            <MadieDialog
+              form={true}
+              title={"Code Details"}
+              dialogProps={{
+                open,
+                onClose: toggleOpen,
+                id: "edit-code-details-popup-dialog",
+                onSubmit: handleDialogEditCodeApply,
+              }}
+              cancelButtonProps={{
+                cancelText: "Cancel",
+                "data-testid": "cancel-button",
+              }}
+              continueButtonProps={{
+                continueText: "Apply",
+                "data-testid": "apply-button",
+                disabled: false,
+              }}
+              children={
+                selectedCodeDetails && (
+                  <EditCodeDetails selectedCodeDetails={selectedCodeDetails} />
+                )
+              }
+            />
           </>
         }
       />
