@@ -146,7 +146,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
       },
       {
         header: "System Version",
-        accessorKey: "version",
+        accessorKey: "svsVersion",
       },
       {
         header: "",

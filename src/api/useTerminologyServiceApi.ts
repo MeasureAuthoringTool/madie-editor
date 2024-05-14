@@ -30,6 +30,7 @@ export interface CodeSystem {
   name?: string;
   title?: string;
   version?: string;
+  qdmDisplayVersion?: string;
   versionId?: string;
 }
 
@@ -43,6 +44,7 @@ export interface Code {
   display: string;
   codeSystem: string;
   version: string;
+  svsVersion: string;
   status: CodeStatus;
   codeSystemOid?: string;
 }
