@@ -101,9 +101,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     setOptionsOpen(true);
     setSelectedReferenceId(selectedId);
     setAnchorEl(event.currentTarget);
-    const id = selectedId;
-    const code = table.getRow(id).original;
-    setSelectedCodeDetails(code);
+    setSelectedCodeDetails(table.getRow(selectedId).original);
   };
 
   useEffect(() => {

@@ -5,6 +5,20 @@ import tw from "twin.macro";
 import "styled-components/macro";
 
 export default function EditCodeDetails({ selectedCodeDetails }) {
+  const getCodeSystemName = (codeDetails) => {
+    if (codeDetails.codeSystem) {
+      if (codeDetails.suffix) {
+        const pattern = /^(.*?)\s*\(\d+\)$/;
+        const match = codeDetails?.codeSystem.match(pattern);
+        if (match) {
+          return match[1].trim();
+        }
+      }
+      return codeDetails?.codeSystem;
+    }
+    return "";
+  };
+
   return (
     <div tw="flex flex-col">
       <div tw="flex mt-4">
@@ -23,14 +37,16 @@ export default function EditCodeDetails({ selectedCodeDetails }) {
         <div tw="w-1/3">
           <p className="result-label">Code System</p>
           <span className="result-value">
-            {selectedCodeDetails?.codeSystem}
+            {getCodeSystemName(selectedCodeDetails)}
           </span>
         </div>
 
         <div tw="flex-grow pl-5">
           <p className="result-label">Code System Version</p>
           <span className="result-value">
-            {selectedCodeDetails?.svsVersion}
+            {selectedCodeDetails?.svsVersion
+              ? selectedCodeDetails.svsVersion
+              : selectedCodeDetails?.version}
           </span>
         </div>
       </div>
