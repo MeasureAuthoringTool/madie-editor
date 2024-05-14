@@ -53,6 +53,9 @@ export default function ResultsSection({
     setOptionsOpen(true);
     setSelectedReferenceId(selectedId);
     setAnchorEl(event.currentTarget);
+    const id = selectedId;
+    const code = table.getRow(id).original;
+    setSelectedCodeDetails(code);
   };
 
   const handleClose = () => {
@@ -116,11 +119,7 @@ export default function ResultsSection({
     getCoreRowModel: getCoreRowModel(),
   });
   const handleApplyCode = () => {
-    const id = selectedReferenceId;
-
-    const code = table.getRow(id).original;
-
-    handleChange(code);
+    handleChange(selectedCodeDetails);
     setOptionsOpen(false);
   };
 
@@ -128,9 +127,9 @@ export default function ResultsSection({
     setOpen(!open);
   };
 
-  const handleEditCode = (code: TCRow) => {
+  const handleEditCode = () => {
+    setOptionsOpen(false);
     setOpen(true);
-    setSelectedCodeDetails(code);
   };
 
   const getCodeStatus = (status) => {
@@ -224,7 +223,6 @@ export default function ResultsSection({
                   label: "Apply",
                   toImplementFunction: () => {
                     handleApplyCode();
-                    setOptionsOpen(false);
                   },
                   dataTestId: `apply-code-${selectedReferenceId}`,
                 }}
@@ -232,10 +230,7 @@ export default function ResultsSection({
                   {
                     label: "Edit",
                     toImplementFunction: () => {
-                      setOptionsOpen(false);
-                      const id = selectedReferenceId;
-                      const code = table.getRow(id).original;
-                      handleEditCode(code);
+                      handleEditCode();
                     },
                     dataTestId: `edit-code-${selectedReferenceId}`,
                   },
