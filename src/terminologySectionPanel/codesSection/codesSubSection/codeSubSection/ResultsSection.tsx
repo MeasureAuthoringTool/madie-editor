@@ -15,7 +15,9 @@ import {
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Popover } from "@madie/madie-design-system/dist/react";
+import { Popover, MadieDialog } from "@madie/madie-design-system/dist/react";
+import "./ResultsSection.scss";
+import EditCodeDetails from "../common/EditCodeDetails";
 
 type ResultSectionProps = {
   showResultsTable: boolean;
@@ -41,6 +43,8 @@ export default function ResultsSection({
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
+  const [selectedCode, setSelectedCode] = useState<TCRow>(null);
+  const [open, setOpen] = useState<boolean>(false);
 
   const handleOpen = async (
     selectedId,
@@ -119,6 +123,16 @@ export default function ResultsSection({
     handleChange(code);
     setOptionsOpen(false);
   };
+
+  const toggleOpen = () => {
+    setOpen(!open);
+  };
+
+  const handleEditCode = (code: TCRow) => {
+    setOpen(true);
+    setSelectedCode(code);
+  };
+
   const getCodeStatus = (status) => {
     if (status == CodeStatus.ACTIVE) {
       return (
@@ -141,6 +155,11 @@ export default function ResultsSection({
     );
   };
 
+  const handleEditCodeApply = () => {
+    // eslint-disable-next-line no-console
+    console.log("Code is edited an applied");
+  };
+
   return (
     <div>
       <TerminologySection
@@ -148,78 +167,113 @@ export default function ResultsSection({
         showHeaderContent={showResultsTable}
         setShowHeaderContent={setShowResultsTable}
         children={
-          <table
-            tw="min-w-full"
-            data-testid="codes-results-tbl"
-            style={{
-              borderBottom: "solid 1px #8c8c8c",
-            }}
-          >
-            <thead tw="bg-slate">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TH key={header.id} scope="col">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TH>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {!code ? (
-                <tr>
-                  <td colSpan={columns.length} tw="text-center p-2">
-                    No Results were found
-                  </td>
-                </tr>
-              ) : (
-                table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} data-test-id={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} tw="p-2">
-                        {cell.column.id === "status"
-                          ? getCodeStatus(cell.getValue())
+          <>
+            <table
+              tw="min-w-full"
+              data-testid="codes-results-tbl"
+              style={{
+                borderBottom: "solid 1px #8c8c8c",
+              }}
+            >
+              <thead tw="bg-slate">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TH key={header.id} scope="col">
+                        {header.isPlaceholder
+                          ? null
                           : flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
+                              header.column.columnDef.header,
+                              header.getContext()
                             )}
-                      </td>
+                      </TH>
                     ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-            <Popover
-              optionsOpen={optionsOpen}
-              anchorEl={anchorEl}
-              handleClose={handleClose}
-              canEdit={true}
-              editViewSelectOptionProps={{
-                label: "Apply",
-                toImplementFunction: () => {
-                  handleApplyCode();
-                  setOptionsOpen(false);
-                },
-                dataTestId: `edit-measure-reference-`,
-              }}
-              otherSelectOptionProps={[
-                {
-                  label: "Delete",
+                ))}
+              </thead>
+              <tbody>
+                {!code ? (
+                  <tr>
+                    <td colSpan={columns.length} tw="text-center p-2">
+                      No Results were found
+                    </td>
+                  </tr>
+                ) : (
+                  table.getRowModel().rows.map((row) => (
+                    <tr key={row.id} data-test-id={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} tw="p-2">
+                          {cell.column.id === "status"
+                            ? getCodeStatus(cell.getValue())
+                            : flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+              <Popover
+                optionsOpen={optionsOpen}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                canEdit={true}
+                editViewSelectOptionProps={{
+                  label: "Apply",
                   toImplementFunction: () => {
-                    //handleClick(selectedReferenceId, "delete");
+                    handleApplyCode();
                     setOptionsOpen(false);
                   },
-                  dataTestId: `delete-measure-reference-`,
-                },
-              ]}
+                  dataTestId: `apply-code-${selectedReferenceId}`,
+                }}
+                otherSelectOptionProps={[
+                  {
+                    label: "Edit",
+                    toImplementFunction: () => {
+                      setOptionsOpen(false);
+                      const id = selectedReferenceId;
+                      const code = table.getRow(id).original;
+                      handleEditCode(code);
+                    },
+                    dataTestId: `edit-code-${selectedReferenceId}`,
+                  },
+                  {
+                    label: "Delete",
+                    toImplementFunction: () => {
+                      //handleClick(selectedReferenceId, "delete");
+                      setOptionsOpen(false);
+                    },
+                    dataTestId: `delete-code-${selectedReferenceId}`,
+                  },
+                ]}
+              />
+            </table>
+
+            <MadieDialog
+              form={true}
+              title={"Code Details"}
+              dialogProps={{
+                open,
+                onClose: toggleOpen,
+                id: "edit-code-details-popup-dialog",
+                onSubmit: handleEditCodeApply,
+              }}
+              cancelButtonProps={{
+                cancelText: "Cancel",
+                "data-testid": "cancel-button",
+              }}
+              continueButtonProps={{
+                continueText: "Apply",
+                "data-testid": "apply-button",
+                disabled: false,
+              }}
+              children={
+                selectedCode && <EditCodeDetails selectedCode={selectedCode} />
+              }
             />
-          </table>
+          </>
         }
       />
     </div>
