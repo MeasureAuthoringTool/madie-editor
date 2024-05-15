@@ -22,26 +22,26 @@ export default function EditCodeDetails({ selectedCodeDetails }) {
   return (
     <div tw="flex flex-col">
       <div tw="flex mt-4">
-        <div tw="w-1/3">
+        <div tw="w-1/3" data-testid="code-info">
           <p className="result-label">Code</p>
           <span className="result-value">{selectedCodeDetails?.name}</span>
         </div>
 
-        <div tw="flex-grow pl-5">
+        <div tw="flex-grow pl-5" data-testid="code-description-info">
           <p className="result-label">Code Description</p>
           <span className="result-value">{selectedCodeDetails?.display}</span>
         </div>
       </div>
 
       <div tw="flex md:flex-wrap mt-4">
-        <div tw="w-1/3">
+        <div tw="w-1/3" data-testid="code-system-info">
           <p className="result-label">Code System</p>
           <span className="result-value">
             {getCodeSystemName(selectedCodeDetails)}
           </span>
         </div>
 
-        <div tw="flex-grow pl-5">
+        <div tw="flex-grow pl-5" data-testid="code-system-version-info">
           <p className="result-label">Code System Version</p>
           <span className="result-value">
             {selectedCodeDetails?.svsVersion

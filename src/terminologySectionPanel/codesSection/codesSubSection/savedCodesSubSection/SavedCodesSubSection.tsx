@@ -146,21 +146,23 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
   };
 
   const managePagination = useCallback(() => {
-    if (totalItems < currentLimit) {
-      setOffset(0);
-      setVisibleCodes(codes && [...codes]);
-      setVisibleItems(codes?.length);
-      setTotalItems(codes?.length);
-      setTotalPages(1);
-    } else {
-      const start = (currentPage - 1) * currentLimit;
-      const end = start + currentLimit;
-      const newVisibleCodes = [...codes].slice(start, end);
-      setOffset(start);
-      setVisibleCodes(newVisibleCodes);
-      setVisibleItems(newVisibleCodes?.length);
-      setTotalItems(codes?.length);
-      setTotalPages(Math.ceil(codes?.length / currentLimit));
+    if (codes?.length > 0) {
+      if (totalItems < currentLimit) {
+        setOffset(0);
+        setVisibleCodes(codes && [...codes]);
+        setVisibleItems(codes?.length);
+        setTotalItems(codes?.length);
+        setTotalPages(1);
+      } else {
+        const start = (currentPage - 1) * currentLimit;
+        const end = start + currentLimit;
+        const newVisibleCodes = [...codes].slice(start, end);
+        setOffset(start);
+        setVisibleCodes(newVisibleCodes);
+        setVisibleItems(newVisibleCodes?.length);
+        setTotalItems(codes?.length);
+        setTotalPages(Math.ceil(codes?.length / currentLimit));
+      }
     }
   }, [
     currentLimit,
@@ -263,14 +265,14 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
   };
 
   const getCodeStatus = (status) => {
-    if (status == CodeStatus.ACTIVE) {
+    if (status == "ACTIVE") {
       return (
         <ToolTippedIcon tooltipMessage="This code is active in this code system version">
           <CheckCircleIcon color="success" />
         </ToolTippedIcon>
       );
     }
-    if (status == CodeStatus.INACTIVE) {
+    if (status == "INACTIVE") {
       return (
         <ToolTippedIcon tooltipMessage="This code is inactive in this code system version">
           <DoDisturbOutlinedIcon />
@@ -361,7 +363,7 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
                   </tr>
                 ))}
               </thead>
-              <tbody>
+              <tbody data-testid="saved-codes-tbl-body">
                 {!loading ? (
                   _.isEmpty(codes) ? (
                     <tr>
@@ -371,7 +373,7 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
                     </tr>
                   ) : (
                     table.getRowModel().rows.map((row) => (
-                      <tr key={row.id} data-test-id={row.id}>
+                      <tr key={row.id} data-testid={`saved-code-row-${row.id}`}>
                         {row.getVisibleCells().map((cell) => (
                           <td key={cell.id} tw="p-2">
                             {cell.column.id === "status"
@@ -386,7 +388,7 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
                     ))
                   )
                 ) : (
-                  <div>
+                  <div data-testid="saved-codes-loading-spinner">
                     <MadieSpinner style={{ height: 50, width: 50 }} />
                   </div>
                 )}

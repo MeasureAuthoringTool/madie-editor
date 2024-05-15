@@ -1,10 +1,17 @@
 import * as React from "react";
 import axios from "axios";
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from "@testing-library/react";
 import SavedCodesSubSection from "./SavedCodesSubSection";
 import { mockMeasureStoreCql } from "../../../__mocks__/MockMeasureStoreCql";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
 import { TerminologyServiceApi } from "../../../../api/useTerminologyServiceApi";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -65,6 +72,14 @@ const mockCodeList = [
 ];
 
 describe("Saved Codes section component", () => {
+  const checkRows = async (number: number) => {
+    const tableBody = screen.getByTestId("saved-codes-tbl-body");
+    expect(tableBody).toBeInTheDocument();
+    const visibleRows = await within(tableBody).findAllByRole("row");
+    await waitFor(() => {
+      expect(visibleRows).toHaveLength(number);
+    });
+  };
   it("should display the saved codes table when navigated to the saved codes tab ", () => {
     render(<SavedCodesSubSection />);
     expect(
@@ -98,11 +113,73 @@ describe("Saved Codes section component", () => {
       }
     });
     await render(
-      <SavedCodesSubSection measureStoreCql={mockMeasureStoreCql} />
+      <SavedCodesSubSection
+        measureStoreCql={mockMeasureStoreCql}
+        canEdit={true}
+      />
     );
 
     expect(
       mockTerminologyServiceApi.getCodesAndCodeSystems
     ).toHaveBeenCalledWith(mockCodeList);
+  });
+
+  it("displaying edit dialog when edit is clicked from the select actions", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url === "/env-config/serviceConfig.json") {
+        return Promise.resolve({ data: mockConfig });
+      }
+      if (
+        url === `${mockConfig.terminologyService.baseUrl}/terminology/codes`
+      ) {
+        return Promise.resolve({ data: mockCodeList });
+      }
+    });
+    const { getByTestId, queryByTestId, getByText } = await render(
+      <SavedCodesSubSection
+        measureStoreCql={mockMeasureStoreCql}
+        canEdit={true}
+      />
+    );
+
+    expect(
+      mockTerminologyServiceApi.getCodesAndCodeSystems
+    ).toHaveBeenCalledWith(mockCodeList);
+
+    expect(getByTestId("saved-codes-loading-spinner")).toBeInTheDocument();
+
+    await waitForElementToBeRemoved(() =>
+      queryByTestId("saved-codes-loading-spinner")
+    );
+    await checkRows(2);
+
+    expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
+
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+
+    const editButton = getByTestId(`edit-code-0`);
+    expect(editButton).toBeInTheDocument();
+
+    const removeButton = getByTestId(`remove-code-0`);
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(editButton);
+
+    await waitFor(() => {
+      expect(getByTestId("dialog-form")).toBeInTheDocument();
+    });
+
+    const suffixInput = screen.getByTestId(
+      "suffix-max-length-input"
+    ) as HTMLInputElement;
+    expect(suffixInput.value).toBe("1");
+
+    const cancelButton = getByTestId("cancel-button");
+    expect(cancelButton).toBeInTheDocument();
+    userEvent.click(cancelButton);
   });
 });
