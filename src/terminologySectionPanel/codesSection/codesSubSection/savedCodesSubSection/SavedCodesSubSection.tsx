@@ -52,7 +52,7 @@ export type SelectedCodeDetails = TCRow & {
   svsVersion?: string;
 };
 
-export default function SavedCodesSubSection({ measureStoreCql }) {
+export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -201,20 +201,24 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
         accessorKey: "apply",
         cell: (row: any) => (
           <div className="inline-flex gap-x-2">
-            <button
-              className="action-button"
-              onClick={(e) => {
-                handleOpen(row.cell.row.id, e);
-              }}
-              tw="text-blue-600 hover:text-blue-900"
-              data-testid={`select-action-${row.cell.id}`}
-              aria-label={`select-action-${row.cell.id}`}
-            >
-              <div className="action">Select</div>
-              <div className="chevron-container">
-                <ExpandMoreIcon />
-              </div>
-            </button>
+            {canEdit ? (
+              <button
+                className="action-button"
+                onClick={(e) => {
+                  handleOpen(row.cell.row.id, e);
+                }}
+                tw="text-blue-600 hover:text-blue-900"
+                data-testid={`select-action-${row.cell.id}`}
+                aria-label={`select-action-${row.cell.id}`}
+              >
+                <div className="action">Select</div>
+                <div className="chevron-container">
+                  <ExpandMoreIcon />
+                </div>
+              </button>
+            ) : (
+              ""
+            )}
           </div>
         ),
       },

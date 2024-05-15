@@ -32,7 +32,10 @@ export default function CodesSection({
           />
         )}
         {activeTab === "savedCodes" && (
-          <SavedCodesSubSection measureStoreCql={measureStoreCql} />
+          <SavedCodesSubSection
+            measureStoreCql={measureStoreCql}
+            canEdit={canEdit}
+          />
         )}
       </div>
     </>

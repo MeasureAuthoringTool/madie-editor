@@ -24,7 +24,7 @@ const mockeCodeDetailsList = {
       name: "8462-4",
       display: "Diastolic blood pressure",
       version: "2.72",
-      codeSystem: "LOINC",
+      codeSystem: "LOINC (1)",
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",
     },
@@ -50,9 +50,9 @@ jest.mock("../../../../api/useTerminologyServiceApi", () =>
 const mockCodeList = [
   {
     code: "8462-4",
-    codeSystem: "LOINC",
+    codeSystem: "LOINC (1)",
     oid: "'urn:oid:2.16.840.1.113883.6.1'",
-    suffix: null,
+    suffix: "1",
     version: undefined,
   },
   {
