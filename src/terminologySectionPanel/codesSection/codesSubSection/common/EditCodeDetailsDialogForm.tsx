@@ -6,17 +6,14 @@ import "styled-components/macro";
 
 export default function EditCodeDetailsDialogForm({ selectedCodeDetails }) {
   const getCodeSystemName = (codeDetails) => {
-    if (codeDetails.codeSystem) {
-      if (codeDetails.suffix) {
-        const pattern = /^(.*?)\s*\(\d+\)$/;
-        const match = codeDetails?.codeSystem.match(pattern);
-        if (match) {
-          return match[1].trim();
-        }
+    if (codeDetails.codeSystem && codeDetails.suffix) {
+      const codeSystemWithSuffix =
+        codeDetails.codeSystem.match(/^(.*?)\s*\(\d+\)$/);
+      if (codeSystemWithSuffix) {
+        return codeSystemWithSuffix[1].trim();
       }
-      return codeDetails?.codeSystem;
     }
-    return "";
+    return codeDetails?.codeSystem;
   };
 
   return (
