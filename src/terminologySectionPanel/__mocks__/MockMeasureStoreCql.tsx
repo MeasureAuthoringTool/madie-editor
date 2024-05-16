@@ -10,6 +10,7 @@ include PalliativeCareQDM version '1.0.000' called PalliativeCare
 include AdvancedIllnessandFrailtyQDM version '1.0.000' called AIFrailLTCF 
 
 codesystem "LOINC": 'urn:oid:2.16.840.1.113883.6.1'
+codesystem "LOINC (1)": 'urn:oid:2.16.840.1.113883.6.1'
 
 valueset "Chronic Kidney Disease, Stage 5": 'urn:oid:2.16.840.1.113883.3.526.3.1002'
 valueset "Dialysis Services": 'urn:oid:2.16.840.1.113883.3.464.1003.109.12.1013'
@@ -26,7 +27,7 @@ valueset "Payer Type": 'urn:oid:2.16.840.1.114222.4.11.3591'
 valueset "Pregnancy": 'urn:oid:2.16.840.1.113883.3.526.3.378'
 valueset "Race": 'urn:oid:2.16.840.1.114222.4.11.836'
 
-code "Diastolic blood pressure": '8462-4' from "LOINC" display 'Diastolic blood pressure'
+code "Diastolic blood pressure": '8462-4' from "LOINC (1)" display 'Diastolic blood pressure'
 code "Systolic blood pressure": '8480-6' from "LOINC" display 'Systolic blood pressure'
 
 

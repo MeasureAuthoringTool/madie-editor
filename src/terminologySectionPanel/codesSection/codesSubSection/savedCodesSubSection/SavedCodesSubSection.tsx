@@ -13,26 +13,46 @@ import {
   MadieSpinner,
   Toast,
   MadieAlert,
+  Popover,
+  MadieDialog,
 } from "@madie/madie-design-system/dist/react";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useTerminologyServiceApi, {
   Code,
   CodeStatus,
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
+import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
 
-export default function SavedCodesSubSection({ measureStoreCql }) {
-  type TCRow = {
-    name: string;
-    display: string;
-    codeSystem: string;
-    version: string;
-  };
+type TCRow = {
+  name: string;
+  display: string;
+  codeSystem: string;
+  version: string;
+};
 
+type CodesList = {
+  code: string;
+  codeSystem: string;
+  oid: string;
+  suffix: string;
+  version: string;
+};
+
+export type SelectedCodeDetails = TCRow & {
+  codeSystemOid?: string;
+  isVersionIncluded?: boolean;
+  status?: string;
+  suffix?: string;
+  svsVersion?: string;
+};
+
+export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -43,6 +63,13 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
     setToastOpen(false);
   };
   const [loading, setLoading] = useState<boolean>(false);
+  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
+  const [selectedCodeDetails, setSelectedCodeDetails] =
+    useState<SelectedCodeDetails>(null);
+  const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
+  const [open, setOpen] = useState<boolean>(false);
 
   //currently we are using random data numbers
   // TODO: integrate with actual data
@@ -65,6 +92,16 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
+  };
+
+  const handleOpen = async (
+    selectedId,
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setOptionsOpen(true);
+    setSelectedReferenceId(selectedId);
+    setAnchorEl(event.currentTarget);
+    setSelectedCodeDetails(table.getRow(selectedId).original);
   };
 
   useEffect(() => {
@@ -90,29 +127,42 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
             codeSystem: code?.codeSystem.replace(/['"]+/g, ""),
             version: version && version.split(":").pop(),
             oid: oid,
+            suffix: getCodeSystemSuffix(code?.codeSystem.replace(/['"]+/g, "")),
           };
         });
+        setParsedCodesList(codesList);
         RetrieveCodeDetailsList(codesList);
       }
     }
   }, [measureStoreCql]);
 
+  const getCodeSystemSuffix = (codeSystemName: string) => {
+    const pattern = /\((\d+)\)/;
+    const match = codeSystemName.match(pattern);
+    if (match) {
+      return match[1];
+    }
+    return null;
+  };
+
   const managePagination = useCallback(() => {
-    if (totalItems < currentLimit) {
-      setOffset(0);
-      setVisibleCodes(codes && [...codes]);
-      setVisibleItems(codes?.length);
-      setTotalItems(codes?.length);
-      setTotalPages(1);
-    } else {
-      const start = (currentPage - 1) * currentLimit;
-      const end = start + currentLimit;
-      const newVisibleCodes = [...codes].slice(start, end);
-      setOffset(start);
-      setVisibleCodes(newVisibleCodes);
-      setVisibleItems(newVisibleCodes?.length);
-      setTotalItems(codes?.length);
-      setTotalPages(Math.ceil(codes?.length / currentLimit));
+    if (codes?.length > 0) {
+      if (totalItems < currentLimit) {
+        setOffset(0);
+        setVisibleCodes(codes && [...codes]);
+        setVisibleItems(codes?.length);
+        setTotalItems(codes?.length);
+        setTotalPages(1);
+      } else {
+        const start = (currentPage - 1) * currentLimit;
+        const end = start + currentLimit;
+        const newVisibleCodes = [...codes].slice(start, end);
+        setOffset(start);
+        setVisibleCodes(newVisibleCodes);
+        setVisibleItems(newVisibleCodes?.length);
+        setTotalItems(codes?.length);
+        setTotalPages(Math.ceil(codes?.length / currentLimit));
+      }
     }
   }, [
     currentLimit,
@@ -151,6 +201,28 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
       {
         header: "",
         accessorKey: "apply",
+        cell: (row: any) => (
+          <div className="inline-flex gap-x-2">
+            {canEdit ? (
+              <button
+                className="action-button"
+                onClick={(e) => {
+                  handleOpen(row.cell.row.id, e);
+                }}
+                tw="text-blue-600 hover:text-blue-900"
+                data-testid={`select-action-${row.cell.id}`}
+                aria-label={`select-action-${row.cell.id}`}
+              >
+                <div className="action">Select</div>
+                <div className="chevron-container">
+                  <ExpandMoreIcon />
+                </div>
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        ),
       },
     ],
     []
@@ -193,14 +265,14 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
   };
 
   const getCodeStatus = (status) => {
-    if (status == CodeStatus.ACTIVE) {
+    if (status == "ACTIVE") {
       return (
         <ToolTippedIcon tooltipMessage="This code is active in this code system version">
           <CheckCircleIcon color="success" />
         </ToolTippedIcon>
       );
     }
-    if (status == CodeStatus.INACTIVE) {
+    if (status == "INACTIVE") {
       return (
         <ToolTippedIcon tooltipMessage="This code is inactive in this code system version">
           <DoDisturbOutlinedIcon />
@@ -212,6 +284,34 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
         <DoNotDisturbOnIcon />
       </ToolTippedIcon>
     );
+  };
+
+  const handleClose = () => {
+    setOptionsOpen(false);
+    setSelectedReferenceId(null);
+    setAnchorEl(null);
+  };
+
+  const toggleOpen = () => {
+    setOpen(!open);
+  };
+
+  const handleDialogEditCodeApply = () => {
+    // eslint-disable-next-line no-console
+    console.log("Code is edited an applied");
+  };
+
+  const handleEditCodeDetails = () => {
+    setOptionsOpen(false);
+    setOpen(true);
+    const selectedAntlrParsedCode = parsedCodesList.filter(
+      (code) => code.codeSystem === selectedCodeDetails.codeSystem
+    )[0];
+    setSelectedCodeDetails({
+      ...selectedCodeDetails,
+      suffix: selectedAntlrParsedCode?.suffix,
+      isVersionIncluded: selectedAntlrParsedCode?.version ? true : false,
+    });
   };
 
   return (
@@ -263,7 +363,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
                   </tr>
                 ))}
               </thead>
-              <tbody>
+              <tbody data-testid="saved-codes-tbl-body">
                 {!loading ? (
                   _.isEmpty(codes) ? (
                     <tr>
@@ -273,7 +373,7 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
                     </tr>
                   ) : (
                     table.getRowModel().rows.map((row) => (
-                      <tr key={row.id} data-test-id={row.id}>
+                      <tr key={row.id} data-testid={`saved-code-row-${row.id}`}>
                         {row.getVisibleCells().map((cell) => (
                           <td key={cell.id} tw="p-2">
                             {cell.column.id === "status"
@@ -288,12 +388,62 @@ export default function SavedCodesSubSection({ measureStoreCql }) {
                     ))
                   )
                 ) : (
-                  <div>
+                  <div data-testid="saved-codes-loading-spinner">
                     <MadieSpinner style={{ height: 50, width: 50 }} />
                   </div>
                 )}
               </tbody>
+
+              <Popover
+                optionsOpen={optionsOpen}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                canEdit={true}
+                editViewSelectOptionProps={{
+                  label: "Remove",
+                  toImplementFunction: () => {
+                    setOptionsOpen(false);
+                  },
+                  dataTestId: `remove-code-${selectedReferenceId}`,
+                }}
+                otherSelectOptionProps={[
+                  {
+                    label: "Edit",
+                    toImplementFunction: () => {
+                      handleEditCodeDetails();
+                    },
+                    dataTestId: `edit-code-${selectedReferenceId}`,
+                  },
+                ]}
+              />
             </table>
+
+            <MadieDialog
+              form={true}
+              title={"Code Details"}
+              dialogProps={{
+                open,
+                onClose: toggleOpen,
+                id: "edit-code-details-popup-dialog",
+                onSubmit: handleDialogEditCodeApply,
+              }}
+              cancelButtonProps={{
+                cancelText: "Cancel",
+                "data-testid": "cancel-button",
+              }}
+              continueButtonProps={{
+                continueText: "Apply",
+                "data-testid": "apply-button",
+                disabled: false,
+              }}
+              children={
+                selectedCodeDetails && (
+                  <EditCodeDetailsDialogForm
+                    selectedCodeDetails={selectedCodeDetails}
+                  />
+                )
+              }
+            />
           </>
         }
       />
