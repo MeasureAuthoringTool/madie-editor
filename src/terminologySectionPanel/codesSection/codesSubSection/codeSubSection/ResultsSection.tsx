@@ -17,7 +17,7 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Popover, MadieDialog } from "@madie/madie-design-system/dist/react";
 import "./ResultsSection.scss";
-import EditCodeDetails from "../common/EditCodeDetails";
+import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
 
 type ResultSectionProps = {
   showResultsTable: boolean;
@@ -264,7 +264,9 @@ export default function ResultsSection({
               }}
               children={
                 selectedCodeDetails && (
-                  <EditCodeDetails selectedCodeDetails={selectedCodeDetails} />
+                  <EditCodeDetailsDialogForm
+                    selectedCodeDetails={selectedCodeDetails}
+                  />
                 )
               }
             />

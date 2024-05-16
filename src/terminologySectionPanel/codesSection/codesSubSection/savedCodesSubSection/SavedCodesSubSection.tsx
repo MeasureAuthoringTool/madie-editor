@@ -27,7 +27,7 @@ import useTerminologyServiceApi, {
   CodeStatus,
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
-import EditCodeDetails from "../common/EditCodeDetails";
+import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
 
 type TCRow = {
   name: string;
@@ -438,7 +438,9 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
               }}
               children={
                 selectedCodeDetails && (
-                  <EditCodeDetails selectedCodeDetails={selectedCodeDetails} />
+                  <EditCodeDetailsDialogForm
+                    selectedCodeDetails={selectedCodeDetails}
+                  />
                 )
               }
             />

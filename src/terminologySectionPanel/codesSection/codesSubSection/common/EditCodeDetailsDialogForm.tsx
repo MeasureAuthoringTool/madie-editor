@@ -4,7 +4,7 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 import tw from "twin.macro";
 import "styled-components/macro";
 
-export default function EditCodeDetails({ selectedCodeDetails }) {
+export default function EditCodeDetailsDialogForm({ selectedCodeDetails }) {
   const getCodeSystemName = (codeDetails) => {
     if (codeDetails.codeSystem) {
       if (codeDetails.suffix) {
@@ -63,37 +63,6 @@ export default function EditCodeDetails({ selectedCodeDetails }) {
               value: `${
                 selectedCodeDetails?.suffix ? selectedCodeDetails.suffix : ""
               }`,
-            }}
-            sx={{
-              borderRadius: "3px",
-              height: "auto",
-              border: "1px solid #8c8c8c",
-              marginTop: "8px",
-              // remove weird line break from legend
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderRadius: "3px",
-                "& legend": {
-                  width: 0,
-                },
-              },
-              "& .MuiOutlinedInput-root": {
-                padding: 0,
-                "&&": {
-                  borderRadius: "3px",
-                },
-              },
-              // input base selector
-              "& .MuiInputBase-input": {
-                color: "#333",
-                fontFamily: "Rubik",
-                fontSize: 14,
-                borderRadius: "3px",
-                padding: "9px 14px",
-                "&::placeholder": {
-                  opacity: 1,
-                  color: "#717171",
-                },
-              },
             }}
             data-testid="suffix-max-length-text-field"
             size="small"

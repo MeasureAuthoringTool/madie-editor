@@ -76,7 +76,18 @@ describe("Results Section component", () => {
 
   it("should display the apply button in Results", async () => {
     renderResultsTable(mockCode, "CheckCircleIcon");
-    screen.debug();
+    const resultsContent = screen.getByTestId("codes-results-tbl");
+    expect(resultsContent).toBeInTheDocument();
+    let applyBtn;
+    await act(async () => {
+      applyBtn = await findByTestId(resultsContent, "select-action-0_apply");
+      expect(applyBtn).toBeDefined();
+      userEvent.click(applyBtn);
+    });
+  });
+
+  it("should display the edit button in Results", async () => {
+    renderResultsTable(mockCode, "CheckCircleIcon");
     const resultsContent = screen.getByTestId("codes-results-tbl");
     expect(resultsContent).toBeInTheDocument();
     let applyBtn;
@@ -98,10 +109,47 @@ describe("Results Section component", () => {
     );
   });
 
-  it("should display the results table for a code with no status available", () => {
+  it("should display the results table for a code with no status available", async () => {
     renderResultsTable(
       { ...mockCode, status: CodeStatus.NA },
       "DoNotDisturbOnIcon"
     );
+  });
+
+  it("displaying edit dialog when edit is clicked from the select actions", async () => {
+    renderResultsTable(
+      { ...mockCode, status: CodeStatus.NA },
+      "DoNotDisturbOnIcon"
+    );
+
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+
+    const editButton = screen.getByTestId(`edit-code-0`);
+    expect(editButton).toBeInTheDocument();
+
+    const applyButton = screen.getByTestId(`apply-code-0`);
+    expect(applyButton).toBeInTheDocument();
+
+    const removeButton = screen.getByTestId(`delete-code-0`);
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(editButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("dialog-form")).toBeInTheDocument();
+    });
+
+    const suffixInput = screen.getByTestId(
+      "suffix-max-length-input"
+    ) as HTMLInputElement;
+    expect(suffixInput.value).toBe("");
+
+    const cancelButton = screen.getByTestId("cancel-button");
+    expect(cancelButton).toBeInTheDocument();
+    userEvent.click(cancelButton);
   });
 });
