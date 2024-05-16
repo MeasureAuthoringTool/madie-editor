@@ -52,6 +52,13 @@ export interface Code {
 export interface ValueSetForSearch {
   codeSystem?: string;
   name?: string;
+  author?: string;
+  composedOf?: string;
+  effectiveDate?: string;
+  lastReviewDate?: string;
+  lastUpdated?: string;
+  publisher?: string;
+  purpose?: string;
   oid?: string;
   status?: string;
   steward?: string;

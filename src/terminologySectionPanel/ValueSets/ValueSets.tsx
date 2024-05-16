@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import TerminologySection from "../../common/TerminologySection";
-import Filter from "./Filter/Filter";
+import Filter, { FILTER_CATEGORIES } from "./Filter/Filter";
 import Search, { SEARCH_CATEGORIES } from "./Search/Search";
 import Results from "./Results/Results";
 import useTerminologyServiceApi, {
   ValueSetForSearch,
 } from "../../api/useTerminologyServiceApi";
 import { MadieSpinner } from "@madie/madie-design-system/dist/react";
-
 import "./ValueSets.scss";
 
 interface ValueSetsProps {
@@ -19,6 +18,12 @@ export default function ValueSets(props: ValueSetsProps) {
   const [resultValueSets, setResultValuesSets] = useState<ValueSetForSearch[]>(
     []
   );
+  const [filteredValueSets, setFilteredValueSets] = useState<
+    ValueSetForSearch[]
+  >([]);
+  // Calls can be pretty heavy and very slow.
+  // This route limits calls to vsac, but state may be heavier. This will allow users to immediately update filters
+  // on clear can be implemented after to reset
   const [resultsOpen, setResultsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -37,6 +42,7 @@ export default function ValueSets(props: ValueSetsProps) {
       .searchValueSets(nonEmptyValues)
       .then((data) => {
         setResultValuesSets(data);
+        setFilteredValueSets(data);
         setLoading(false);
         setResultsOpen(true);
       })
@@ -45,6 +51,38 @@ export default function ValueSets(props: ValueSetsProps) {
         setLoading(false);
       });
   };
+
+  //  Title is the human friendly version, the mockup refers to it as name, but there are spaces.
+  //  This should probably be listed as title instead.
+  const onFilter = (values) => {
+    const nonEmptyValues = {};
+    FILTER_CATEGORIES.forEach(({ value }) => {
+      // blank the value if it exists and it is still a search category
+      if (values[value]) {
+        if (value === "oid" || value === "url") {
+          // if there's an http in front, we don't care so just cut it since we're string matching anyway
+          values[value] = values[value].replace(/^http?:\/\//, "");
+        }
+        nonEmptyValues[value] = values[value].toLowerCase();
+      }
+    });
+    const filteredValueSets = resultValueSets.filter((valueSet) => {
+      for (const key in nonEmptyValues) {
+        const filterTerm = nonEmptyValues[key];
+        const valueSetPropValue = valueSet[key];
+        if (!valueSetPropValue.toLowerCase().includes(filterTerm)) {
+          return false;
+        }
+        return true;
+      }
+    });
+    setFilteredValueSets(filteredValueSets);
+  };
+
+  const onFilterClear = () => {
+    setFilteredValueSets(resultValueSets);
+  };
+
   return (
     <div id="value-sets-right-panel">
       {loading && (
@@ -58,10 +96,14 @@ export default function ValueSets(props: ValueSetsProps) {
         <Search canEdit={canEdit} handleSearch={handleSearch} />
       </TerminologySection>
       <TerminologySection title="Filter" showHeaderContent={false}>
-        <Filter canEdit={canEdit} />
+        <Filter
+          canEdit={canEdit}
+          onFilter={onFilter}
+          onFilterClear={onFilterClear}
+        />
       </TerminologySection>
       <TerminologySection title="Results" showHeaderContent={resultsOpen}>
-        <Results resultValueSets={resultValueSets} />
+        <Results resultValueSets={filteredValueSets} />
       </TerminologySection>
     </div>
   );
