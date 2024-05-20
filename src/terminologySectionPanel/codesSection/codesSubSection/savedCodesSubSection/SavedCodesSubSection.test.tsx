@@ -142,7 +142,7 @@ describe("Saved Codes section component", () => {
     ).toHaveBeenCalledWith(mockCodeList);
   });
 
-  it.only("displaying edit dialog when edit is clicked from the select actions", async () => {
+  it("displaying edit dialog when edit is clicked from the select actions", async () => {
     mockedAxios.get.mockImplementation((url) => {
       if (url === "/env-config/serviceConfig.json") {
         return Promise.resolve({ data: mockConfig });
