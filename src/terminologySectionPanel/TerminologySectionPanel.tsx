@@ -8,6 +8,7 @@ import { useFeatureFlags } from "@madie/madie-util";
 export default function TerminologySectionPanel({
   canEdit,
   measureStoreCql,
+  cqlMetaData,
   handleChange,
 }) {
   const featureFlags = useFeatureFlags();
@@ -32,6 +33,7 @@ export default function TerminologySectionPanel({
           <CodesSection
             canEdit={canEdit}
             measureStoreCql={measureStoreCql}
+            cqlMetaData={cqlMetaData}
             handleChange={handleChange}
           />
         )}

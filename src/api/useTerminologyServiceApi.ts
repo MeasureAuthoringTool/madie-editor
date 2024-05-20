@@ -49,6 +49,10 @@ export interface Code {
   codeSystemOid?: string;
 }
 
+export declare type CqlMetaData = {
+  codeSystemMap: Map<string, CodeSystem>;
+};
+
 export class TerminologyServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 

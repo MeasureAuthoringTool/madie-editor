@@ -28,6 +28,7 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
+import { getOidFromString } from "@madie/madie-util";
 
 type TCRow = {
   name: string;
@@ -52,7 +53,11 @@ export type SelectedCodeDetails = TCRow & {
   svsVersion?: string;
 };
 
-export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
+export default function SavedCodesSubSection({
+  measureStoreCql,
+  canEdit,
+  cqlMetaData,
+}) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -120,13 +125,18 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
               codeSystem?.name?.replace(/['"]+/g, "") ===
               code?.codeSystem?.replace(/['"]+/g, "")
           );
-          const version = matchedCodeSystem?.version?.replace(/['"]+/g, "");
-          const oid = matchedCodeSystem?.oid;
+          const parsedCode = code?.codeId.replace(/['"]+/g, "");
+          const parsedCodeSystem = code?.codeSystem.replace(/['"]+/g, "");
           return {
-            code: code?.codeId.replace(/['"]+/g, ""),
-            codeSystem: code?.codeSystem.replace(/['"]+/g, ""),
-            version: version && version.split(":").pop(),
-            oid: oid,
+            code: parsedCode,
+            codeSystem: parsedCodeSystem,
+            version: getCodeVersion(
+              parsedCode,
+              matchedCodeSystem?.oid,
+              cqlMetaData?.codeSystemMap,
+              matchedCodeSystem?.version //if version is present in the given cql
+            ),
+            oid: matchedCodeSystem?.oid,
             suffix: getCodeSystemSuffix(code?.codeSystem.replace(/['"]+/g, "")),
           };
         });
@@ -135,6 +145,29 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
       }
     }
   }, [measureStoreCql]);
+
+  const getCodeVersion = (
+    code,
+    oid,
+    codeSystemMap,
+    matchedCodeSystemVersion
+  ) => {
+    if (codeSystemMap) {
+      //if version is added through UI, then check inn the cql meta data
+      if (code && oid) {
+        const parsedOid = getOidFromString(oid, "QDM")?.replace("'", "");
+        if (
+          codeSystemMap[code] &&
+          codeSystemMap[code]?.codeSystemOid === parsedOid
+        ) {
+          return codeSystemMap[code]?.version;
+        }
+      }
+    }
+    // if version is added in the cql
+    const version = matchedCodeSystemVersion?.replace(/['"]+/g, "");
+    return version && version.split(":").pop();
+  };
 
   const getCodeSystemSuffix = (codeSystemName: string) => {
     const pattern = /\((\d+)\)/;
