@@ -134,7 +134,7 @@ export default function SavedCodesSubSection({
               parsedCode,
               matchedCodeSystem?.oid,
               cqlMetaData?.codeSystemMap,
-              matchedCodeSystem?.version //if version is present in the given cql
+              matchedCodeSystem?.version
             ),
             oid: matchedCodeSystem?.oid,
             suffix: getCodeSystemSuffix(code?.codeSystem.replace(/['"]+/g, "")),
