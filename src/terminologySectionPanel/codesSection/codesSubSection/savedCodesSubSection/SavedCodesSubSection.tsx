@@ -152,7 +152,7 @@ export default function SavedCodesSubSection({
     codeSystemMap,
     matchedCodeSystemVersion
   ) => {
-    if (codeSystemMap) {
+    if (codeSystemMap && !matchedCodeSystemVersion) {
       //if version is added through UI, then check inn the cql meta data
       if (code && oid) {
         const parsedOid = getOidFromString(oid, "QDM")?.replace("'", "");
