@@ -11,10 +11,16 @@ export const SEARCH_CATEGORIES = [
   { label: "Description", value: "description" },
   { label: "Keyword", value: "keyword" },
   { label: "Name", value: "name" },
-  { label: "OID/URL", value: "oid" },
+  { label: "OID/URL", value: "url" },
   { label: "Status", value: "status" },
   { label: "Title", value: "title" },
 ];
+
+// given url:  2.16.840.1.113762.1.4.1200.105
+// given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
+// convert to: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
+// https://cts.nlm.nih.gov/fhir/res/ValueSet?url=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
+
 // easy lookup to interface label with value for the search fields
 const SEARCH_MAP = {};
 SEARCH_CATEGORIES.forEach((obj) => {
@@ -23,10 +29,10 @@ SEARCH_CATEGORIES.forEach((obj) => {
 
 interface SearchProps {
   canEdit: boolean;
+  handleSearch: Function;
 }
 export default function Search(props: SearchProps) {
-  const { canEdit } = props;
-  const handleSearch = () => {};
+  const { canEdit, handleSearch } = props;
 
   const formik = useFormik({
     initialValues: {
@@ -43,12 +49,12 @@ export default function Search(props: SearchProps) {
       description: "",
       keyword: "",
       name: "",
-      oid: "",
+      url: "",
       status: "",
       title: "",
     },
     enableReinitialize: true,
-    onSubmit: async (values) => await handleSearch(),
+    onSubmit: async (values) => await handleSearch(values),
   });
 
   // check if any keys are dirty aside from searchCategories.
