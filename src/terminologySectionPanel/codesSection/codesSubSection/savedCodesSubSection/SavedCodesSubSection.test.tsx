@@ -64,7 +64,7 @@ const mockCodeList = [
     codeSystem: "LOINC (1)",
     oid: "'urn:oid:2.16.840.1.113883.6.1'",
     suffix: "1",
-    version: "2.44",
+    version: undefined,
   },
   {
     code: "8480-6",
