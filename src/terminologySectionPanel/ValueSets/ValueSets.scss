@@ -29,3 +29,18 @@
     }
   }
 }
+
+#value-sets-right-panel {
+  > .spinner-overlay {
+    position: absolute;
+    background-color: rgba(250, 250, 250, 0.5);
+    width: 100%;
+    height: 100%;
+
+    > .spinner-container {
+      position: relative;
+      top: calc(45% - 50px);
+      left: calc(50% - 50px);
+    }
+  }
+}

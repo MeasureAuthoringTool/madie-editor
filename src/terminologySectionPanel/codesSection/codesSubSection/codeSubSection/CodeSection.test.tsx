@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import CodeSection from "./CodeSection";
 import userEvent from "@testing-library/user-event";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
+import { within } from "@testing-library/dom";
 
 const readOnly = true;
 const handleFormSubmitMock = jest.fn();
@@ -50,9 +51,15 @@ describe("Code Section component", () => {
     userEvent.click(codeSystemOptions[0]);
 
     // Selecting a Code System Version
-    const codeSystemVersionSelect = screen.getByRole("combobox", {
-      name: "Code System Version",
-    });
+    const comboBoxContainer = screen.getByTestId(
+      "code-system-version-selector"
+    );
+    const codeSystemVersionSelect = within(comboBoxContainer).getByRole(
+      "button",
+      {
+        name: "Code System Version HL7V3.0_2019-02",
+      }
+    );
     expect(codeSystemVersionSelect).toHaveTextContent("HL7V3.0_2019-02");
     expect(codeSystemVersionSelect).toBeEnabled();
     userEvent.click(codeSystemVersionSelect);

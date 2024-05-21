@@ -7,7 +7,7 @@ import SearchField from "../../../common/SearchField";
 export const FILTER_CATEGORIES = [
   { label: "Author", value: "author" },
   { label: "Composed of", value: "composedOf" },
-  { label: "Definition Version", value: "definitionVersion" },
+  { label: "Definition Version", value: "version" },
   { label: "Effective Date", value: "effectiveDate" },
   { label: "Last Review Date", value: "lastReviewDate" },
   { label: "Last Updated", value: "lastUpdated" },
@@ -22,8 +22,7 @@ FILTER_CATEGORIES.forEach((obj) => {
   FILTER_MAP[obj.value] = obj.label;
 });
 const Filter = (props) => {
-  const { canEdit } = props;
-  const handleFilter = () => {};
+  const { canEdit, onFilter, onFilterClear } = props;
 
   const formik = useFormik({
     initialValues: {
@@ -31,7 +30,7 @@ const Filter = (props) => {
 
       author: "",
       composedOf: "",
-      definitionVersion: "",
+      version: "",
       effectiveDate: "",
       lastReviewDate: "",
       lastUpdated: "",
@@ -42,7 +41,7 @@ const Filter = (props) => {
       title: "",
     },
     enableReinitialize: true,
-    onSubmit: async (values) => await handleFilter(),
+    onSubmit: (values) => onFilter(values),
   });
 
   const isDirty = (() => {
@@ -134,7 +133,10 @@ const Filter = (props) => {
           variant="outline"
           data-testid="clear-filters-btn"
           disabled={!formik.dirty}
-          onClick={resetForm}
+          onClick={() => {
+            resetForm();
+            onFilterClear();
+          }}
         >
           Clear
         </Button>
