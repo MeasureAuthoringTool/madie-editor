@@ -43,7 +43,7 @@ export interface Code {
   name: string;
   display: string;
   codeSystem: string;
-  version: string;
+  fhirVersion: string;
   svsVersion: string;
   status: CodeStatus;
   codeSystemOid?: string;

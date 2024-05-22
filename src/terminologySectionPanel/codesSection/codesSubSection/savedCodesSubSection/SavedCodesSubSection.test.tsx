@@ -34,7 +34,8 @@ const mockeCodeDetailsList = {
     {
       name: "8462-4",
       display: "Diastolic blood pressure",
-      version: "2.44",
+      svsVersion: "2.44",
+      fhirVersion: "2.44",
       codeSystem: "LOINC (1)",
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",
@@ -42,7 +43,8 @@ const mockeCodeDetailsList = {
     {
       name: "8480-6",
       display: "Systolic blood pressure",
-      version: "2.72",
+      svsVersion: "2.72",
+      fhirVersion: "2.72",
       codeSystem: "LOINC",
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",
@@ -80,7 +82,8 @@ const mockCqlMetaData = {
     "8462-4": {
       name: "8462-4",
       display: "Diastolic blood pressure",
-      version: "2.44",
+      svsVersion: "2.44",
+      fhirVersion: "2.44",
       codeSystem: "LOINC",
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",

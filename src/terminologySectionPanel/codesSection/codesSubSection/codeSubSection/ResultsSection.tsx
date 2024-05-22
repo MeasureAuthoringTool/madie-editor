@@ -26,11 +26,11 @@ type ResultSectionProps = {
   handleChange;
 };
 
-type TCRow = {
+type ResultsColumnRow = {
   name: string;
   display: string;
   codeSystem: string;
-  version: string;
+  svsVersion: string;
 };
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
@@ -43,7 +43,8 @@ export default function ResultsSection({
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
-  const [selectedCodeDetails, setSelectedCodeDetails] = useState<TCRow>(null);
+  const [selectedCodeDetails, setSelectedCodeDetails] =
+    useState<ResultsColumnRow>(null);
   const [open, setOpen] = useState<boolean>(false);
 
   const handleOpen = async (
@@ -63,7 +64,7 @@ export default function ResultsSection({
   };
 
   const data = [code];
-  const columns = useMemo<ColumnDef<TCRow>[]>(
+  const columns = useMemo<ColumnDef<ResultsColumnRow>[]>(
     () => [
       {
         header: "",
@@ -83,7 +84,7 @@ export default function ResultsSection({
       },
       {
         header: "System Version",
-        accessorKey: "version",
+        accessorKey: "svsVersion",
       },
       {
         header: "",

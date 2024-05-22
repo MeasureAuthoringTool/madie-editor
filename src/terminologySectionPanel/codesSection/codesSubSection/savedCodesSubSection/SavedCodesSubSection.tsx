@@ -30,11 +30,11 @@ import _ from "lodash";
 import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
 import { getOidFromString } from "@madie/madie-util";
 
-type TCRow = {
+type SavedCodesColumnRow = {
   name: string;
   display: string;
   codeSystem: string;
-  version: string;
+  svsVersion: string;
 };
 
 type CodesList = {
@@ -45,12 +45,12 @@ type CodesList = {
   version: string;
 };
 
-export type SelectedCodeDetails = TCRow & {
+export type SelectedCodeDetails = SavedCodesColumnRow & {
   codeSystemOid?: string;
   isVersionIncluded?: boolean;
   status?: string;
   suffix?: string;
-  svsVersion?: string;
+  fhirVersion?: string;
 };
 
 export default function SavedCodesSubSection({
@@ -163,7 +163,7 @@ export default function SavedCodesSubSection({
           codeSystemMap[code]?.codeSystemOid === parsedOid &&
           codeSystemMap[code]?.codeSystem === parsedCodeSystem
         ) {
-          return codeSystemMap[code]?.version;
+          return codeSystemMap[code]?.svsVersion;
         }
       }
     }
@@ -212,7 +212,7 @@ export default function SavedCodesSubSection({
   ]);
 
   const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-  const columns = useMemo<ColumnDef<TCRow>[]>(
+  const columns = useMemo<ColumnDef<SavedCodesColumnRow>[]>(
     () => [
       {
         header: "",
