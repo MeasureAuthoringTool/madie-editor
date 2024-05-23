@@ -11,6 +11,7 @@ interface CodesSectionProps {
   canEdit: boolean;
   measureStoreCql: string;
   cqlMetaData: CqlMetaData;
+  measureModel: string;
   handleChange;
 }
 
@@ -18,6 +19,7 @@ export default function CodesSection({
   canEdit,
   measureStoreCql,
   cqlMetaData,
+  measureModel,
   handleChange,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
@@ -32,6 +34,7 @@ export default function CodesSection({
             allCodeSystems={codeSystems}
             canEdit={canEdit}
             handleChange={handleChange}
+            measureModel={measureModel}
           />
         )}
         {activeTab === "savedCodes" && (
