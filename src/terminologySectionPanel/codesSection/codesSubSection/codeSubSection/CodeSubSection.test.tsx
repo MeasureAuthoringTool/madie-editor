@@ -6,6 +6,8 @@ import { ServiceConfig } from "../../../../api/useServiceConfig";
 import axios from "axios";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
+import { measureStore } from "@madie/madie-util";
+import { Measure } from "@madie/madie-models";
 
 jest.mock("../../useCodeSystems");
 jest.mock("axios");
@@ -14,6 +16,14 @@ jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
   }),
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+    state: jest.fn().mockImplementation(() => null),
+    initialState: jest.fn().mockImplementation(() => null),
+    subscribe: () => {
+      return { unsubscribe: () => null };
+    },
+  },
 }));
 const mockConfig: ServiceConfig = {
   elmTranslationService: {
@@ -30,7 +40,16 @@ const mockCode: Code = {
   status: CodeStatus.ACTIVE,
   version: "2.0",
 };
+const measure = {
+  id: "measure ID",
+  createdBy: "testuseratexample.com",
+  model: "QDM v5.6",
+  testCases: [],
+} as Measure;
 describe("CodeSub Section component", () => {
+  beforeEach(() => {
+    measureStore.state.mockImplementation(() => measure);
+  });
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
     const { findByTestId } = render(
       <CodeSubSection canEdit={false} allCodeSystems={mockedCodeSystems} />

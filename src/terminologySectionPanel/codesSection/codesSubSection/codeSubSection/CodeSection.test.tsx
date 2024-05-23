@@ -4,11 +4,34 @@ import CodeSection from "./CodeSection";
 import userEvent from "@testing-library/user-event";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
 import { within } from "@testing-library/dom";
+import { measureStore } from "@madie/madie-util";
+import { Measure } from "@madie/madie-models";
+
+jest.mock("@madie/madie-util", () => ({
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+    state: jest.fn().mockImplementation(() => null),
+    initialState: jest.fn().mockImplementation(() => null),
+    subscribe: () => {
+      return { unsubscribe: () => null };
+    },
+  },
+}));
 
 const readOnly = true;
 const handleFormSubmitMock = jest.fn();
 
+const measure = {
+  id: "measure ID",
+  createdBy: "testuseratexample.com",
+  model: "QDM v5.6",
+  testCases: [],
+} as Measure;
+
 describe("Code Section component", () => {
+  beforeEach(() => {
+    measureStore.state.mockImplementation(() => measure);
+  });
   it("should display all the fields in the Code(s) section", async () => {
     render(
       <CodeSection

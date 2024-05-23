@@ -16,6 +16,8 @@ import moment from "moment";
 import { MenuItem } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
 import ControlledAutoComplete from "../../../../common/ControlledAutoComplete";
+import { measureStore } from "@madie/madie-util";
+import { Measure } from "@madie/madie-models";
 
 interface CodeSectionProps {
   handleFormSubmit: Function;
@@ -36,6 +38,13 @@ export default function CodeSection({
   blankResults,
 }: CodeSectionProps) {
   const [titles, setTitles] = useState([]);
+  const [measure, setMeasure] = useState<Measure>(measureStore.state);
+  useEffect(() => {
+    const subscription = measureStore.subscribe(setMeasure);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   // if we open tab before information has arrived, we need to trigger a useEffect
   useEffect(() => {
     if (allCodeSystems?.length) {
@@ -74,10 +83,17 @@ export default function CodeSection({
           return dateB.getTime() - dateA.getTime();
         });
       setAvailableVersions(
-        availableVersions.map((cs) => ({
-          value: cs.version,
-          label: cs.qdmDisplayVersion,
-        }))
+        availableVersions
+          .map((cs) => ({
+            value: cs.version,
+            label: cs.qdmDisplayVersion,
+          }))
+          .filter((cs) => {
+            if (measure.model === "QDM v5.6") {
+              return cs.label !== null;
+            }
+            return true;
+          })
       );
       formik.setFieldValue("version", availableVersions[0].version);
     } else {

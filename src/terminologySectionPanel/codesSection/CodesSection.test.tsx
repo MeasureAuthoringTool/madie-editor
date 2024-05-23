@@ -10,6 +10,8 @@ import * as React from "react";
 import CodesSection from "./CodesSection";
 import { useCodeSystems } from "./useCodeSystems";
 import { ServiceConfig } from "../../api/useServiceConfig";
+import { measureStore } from "@madie/madie-util";
+import { Measure } from "@madie/madie-models";
 
 jest.mock("./useCodeSystems");
 
@@ -26,6 +28,19 @@ jest.mock("../../api/useServiceConfig", () => {
     useServiceConfig: jest.fn(() => Promise.resolve(mockConfig)),
   };
 });
+jest.mock("@madie/madie-util", () => ({
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+    state: jest.fn().mockImplementation(() => null),
+    initialState: jest.fn().mockImplementation(() => null),
+    subscribe: () => {
+      return { unsubscribe: () => null };
+    },
+  },
+}));
 
 const mockCodeSystems = [
   {
@@ -48,6 +63,13 @@ const mockCodeSystems = [
   },
 ];
 
+const measure = {
+  id: "measure ID",
+  createdBy: "testuseratexample.com",
+  model: "QDM v5.6",
+  testCases: [],
+} as Measure;
+
 const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<
   typeof useCodeSystems
 >;
@@ -59,6 +81,9 @@ const renderEditor = () => {
 };
 
 describe("CodesSection", () => {
+  beforeEach(() => {
+    measureStore.state.mockImplementation(() => measure);
+  });
   it("should display all codes section nav tabs and navigation works as expected", async () => {
     renderEditor();
     const codeSystems = await screen.findByText("Code Systems");
