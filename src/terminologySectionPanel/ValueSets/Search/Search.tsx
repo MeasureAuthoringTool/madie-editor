@@ -7,7 +7,7 @@ import { Button } from "@madie/madie-design-system/dist/react";
 // human readable label & formik value / query param key
 export const SEARCH_CATEGORIES = [
   { label: "Code", value: "code" },
-  { label: "Definition Version", value: "version" },
+  { label: "Definition Version", value: "version", ds: "test" },
   { label: "Description", value: "description" },
   { label: "Keyword", value: "keyword" },
   { label: "Name", value: "name" },
