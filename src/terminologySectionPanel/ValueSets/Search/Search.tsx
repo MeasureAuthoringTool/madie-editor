@@ -7,7 +7,11 @@ import { Button } from "@madie/madie-design-system/dist/react";
 // human readable label & formik value / query param key
 export const SEARCH_CATEGORIES = [
   { label: "Code", value: "code" },
-  { label: "Definition Version", value: "version" },
+  {
+    label: "Definition Version",
+    value: "version",
+    disabledText: "OID/URL must be selected first.",
+  },
   { label: "Description", value: "description" },
   { label: "Keyword", value: "keyword" },
   { label: "Name", value: "name" },
@@ -89,6 +93,7 @@ export default function Search(props: SearchProps) {
       }
     });
   };
+
   return (
     <form
       id="madie-editor-search"
@@ -110,6 +115,12 @@ export default function Search(props: SearchProps) {
         required={false}
         disabled={!canEdit}
         options={SEARCH_CATEGORIES}
+        getOptionDisabled={(option) => {
+          if (option.value === "version") {
+            return formik.values.url === "";
+          }
+          return false;
+        }}
         multipleSelect={true}
         limitTags={8}
       />
