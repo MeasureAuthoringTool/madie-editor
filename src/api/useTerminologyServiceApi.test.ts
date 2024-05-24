@@ -16,8 +16,11 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 const mockConfig: ServiceConfig = {
-  elmTranslationService: {
-    baseUrl: "elm.com",
+  qdmElmTranslationService: {
+    baseUrl: "qdm-elm.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir-elm.com",
   },
   terminologyService: {
     baseUrl: "terminology.com",
@@ -30,6 +33,7 @@ const mockCode: Code = {
   codeSystem: "LOINC",
   status: CodeStatus.ACTIVE,
   version: "2.40",
+  svsVersion: "2.40",
 };
 
 describe("TerminologyServiceApi test", () => {
