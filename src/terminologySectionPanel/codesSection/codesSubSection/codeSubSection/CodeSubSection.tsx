@@ -12,12 +12,14 @@ interface CodeSectionProps {
   canEdit: boolean;
   allCodeSystems: CodeSystem[];
   handleChange: string;
+  measureModel: string;
 }
 
 export default function CodeSubSection({
   canEdit,
   allCodeSystems,
   handleChange,
+  measureModel,
 }: CodeSectionProps) {
   const [code, setCode] = useState<Code>();
   const [showResultsTable, setShowResultsTable] = useState(false);
@@ -65,6 +67,7 @@ export default function CodeSubSection({
         allCodeSystems={allCodeSystems}
         canEdit={canEdit}
         blankResults={blankResults}
+        measureModel={measureModel}
       />
       <ResultsSection
         showResultsTable={showResultsTable}

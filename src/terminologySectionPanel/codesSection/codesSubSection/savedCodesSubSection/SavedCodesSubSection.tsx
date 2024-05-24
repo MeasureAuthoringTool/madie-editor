@@ -28,12 +28,13 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
+import { getOidFromString } from "@madie/madie-util";
 
-type TCRow = {
+type SavedCodesColumnRow = {
   name: string;
   display: string;
   codeSystem: string;
-  version: string;
+  svsVersion: string;
 };
 
 type CodesList = {
@@ -44,15 +45,19 @@ type CodesList = {
   version: string;
 };
 
-export type SelectedCodeDetails = TCRow & {
+export type SelectedCodeDetails = SavedCodesColumnRow & {
   codeSystemOid?: string;
   isVersionIncluded?: boolean;
   status?: string;
   suffix?: string;
-  svsVersion?: string;
+  fhirVersion?: string;
 };
 
-export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
+export default function SavedCodesSubSection({
+  measureStoreCql,
+  canEdit,
+  cqlMetaData,
+}) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -120,13 +125,19 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
               codeSystem?.name?.replace(/['"]+/g, "") ===
               code?.codeSystem?.replace(/['"]+/g, "")
           );
-          const version = matchedCodeSystem?.version?.replace(/['"]+/g, "");
-          const oid = matchedCodeSystem?.oid;
+          const parsedCode = code?.codeId.replace(/['"]+/g, "");
+          const parsedCodeSystem = code?.codeSystem.replace(/['"]+/g, "");
           return {
-            code: code?.codeId.replace(/['"]+/g, ""),
-            codeSystem: code?.codeSystem.replace(/['"]+/g, ""),
-            version: version && version.split(":").pop(),
-            oid: oid,
+            code: parsedCode,
+            codeSystem: parsedCodeSystem,
+            version: getCodeVersion(
+              parsedCode,
+              parsedCodeSystem,
+              matchedCodeSystem?.oid,
+              cqlMetaData?.codeSystemMap,
+              matchedCodeSystem?.version
+            ),
+            oid: matchedCodeSystem?.oid,
             suffix: getCodeSystemSuffix(code?.codeSystem.replace(/['"]+/g, "")),
           };
         });
@@ -135,6 +146,31 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
       }
     }
   }, [measureStoreCql]);
+
+  const getCodeVersion = (
+    code,
+    parsedCodeSystem,
+    oid,
+    codeSystemMap,
+    matchedCodeSystemVersion
+  ) => {
+    if (codeSystemMap && !matchedCodeSystemVersion) {
+      //if version is added through UI, then check inn the cql meta data
+      if (code && oid && parsedCodeSystem) {
+        const parsedOid = getOidFromString(oid, "QDM")?.replace("'", "");
+        if (
+          codeSystemMap[code] &&
+          codeSystemMap[code]?.codeSystemOid === parsedOid &&
+          codeSystemMap[code]?.codeSystem === parsedCodeSystem
+        ) {
+          return codeSystemMap[code]?.svsVersion;
+        }
+      }
+    }
+    // if version is added in the cql
+    const version = matchedCodeSystemVersion?.replace(/['"]+/g, "");
+    return version && version.split(":").pop();
+  };
 
   const getCodeSystemSuffix = (codeSystemName: string) => {
     const pattern = /\((\d+)\)/;
@@ -176,7 +212,7 @@ export default function SavedCodesSubSection({ measureStoreCql, canEdit }) {
   ]);
 
   const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-  const columns = useMemo<ColumnDef<TCRow>[]>(
+  const columns = useMemo<ColumnDef<SavedCodesColumnRow>[]>(
     () => [
       {
         header: "",

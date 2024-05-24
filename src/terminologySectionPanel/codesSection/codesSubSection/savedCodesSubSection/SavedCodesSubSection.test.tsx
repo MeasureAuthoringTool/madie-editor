@@ -16,6 +16,10 @@ import userEvent from "@testing-library/user-event";
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+jest.mock("@madie/madie-util", () => ({
+  getOidFromString: () => "2.16.840.1.113883.6.1",
+}));
+
 const mockConfig: ServiceConfig = {
   elmTranslationService: {
     baseUrl: "elm.com",
@@ -30,7 +34,8 @@ const mockeCodeDetailsList = {
     {
       name: "8462-4",
       display: "Diastolic blood pressure",
-      version: "2.72",
+      svsVersion: "2.44",
+      fhirVersion: "2.44",
       codeSystem: "LOINC (1)",
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",
@@ -38,7 +43,8 @@ const mockeCodeDetailsList = {
     {
       name: "8480-6",
       display: "Systolic blood pressure",
-      version: "2.72",
+      svsVersion: "2.72",
+      fhirVersion: "2.72",
       codeSystem: "LOINC",
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",
@@ -70,6 +76,20 @@ const mockCodeList = [
     version: undefined,
   },
 ];
+
+const mockCqlMetaData = {
+  codeSystemMap: {
+    "8462-4": {
+      name: "8462-4",
+      display: "Diastolic blood pressure",
+      svsVersion: "2.44",
+      fhirVersion: "2.44",
+      codeSystem: "LOINC",
+      codeSystemOid: "2.16.840.1.113883.6.1",
+      status: "ACTIVE",
+    },
+  },
+};
 
 describe("Saved Codes section component", () => {
   const checkRows = async (number: number) => {
@@ -116,6 +136,7 @@ describe("Saved Codes section component", () => {
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
+        cqlMetaData={mockCqlMetaData}
       />
     );
 
@@ -135,10 +156,11 @@ describe("Saved Codes section component", () => {
         return Promise.resolve({ data: mockCodeList });
       }
     });
-    const { getByTestId, queryByTestId, getByText } = await render(
+    const { getByTestId, queryByTestId } = await render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
+        cqlMetaData={mockCqlMetaData}
       />
     );
 

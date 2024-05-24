@@ -22,6 +22,7 @@ interface CodeSectionProps {
   canEdit: boolean;
   allCodeSystems: CodeSystem[];
   blankResults: Function;
+  measureModel: string;
 }
 
 interface MenuObj {
@@ -34,6 +35,7 @@ export default function CodeSection({
   allCodeSystems,
   canEdit,
   blankResults,
+  measureModel,
 }: CodeSectionProps) {
   const [titles, setTitles] = useState([]);
   // if we open tab before information has arrived, we need to trigger a useEffect
@@ -74,10 +76,17 @@ export default function CodeSection({
           return dateB.getTime() - dateA.getTime();
         });
       setAvailableVersions(
-        availableVersions.map((cs) => ({
-          value: cs.version,
-          label: cs.qdmDisplayVersion,
-        }))
+        availableVersions
+          .map((cs) => ({
+            value: cs.version,
+            label: cs.qdmDisplayVersion,
+          }))
+          .filter((cs) => {
+            if (measureModel === "QDM v5.6") {
+              return cs.label !== null;
+            }
+            return true;
+          })
       );
       formik.setFieldValue("version", availableVersions[0].version);
     } else {
@@ -172,7 +181,7 @@ export default function CodeSection({
                         const version = availableVersions.find(
                           (el) => el.value === val
                         );
-                        return version.label;
+                        return version?.label;
                       }
                       return val;
                     }}
