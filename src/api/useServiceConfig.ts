@@ -1,7 +1,10 @@
 import axios from "axios";
 
 export interface ServiceConfig {
-  elmTranslationService: {
+  qdmElmTranslationService: {
+    baseUrl: string;
+  };
+  fhirElmTranslationService: {
     baseUrl: string;
   };
   terminologyService: {
@@ -16,11 +19,20 @@ export async function useServiceConfig(): Promise<ServiceConfig> {
 
   if (
     !(
-      serviceConfig?.elmTranslationService &&
-      serviceConfig.elmTranslationService.baseUrl
+      serviceConfig?.qdmElmTranslationService &&
+      serviceConfig.qdmElmTranslationService.baseUrl
     )
   ) {
-    throw new Error("Invalid ELM Translation Service Config");
+    throw new Error("Invalid QDM ELM Translation Service Config");
+  }
+
+  if (
+    !(
+      serviceConfig?.fhirElmTranslationService &&
+      serviceConfig.fhirElmTranslationService.baseUrl
+    )
+  ) {
+    throw new Error("Invalid FHIR ELM Translation Service Config");
   }
 
   if (

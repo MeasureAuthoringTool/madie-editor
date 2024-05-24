@@ -10,12 +10,11 @@ import MadieAceEditor, {
 } from "./AceEditor/madie-ace-editor";
 import CqlEditorWithTerminology from "./cqlEditorWithTerminology/CqlEditorWithTerminology";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
-import { ElmTranslationError } from "./api/useElmTranslationServiceApi";
+import { ElmTranslationError } from "./api/TranslatedElmModels";
 import {
   ValidationResult,
   useGetAllErrors,
 } from "../src/validations/editorValidation";
-import { ParsedCql } from "./model/ParsedCql";
 
 const lifecycles = singleSpaReact({
   React,

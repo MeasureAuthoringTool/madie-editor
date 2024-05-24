@@ -15,6 +15,7 @@ describe("Code Section component", () => {
         canEdit={readOnly}
         allCodeSystems={mockedCodeSystems}
         handleFormSubmit={handleFormSubmitMock}
+        blankResults={jest.fn()}
       />
     );
 
@@ -98,6 +99,7 @@ describe("Code Section component", () => {
         canEdit={readOnly}
         handleFormSubmit={handleFormSubmitMock}
         allCodeSystems={[]}
+        blankResults={jest.fn()}
       />
     );
 
@@ -123,6 +125,7 @@ describe("Code Section component", () => {
         canEdit={false}
         handleFormSubmit={handleFormSubmitMock}
         allCodeSystems={[]}
+        blankResults={jest.fn()}
       />
     );
 

@@ -16,8 +16,11 @@ jest.mock("@madie/madie-util", () => ({
   }),
 }));
 const mockConfig: ServiceConfig = {
-  elmTranslationService: {
-    baseUrl: "elm.com",
+  qdmElmTranslationService: {
+    baseUrl: "qdm-elm.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir-elm.com",
   },
   terminologyService: {
     baseUrl: "terminology.com",
@@ -29,11 +32,16 @@ const mockCode: Code = {
   codeSystem: "System2",
   status: CodeStatus.ACTIVE,
   version: "2.0",
+  svsVersion: "test svs version",
 };
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
     const { findByTestId } = render(
-      <CodeSubSection canEdit={false} allCodeSystems={mockedCodeSystems} />
+      <CodeSubSection
+        canEdit={false}
+        allCodeSystems={mockedCodeSystems}
+        handleChange="changed-code"
+      />
     );
 
     const codeSubTabHeading = await findByTestId(
@@ -50,7 +58,11 @@ describe("CodeSub Section component", () => {
   it("should display code details for selected code, system, version filters", async () => {
     const { getByTestId, getByText, getByRole, queryByText, findAllByRole } =
       render(
-        <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+        <CodeSubSection
+          canEdit={true}
+          allCodeSystems={mockedCodeSystems}
+          handleChange="changed-code"
+        />
       );
     const codeSystemSelect = getByTestId("code-system-selector-dropdown");
 
@@ -89,7 +101,11 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByText, getByRole } = render(
-      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+      <CodeSubSection
+        canEdit={true}
+        allCodeSystems={mockedCodeSystems}
+        handleChange="changed-code"
+      />
     );
 
     const codeSystemSelect = getByTestId("code-system-selector-dropdown");
@@ -149,7 +165,11 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByRole, getByText } = render(
-      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+      <CodeSubSection
+        canEdit={true}
+        allCodeSystems={mockedCodeSystems}
+        handleChange="changed-code"
+      />
     );
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
@@ -186,7 +206,7 @@ describe("CodeSub Section component", () => {
 
     expect(getByTestId("codes-search-btn")).toBeEnabled();
     expect(getByTestId("clear-codes-btn")).toBeEnabled();
-    fireEvent.click(getByTestId("codes-search-btn"));
+    userEvent.click(getByTestId("codes-search-btn"));
     const resultTable = await findByTestId("codes-results-tbl");
     const tableRow = resultTable.querySelector("tbody").children[0];
     expect(tableRow.children[0].textContent).toEqual("No Results were found");
@@ -202,7 +222,11 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByText, getByRole } = render(
-      <CodeSubSection canEdit={true} allCodeSystems={mockedCodeSystems} />
+      <CodeSubSection
+        canEdit={true}
+        allCodeSystems={mockedCodeSystems}
+        handleChange="changed-code"
+      />
     );
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
@@ -237,20 +261,26 @@ describe("CodeSub Section component", () => {
     expect(codeTextInput.value).toBe("System1");
     expect(getByTestId("codes-search-btn")).toBeEnabled();
     expect(getByTestId("clear-codes-btn")).toBeEnabled();
-    fireEvent.click(getByTestId("codes-search-btn"));
+    userEvent.click(getByTestId("codes-search-btn"));
     const errorMessage = await findByTestId("fetch-code-error-message");
     expect(errorMessage.textContent).toEqual(
       "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
     );
     const resultsContent = await findByTestId("codes-results-tbl");
     expect(resultsContent).toBeInTheDocument();
-    fireEvent.click(getByTestId("clear-codes-btn"));
-    expect(getByTestId("code-system-selector-input").value).toBe("");
+    userEvent.click(getByTestId("clear-codes-btn"));
+    expect(
+      (getByTestId("code-system-selector-input") as HTMLInputElement).value
+    ).toBe("");
   });
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
     const { getByTestId } = render(
-      <CodeSubSection allCodeSystems={mockedCodeSystems} canEdit={true} />
+      <CodeSubSection
+        allCodeSystems={mockedCodeSystems}
+        canEdit={true}
+        handleChange="changed-code"
+      />
     );
 
     const clearButton = getByTestId("clear-codes-btn");

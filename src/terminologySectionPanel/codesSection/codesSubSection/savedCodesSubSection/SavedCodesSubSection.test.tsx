@@ -17,8 +17,11 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockConfig: ServiceConfig = {
-  elmTranslationService: {
-    baseUrl: "elm.com",
+  qdmElmTranslationService: {
+    baseUrl: "qdm-elm.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir-elm.com",
   },
   terminologyService: {
     baseUrl: "terminology.com",
@@ -81,7 +84,12 @@ describe("Saved Codes section component", () => {
     });
   };
   it("should display the saved codes table when navigated to the saved codes tab ", () => {
-    render(<SavedCodesSubSection />);
+    render(
+      <SavedCodesSubSection
+        measureStoreCql="using QDM version 1.0.000"
+        canEdit={true}
+      />
+    );
     expect(
       screen.getByRole("columnheader", {
         name: "Code",
@@ -112,7 +120,7 @@ describe("Saved Codes section component", () => {
         return Promise.resolve({ data: mockConfig });
       }
     });
-    await render(
+    render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
@@ -135,7 +143,7 @@ describe("Saved Codes section component", () => {
         return Promise.resolve({ data: mockCodeList });
       }
     });
-    const { getByTestId, queryByTestId, getByText } = await render(
+    const { getByTestId, queryByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}

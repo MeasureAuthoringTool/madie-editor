@@ -2,22 +2,27 @@ import { ValidationResult, useGetAllErrors } from "./editorValidation";
 import axios from "axios";
 import { ServiceConfig } from "../api/useServiceConfig";
 import { ValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
-import {
-  ElmTranslation,
-  ElmTranslationError,
-  ElmTranslationLibrary,
-} from "../api/useElmTranslationServiceApi";
+// @ts-ignore
 import {
   useTerminologyServiceApi,
   TerminologyServiceApi,
 } from "@madie/madie-util";
+// @ts-ignore
 import { ElmTranslationExternalError } from "@madie/madie-editor";
+import {
+  ElmTranslation,
+  ElmTranslationError,
+  ElmTranslationLibrary,
+} from "../api/TranslatedElmModels";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const mockServiceConfig: ServiceConfig = {
-  elmTranslationService: {
-    baseUrl: "elm-translator.com",
+  qdmElmTranslationService: {
+    baseUrl: "qdm-elm-translator.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir-elm-translator.com",
   },
   terminologyService: {
     baseUrl: "terminology-service.com",
@@ -186,7 +191,7 @@ describe("Editor Validation Test", () => {
         });
       } else if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.resolve({
           data: {
@@ -239,7 +244,7 @@ describe("Editor Validation Test", () => {
         });
       } else if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.resolve({
           data: {
@@ -292,7 +297,7 @@ describe("Editor Validation Test", () => {
         });
       } else if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.resolve({
           data: {
@@ -316,7 +321,7 @@ describe("Editor Validation Test", () => {
     mockedAxios.put.mockImplementation((args) => {
       if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.resolve({
           data: {
