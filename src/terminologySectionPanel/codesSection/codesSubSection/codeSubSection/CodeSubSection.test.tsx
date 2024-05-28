@@ -41,6 +41,7 @@ describe("CodeSub Section component", () => {
         canEdit={false}
         allCodeSystems={mockedCodeSystems}
         handleChange="changed-code"
+        measureModel=""
       />
     );
 
@@ -62,6 +63,7 @@ describe("CodeSub Section component", () => {
           canEdit={true}
           allCodeSystems={mockedCodeSystems}
           handleChange="changed-code"
+          measureModel=""
         />
       );
     const codeSystemSelect = getByTestId("code-system-selector-dropdown");
@@ -105,6 +107,7 @@ describe("CodeSub Section component", () => {
         canEdit={true}
         allCodeSystems={mockedCodeSystems}
         handleChange="changed-code"
+        measureModel=""
       />
     );
 
@@ -169,6 +172,7 @@ describe("CodeSub Section component", () => {
         canEdit={true}
         allCodeSystems={mockedCodeSystems}
         handleChange="changed-code"
+        measureModel=""
       />
     );
     const codeSystemSelectButton = getByRole("button", {
@@ -226,6 +230,7 @@ describe("CodeSub Section component", () => {
         canEdit={true}
         allCodeSystems={mockedCodeSystems}
         handleChange="changed-code"
+        measureModel=""
       />
     );
     const codeSystemSelectButton = getByRole("button", {
@@ -280,6 +285,7 @@ describe("CodeSub Section component", () => {
         allCodeSystems={mockedCodeSystems}
         canEdit={true}
         handleChange="changed-code"
+        measureModel=""
       />
     );
 

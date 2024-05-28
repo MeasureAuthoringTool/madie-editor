@@ -16,6 +16,7 @@ describe("Code Section component", () => {
         allCodeSystems={mockedCodeSystems}
         handleFormSubmit={handleFormSubmitMock}
         blankResults={jest.fn()}
+        measureModel=""
       />
     );
 
@@ -56,9 +57,9 @@ describe("Code Section component", () => {
       "code-system-version-selector"
     );
     const codeSystemVersionSelect = within(comboBoxContainer).getByRole(
-      "button",
+      "combobox",
       {
-        name: "Code System Version HL7V3.0_2019-02",
+        name: "Code System Version",
       }
     );
     expect(codeSystemVersionSelect).toHaveTextContent("HL7V3.0_2019-02");
@@ -100,6 +101,7 @@ describe("Code Section component", () => {
         handleFormSubmit={handleFormSubmitMock}
         allCodeSystems={[]}
         blankResults={jest.fn()}
+        measureModel=""
       />
     );
 
@@ -126,6 +128,7 @@ describe("Code Section component", () => {
         handleFormSubmit={handleFormSubmitMock}
         allCodeSystems={[]}
         blankResults={jest.fn()}
+        measureModel=""
       />
     );
 
