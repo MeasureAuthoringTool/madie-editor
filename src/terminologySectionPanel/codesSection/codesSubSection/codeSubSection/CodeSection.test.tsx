@@ -57,9 +57,9 @@ describe("Code Section component", () => {
       "code-system-version-selector"
     );
     const codeSystemVersionSelect = within(comboBoxContainer).getByRole(
-      "combobox",
+      "button",
       {
-        name: "Code System Version",
+        name: "Code System Version HL7V3.0_2019-02",
       }
     );
     expect(codeSystemVersionSelect).toHaveTextContent("HL7V3.0_2019-02");
