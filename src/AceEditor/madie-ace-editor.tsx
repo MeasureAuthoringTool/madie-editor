@@ -13,6 +13,7 @@ import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 
 import "./madie-custom.css";
 import { ParsedCql, Statement } from "../model/ParsedCql";
+import { CqlMetaData } from "../api/useTerminologyServiceApi";
 
 export interface EditorPropsType {
   value: string;
@@ -25,6 +26,8 @@ export interface EditorPropsType {
   readOnly?: boolean;
   validationsEnabled?: boolean;
   measureStoreCql?: string;
+  cqlMetaData?: CqlMetaData;
+  measureModel?: string;
 
   // conditional props used to pass up annotations outside of the editor
   setOutboundAnnotations?: Function;

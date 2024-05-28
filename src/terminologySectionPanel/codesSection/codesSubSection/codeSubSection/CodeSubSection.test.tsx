@@ -31,8 +31,8 @@ const mockCode: Code = {
   display: "this is test code",
   codeSystem: "System2",
   status: CodeStatus.ACTIVE,
-  version: "2.0",
-  svsVersion: "test svs version",
+  svsVersion: "2.0",
+  fhirVersion: "2.0",
 };
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
@@ -152,7 +152,7 @@ describe("CodeSub Section component", () => {
     expect(tableRow.children[1].textContent).toEqual(mockCode.name);
     expect(tableRow.children[2].textContent).toEqual(mockCode.display);
     expect(tableRow.children[3].textContent).toEqual(mockCode.codeSystem);
-    expect(tableRow.children[4].textContent).toEqual(mockCode.version);
+    expect(tableRow.children[4].textContent).toEqual(mockCode.svsVersion);
   });
 
   it("should display no results found in result table if code not found", async () => {

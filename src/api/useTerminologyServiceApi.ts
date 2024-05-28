@@ -43,12 +43,15 @@ export interface Code {
   name: string;
   display: string;
   codeSystem: string;
-  version: string;
+  fhirVersion: string;
   svsVersion: string;
   status: CodeStatus;
   codeSystemOid?: string;
 }
 
+export declare type CqlMetaData = {
+  codeSystemMap: Map<string, CodeSystem>;
+};
 export interface ValueSetForSearch {
   codeSystem?: string;
   name?: string;
