@@ -116,9 +116,9 @@ export default function SavedCodesSubSection({
   //load codes when actual measure cql is changed
   useEffect(() => {
     if (measureStoreCql) {
-      setLoading(true);
       const parsedCql = new CqlAntlr(measureStoreCql).parse();
-      if (parsedCql.codes) {
+      if (!_.isEmpty(parsedCql?.codes)) {
+        setLoading(true);
         const codesList = parsedCql.codes.map((code) => {
           const matchedCodeSystem = parsedCql?.codeSystems.find(
             (codeSystem) =>
