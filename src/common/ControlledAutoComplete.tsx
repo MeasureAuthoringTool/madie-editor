@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import { TextField } from "@madie/madie-design-system/dist/react/";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import "./ControlledAutoCompleteStyles.scss";
+
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -88,10 +90,17 @@ const ControlledAutoComplete = ({
           return option.label;
         }}
         renderOption={(props: any, option, { selected }) => {
+          const disabled = props["aria-disabled"];
           const uniqueProps = {
             ...props,
             key: `${props.key}_${props.id}`,
           };
+          if (disabled) {
+            // we want to prevent the use from triggering an onclick.
+            uniqueProps.className =
+              uniqueProps.className + " madie-tooltip-container";
+            uniqueProps.onClick = undefined;
+          }
           return (
             <li
               {...uniqueProps}
@@ -106,6 +115,17 @@ const ControlledAutoComplete = ({
                 checked={selected}
               />
               {option.label}
+              {disabled && (
+                <div
+                  role="tooltip"
+                  id={id}
+                  data-testid={id}
+                  aria-live="polite"
+                  className="madie-tooltip"
+                >
+                  <p>{option.disabledText}</p>
+                </div>
+              )}
             </li>
           );
         }}
@@ -123,6 +143,9 @@ const ControlledAutoComplete = ({
               helperText={helperText}
             />
           );
+        }}
+        slotProps={{
+          paper: { className: "paper-root" },
         }}
         {...rest}
       />
