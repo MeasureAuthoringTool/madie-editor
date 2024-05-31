@@ -48,6 +48,10 @@ export default function Results(props: ResultsProps) {
         accessorKey: "oid",
       },
       {
+        header: "Status",
+        accessorKey: "status",
+      },
+      {
         header: "",
         accessorKey: "apply",
         cell: (row: any) => (
