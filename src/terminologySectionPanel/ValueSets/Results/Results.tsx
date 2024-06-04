@@ -36,7 +36,7 @@ export default function Results(props: ResultsProps) {
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
       {
-        header: "Name",
+        header: "Title",
         accessorKey: "title",
       },
       {
