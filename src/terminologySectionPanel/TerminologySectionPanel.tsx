@@ -11,6 +11,7 @@ export default function TerminologySectionPanel({
   cqlMetaData,
   measureModel,
   handleChange,
+  handleCodeDelete,
 }) {
   const featureFlags = useFeatureFlags();
   const { QDMValueSetSearch } = featureFlags;
@@ -37,6 +38,7 @@ export default function TerminologySectionPanel({
             cqlMetaData={cqlMetaData}
             measureModel={measureModel}
             handleChange={handleChange}
+            handleCodeDelete={handleCodeDelete}
           />
         )}
         {activeTab === "definitions" && <DefinitionsSection />}

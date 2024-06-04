@@ -9,6 +9,7 @@ const CqlEditorWithTerminology = ({
   value,
   onChange,
   onTerminologyChange,
+  handleCodeDelete,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -48,6 +49,7 @@ const CqlEditorWithTerminology = ({
             cqlMetaData={cqlMetaData}
             measureModel={measureModel}
             handleChange={onTerminologyChange}
+            handleCodeDelete={handleCodeDelete}
           />
         </Allotment.Pane>
       </Allotment>

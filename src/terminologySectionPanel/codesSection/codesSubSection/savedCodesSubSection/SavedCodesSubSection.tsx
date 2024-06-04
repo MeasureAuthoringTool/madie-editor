@@ -58,6 +58,7 @@ export default function SavedCodesSubSection({
   measureStoreCql,
   canEdit,
   cqlMetaData,
+  handleCodeDelete,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -353,22 +354,6 @@ export default function SavedCodesSubSection({
     });
   };
 
-  const handleCodeDelete = () => {
-    const data = {
-      selectedCodeDetails: selectedCodeDetails,
-      cql: measureStoreCql,
-    };
-    const event = new CustomEvent("deleteCode", {
-      detail: {
-        data,
-        callback: () => {
-          setDeleteDialogModalOpen(false);
-        },
-      },
-    });
-    window.dispatchEvent(event);
-  };
-
   return (
     <div>
       <TerminologySection
@@ -532,7 +517,7 @@ export default function SavedCodesSubSection({
       <MadieDeleteDialog
         open={deleteDialogModalOpen}
         onContinue={() => {
-          handleCodeDelete();
+          handleCodeDelete(selectedCodeDetails);
         }}
         onClose={() => {
           setDeleteDialogModalOpen(false);

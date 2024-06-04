@@ -13,6 +13,7 @@ interface CodesSectionProps {
   cqlMetaData: CqlMetaData;
   measureModel: string;
   handleChange;
+  handleCodeDelete;
 }
 
 export default function CodesSection({
@@ -21,6 +22,7 @@ export default function CodesSection({
   cqlMetaData,
   measureModel,
   handleChange,
+  handleCodeDelete,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
   const { codeSystems } = useCodeSystems();
@@ -42,6 +44,7 @@ export default function CodesSection({
             measureStoreCql={measureStoreCql}
             cqlMetaData={cqlMetaData}
             canEdit={canEdit}
+            handleCodeDelete={handleCodeDelete}
           />
         )}
       </div>
