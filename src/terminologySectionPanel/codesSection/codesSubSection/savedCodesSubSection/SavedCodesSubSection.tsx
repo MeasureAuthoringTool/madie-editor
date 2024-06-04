@@ -15,6 +15,7 @@ import {
   MadieAlert,
   Popover,
   MadieDialog,
+  MadieDeleteDialog,
 } from "@madie/madie-design-system/dist/react";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
@@ -75,6 +76,8 @@ export default function SavedCodesSubSection({
     useState<SelectedCodeDetails>(null);
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
+    useState<boolean>(false);
 
   //currently we are using random data numbers
   // TODO: integrate with actual data
@@ -350,6 +353,22 @@ export default function SavedCodesSubSection({
     });
   };
 
+  const handleCodeDelete = () => {
+    const data = {
+      selectedCodeDetails: selectedCodeDetails,
+      cql: measureStoreCql,
+    };
+    const event = new CustomEvent("deleteCode", {
+      detail: {
+        data,
+        callback: () => {
+          setDeleteDialogModalOpen(false);
+        },
+      },
+    });
+    window.dispatchEvent(event);
+  };
+
   return (
     <div>
       <TerminologySection
@@ -439,6 +458,7 @@ export default function SavedCodesSubSection({
                   label: "Remove",
                   toImplementFunction: () => {
                     setOptionsOpen(false);
+                    setDeleteDialogModalOpen(true);
                   },
                   dataTestId: `remove-code-${selectedReferenceId}`,
                 }}
@@ -508,6 +528,18 @@ export default function SavedCodesSubSection({
           hidePrevButton={!canGoPrev}
         />
       </div>
+
+      <MadieDeleteDialog
+        open={deleteDialogModalOpen}
+        onContinue={() => {
+          handleCodeDelete();
+        }}
+        onClose={() => {
+          setDeleteDialogModalOpen(false);
+        }}
+        dialogTitle="Delete Code"
+        name={`${selectedCodeDetails?.name} ${selectedCodeDetails?.display}`}
+      />
     </div>
   );
 }

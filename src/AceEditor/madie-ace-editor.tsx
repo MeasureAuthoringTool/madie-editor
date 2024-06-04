@@ -47,24 +47,26 @@ export const parseEditorContent = (content): CqlError[] => {
 const parsingCql = (editorVal): ParsedCql => {
   //TODO: post MVP, move to ANTLR Parser, possibly the listener?
   //look at/use enterConceptDefinition
-  const conceptToRemove = editorVal.match(/^\s*concept .*/gm);
-  if (conceptToRemove) {
-    conceptToRemove.map((conceptLine) => {
-      editorVal = editorVal.replace(
-        conceptLine,
-        "/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/"
-      );
-    });
+  if (editorVal) {
+    const conceptToRemove = editorVal?.match(/^\s*concept .*/gm);
+    if (conceptToRemove) {
+      conceptToRemove.map((conceptLine) => {
+        editorVal = editorVal?.replace(
+          conceptLine,
+          "/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/"
+        );
+      });
+    }
+    const parsedCql = new CqlAntlr(editorVal)?.parse();
+    const cqlArrayToBeFiltered = editorVal?.split("\n");
+    const libraryContent = parsingLibrary(parsedCql, cqlArrayToBeFiltered);
+    const usingContent = parsingUsing(parsedCql, cqlArrayToBeFiltered);
+    return {
+      cqlArrayToBeFiltered,
+      libraryContent,
+      usingContent,
+    };
   }
-  const parsedCql = new CqlAntlr(editorVal).parse();
-  const cqlArrayToBeFiltered = editorVal.split("\n");
-  const libraryContent = parsingLibrary(parsedCql, cqlArrayToBeFiltered);
-  const usingContent = parsingUsing(parsedCql, cqlArrayToBeFiltered);
-  return {
-    cqlArrayToBeFiltered,
-    libraryContent,
-    usingContent,
-  };
 };
 
 const parsingLibrary = (parsedCql, cqlArrayToBeFiltered): Statement => {
@@ -165,7 +167,7 @@ export const parsingEditorCqlContent = async (
 
 export const isUsingStatementEmpty = (editorVal): boolean => {
   const parsedCql = parsingCql(editorVal);
-  if (parsedCql.usingContent === undefined) {
+  if (parsedCql?.usingContent === undefined) {
     return true;
   }
   return false;
