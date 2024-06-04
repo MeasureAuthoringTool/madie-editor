@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
-import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
+import { ElmTranslationError } from "../api/useQdmElmTranslationServiceApi";
 import { ValueSet } from "../api/useTerminologyServiceApi";
 import GetValueSetErrors from "./valuesetValidation";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";

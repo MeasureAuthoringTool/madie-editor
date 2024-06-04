@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
-import { ElmTranslation } from "../api/useElmTranslationServiceApi";
 import TranslateCql from "./elmTranslateValidation";
+import { ElmTranslation } from "../api/TranslatedElmModels";
 
 const elmTranslationWithNoErrors: ElmTranslation = {
   externalErrors: [],
@@ -42,14 +42,16 @@ const elmTranslationWithErrors: ElmTranslation = {
 };
 
 const mockServiceConfig: ServiceConfig = {
-  elmTranslationService: {
-    baseUrl: "elm-translator.com",
+  qdmElmTranslationService: {
+    baseUrl: "qdm-elm-translator.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir-elm-translator.com",
   },
   terminologyService: {
     baseUrl: "terminology-service.com",
   },
 };
-
 jest.mock("../api/useServiceConfig", () => {
   return {
     useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
@@ -69,7 +71,7 @@ describe("ELM Translation validation", () => {
     mockedAxios.put.mockImplementation((args) => {
       if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.resolve({
           data: { json: JSON.stringify(elmTranslationWithNoErrors) },
@@ -78,7 +80,7 @@ describe("ELM Translation validation", () => {
       }
     });
 
-    const elmErrors: ElmTranslation = await TranslateCql("test");
+    const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
     expect(elmErrors.errorExceptions.length).toBe(0);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
@@ -87,7 +89,7 @@ describe("ELM Translation validation", () => {
     mockedAxios.put.mockImplementation((args) => {
       if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.resolve({
           data: { json: JSON.stringify(elmTranslationWithErrors) },
@@ -96,7 +98,7 @@ describe("ELM Translation validation", () => {
       }
     });
 
-    const elmErrors: ElmTranslation = await TranslateCql("test");
+    const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
     expect(elmErrors.errorExceptions.length).toBe(2);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
@@ -105,24 +107,34 @@ describe("ELM Translation validation", () => {
     mockedAxios.put.mockImplementation((args) => {
       if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.reject({
-          data: { json: JSON.stringify(elmTranslationWithErrors) },
-          status: 500,
+          response: {
+            data: {
+              timestamp: "2024-05-23T13:35:15.059+00:00",
+              status: 500,
+              error: "Network Error",
+              path: "/api/qdm/cql/translator/cql",
+            },
+            status: 500,
+          },
+          message: "Network Error",
+          code: "ERR_NETWORK_ERROR",
+          name: "AxiosError",
         });
       }
     });
     try {
-      const elmErrors: ElmTranslation = await TranslateCql("test");
+      const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
       expect(elmErrors).toBeNull();
     } catch (error) {
-      expect(error.status).toBe(500);
+      expect(error.message).toBe("Network Error");
     }
   });
 
   it("translate CQL to ELM no input CQL", async () => {
-    const elmErrors: ElmTranslation = await TranslateCql(null);
+    const elmErrors: ElmTranslation = await TranslateCql(null, "QICore");
     expect(elmErrors).toBeNull();
   });
 
@@ -130,7 +142,7 @@ describe("ELM Translation validation", () => {
     mockedAxios.put.mockImplementation((args) => {
       if (
         args &&
-        args.startsWith(mockServiceConfig.elmTranslationService.baseUrl)
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
       ) {
         return Promise.resolve({
           data: { json: JSON.stringify(elmTranslationWithErrors) },
@@ -139,7 +151,7 @@ describe("ELM Translation validation", () => {
       }
     });
     try {
-      const elmErrors: ElmTranslation = await TranslateCql("test");
+      const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
       expect(elmErrors).toBeNull();
     } catch (error) {}
   });

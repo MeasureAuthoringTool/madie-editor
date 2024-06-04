@@ -19,6 +19,7 @@ describe("Results Section component", () => {
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
         code={code}
+        handleChange={jest.fn()}
       />
     );
     expect(
@@ -68,6 +69,7 @@ describe("Results Section component", () => {
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
         code={undefined}
+        handleChange={jest.fn()}
       />
     );
 

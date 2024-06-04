@@ -1,8 +1,3 @@
-import {
-  ElmTranslation,
-  ElmTranslationError,
-  ElmTranslationExternalError,
-} from "../api/useElmTranslationServiceApi";
 import { CustomCqlCode } from "../api/useTerminologyServiceApi";
 import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
@@ -13,6 +8,11 @@ import ValidateCustomCqlCodes, {
 import TranslateCql from "../validations/elmTranslateValidation";
 import CheckLogin from "../validations/umlsLogin";
 import GetValueSetErrors from "../validations/valuesetValidation";
+import {
+  ElmTranslation,
+  ElmTranslationError,
+  ElmTranslationExternalError,
+} from "../api/TranslatedElmModels";
 
 export interface ValidationResult {
   translation: ElmTranslation;
@@ -34,8 +34,7 @@ export const useGetAllErrors = async (
           isLoggedInUMLS.valueOf(),
           cqlResult?.using?.name
         ),
-
-        TranslateCql(cql),
+        TranslateCql(cql, cqlResult?.using?.name),
         GetValueSetErrors(
           cqlResult.valueSets,
           isLoggedInUMLS.valueOf(),
