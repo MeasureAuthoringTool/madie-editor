@@ -1,8 +1,3 @@
-import {
-  ElmTranslationError,
-  ElmValueSet,
-} from "../../api/useElmTranslationServiceApi";
-
 export const useOktaTokens = (storageKey = "okta-token-storage") => {
   return {
     getAccessToken: () => "test-token",

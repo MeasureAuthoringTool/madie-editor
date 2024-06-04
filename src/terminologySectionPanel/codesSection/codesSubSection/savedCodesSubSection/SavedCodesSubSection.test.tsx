@@ -1,5 +1,4 @@
 import * as React from "react";
-import axios from "axios";
 import {
   render,
   screen,
@@ -9,27 +8,17 @@ import {
 } from "@testing-library/react";
 import SavedCodesSubSection from "./SavedCodesSubSection";
 import { mockMeasureStoreCql } from "../../../__mocks__/MockMeasureStoreCql";
-import { ServiceConfig } from "../../../../api/useServiceConfig";
 import { TerminologyServiceApi } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
 jest.mock("@madie/madie-util", () => ({
   getOidFromString: () => "2.16.840.1.113883.6.1",
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
 }));
 
-const mockConfig: ServiceConfig = {
-  elmTranslationService: {
-    baseUrl: "elm.com",
-  },
-  terminologyService: {
-    baseUrl: "terminology.com",
-  },
-};
-
-const mockeCodeDetailsList = {
+const mockeCodeDetailsList: any = {
   data: [
     {
       name: "8462-4",
@@ -60,23 +49,6 @@ jest.mock("../../../../api/useTerminologyServiceApi", () =>
   jest.fn(() => mockTerminologyServiceApi)
 );
 
-const mockCodeList = [
-  {
-    code: "8462-4",
-    codeSystem: "LOINC (1)",
-    oid: "'urn:oid:2.16.840.1.113883.6.1'",
-    suffix: "1",
-    version: undefined,
-  },
-  {
-    code: "8480-6",
-    codeSystem: "LOINC",
-    oid: "'urn:oid:2.16.840.1.113883.6.1'",
-    suffix: null,
-    version: undefined,
-  },
-];
-
 const mockCqlMetaData = {
   codeSystemMap: {
     "8462-4": {
@@ -93,15 +65,21 @@ const mockCqlMetaData = {
 
 describe("Saved Codes section component", () => {
   const checkRows = async (number: number) => {
-    const tableBody = screen.getByTestId("saved-codes-tbl-body");
+    const tableBody = await screen.findByTestId("saved-codes-tbl-body");
     expect(tableBody).toBeInTheDocument();
     const visibleRows = await within(tableBody).findAllByRole("row");
     await waitFor(() => {
       expect(visibleRows).toHaveLength(number);
     });
   };
-  it("should display the saved codes table when navigated to the saved codes tab ", () => {
-    render(<SavedCodesSubSection />);
+  it("should display the saved codes table when navigated to the saved codes tab ", async () => {
+    render(
+      <SavedCodesSubSection
+        measureStoreCql="using QDM version 1.0.000"
+        canEdit={true}
+        cqlMetaData={mockCqlMetaData}
+      />
+    );
     expect(
       screen.getByRole("columnheader", {
         name: "Code",
@@ -122,51 +100,19 @@ describe("Saved Codes section component", () => {
         name: "System Version",
       })
     ).toBeInTheDocument();
-    const savedCodesTable = screen.getByTestId("saved-codes-tbl");
+    const savedCodesTable = await screen.findByTestId("saved-codes-tbl");
     expect(savedCodesTable).toBeInTheDocument();
-  });
-
-  it("should render the data in the table", async () => {
-    mockedAxios.get.mockImplementation((url) => {
-      if (url === "/env-config/serviceConfig.json") {
-        return Promise.resolve({ data: mockConfig });
-      }
-    });
-    await render(
-      <SavedCodesSubSection
-        measureStoreCql={mockMeasureStoreCql}
-        canEdit={true}
-        cqlMetaData={mockCqlMetaData}
-      />
-    );
-
-    expect(
-      mockTerminologyServiceApi.getCodesAndCodeSystems
-    ).toHaveBeenCalledWith(mockCodeList);
+    await checkRows(1);
   });
 
   it("displaying edit dialog when edit is clicked from the select actions", async () => {
-    mockedAxios.get.mockImplementation((url) => {
-      if (url === "/env-config/serviceConfig.json") {
-        return Promise.resolve({ data: mockConfig });
-      }
-      if (
-        url === `${mockConfig.terminologyService.baseUrl}/terminology/codes`
-      ) {
-        return Promise.resolve({ data: mockCodeList });
-      }
-    });
-    const { getByTestId, queryByTestId } = await render(
+    const { getByTestId, queryByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
         cqlMetaData={mockCqlMetaData}
       />
     );
-
-    expect(
-      mockTerminologyServiceApi.getCodesAndCodeSystems
-    ).toHaveBeenCalledWith(mockCodeList);
 
     expect(getByTestId("saved-codes-loading-spinner")).toBeInTheDocument();
 

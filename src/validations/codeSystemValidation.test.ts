@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
-import { ElmTranslationError } from "../api/useElmTranslationServiceApi";
 import ValidateCustomCqlCodes, {
   getCustomCqlCodes,
   mapCodeSystemErrorsToTranslationErrors,
@@ -12,6 +11,7 @@ import {
   CqlCode,
   CqlCodeSystem,
 } from "@madie/cql-antlr-parser/dist/src";
+import { ElmTranslationError } from "../api/TranslatedElmModels";
 
 const customCqlCodes: CustomCqlCode[] = [
   {
