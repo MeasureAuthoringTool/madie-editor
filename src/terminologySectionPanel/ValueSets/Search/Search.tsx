@@ -108,6 +108,9 @@ export default function Search(props: SearchProps) {
           if (reason === "removeOption") {
             formBlanker(selectedVal);
           }
+          if (reason === "clear") {
+            formBlanker([]);
+          }
           formik.setFieldValue("searchCategories", selectedVal);
         }}
         id="search-by-category"
