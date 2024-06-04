@@ -116,6 +116,10 @@ export default function CodeSection({
     ];
   };
 
+  function trimCodeInput() {
+    formik.setFieldValue("code", formik.values.code.trim());
+  }
+
   return (
     <div>
       <TerminologySection
@@ -206,6 +210,7 @@ export default function CodeSection({
                   InputProps={searchInputProps}
                   onChange={formik.handleChange}
                   value={formik.values.code}
+                  onBlur={trimCodeInput}
                   name="code"
                   disabled={!formik.values.title}
                 />
