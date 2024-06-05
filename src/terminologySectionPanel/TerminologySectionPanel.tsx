@@ -12,6 +12,9 @@ export default function TerminologySectionPanel({
   measureModel,
   handleChange,
   handleCodeDelete,
+  setEditorVal,
+  setIsCQLUnchanged,
+  isCQLUnchanged,
 }) {
   const featureFlags = useFeatureFlags();
   const { QDMValueSetSearch } = featureFlags;
@@ -39,6 +42,9 @@ export default function TerminologySectionPanel({
             measureModel={measureModel}
             handleChange={handleChange}
             handleCodeDelete={handleCodeDelete}
+            setEditorVal={setEditorVal}
+            setIsCQLUnchanged={setIsCQLUnchanged}
+            isCQLUnchanged={isCQLUnchanged}
           />
         )}
         {activeTab === "definitions" && <DefinitionsSection />}
