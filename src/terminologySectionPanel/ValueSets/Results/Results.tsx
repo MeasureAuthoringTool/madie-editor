@@ -33,7 +33,6 @@ interface ResultsProps {
 }
 export default function Results(props: ResultsProps) {
   let { resultValueSets, handleApplyValueSet } = props;
-
   const data = resultValueSets;
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
@@ -62,7 +61,7 @@ export default function Results(props: ResultsProps) {
               <Button
                 variant="outline"
                 className="apply-button"
-                data-testid={`seleapplyct-action-${row.cell.id}`}
+                data-testid={`select-apply-vs-action-${row.cell.id}`}
                 aria-label={`apply-action-${row.cell.id}`}
                 onClick={() => {
                   handleApplyValueSet(row.row.original);
