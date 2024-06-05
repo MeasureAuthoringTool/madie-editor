@@ -23,7 +23,7 @@ type ResultSectionProps = {
   showResultsTable: boolean;
   setShowResultsTable: any;
   code: Code;
-  handleChange;
+  handleApplyCode;
 };
 
 type ResultsColumnRow = {
@@ -38,7 +38,7 @@ export default function ResultsSection({
   showResultsTable,
   setShowResultsTable,
   code,
-  handleChange,
+  handleApplyCode,
 }: ResultSectionProps) {
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -117,8 +117,8 @@ export default function ResultsSection({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-  const handleApplyCode = () => {
-    handleChange(selectedCodeDetails);
+  const handleApplyCodeInner = () => {
+    handleApplyCode(selectedCodeDetails);
     setOptionsOpen(false);
   };
 
@@ -221,7 +221,7 @@ export default function ResultsSection({
                 editViewSelectOptionProps={{
                   label: "Apply",
                   toImplementFunction: () => {
-                    handleApplyCode();
+                    handleApplyCodeInner();
                   },
                   dataTestId: `apply-code-${selectedReferenceId}`,
                 }}
