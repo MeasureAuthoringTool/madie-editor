@@ -11,10 +11,11 @@ import "./ValueSets.scss";
 
 interface ValueSetsProps {
   canEdit: boolean;
+  handleApplyValueSet: Function;
 }
 
 export default function ValueSets(props: ValueSetsProps) {
-  const { canEdit } = props;
+  const { canEdit, handleApplyValueSet } = props;
   const [resultValueSets, setResultValuesSets] = useState<ValueSetForSearch[]>(
     []
   );
@@ -103,7 +104,10 @@ export default function ValueSets(props: ValueSetsProps) {
         />
       </TerminologySection>
       <TerminologySection title="Results" showHeaderContent={resultsOpen}>
-        <Results resultValueSets={filteredValueSets} />
+        <Results
+          resultValueSets={filteredValueSets}
+          handleApplyValueSet={handleApplyValueSet}
+        />
       </TerminologySection>
     </div>
   );

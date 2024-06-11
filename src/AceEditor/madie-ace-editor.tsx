@@ -13,12 +13,16 @@ import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 
 import "./madie-custom.css";
 import { ParsedCql, Statement } from "../model/ParsedCql";
-import { CqlMetaData } from "../api/useTerminologyServiceApi";
+import {
+  CqlMetaData,
+  ValueSetForSearch,
+} from "../api/useTerminologyServiceApi";
 
 export interface EditorPropsType {
   value: string;
   onChange?: (value: string) => void;
-  onTerminologyChange?: (code: string) => void;
+  handleApplyCode?: (code: string) => void;
+  handleApplyValueSet?: (vs: ValueSetForSearch) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];

@@ -48,6 +48,7 @@ describe("CqlEditorWithTerminology component", () => {
       value: "",
       onChange: jest.fn(),
       handleClick: true,
+      handleApplyValueSet: jest.fn(),
     };
     render(<CqlEditorWithTerminology {...props} />);
     const valueSets = await screen.findByText("Value Sets");

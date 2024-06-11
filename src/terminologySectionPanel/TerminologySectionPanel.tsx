@@ -10,11 +10,12 @@ export default function TerminologySectionPanel({
   measureStoreCql,
   cqlMetaData,
   measureModel,
-  handleChange,
   handleCodeDelete,
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
+  handleApplyCode,
+  handleApplyValueSet,
 }) {
   const featureFlags = useFeatureFlags();
   const { QDMValueSetSearch } = featureFlags;
@@ -33,18 +34,23 @@ export default function TerminologySectionPanel({
         />
       </div>
       <div className="panel-content">
-        {activeTab === "valueSets" && <ValueSetsSection canEdit={canEdit} />}
+        {activeTab === "valueSets" && (
+          <ValueSetsSection
+            canEdit={canEdit}
+            handleApplyValueSet={handleApplyValueSet}
+          />
+        )}
         {activeTab === "codes" && (
           <CodesSection
             canEdit={canEdit}
             measureStoreCql={measureStoreCql}
             cqlMetaData={cqlMetaData}
             measureModel={measureModel}
-            handleChange={handleChange}
             handleCodeDelete={handleCodeDelete}
             setEditorVal={setEditorVal}
             setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
+            handleApplyCode={handleApplyCode}
           />
         )}
         {activeTab === "definitions" && <DefinitionsSection />}
