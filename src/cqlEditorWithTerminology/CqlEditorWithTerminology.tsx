@@ -9,6 +9,7 @@ const CqlEditorWithTerminology = ({
   value,
   onChange,
   onTerminologyChange,
+  handleCodeDelete,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -19,6 +20,9 @@ const CqlEditorWithTerminology = ({
   measureStoreCql,
   cqlMetaData,
   measureModel,
+  setEditorVal,
+  setIsCQLUnchanged,
+  isCQLUnchanged,
 }: EditorPropsType) => {
   return (
     <div className="allotment-wrapper" id="cql-editor-with-terminology">
@@ -48,6 +52,10 @@ const CqlEditorWithTerminology = ({
             cqlMetaData={cqlMetaData}
             measureModel={measureModel}
             handleChange={onTerminologyChange}
+            handleCodeDelete={handleCodeDelete}
+            setEditorVal={setEditorVal}
+            setIsCQLUnchanged={setIsCQLUnchanged}
+            isCQLUnchanged={isCQLUnchanged}
           />
         </Allotment.Pane>
       </Allotment>

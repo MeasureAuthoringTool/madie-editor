@@ -1,5 +1,7 @@
 import * as React from "react";
 import {
+  fireEvent,
+  queryByText,
   render,
   screen,
   waitFor,
@@ -149,5 +151,118 @@ describe("Saved Codes section component", () => {
     const cancelButton = getByTestId("cancel-button");
     expect(cancelButton).toBeInTheDocument();
     userEvent.click(cancelButton);
+  });
+
+  it("displaying delete dialog when delete is clicked from the select actions", async () => {
+    const { getByTestId, queryByTestId, queryByText } = render(
+      <SavedCodesSubSection
+        measureStoreCql={mockMeasureStoreCql}
+        canEdit={true}
+        cqlMetaData={mockCqlMetaData}
+        isCQLUnchanged={true}
+      />
+    );
+
+    expect(getByTestId("saved-codes-loading-spinner")).toBeInTheDocument();
+
+    await waitForElementToBeRemoved(() =>
+      queryByTestId("saved-codes-loading-spinner")
+    );
+    await checkRows(2);
+
+    expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
+
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+
+    const editButton = getByTestId(`edit-code-0`);
+    expect(editButton).toBeInTheDocument();
+
+    const removeButton = getByTestId(`remove-code-0`);
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(removeButton);
+
+    expect(getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(getByTestId("delete-dialog-continue-button")).toBeInTheDocument();
+    expect(getByTestId("delete-dialog-cancel-button")).toBeInTheDocument();
+
+    fireEvent.click(getByTestId("delete-dialog-cancel-button"));
+    await waitFor(() => {
+      const submitButton = queryByText("Yes, Delete");
+      expect(submitButton).not.toBeInTheDocument();
+    });
+  });
+
+  it("should successfully delete when delete is clicked from the select actions", async () => {
+    const handleCodeDelete = jest.fn();
+    const { getByTestId, queryByTestId } = render(
+      <SavedCodesSubSection
+        measureStoreCql={mockMeasureStoreCql}
+        canEdit={true}
+        cqlMetaData={mockCqlMetaData}
+        isCQLUnchanged={true}
+        handleCodeDelete={handleCodeDelete}
+      />
+    );
+    await checkRows(2);
+
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+
+    const removeButton = getByTestId(`remove-code-0`);
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(removeButton);
+    expect(getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(getByTestId("delete-dialog-continue-button")).toBeInTheDocument();
+    expect(getByTestId("delete-dialog-cancel-button")).toBeInTheDocument();
+
+    fireEvent.click(getByTestId("delete-dialog-continue-button"));
+    expect(queryByTestId("delete-dialog-body")).toBeNull();
+  });
+
+  it("should display discard dialog when there is a change in the cql and if try to delete a code", async () => {
+    const { getByTestId, queryByTestId } = render(
+      <SavedCodesSubSection
+        measureStoreCql={mockMeasureStoreCql}
+        canEdit={true}
+        cqlMetaData={mockCqlMetaData}
+        isCQLUnchanged={false}
+        handleCodeDelete={jest.fn()}
+        setEditorVal={jest.fn()}
+        setIsCQLUnchanged={jest.fn()}
+      />
+    );
+    await checkRows(2);
+
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+
+    const removeButton = getByTestId(`remove-code-0`);
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(removeButton);
+    expect(getByTestId("discard-dialog")).toBeInTheDocument();
+    expect(getByTestId("discard-dialog-continue-button")).toBeInTheDocument();
+    expect(getByTestId("discard-dialog-cancel-button")).toBeInTheDocument();
+
+    fireEvent.click(getByTestId("discard-dialog-continue-button"));
+
+    expect(getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(getByTestId("delete-dialog-continue-button")).toBeInTheDocument();
+    expect(getByTestId("delete-dialog-cancel-button")).toBeInTheDocument();
+
+    fireEvent.click(getByTestId("delete-dialog-continue-button"));
+    expect(queryByTestId("delete-dialog-body")).toBeNull();
   });
 });

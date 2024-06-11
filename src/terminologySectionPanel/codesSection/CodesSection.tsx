@@ -13,6 +13,10 @@ interface CodesSectionProps {
   cqlMetaData: CqlMetaData;
   measureModel: string;
   handleChange;
+  handleCodeDelete;
+  setEditorVal: Function;
+  setIsCQLUnchanged: Function;
+  isCQLUnchanged: boolean;
 }
 
 export default function CodesSection({
@@ -21,6 +25,10 @@ export default function CodesSection({
   cqlMetaData,
   measureModel,
   handleChange,
+  handleCodeDelete,
+  setEditorVal,
+  setIsCQLUnchanged,
+  isCQLUnchanged,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("codeSystems");
   const { codeSystems } = useCodeSystems();
@@ -42,6 +50,10 @@ export default function CodesSection({
             measureStoreCql={measureStoreCql}
             cqlMetaData={cqlMetaData}
             canEdit={canEdit}
+            handleCodeDelete={handleCodeDelete}
+            setEditorVal={setEditorVal}
+            setIsCQLUnchanged={setIsCQLUnchanged}
+            isCQLUnchanged={isCQLUnchanged}
           />
         )}
       </div>
