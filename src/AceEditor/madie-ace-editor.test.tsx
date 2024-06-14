@@ -3,7 +3,7 @@ import { act, render, screen } from "@testing-library/react";
 import MadieAceEditor, {
   mapParserErrorsToAceAnnotations,
   mapParserErrorsToAceMarkers,
-  parsingEditorCqlContent,
+  updateEditorContent,
   setCommandEnabled,
 } from "./madie-ace-editor";
 
@@ -236,9 +236,9 @@ describe("map parser errors to ace markers", () => {
 });
 
 describe("synching the cql", () => {
-  test("replacing the error containing library content line to actual library content ", async () => {
+  test("replacing the error containing library content line to actual library content", async () => {
     const expectValue = "library Test version '0.0.000'";
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContent = await updateEditorContent(
       "library Test versionsdwds '0.0.000''",
       "library Test version '0.0.000'",
       "Test",
@@ -248,27 +248,15 @@ describe("synching the cql", () => {
       "4.1.1",
       "measureEditor"
     );
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContent.cql).toEqual(expectValue);
+    expect(updatedContent.isLibraryStatementChanged).toEqual(true);
+    expect(updatedContent.isUsingStatementChanged).toEqual(false);
+    expect(updatedContent.isValueSetChanged).toEqual(false);
   });
 
-  test("not replacing the cql when there are errors in the cql library content ", async () => {
-    const inSyncCql = await parsingEditorCqlContent(
-      "test",
-      "library Test version '0.0.000'\nusing QI-Core version '4.1.1",
-      "Testing",
-      "Test",
-      "0.0.000",
-      "QI-Core",
-      "4.1.1",
-      "measureEditor"
-    );
-
-    expect(inSyncCql).toEqual("test");
-  });
-
-  test("replacing the error containing using content line to actual using content ", async () => {
+  test("replacing the error containing using content line to actual using content", async () => {
     const expectValue = "using QICore version '4.1.1'";
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContent = await updateEditorContent(
       "using QIasdf version '4.1.1'",
       "",
       "Test",
@@ -278,12 +266,13 @@ describe("synching the cql", () => {
       "4.1.1",
       "measureEditor"
     );
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContent.cql).toEqual(expectValue);
+    expect(updatedContent.isUsingStatementChanged).toEqual(true);
   });
 
-  test("replacing the error containing using content line to actual using content with FHIR ", async () => {
+  test("replacing the error containing using content line to actual using content with FHIR", async () => {
     const expectValue = "using FHIR version '4.0.1'";
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContent = await updateEditorContent(
       "using FHIR version '4.0.1'",
       "",
       "Test",
@@ -293,12 +282,12 @@ describe("synching the cql", () => {
       "4.1.1",
       "measureEditor"
     );
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContent.cql).toEqual(expectValue);
   });
 
   test("generated Cql has updated cql library name", async () => {
     const expectValue = "library Testing version '0.0.000'";
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContent = await updateEditorContent(
       "",
       "library Test version '0.0.000'",
       "Testing",
@@ -308,13 +297,31 @@ describe("synching the cql", () => {
       "4.1.1",
       "measureInformation"
     );
-
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContent.cql).toEqual(expectValue);
   });
 
-  test("generated Cql has no change in cql library name when other contents in the measureninformation are saved", async () => {
+  test("remove value set version if exists in cql", async () => {
+    const cql = `
+    library Testing version '0.0.000'
+    using QDM version '5.6'
+    valueset "Adolescent depression screening assessment with version":  'urn:oid:2.16.840.1.113762.1.4.1260.162' version 'urn:hl7:version:20240307'
+    `;
+    const updatedContent = await updateEditorContent(
+      cql,
+      "library Test version '0.0.000'",
+      "Test",
+      "Test",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+    expect(updatedContent.isValueSetChanged).toEqual(true);
+  });
+
+  test("generated Cql has no change in cql library name when other contents in the measure information are saved", async () => {
     const expectValue = "library Test version '0.0.000'";
-    const inSyncCql = await parsingEditorCqlContent(
+    const inSyncCql = await updateEditorContent(
       "",
       "library Test version '0.0.000'",
       "Test",
@@ -329,7 +336,7 @@ describe("synching the cql", () => {
   });
 
   test("generated Cql has no change in cql library name  when library content is missing in the cql", async () => {
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedConents = await updateEditorContent(
       "",
       "test",
       "Testing",
@@ -340,14 +347,14 @@ describe("synching the cql", () => {
       "measureInformation"
     );
 
-    expect(inSyncCql).toEqual("test");
+    expect(updatedConents.cql).toEqual("test");
   });
 });
 describe("ParsingCQL Function, Kill Concept Declaration", () => {
   it("Replace concept declaration with comment", async () => {
     const expectValue = `library Testing version '0.0.000'
 /*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
   concept lalala`,
       "",
@@ -359,12 +366,12 @@ describe("ParsingCQL Function, Kill Concept Declaration", () => {
       "measureEditor"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
   it('Only replaces concept declaration, not just lines that contain the word "concept"', async () => {
     const expectValue = `library Testing version '0.0.000'
 I want to decalre a concept lalala`;
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
 I want to decalre a concept lalala`,
       "",
@@ -376,13 +383,13 @@ I want to decalre a concept lalala`,
       "measureEditor"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
 
   it("Replace concept declaration with comment even with a LOT of spaces", async () => {
     const expectValue = `library Testing version '0.0.000'
 /*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
                     concept lalala`,
       "",
@@ -394,7 +401,7 @@ I want to decalre a concept lalala`,
       "measureEditor"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
 });
 
@@ -402,7 +409,7 @@ describe("isUsingStatementEmpty", () => {
   test("Replace concept declaration with comment", async () => {
     const expectValue = `library Testing version '0.0.000'
 /*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
   concept lalala`,
       "",
@@ -414,12 +421,12 @@ describe("isUsingStatementEmpty", () => {
       "measureEditor"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
   it('Only replaces concept declaration, not just lines that contain the word "concept"', async () => {
     const expectValue = `library Testing version '0.0.000'
 I want to decalre a concept lalala`;
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
 I want to decalre a concept lalala`,
       "",
@@ -431,13 +438,13 @@ I want to decalre a concept lalala`,
       "measureEditor"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
 
   it("Replace concept declaration with comment even with a LOT of spaces", async () => {
     const expectValue = `library Testing version '0.0.000'
 /*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
-    const inSyncCql = await parsingEditorCqlContent(
+    const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
                     concept lalala`,
       "",
@@ -449,12 +456,12 @@ I want to decalre a concept lalala`,
       "measureEditor"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
 
   it("Blank cql will return a blank string", async () => {
     const expectValue = "";
-    const inSyncCql = await parsingEditorCqlContent(
+    const inSyncCql = await updateEditorContent(
       "",
       "",
       "Testing",

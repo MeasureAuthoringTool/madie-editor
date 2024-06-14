@@ -52,7 +52,7 @@ export const parseEditorContent = (content): CqlError[] => {
   return errors;
 };
 
-const parsingCql = (editorVal): ParsedCql => {
+const parseCql = (editorVal): ParsedCql => {
   //TODO: post MVP, move to ANTLR Parser, possibly the listener?
   //look at/use enterConceptDefinition
   if (editorVal) {
@@ -73,6 +73,7 @@ const parsingCql = (editorVal): ParsedCql => {
       cqlArrayToBeFiltered,
       libraryContent,
       usingContent,
+      parsedCql,
     };
   }
 };
@@ -101,38 +102,84 @@ const parsingUsing = (parsedCql, cqlArrayToBeFiltered): Statement => {
   }
 };
 
-const synchingCql = (
+/**
+ * User is not allowed to update following things in CQL:
+ * 1. library version
+ * 2. using statement
+ * 3. value set can not have version
+ * If any of the above change encountered, it will be reverted
+ * @param parsedEditorCql
+ * @param libraryName
+ * @param versionString
+ * @param usedModel
+ * @param modelVersion
+ */
+const updateCql = (
   parsedEditorCql: ParsedCql | "",
   libraryName,
-  versionString,
-  usingName,
-  usingVersion
+  libraryVersion,
+  usedModel,
+  modelVersion
 ) => {
   if (parsedEditorCql) {
-    if (parsedEditorCql.libraryContent) {
+    const cqlUpdates = {
+      cql: undefined,
+      isLibraryStatementChanged: false,
+      isUsingStatementChanged: false,
+      isValueSetChanged: false,
+    };
+    const currentLibraryName = parsedEditorCql.parsedCql?.library?.name;
+    const currentLibraryVersion = parsedEditorCql.parsedCql?.library?.version;
+    // library statement can't be modified
+    if (
+      libraryName !== currentLibraryName ||
+      `'${libraryVersion}'` !== currentLibraryVersion
+    ) {
       parsedEditorCql.cqlArrayToBeFiltered[
         parsedEditorCql.libraryContent?.index
-      ] = `library ${libraryName} version '${versionString}'`;
+      ] = `library ${libraryName} version '${libraryVersion}'`;
+      cqlUpdates.isLibraryStatementChanged = true;
     }
 
+    // using statement can't be modified, except it can be updated from QICore to FHIR
     if (parsedEditorCql.usingContent) {
-      if (usingName === "QI-Core") {
+      if (usedModel === "QI-Core") {
         if (parsedEditorCql.usingContent?.statement.includes("FHIR")) {
-          usingName = "FHIR";
-          usingVersion = "4.0.1";
+          usedModel = "FHIR";
+          modelVersion = "4.0.1";
         }
       }
-
-      parsedEditorCql.cqlArrayToBeFiltered[
-        parsedEditorCql.usingContent?.index
-      ] = `using ${usingName.replace("-", "")} version '${usingVersion}'`;
+      const model = usedModel.replace("-", "");
+      if (
+        model !== parsedEditorCql.parsedCql.using?.name ||
+        `'${modelVersion}'` !== parsedEditorCql.parsedCql.using?.version
+      ) {
+        parsedEditorCql.cqlArrayToBeFiltered[
+          parsedEditorCql.usingContent?.index
+        ] = `using ${model} version '${modelVersion}'`;
+        cqlUpdates.isUsingStatementChanged = true;
+      }
     }
-    return parsedEditorCql?.cqlArrayToBeFiltered?.join("\n");
+
+    // value set with version are not allowed at this moment, remove version
+    if (parsedEditorCql.parsedCql?.valueSets) {
+      parsedEditorCql.parsedCql.valueSets
+        .filter((valueSet) => valueSet.version)
+        .forEach((valueSet) => {
+          const lineNumber = valueSet.start.line - 1;
+          parsedEditorCql.cqlArrayToBeFiltered[
+            lineNumber
+          ] = `valueset ${valueSet.name}: ${valueSet.url}`;
+          cqlUpdates.isValueSetChanged = true;
+        });
+    }
+    cqlUpdates.cql = parsedEditorCql?.cqlArrayToBeFiltered?.join("\n");
+    return cqlUpdates;
   }
   return parsedEditorCql;
 };
 
-export const parsingEditorCqlContent = async (
+export const updateEditorContent = async (
   editorVal,
   existingCql,
   libraryName,
@@ -146,9 +193,8 @@ export const parsingEditorCqlContent = async (
     triggeredFrom === "measureEditor" ||
     triggeredFrom === "updateCqlLibrary"
   ) {
-    const parsedEditorCql = editorVal ? await parsingCql(editorVal) : "";
-
-    return synchingCql(
+    const parsedEditorCql = editorVal ? await parseCql(editorVal) : "";
+    return updateCql(
       parsedEditorCql,
       libraryName,
       versionString,
@@ -157,9 +203,9 @@ export const parsingEditorCqlContent = async (
     );
   } else {
     if (existingCql && existingCqlLibraryName !== libraryName) {
-      const parsedEditorCql = await parsingCql(existingCql);
+      const parsedEditorCql = await parseCql(existingCql);
       if (parsedEditorCql) {
-        return synchingCql(
+        return updateCql(
           parsedEditorCql,
           libraryName,
           versionString,
@@ -174,7 +220,7 @@ export const parsingEditorCqlContent = async (
 };
 
 export const isUsingStatementEmpty = (editorVal): boolean => {
-  const parsedCql = parsingCql(editorVal);
+  const parsedCql = parseCql(editorVal);
   if (parsedCql?.usingContent === undefined) {
     return true;
   }
@@ -213,14 +259,13 @@ export const mapParserErrorsToAceMarkers = (errors: CqlError[]) => {
   return markers;
 };
 
-var originalCommands;
+let originalCommands;
 export const setCommandEnabled = (editor, name, enabled) => {
-  var command = editor.commands.byName[name];
-  var bindKeyOriginal;
+  const command = editor.commands.byName[name];
   if (!originalCommands) {
     originalCommands = JSON.parse(JSON.stringify(editor.commands));
   }
-  var bindKeyOriginal = originalCommands.byName[name].bindKey;
+  const bindKeyOriginal = originalCommands.byName[name].bindKey;
   command.bindKey = enabled ? bindKeyOriginal : null;
   editor.commands.addCommand(command);
 };
