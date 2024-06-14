@@ -317,6 +317,9 @@ describe("synching the cql", () => {
       "measureEditor"
     );
     expect(updatedContent.isValueSetChanged).toEqual(true);
+    expect(updatedContent.cql).not.toContain(
+      "version 'urn:hl7:version:20240307'"
+    );
   });
 
   test("generated Cql has no change in cql library name when other contents in the measure information are saved", async () => {
