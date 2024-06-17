@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 import { ElmTranslation } from "./TranslatedElmModels";
 
 export class QdmElmTranslationServiceApi {
@@ -42,6 +42,10 @@ export class QdmElmTranslationServiceApi {
     }
   }
 }
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);
 
 export default async function useQdmElmTranslationServiceApi(): Promise<QdmElmTranslationServiceApi> {
   const config: ServiceConfig = await useServiceConfig();

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 
 // customCqlCode contains validation result from VSAC
@@ -246,6 +246,10 @@ const processCodeSystemErrors = (
     };
   });
 };
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);
 
 export default async function useTerminologyServiceApi(): Promise<TerminologyServiceApi> {
   const config: ServiceConfig = await useServiceConfig();

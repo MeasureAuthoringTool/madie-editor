@@ -14,7 +14,7 @@ declare module "@madie/madie-util" {
     useFeatureFlags: () => any;
   };
   export function useFeatureFlags(): FeatureFlags;
-
+  export function wafIntercept(): void;
   export function getOidFromString(
     oidString: string,
     dataModel: string
