@@ -29,9 +29,10 @@ type TCRow = {
 
 interface ResultsProps {
   resultValueSets: ValueSetForSearch[];
+  handleApplyValueSet: Function;
 }
 export default function Results(props: ResultsProps) {
-  const { resultValueSets } = props;
+  let { resultValueSets, handleApplyValueSet } = props;
   const data = resultValueSets;
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
@@ -54,21 +55,26 @@ export default function Results(props: ResultsProps) {
       {
         header: "",
         accessorKey: "apply",
-        cell: (row: any) => (
-          <div>
-            <Button
-              variant="outline"
-              className="apply-button"
-              data-testid={`seleapplyct-action-${row.cell.id}`}
-              aria-label={`apply-action-${row.cell.id}`}
-            >
-              <div className="action">Apply</div>
-              <div className="chevron-container">
-                <ExpandMore sx={{ color: "#0073c8" }} />
-              </div>
-            </Button>
-          </div>
-        ),
+        cell: (row: any) => {
+          return (
+            <div>
+              <Button
+                variant="outline"
+                className="apply-button"
+                data-testid={`select-apply-vs-action-${row.cell.id}`}
+                aria-label={`apply-action-${row.cell.id}`}
+                onClick={() => {
+                  handleApplyValueSet(row.row.original);
+                }}
+              >
+                <div className="action">Apply</div>
+                <div className="chevron-container">
+                  <ExpandMore sx={{ color: "#0073c8" }} />
+                </div>
+              </Button>
+            </div>
+          );
+        },
       },
     ],
     []

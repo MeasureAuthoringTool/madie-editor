@@ -15,6 +15,8 @@ import {
   MadieAlert,
   Popover,
   MadieDialog,
+  MadieDeleteDialog,
+  MadieDiscardDialog,
 } from "@madie/madie-design-system/dist/react";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
@@ -57,6 +59,10 @@ export default function SavedCodesSubSection({
   measureStoreCql,
   canEdit,
   cqlMetaData,
+  handleCodeDelete,
+  setEditorVal,
+  setIsCQLUnchanged,
+  isCQLUnchanged,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -75,6 +81,9 @@ export default function SavedCodesSubSection({
     useState<SelectedCodeDetails>(null);
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
+    useState<boolean>(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
 
   //currently we are using random data numbers
   // TODO: integrate with actual data
@@ -439,6 +448,11 @@ export default function SavedCodesSubSection({
                   label: "Remove",
                   toImplementFunction: () => {
                     setOptionsOpen(false);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialogOpen(true);
+                    } else {
+                      setDeleteDialogModalOpen(true);
+                    }
                   },
                   dataTestId: `remove-code-${selectedReferenceId}`,
                 }}
@@ -508,6 +522,29 @@ export default function SavedCodesSubSection({
           hidePrevButton={!canGoPrev}
         />
       </div>
+
+      <MadieDeleteDialog
+        open={deleteDialogModalOpen}
+        onContinue={() => {
+          handleCodeDelete(selectedCodeDetails);
+        }}
+        onClose={() => {
+          setDeleteDialogModalOpen(false);
+        }}
+        dialogTitle="Delete Code"
+        name={`${selectedCodeDetails?.name} ${selectedCodeDetails?.display}`}
+      />
+
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onContinue={() => {
+          setEditorVal(measureStoreCql || "");
+          setIsCQLUnchanged(true);
+          setDiscardDialogOpen(false);
+          setDeleteDialogModalOpen(true);
+        }}
+        onClose={() => setDiscardDialogOpen(false)}
+      />
     </div>
   );
 }

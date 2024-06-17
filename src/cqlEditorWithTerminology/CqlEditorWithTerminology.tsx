@@ -8,7 +8,9 @@ import TerminologySectionPanel from "../terminologySectionPanel/TerminologySecti
 const CqlEditorWithTerminology = ({
   value,
   onChange,
-  onTerminologyChange,
+  handleCodeDelete,
+  handleApplyCode,
+  handleApplyValueSet,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -19,6 +21,9 @@ const CqlEditorWithTerminology = ({
   measureStoreCql,
   cqlMetaData,
   measureModel,
+  setEditorVal,
+  setIsCQLUnchanged,
+  isCQLUnchanged,
 }: EditorPropsType) => {
   return (
     <div className="allotment-wrapper" id="cql-editor-with-terminology">
@@ -47,7 +52,12 @@ const CqlEditorWithTerminology = ({
             measureStoreCql={measureStoreCql}
             cqlMetaData={cqlMetaData}
             measureModel={measureModel}
-            handleChange={onTerminologyChange}
+            handleCodeDelete={handleCodeDelete}
+            setEditorVal={setEditorVal}
+            setIsCQLUnchanged={setIsCQLUnchanged}
+            isCQLUnchanged={isCQLUnchanged}
+            handleApplyCode={handleApplyCode}
+            handleApplyValueSet={handleApplyValueSet}
           />
         </Allotment.Pane>
       </Allotment>
