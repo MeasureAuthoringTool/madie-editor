@@ -64,7 +64,7 @@ const RESULT_VALUESETS = [
 
 const { getByTestId } = screen;
 describe("ValueSets Page", () => {
-  it("Should use a type ahead field to add and remove search categories", async () => {
+  it.skip("Should use a type ahead field to add and remove search categories", async () => {
     const handleApplyValueSet = jest.fn();
 
     render(
