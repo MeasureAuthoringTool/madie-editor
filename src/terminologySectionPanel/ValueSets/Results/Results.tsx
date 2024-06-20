@@ -1,7 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { Button, Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  Pagination,
+  Popover,
+  MadieDialog,
+  TextField,
+} from "@madie/madie-design-system/dist/react";
 import {
   useReactTable,
   ColumnDef,
@@ -9,8 +14,10 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
-import ExpandMore from "@mui/icons-material/ExpandMore";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./Results.scss";
+import { useFormik } from "formik";
+import { ValueSetSuffixSchemaValidator } from "../../../validations/ValueSetSuffixSchemaValidator";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -34,6 +41,43 @@ interface ResultsProps {
 export default function Results(props: ResultsProps) {
   let { resultValueSets, handleApplyValueSet } = props;
   const data = resultValueSets;
+
+  const [openPopoverOptions, setOpenPopoverOptions] = useState<boolean>(false);
+  const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
+  const [selectedValueSetDetails, setSelectedValueSetDetails] = useState(null);
+
+  const handleOpen = async (selectedId, event) => {
+    setOpenPopoverOptions(true);
+    setSelectedReferenceId(selectedId);
+    setAnchorEl(event.currentTarget);
+    setSelectedValueSetDetails(table.getRow(selectedId).original);
+  };
+
+  const handleClose = () => {
+    setOpenPopoverOptions(false);
+    setSelectedReferenceId(null);
+    setAnchorEl(null);
+  };
+
+  const handleEditValueSetDetails = () => {
+    setOpenPopoverOptions(false);
+    setOpenEditDialog(true);
+  };
+
+  const toggleClose = () => {
+    setOpenEditDialog(!openEditDialog);
+    setSelectedValueSetDetails(null);
+    resetForm();
+  };
+
+  const formikErrorHandler = (name: string) => {
+    if (formik.touched[name] && formik.errors[name]) {
+      return `${formik.errors[name]}`;
+    }
+  };
+
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
       {
@@ -57,21 +101,21 @@ export default function Results(props: ResultsProps) {
         accessorKey: "apply",
         cell: (row: any) => {
           return (
-            <div>
-              <Button
-                variant="outline"
-                className="apply-button"
-                data-testid={`select-apply-vs-action-${row.cell.id}`}
-                aria-label={`apply-action-${row.cell.id}`}
-                onClick={() => {
-                  handleApplyValueSet(row.row.original);
+            <div className="inline-flex gap-x-2">
+              <button
+                className="action-button"
+                onClick={(e) => {
+                  handleOpen(row.cell.row.id, e);
                 }}
+                tw="text-blue-600 hover:text-blue-900"
+                data-testid={`select-action-${row.cell.id}`}
+                aria-label={`select-action-${row.cell.id}`}
               >
-                <div className="action">Apply</div>
+                <div className="action">Select</div>
                 <div className="chevron-container">
-                  <ExpandMore sx={{ color: "#0073c8" }} />
+                  <ExpandMoreIcon />
                 </div>
-              </Button>
+              </button>
             </div>
           );
         },
@@ -84,6 +128,22 @@ export default function Results(props: ResultsProps) {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const formik = useFormik({
+    initialValues: {
+      suffix: "",
+    },
+    validationSchema: ValueSetSuffixSchemaValidator,
+    onSubmit: (values) => {
+      handleApplyValueSet({
+        ...selectedValueSetDetails,
+        suffix: values.suffix,
+      });
+      toggleClose();
+    },
+  });
+  const { resetForm } = formik;
+
   return (
     <div
       id="madie-editor-search-results"
@@ -136,7 +196,100 @@ export default function Results(props: ResultsProps) {
               ))
             )}
           </tbody>
+
+          <Popover
+            optionsOpen={openPopoverOptions}
+            anchorEl={anchorEl}
+            handleClose={handleClose}
+            canEdit={true}
+            editViewSelectOptionProps={{
+              label: "Apply",
+              toImplementFunction: () => {
+                setOpenPopoverOptions(false);
+                handleApplyValueSet(selectedValueSetDetails);
+              },
+              dataTestId: `apply-valueset-${selectedReferenceId}`,
+            }}
+            otherSelectOptionProps={[
+              {
+                label: "Edit",
+                toImplementFunction: () => {
+                  handleEditValueSetDetails();
+                },
+                dataTestId: `edit-valueset-${selectedReferenceId}`,
+              },
+              {
+                label: "Details",
+                dataTestId: `details-valueset-${selectedReferenceId}`,
+              },
+            ]}
+          />
         </table>
+
+        <MadieDialog
+          form={true}
+          title={"Edit"}
+          dialogProps={{
+            open: openEditDialog,
+            onClose: toggleClose,
+            id: "edit-value-set-suffix-popup-dialog",
+            onSubmit: formik.handleSubmit,
+          }}
+          cancelButtonProps={{
+            id: "cancelBtn",
+            "data-testid": "edit-value-set-suffix-cancel-button",
+            "aria-label": "edit value set cancel button",
+            variant: "outline",
+            onClick: () => {
+              toggleClose();
+              resetForm();
+            },
+            cancelText: "Cancel",
+          }}
+          continueButtonProps={{
+            continueText: "Apply",
+            "aria-label": "apply suffix button",
+            "data-testid": "apply-suffix-button",
+            disabled: !(formik.isValid && formik.dirty),
+          }}
+          children={
+            <div tw="w-1/2">
+              <TextField
+                placeholder="Suffix"
+                label="Suffix(Max Length 4)"
+                id="suffix-max-length"
+                inputProps={{
+                  "data-testid": "suffix-max-length-input",
+                  disabled: false,
+                }}
+                sx={{
+                  borderRadius: "3px",
+                  height: "auto",
+                  border: "1px solid #8c8c8c",
+                  marginTop: "8px",
+                  "& .MuiInputBase-input": {
+                    color: "#333",
+                    fontFamily: "Rubik",
+                    fontSize: 14,
+                    borderRadius: "3px",
+                    padding: "9px 14px",
+                    "&::placeholder": {
+                      opacity: 1,
+                      color: "#717171",
+                    },
+                  },
+                }}
+                onChange={formik.handleChange}
+                {...formik.getFieldProps("suffix")}
+                data-testid="suffix-max-length-text-field"
+                size="small"
+                error={formik.touched.suffix && Boolean(formik.errors.suffix)}
+                helperText={formikErrorHandler("suffix")}
+              />
+            </div>
+          }
+        />
+
         {resultValueSets?.length > 0 && (
           <div className="pagination-container">
             <Pagination
