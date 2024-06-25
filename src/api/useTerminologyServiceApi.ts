@@ -104,7 +104,6 @@ export class TerminologyServiceApi {
       })
       .then((resp) => {
         valueset = resp.data;
-        valueset = { ...valueset, status: resp.statusText };
       })
       .catch((error) => {
         const message =
