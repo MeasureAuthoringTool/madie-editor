@@ -237,8 +237,8 @@ export default function Results(props: ResultsProps) {
           }}
           cancelButtonProps={{
             id: "cancelBtn",
-            "data-testid": "edit-value-set-suffix-cancel-button",
-            "aria-label": "edit value set cancel button",
+            "data-testid": "apply-suffix-cancel-button",
+            "aria-label": "apply suffix cancel button",
             variant: "outline",
             onClick: () => {
               toggleClose();
@@ -249,7 +249,7 @@ export default function Results(props: ResultsProps) {
           continueButtonProps={{
             continueText: "Apply",
             "aria-label": "apply suffix button",
-            "data-testid": "apply-suffix-button",
+            "data-testid": "apply-suffix-continue-button",
             disabled: !(formik.isValid && formik.dirty),
           }}
           children={
