@@ -3,7 +3,7 @@ import { expect, describe, it } from "@jest/globals";
 import { render, screen, getByRole } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
-import Modal from 'react-modal';
+import Modal from "react-modal";
 import {
   ValueSetForSearch,
   TerminologyServiceApi,
@@ -107,15 +107,14 @@ describe("ValueSets Page", () => {
 
     const selectButton = getByTestId(`select-action-0_apply`);
     act(() => {
-       userEvent.click(selectButton);      
+      userEvent.click(selectButton);
     });
     screen.debug();
-    
+
     const detailsButton = getByTestId(
       "details-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163"
     );
     expect(detailsButton).toBeDefined();
     await userEvent.click(detailsButton);
-
-   });
+  });
 });

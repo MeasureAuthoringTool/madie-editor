@@ -168,9 +168,9 @@ export default function Results(props: ResultsProps) {
   });
   const { resetForm } = formik;
   const RetrieveValueSet = async (oid) => {
-    const terminologyService = await useTerminologyServiceApi();    
-    const result = await terminologyService.getValueSet(oid, undefined, true);    
-    return JSON.stringify(result, null, 2);    
+    const terminologyService = await useTerminologyServiceApi();
+    const result = await terminologyService.getValueSet(oid, undefined, true);
+    return JSON.stringify(result, null, 2);
   };
 
   const handleDetailsClick = async () => {
@@ -178,10 +178,9 @@ export default function Results(props: ResultsProps) {
     //get teh OID number
     //urn:oid:2.16.840.1.113762.1.4.1099.53 -> 2.16.840.1.113762.1.4.1099.53
     const oid = selectedReferenceId.slice(8);
-    const result: String = await RetrieveValueSet(oid);    
+    const result: String = await RetrieveValueSet(oid);
     setVsJson(result);
     setDetailsOpen(true);
-    console.log("TerminologyService result ", result);
   };
 
   return (
@@ -294,10 +293,11 @@ export default function Results(props: ResultsProps) {
             <DialogTitle>Details</DialogTitle>
             <Toolbar sx={{ justifyContent: "space-between" }}>
               <div />
-              <IconButton              
-                sx={{ 
-                  "&:hover, &.Mui-focusVisible": { backgroundColor: "gray" }, 
-                  backgroundColor: "black", marginLeft: "auto" 
+              <IconButton
+                sx={{
+                  "&:hover, &.Mui-focusVisible": { backgroundColor: "gray" },
+                  backgroundColor: "black",
+                  marginLeft: "auto",
                 }}
                 edge="start"
                 color="inherit"
