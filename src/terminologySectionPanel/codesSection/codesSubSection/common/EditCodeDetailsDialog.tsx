@@ -38,17 +38,6 @@ export default function EditCodeDetailsDialog({
     }
   };
 
-  const getCodeSystemName = (codeDetails) => {
-    if (codeDetails?.codeSystem && codeDetails.suffix) {
-      const codeSystemWithSuffix =
-        codeDetails.codeSystem.match(/^(.*?)\s*\(\d+\)$/);
-      if (codeSystemWithSuffix) {
-        return codeSystemWithSuffix[1].trim();
-      }
-    }
-    return codeDetails?.codeSystem;
-  };
-
   return (
     <MadieDialog
       form={true}
@@ -86,16 +75,14 @@ export default function EditCodeDetailsDialog({
           <div tw="w-1/3" data-testid="code-system-info">
             <p className="result-label">Code System</p>
             <span className="result-value">
-              {getCodeSystemName(selectedCodeDetails)}
+              {selectedCodeDetails?.codeSystem}
             </span>
           </div>
 
           <div tw="flex-grow pl-5" data-testid="code-system-version-info">
             <p className="result-label">Code System Version</p>
             <span className="result-value">
-              {selectedCodeDetails?.svsVersion
-                ? selectedCodeDetails.svsVersion
-                : selectedCodeDetails?.version}
+              {selectedCodeDetails?.svsVersion}
             </span>
           </div>
         </div>
