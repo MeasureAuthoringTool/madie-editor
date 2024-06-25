@@ -98,6 +98,27 @@ describe("ValueSets Page", () => {
     expect(handleApplyValueSet).toHaveBeenCalled();
   });
 
+  it("Should allow a 'Details' button to show ValueSet Details", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    const { getByTestId, queryByTestId } = render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        resultValueSets={RESULT_VALUESETS}
+      />
+    );
+
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      userEvent.click(selectButton);
+    });
+
+    const detailsButton = getByTestId(
+      `details-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
+    );
+    userEvent.click(detailsButton);
+  });
+
   it("Display edit dialogue box and show errors when user enters invalid input", async () => {
     const handleApplyValueSet = jest.fn();
 
