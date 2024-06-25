@@ -1,8 +1,9 @@
 import React from "react";
 import { expect, describe, it } from "@jest/globals";
-import { render, screen } from "@testing-library/react";
+import { render, screen, getByRole } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
+import Modal from 'react-modal';
 import {
   ValueSetForSearch,
   TerminologyServiceApi,
@@ -94,7 +95,7 @@ describe("ValueSets Page", () => {
     expect(applyButton).toBeDefined();
   });
 
-  it("Displays Details after clicking 'Details'", async () => {
+  it.only("Displays Details after clicking 'Details'", async () => {
     const handleApplyValueSet = jest.fn();
 
     render(
@@ -103,18 +104,18 @@ describe("ValueSets Page", () => {
         resultValueSets={RESULT_VALUESETS}
       />
     );
+
     const selectButton = getByTestId(`select-action-0_apply`);
-    userEvent.click(selectButton);
-    //
+    act(() => {
+       userEvent.click(selectButton);      
+    });
+    screen.debug();
+    
     const detailsButton = getByTestId(
       "details-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163"
     );
     expect(detailsButton).toBeDefined();
+    await userEvent.click(detailsButton);
 
-    act(() => {
-      userEvent.click(detailsButton);
-    });
-    // const detailsModal = getByTestId("details-modal");
-    // expect(detailsModal).toBeDefined();
-  });
+   });
 });

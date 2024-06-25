@@ -168,19 +168,20 @@ export default function Results(props: ResultsProps) {
   });
   const { resetForm } = formik;
   const RetrieveValueSet = async (oid) => {
-    const terminologyService = await useTerminologyServiceApi();
-    const result = await terminologyService.getValueSet(oid, undefined, true);
-    return JSON.stringify(result, null, 2);
+    const terminologyService = await useTerminologyServiceApi();    
+    const result = await terminologyService.getValueSet(oid, undefined, true);    
+    return JSON.stringify(result, null, 2);    
   };
+
   const handleDetailsClick = async () => {
     setOpenPopoverOptions(false);
-
     //get teh OID number
     //urn:oid:2.16.840.1.113762.1.4.1099.53 -> 2.16.840.1.113762.1.4.1099.53
     const oid = selectedReferenceId.slice(8);
-    const result: String = await RetrieveValueSet(oid);
+    const result: String = await RetrieveValueSet(oid);    
     setVsJson(result);
     setDetailsOpen(true);
+    console.log("TerminologyService result ", result);
   };
 
   return (
@@ -242,6 +243,7 @@ export default function Results(props: ResultsProps) {
             handleClose={handleClose}
             canEdit={true}
             editViewSelectOptionProps={{
+              key: 1,
               label: "Apply",
               toImplementFunction: () => {
                 setOpenPopoverOptions(false);
@@ -251,6 +253,7 @@ export default function Results(props: ResultsProps) {
             }}
             otherSelectOptionProps={[
               {
+                key: 2,
                 label: "Edit",
                 toImplementFunction: () => {
                   handleEditValueSetDetails();
@@ -258,10 +261,9 @@ export default function Results(props: ResultsProps) {
                 dataTestId: `edit-valueset-${selectedReferenceId}`,
               },
               {
+                key: 3,
                 label: "Details",
-
                 dataTestId: `details-valueset-${selectedReferenceId}`,
-
                 toImplementFunction: () => {
                   handleDetailsClick();
                 },
@@ -282,6 +284,7 @@ export default function Results(props: ResultsProps) {
           sx={{
             "& .MuiDialog-container": {
               "& .MuiPaper-root": {
+                backgroundColor: "white",
                 width: "100%",
               },
             },
@@ -291,8 +294,11 @@ export default function Results(props: ResultsProps) {
             <DialogTitle>Details</DialogTitle>
             <Toolbar sx={{ justifyContent: "space-between" }}>
               <div />
-              <IconButton
-                sx={{ marginLeft: "auto" }}
+              <IconButton              
+                sx={{ 
+                  "&:hover, &.Mui-focusVisible": { backgroundColor: "gray" }, 
+                  backgroundColor: "black", marginLeft: "auto" 
+                }}
                 edge="start"
                 color="inherit"
                 onClick={() => setDetailsOpen(false)}
