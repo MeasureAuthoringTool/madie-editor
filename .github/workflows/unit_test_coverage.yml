@@ -98,5 +98,4 @@ jobs:
         with:
           file: lcov.info
           fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }} # required
-          
+          token: ${{ secrets.CODECOV_TOKEN }}
