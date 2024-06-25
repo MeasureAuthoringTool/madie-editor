@@ -20,14 +20,14 @@ jest.mock("@madie/madie-util", () => ({
   }),
 }));
 
-const mockeCodeDetailsList: any = {
+const mockCodeDetailsList: any = {
   data: [
     {
       name: "8462-4",
       display: "Diastolic blood pressure",
-      svsVersion: "2.44",
-      fhirVersion: "2.44",
-      codeSystem: "LOINC (1)",
+      svsVersion: "2.6",
+      fhirVersion: "2.6",
+      codeSystem: "LOINC:2.6",
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",
     },
@@ -44,7 +44,7 @@ const mockeCodeDetailsList: any = {
 };
 
 const mockTerminologyServiceApi = {
-  getCodesAndCodeSystems: jest.fn().mockResolvedValue(mockeCodeDetailsList),
+  getCodesAndCodeSystems: jest.fn().mockResolvedValue(mockCodeDetailsList),
 } as unknown as TerminologyServiceApi;
 
 jest.mock("../../../../api/useTerminologyServiceApi", () =>
@@ -80,6 +80,11 @@ describe("Saved Codes section component", () => {
         measureStoreCql="using QDM version 1.0.000"
         canEdit={true}
         cqlMetaData={mockCqlMetaData}
+        handleApplyCode={undefined}
+        handleCodeDelete={undefined}
+        setEditorVal={undefined}
+        setIsCQLUnchanged={undefined}
+        isCQLUnchanged={undefined}
       />
     );
     expect(
@@ -113,6 +118,11 @@ describe("Saved Codes section component", () => {
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
         cqlMetaData={mockCqlMetaData}
+        handleApplyCode={undefined}
+        handleCodeDelete={undefined}
+        setEditorVal={undefined}
+        setIsCQLUnchanged={undefined}
+        isCQLUnchanged={undefined}
       />
     );
 
@@ -144,13 +154,52 @@ describe("Saved Codes section component", () => {
     });
 
     const suffixInput = screen.getByTestId(
-      "suffix-max-length-input"
+      "code-suffix-field-input"
     ) as HTMLInputElement;
     expect(suffixInput.value).toBe("1");
 
     const cancelButton = getByTestId("cancel-button");
     expect(cancelButton).toBeInTheDocument();
     userEvent.click(cancelButton);
+  });
+
+  it("Apply code button click action", async () => {
+    const handleApplyCode = jest.fn();
+    const { getByTestId, queryByTestId } = render(
+      <SavedCodesSubSection
+        measureStoreCql={mockMeasureStoreCql}
+        canEdit={true}
+        cqlMetaData={mockCqlMetaData}
+        handleApplyCode={handleApplyCode}
+        handleCodeDelete={jest.fn()}
+        setEditorVal={undefined}
+        setIsCQLUnchanged={undefined}
+        isCQLUnchanged={undefined}
+      />
+    );
+    await waitForElementToBeRemoved(() =>
+      queryByTestId("saved-codes-loading-spinner")
+    );
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+    const editButton = getByTestId(`edit-code-0`);
+    userEvent.click(editButton);
+    await waitFor(() => {
+      expect(getByTestId("dialog-form")).toBeInTheDocument();
+    });
+    const suffixInput = screen.getByTestId(
+      "code-suffix-field-input"
+    ) as HTMLInputElement;
+    expect(suffixInput.value).toBe("1");
+
+    const applyButton = getByTestId("apply-button");
+    userEvent.click(applyButton);
+    await waitFor(() => {
+      expect(handleApplyCode).toHaveBeenCalled();
+    });
   });
 
   it("displaying delete dialog when delete is clicked from the select actions", async () => {
@@ -160,6 +209,10 @@ describe("Saved Codes section component", () => {
         canEdit={true}
         cqlMetaData={mockCqlMetaData}
         isCQLUnchanged={true}
+        handleApplyCode={undefined}
+        handleCodeDelete={undefined}
+        setEditorVal={undefined}
+        setIsCQLUnchanged={undefined}
       />
     );
 
@@ -206,6 +259,9 @@ describe("Saved Codes section component", () => {
         cqlMetaData={mockCqlMetaData}
         isCQLUnchanged={true}
         handleCodeDelete={handleCodeDelete}
+        handleApplyCode={undefined}
+        setEditorVal={undefined}
+        setIsCQLUnchanged={undefined}
       />
     );
     await checkRows(2);
@@ -238,6 +294,7 @@ describe("Saved Codes section component", () => {
         handleCodeDelete={jest.fn()}
         setEditorVal={jest.fn()}
         setIsCQLUnchanged={jest.fn()}
+        handleApplyCode={undefined}
       />
     );
     await checkRows(2);

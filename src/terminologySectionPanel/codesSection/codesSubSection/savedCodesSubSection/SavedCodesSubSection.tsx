@@ -14,11 +14,10 @@ import {
   Toast,
   MadieAlert,
   Popover,
-  MadieDialog,
   MadieDeleteDialog,
   MadieDiscardDialog,
 } from "@madie/madie-design-system/dist/react";
-import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
+import { CqlAntlr, CqlCode } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
@@ -26,10 +25,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useTerminologyServiceApi, {
   Code,
-  CodeStatus,
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
-import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
+import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 import { getOidFromString } from "@madie/madie-util";
 
 type SavedCodesColumnRow = {
@@ -45,6 +43,7 @@ type CodesList = {
   oid: string;
   suffix: string;
   version: string;
+  isVersionIncluded: boolean;
 };
 
 export type SelectedCodeDetails = SavedCodesColumnRow & {
@@ -58,6 +57,7 @@ export type SelectedCodeDetails = SavedCodesColumnRow & {
 export default function SavedCodesSubSection({
   measureStoreCql,
   canEdit,
+  handleApplyCode,
   cqlMetaData,
   handleCodeDelete,
   setEditorVal,
@@ -80,7 +80,7 @@ export default function SavedCodesSubSection({
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<SelectedCodeDetails>(null);
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
-  const [open, setOpen] = useState<boolean>(false);
+  const [openEditCodeDialog, setOpenEditCodeDialog] = useState<boolean>(false);
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
     useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
@@ -129,25 +129,27 @@ export default function SavedCodesSubSection({
       if (!_.isEmpty(parsedCql?.codes)) {
         setLoading(true);
         const codesList = parsedCql.codes.map((code) => {
-          const matchedCodeSystem = parsedCql?.codeSystems.find(
+          const matchedCodeSystem = parsedCql.codeSystems.find(
             (codeSystem) =>
-              codeSystem?.name?.replace(/['"]+/g, "") ===
-              code?.codeSystem?.replace(/['"]+/g, "")
+              codeSystem.name?.replace(/['"]+/g, "") ===
+              code.codeSystem?.replace(/['"]+/g, "")
           );
-          const parsedCode = code?.codeId.replace(/['"]+/g, "");
-          const parsedCodeSystem = code?.codeSystem.replace(/['"]+/g, "");
+          const parsedCode = code.codeId.replace(/['"]+/g, "");
+          const parsedCodeSystem = code.codeSystem.replace(/['"]+/g, "");
+          const codeSystemVersion = getCodeVersion(
+            parsedCode,
+            parsedCodeSystem,
+            matchedCodeSystem?.oid,
+            cqlMetaData?.codeSystemMap,
+            matchedCodeSystem?.version
+          );
           return {
             code: parsedCode,
-            codeSystem: parsedCodeSystem,
-            version: getCodeVersion(
-              parsedCode,
-              parsedCodeSystem,
-              matchedCodeSystem?.oid,
-              cqlMetaData?.codeSystemMap,
-              matchedCodeSystem?.version
-            ),
+            codeSystem: parsedCodeSystem.replace(":" + codeSystemVersion, ""),
+            version: codeSystemVersion,
             oid: matchedCodeSystem?.oid,
-            suffix: getCodeSystemSuffix(code?.codeSystem.replace(/['"]+/g, "")),
+            suffix: getCodeSuffix(code),
+            isVersionIncluded: code.codeSystem.includes(codeSystemVersion),
           };
         });
         setParsedCodesList(codesList);
@@ -181,9 +183,10 @@ export default function SavedCodesSubSection({
     return version && version.split(":").pop();
   };
 
-  const getCodeSystemSuffix = (codeSystemName: string) => {
+  const getCodeSuffix = (code: CqlCode) => {
+    const name = code?.name.replace(/['"]+/g, "");
     const pattern = /\((\d+)\)/;
-    const match = codeSystemName.match(pattern);
+    const match = name.match(pattern);
     if (match) {
       return match[1];
     }
@@ -251,9 +254,7 @@ export default function SavedCodesSubSection({
             {canEdit ? (
               <button
                 className="action-button"
-                onClick={(e) => {
-                  handleOpen(row.cell.row.id, e);
-                }}
+                onClick={(e) => handleOpen(row.cell.row.id, e)}
                 tw="text-blue-600 hover:text-blue-900"
                 data-testid={`select-action-${row.cell.id}`}
                 aria-label={`select-action-${row.cell.id}`}
@@ -337,25 +338,20 @@ export default function SavedCodesSubSection({
     setAnchorEl(null);
   };
 
-  const toggleOpen = () => {
-    setOpen(!open);
+  const toggleEditCodeDialogState = () => {
+    setOpenEditCodeDialog(!open);
   };
 
-  const handleDialogEditCodeApply = () => {
-    // eslint-disable-next-line no-console
-    console.log("Code is edited an applied");
-  };
-
-  const handleEditCodeDetails = () => {
+  const handleEditCode = () => {
     setOptionsOpen(false);
-    setOpen(true);
-    const selectedAntlrParsedCode = parsedCodesList.filter(
-      (code) => code.codeSystem === selectedCodeDetails.codeSystem
-    )[0];
+    setOpenEditCodeDialog(true);
+    const parsedCode = parsedCodesList.find(
+      (parsedCode) => parsedCode.code === selectedCodeDetails.name
+    );
     setSelectedCodeDetails({
       ...selectedCodeDetails,
-      suffix: selectedAntlrParsedCode?.suffix,
-      isVersionIncluded: selectedAntlrParsedCode?.version ? true : false,
+      suffix: parsedCode?.suffix,
+      isVersionIncluded: parsedCode.isVersionIncluded,
     });
   };
 
@@ -459,40 +455,18 @@ export default function SavedCodesSubSection({
                 otherSelectOptionProps={[
                   {
                     label: "Edit",
-                    toImplementFunction: () => {
-                      handleEditCodeDetails();
-                    },
+                    toImplementFunction: () => handleEditCode(),
                     dataTestId: `edit-code-${selectedReferenceId}`,
                   },
                 ]}
               />
             </table>
 
-            <MadieDialog
-              form={true}
-              title={"Code Details"}
-              dialogProps={{
-                open,
-                onClose: toggleOpen,
-                id: "edit-code-details-popup-dialog",
-                onSubmit: handleDialogEditCodeApply,
-              }}
-              cancelButtonProps={{
-                cancelText: "Cancel",
-                "data-testid": "cancel-button",
-              }}
-              continueButtonProps={{
-                continueText: "Apply",
-                "data-testid": "apply-button",
-                disabled: false,
-              }}
-              children={
-                selectedCodeDetails && (
-                  <EditCodeDetailsDialogForm
-                    selectedCodeDetails={selectedCodeDetails}
-                  />
-                )
-              }
+            <EditCodeDetailsDialog
+              selectedCodeDetails={selectedCodeDetails}
+              onApplyCode={handleApplyCode}
+              open={openEditCodeDialog}
+              onClose={toggleEditCodeDialogState}
             />
           </>
         }

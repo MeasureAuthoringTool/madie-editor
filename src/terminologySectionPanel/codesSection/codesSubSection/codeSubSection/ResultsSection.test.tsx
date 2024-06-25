@@ -19,7 +19,7 @@ describe("Results Section component", () => {
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
         code={code}
-        handleChange={jest.fn()}
+        handleApplyCode={jest.fn()}
       />
     );
     expect(
@@ -69,7 +69,7 @@ describe("Results Section component", () => {
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
         code={undefined}
-        handleChange={jest.fn()}
+        handleApplyCode={jest.fn()}
       />
     );
 
@@ -147,7 +147,7 @@ describe("Results Section component", () => {
     });
 
     const suffixInput = screen.getByTestId(
-      "suffix-max-length-input"
+      "code-suffix-field-input"
     ) as HTMLInputElement;
     expect(suffixInput.value).toBe("");
 

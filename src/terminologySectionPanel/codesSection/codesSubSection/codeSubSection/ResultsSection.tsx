@@ -17,7 +17,7 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Popover, MadieDialog } from "@madie/madie-design-system/dist/react";
 import "./ResultsSection.scss";
-import EditCodeDetailsDialogForm from "../common/EditCodeDetailsDialogForm";
+import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 
 type ResultSectionProps = {
   showResultsTable: boolean;
@@ -31,6 +31,7 @@ type ResultsColumnRow = {
   display: string;
   codeSystem: string;
   svsVersion: string;
+  isVersionIncluded?: string;
 };
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
@@ -45,7 +46,7 @@ export default function ResultsSection({
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<ResultsColumnRow>(null);
-  const [open, setOpen] = useState<boolean>(false);
+  const [openEditCodeDialog, setOpenEditCodeDialog] = useState<boolean>(false);
 
   const handleOpen = async (
     selectedId,
@@ -93,9 +94,7 @@ export default function ResultsSection({
           <div className="inline-flex gap-x-2">
             <button
               className="action-button"
-              onClick={(e) => {
-                handleOpen(row.cell.row.id, e);
-              }}
+              onClick={(e) => handleOpen(row.cell.row.id, e)}
               tw="text-blue-600 hover:text-blue-900"
               data-testid={`select-action-${row.cell.id}`}
               aria-label={`select-action-${row.cell.id}`}
@@ -122,13 +121,13 @@ export default function ResultsSection({
     setOptionsOpen(false);
   };
 
-  const toggleOpen = () => {
-    setOpen(!open);
+  const toggleEditCodeDialogState = () => {
+    setOpenEditCodeDialog(!open);
   };
 
   const handleEditCode = () => {
     setOptionsOpen(false);
-    setOpen(true);
+    setOpenEditCodeDialog(true);
   };
 
   const getCodeStatus = (status) => {
@@ -151,11 +150,6 @@ export default function ResultsSection({
         <DoNotDisturbOnIcon />
       </ToolTippedIcon>
     );
-  };
-
-  const handleDialogEditCodeApply = () => {
-    // eslint-disable-next-line no-console
-    console.log("Code is edited an applied");
   };
 
   return (
@@ -220,17 +214,13 @@ export default function ResultsSection({
                 canEdit={true}
                 editViewSelectOptionProps={{
                   label: "Apply",
-                  toImplementFunction: () => {
-                    handleApplyCodeInner();
-                  },
+                  toImplementFunction: () => handleApplyCodeInner(),
                   dataTestId: `apply-code-${selectedReferenceId}`,
                 }}
                 otherSelectOptionProps={[
                   {
                     label: "Edit",
-                    toImplementFunction: () => {
-                      handleEditCode();
-                    },
+                    toImplementFunction: () => handleEditCode(),
                     dataTestId: `edit-code-${selectedReferenceId}`,
                   },
                   {
@@ -244,32 +234,11 @@ export default function ResultsSection({
                 ]}
               />
             </table>
-
-            <MadieDialog
-              form={true}
-              title={"Code Details"}
-              dialogProps={{
-                open,
-                onClose: toggleOpen,
-                id: "edit-code-details-popup-dialog",
-                onSubmit: handleDialogEditCodeApply,
-              }}
-              cancelButtonProps={{
-                cancelText: "Cancel",
-                "data-testid": "cancel-button",
-              }}
-              continueButtonProps={{
-                continueText: "Apply",
-                "data-testid": "apply-button",
-                disabled: false,
-              }}
-              children={
-                selectedCodeDetails && (
-                  <EditCodeDetailsDialogForm
-                    selectedCodeDetails={selectedCodeDetails}
-                  />
-                )
-              }
+            <EditCodeDetailsDialog
+              selectedCodeDetails={selectedCodeDetails}
+              onApplyCode={handleApplyCode}
+              open={openEditCodeDialog}
+              onClose={toggleEditCodeDialogState}
             />
           </>
         }

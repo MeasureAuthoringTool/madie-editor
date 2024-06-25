@@ -17,7 +17,7 @@ import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./Results.scss";
 import { useFormik } from "formik";
-import { ValueSetSuffixSchemaValidator } from "../../../validations/ValueSetSuffixSchemaValidator";
+import { SuffixSchemaValidator } from "../../../validations/SuffixSchemaValidator";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -133,7 +133,7 @@ export default function Results(props: ResultsProps) {
     initialValues: {
       suffix: "",
     },
-    validationSchema: ValueSetSuffixSchemaValidator,
+    validationSchema: SuffixSchemaValidator,
     onSubmit: (values) => {
       handleApplyValueSet({
         ...selectedValueSetDetails,
