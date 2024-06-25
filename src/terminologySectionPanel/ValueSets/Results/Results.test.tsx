@@ -1,9 +1,8 @@
 import React from "react";
-import { expect, describe, it } from "@jest/globals";
-import { render, screen, getByRole } from "@testing-library/react";
+
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
-import Modal from "react-modal";
 import {
   ValueSetForSearch,
   TerminologyServiceApi,
@@ -18,7 +17,7 @@ jest.mock("../../../api/useTerminologyServiceApi", () =>
   jest.fn(() => mockTerminologyServiceApi)
 );
 
-const RESULT_VALUESETS = [
+const RESULT_VALUESETS: ValueSetForSearch[] = [
   {
     title: "Emergency Department Evaluation",
     name: "EmergencyDepartmentEvaluation",
@@ -73,48 +72,105 @@ const RESULT_VALUESETS = [
     codeSystem: null,
     status: "ACTIVE",
   },
-] as ValueSetForSearch;
+];
 
-const { getByTestId } = screen;
+// const { getByTestId } = screen;
 describe("ValueSets Page", () => {
   it("Should use a type ahead field to add and remove search categories", async () => {
     const handleApplyValueSet = jest.fn();
 
-    render(
-      <Results
-        handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
-      />
-    );
-    const selectButton = getByTestId(`select-action-0_apply`);
-    userEvent.click(selectButton);
-    //
-    const applyButton = getByTestId(
-      "apply-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163"
-    );
-    expect(applyButton).toBeDefined();
-  });
-
-  it.only("Displays Details after clicking 'Details'", async () => {
-    const handleApplyValueSet = jest.fn();
-
-    render(
+    const { getByTestId, queryByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
         resultValueSets={RESULT_VALUESETS}
       />
     );
 
-    const selectButton = getByTestId(`select-action-0_apply`);
-    act(() => {
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
       userEvent.click(selectButton);
     });
-    screen.debug();
 
-    const detailsButton = getByTestId(
-      "details-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163"
+    const applyButton = getByTestId(
+      `apply-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
     );
-    expect(detailsButton).toBeDefined();
-    await userEvent.click(detailsButton);
+    userEvent.click(applyButton);
+    expect(handleApplyValueSet).toHaveBeenCalled();
+  });
+
+  it("Display edit dialogue box and show errors when user enters invalid input", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    const { getByTestId } = render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        resultValueSets={RESULT_VALUESETS}
+      />
+    );
+
+    const selectButton = screen.getByTestId(`select-action-0_apply`);
+    userEvent.click(selectButton);
+    const editButton = getByTestId(
+      `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
+    );
+    userEvent.click(editButton);
+
+    await waitFor(async () => {
+      const continueButton = getByTestId("apply-suffix-continue-button");
+      const cancelButton = getByTestId("apply-suffix-cancel-button");
+
+      expect(continueButton).toBeInTheDocument();
+      expect(continueButton).toBeDisabled();
+      expect(cancelButton).toBeInTheDocument();
+
+      const suffixInput = (await getByTestId(
+        "suffix-max-length-input"
+      )) as HTMLInputElement;
+      userEvent.type(suffixInput, "52345");
+      userEvent.click(continueButton);
+      expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
+
+      userEvent.type(suffixInput, "523a");
+      userEvent.click(continueButton);
+      expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
+    });
+  });
+
+  it("Display edit dialogue box and applying valuesets when contine button is clicked", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    const { getByTestId } = render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        resultValueSets={RESULT_VALUESETS}
+      />
+    );
+
+    const selectButton = screen.getByTestId(`select-action-0_apply`);
+    userEvent.click(selectButton);
+    const editButton = getByTestId(
+      `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
+    );
+    userEvent.click(editButton);
+
+    await waitFor(async () => {
+      const continueButton = getByTestId("apply-suffix-continue-button");
+      const cancelButton = getByTestId("apply-suffix-cancel-button");
+
+      expect(continueButton).toBeInTheDocument();
+      expect(continueButton).toBeDisabled();
+      expect(cancelButton).toBeInTheDocument();
+
+      const suffixInput = (await getByTestId(
+        "suffix-max-length-input"
+      )) as HTMLInputElement;
+
+      userEvent.type(suffixInput, "5");
+      expect(suffixInput.value).toBe("5");
+      expect(continueButton).not.toBeDisabled();
+
+      userEvent.click(continueButton);
+      expect(handleApplyValueSet).toHaveBeenCalled();
+    });
   });
 });
