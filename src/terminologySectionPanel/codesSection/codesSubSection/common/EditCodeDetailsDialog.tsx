@@ -15,7 +15,7 @@ export default function EditCodeDetailsDialog({
   const formik = useFormik({
     initialValues: {
       suffix: selectedCodeDetails?.suffix,
-      isVersionIncluded: Boolean(selectedCodeDetails?.isVersionIncluded),
+      isVersionIncluded: selectedCodeDetails?.isVersionIncluded,
     },
     validationSchema: SuffixSchemaValidator,
     onSubmit: ({ suffix, isVersionIncluded }) => {
