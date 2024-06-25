@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+
 import tw from "twin.macro";
 import "styled-components/macro";
 import {
@@ -6,18 +7,34 @@ import {
   Popover,
   MadieDialog,
   TextField,
+  Button,
 } from "@madie/madie-design-system/dist/react";
+
 import {
   useReactTable,
   ColumnDef,
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
+
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 import "./Results.scss";
 import { useFormik } from "formik";
 import { ValueSetSuffixSchemaValidator } from "../../../validations/ValueSetSuffixSchemaValidator";
+
+import useTerminologyServiceApi, {
+  ValueSetForSearch,
+} from "../../../api/useTerminologyServiceApi";
+
+import {
+  Dialog,
+  DialogTitle,
+  AppBar,
+  Toolbar,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -38,19 +55,26 @@ interface ResultsProps {
   resultValueSets: ValueSetForSearch[];
   handleApplyValueSet: Function;
 }
+
 export default function Results(props: ResultsProps) {
+  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [vsJson, setVsJson] = useState<String>("Loading");
+  const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
+
   let { resultValueSets, handleApplyValueSet } = props;
   const data = resultValueSets;
 
   const [openPopoverOptions, setOpenPopoverOptions] = useState<boolean>(false);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
+
   const [selectedValueSetDetails, setSelectedValueSetDetails] = useState(null);
 
   const handleOpen = async (selectedId, event) => {
     setOpenPopoverOptions(true);
-    setSelectedReferenceId(selectedId);
+
+    setSelectedReferenceId(table.getRow(selectedId).original.oid);
+
     setAnchorEl(event.currentTarget);
     setSelectedValueSetDetails(table.getRow(selectedId).original);
   };
@@ -113,7 +137,7 @@ export default function Results(props: ResultsProps) {
               >
                 <div className="action">Select</div>
                 <div className="chevron-container">
-                  <ExpandMoreIcon />
+                  <ExpandMoreIcon sx={{ color: "#0073c8" }} />
                 </div>
               </button>
             </div>
@@ -143,6 +167,21 @@ export default function Results(props: ResultsProps) {
     },
   });
   const { resetForm } = formik;
+  const RetrieveValueSet = async (oid) => {
+    const terminologyService = await useTerminologyServiceApi();
+    const result = await terminologyService.getValueSet(oid, undefined, true);
+    return JSON.stringify(result, null, 2);
+  };
+
+  const handleDetailsClick = async () => {
+    setOpenPopoverOptions(false);
+    //get teh OID number
+    //urn:oid:2.16.840.1.113762.1.4.1099.53 -> 2.16.840.1.113762.1.4.1099.53
+    const oid = selectedReferenceId.slice(8);
+    const result: String = await RetrieveValueSet(oid);
+    setVsJson(result);
+    setDetailsOpen(true);
+  };
 
   return (
     <div
@@ -203,6 +242,7 @@ export default function Results(props: ResultsProps) {
             handleClose={handleClose}
             canEdit={true}
             editViewSelectOptionProps={{
+              key: 1,
               label: "Apply",
               toImplementFunction: () => {
                 setOpenPopoverOptions(false);
@@ -212,6 +252,7 @@ export default function Results(props: ResultsProps) {
             }}
             otherSelectOptionProps={[
               {
+                key: 2,
                 label: "Edit",
                 toImplementFunction: () => {
                   handleEditValueSetDetails();
@@ -219,12 +260,58 @@ export default function Results(props: ResultsProps) {
                 dataTestId: `edit-valueset-${selectedReferenceId}`,
               },
               {
+                key: 3,
                 label: "Details",
                 dataTestId: `details-valueset-${selectedReferenceId}`,
+                toImplementFunction: () => {
+                  handleDetailsClick();
+                },
               },
             ]}
           />
         </table>
+
+        <Dialog
+          fullWidth={true}
+          maxWidth={"xl"}
+          onClose={() => {
+            setVsJson("Loading");
+            setDetailsOpen(false);
+          }}
+          open={detailsOpen}
+          data-testid="details-modal"
+          sx={{
+            "& .MuiDialog-container": {
+              "& .MuiPaper-root": {
+                backgroundColor: "white",
+                width: "100%",
+              },
+            },
+          }}
+        >
+          <AppBar position="static">
+            <DialogTitle>Details</DialogTitle>
+            <Toolbar sx={{ justifyContent: "space-between" }}>
+              <div />
+              <IconButton
+                sx={{
+                  "&:hover, &.Mui-focusVisible": { backgroundColor: "gray" },
+                  backgroundColor: "black",
+                  marginLeft: "auto",
+                }}
+                edge="start"
+                color="inherit"
+                onClick={() => setDetailsOpen(false)}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          <div>
+            <pre>{vsJson}</pre>
+          </div>
+        </Dialog>
 
         <MadieDialog
           form={true}

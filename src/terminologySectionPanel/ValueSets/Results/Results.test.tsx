@@ -1,8 +1,21 @@
 import React from "react";
+
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
-import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
+import {
+  ValueSetForSearch,
+  TerminologyServiceApi,
+} from "../../../api/useTerminologyServiceApi";
+import { act } from "react-dom/test-utils";
+
+const mockTerminologyServiceApi = {
+  getValueSet: jest.fn().mockResolvedValue({}),
+} as unknown as TerminologyServiceApi;
+
+jest.mock("../../../api/useTerminologyServiceApi", () =>
+  jest.fn(() => mockTerminologyServiceApi)
+);
 
 const RESULT_VALUESETS: ValueSetForSearch[] = [
   {
@@ -78,9 +91,32 @@ describe("ValueSets Page", () => {
       userEvent.click(selectButton);
     });
 
-    const applyButton = getByTestId(`apply-valueset-0`);
+    const applyButton = getByTestId(
+      `apply-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
+    );
     userEvent.click(applyButton);
     expect(handleApplyValueSet).toHaveBeenCalled();
+  });
+
+  it("Should allow a 'Details' button to show ValueSet Details", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    const { getByTestId, queryByTestId } = render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        resultValueSets={RESULT_VALUESETS}
+      />
+    );
+
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      userEvent.click(selectButton);
+    });
+
+    const detailsButton = getByTestId(
+      `details-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
+    );
+    userEvent.click(detailsButton);
   });
 
   it("Display edit dialogue box and show errors when user enters invalid input", async () => {
@@ -95,7 +131,9 @@ describe("ValueSets Page", () => {
 
     const selectButton = screen.getByTestId(`select-action-0_apply`);
     userEvent.click(selectButton);
-    const editButton = getByTestId(`edit-valueset-0`);
+    const editButton = getByTestId(
+      `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
+    );
     userEvent.click(editButton);
 
     await waitFor(async () => {
@@ -131,7 +169,9 @@ describe("ValueSets Page", () => {
 
     const selectButton = screen.getByTestId(`select-action-0_apply`);
     userEvent.click(selectButton);
-    const editButton = getByTestId(`edit-valueset-0`);
+    const editButton = getByTestId(
+      `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
+    );
     userEvent.click(editButton);
 
     await waitFor(async () => {
