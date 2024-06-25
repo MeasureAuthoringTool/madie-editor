@@ -94,7 +94,7 @@ describe("ValueSets Page", () => {
     expect(applyButton).toBeDefined();
   });
 
-  it.only("Displays Details after clicking 'Details'", async () => {
+  it("Displays Details after clicking 'Details'", async () => {
     const handleApplyValueSet = jest.fn();
 
     render(
