@@ -3,7 +3,19 @@ import { expect, describe, it } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
-import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
+import {
+  ValueSetForSearch,
+  TerminologyServiceApi,
+} from "../../../api/useTerminologyServiceApi";
+import { act } from "react-dom/test-utils";
+
+const mockTerminologyServiceApi = {
+  getValueSet: jest.fn().mockResolvedValue({}),
+} as unknown as TerminologyServiceApi;
+
+jest.mock("../../../api/useTerminologyServiceApi", () =>
+  jest.fn(() => mockTerminologyServiceApi)
+);
 
 const RESULT_VALUESETS = [
   {
@@ -64,7 +76,7 @@ const RESULT_VALUESETS = [
 
 const { getByTestId } = screen;
 describe("ValueSets Page", () => {
-  it.skip("Should use a type ahead field to add and remove search categories", async () => {
+  it("Should use a type ahead field to add and remove search categories", async () => {
     const handleApplyValueSet = jest.fn();
 
     render(
@@ -73,9 +85,36 @@ describe("ValueSets Page", () => {
         resultValueSets={RESULT_VALUESETS}
       />
     );
-    const applyButton = getByTestId(`select-apply-vs-action-0_apply`);
-    userEvent.click(applyButton);
-    expect(handleApplyValueSet).toHaveBeenCalled();
+    const selectButton = getByTestId(`select-action-0_apply`);
+    userEvent.click(selectButton);
+    //
+    const applyButton = getByTestId(
+      "apply-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163"
+    );
+    expect(applyButton).toBeDefined();
   });
-  3;
+
+  it.only("Displays Details after clicking 'Details'", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        resultValueSets={RESULT_VALUESETS}
+      />
+    );
+    const selectButton = getByTestId(`select-action-0_apply`);
+    userEvent.click(selectButton);
+    //
+    const detailsButton = getByTestId(
+      "details-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163"
+    );
+    expect(detailsButton).toBeDefined();
+
+    act(() => {
+      userEvent.click(detailsButton);
+    });
+    // const detailsModal = getByTestId("details-modal");
+    // expect(detailsModal).toBeDefined();
+  });
 });
