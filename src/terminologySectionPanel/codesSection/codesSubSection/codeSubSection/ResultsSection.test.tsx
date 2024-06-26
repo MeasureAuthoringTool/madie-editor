@@ -156,7 +156,7 @@ describe("Results Section component", () => {
     userEvent.click(cancelButton);
   });
 
-  it("Edit dialog validations", async () => {
+  it("Should validate code suffix- Edit dialog validations", async () => {
     renderResultsTable(
       { ...mockCode, status: CodeStatus.NA },
       "DoNotDisturbOnIcon"
