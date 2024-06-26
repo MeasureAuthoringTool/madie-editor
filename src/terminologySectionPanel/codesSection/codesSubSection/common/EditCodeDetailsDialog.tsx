@@ -15,7 +15,7 @@ export default function EditCodeDetailsDialog({
   const formik = useFormik({
     initialValues: {
       suffix: selectedCodeDetails?.suffix,
-      isVersionIncluded: selectedCodeDetails?.isVersionIncluded,
+      isVersionIncluded: selectedCodeDetails?.isVersionIncluded || false,
     },
     validationSchema: SuffixSchemaValidator,
     onSubmit: ({ suffix, isVersionIncluded }) => {
@@ -116,6 +116,7 @@ export default function EditCodeDetailsDialog({
                   id="include-code-system-version-checkbox"
                   data-testid="include-code-system-version-checkbox"
                   checked={formik.values.isVersionIncluded}
+                  onChange={formik.handleChange}
                 />
               }
               label="Include Code System Version"
@@ -125,7 +126,6 @@ export default function EditCodeDetailsDialog({
                 fontFamily: "Rubik",
                 marginTop: "6px",
               }}
-              {...formik.getFieldProps("includeCodeSystemVersion")}
             />
           </div>
         </div>

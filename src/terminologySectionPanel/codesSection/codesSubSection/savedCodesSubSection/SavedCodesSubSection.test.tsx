@@ -163,7 +163,7 @@ describe("Saved Codes section component", () => {
     userEvent.click(cancelButton);
   });
 
-  it("Apply code button click action", async () => {
+  it("Should apply code on apply button click successfully", async () => {
     const handleApplyCode = jest.fn();
     const { getByTestId, queryByTestId } = render(
       <SavedCodesSubSection

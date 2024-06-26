@@ -15,7 +15,7 @@ import {
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Popover, MadieDialog } from "@madie/madie-design-system/dist/react";
+import { Popover } from "@madie/madie-design-system/dist/react";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 
