@@ -1,6 +1,5 @@
 import * as React from "react";
 import "@testing-library/jest-dom";
-import { describe, test } from "@jest/globals";
 import { fireEvent, waitFor, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import TerminologySection from "./TerminologySection";
