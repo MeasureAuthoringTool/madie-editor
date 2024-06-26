@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import {axiosInstance as axios} from "../utils/axios-insatnce";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";

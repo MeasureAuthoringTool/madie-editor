@@ -1,4 +1,4 @@
-import axios from "axios";
+import {axiosInstance as axios} from "../utils/axios-insatnce";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 import { ElmTranslation } from "./TranslatedElmModels";
