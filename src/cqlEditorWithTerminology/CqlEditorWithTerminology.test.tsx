@@ -6,11 +6,11 @@ import {
   waitFor,
 } from "@testing-library/react";
 import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
-import axios from "axios";
+import axios from "../api/axios-instance";
 import * as React from "react";
 import { ServiceConfig } from "../api/useServiceConfig";
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn(() => {
     return {

@@ -1,9 +1,9 @@
 import { QdmElmTranslationServiceApi } from "./useQdmElmTranslationServiceApi";
 import { ServiceConfig } from "./useServiceConfig";
-import axios from "axios";
+import axios from "../api/axios-instance";
 import { ElmTranslation } from "./TranslatedElmModels";
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockConfig: ServiceConfig = {

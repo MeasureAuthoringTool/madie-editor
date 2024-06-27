@@ -1,4 +1,4 @@
-import {axiosInstance as axios} from "../utils/axios-insatnce";
+import axios from "./axios-instance";
 
 export interface ServiceConfig {
   qdmElmTranslationService: {

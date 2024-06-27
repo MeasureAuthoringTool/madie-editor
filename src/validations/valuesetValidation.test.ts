@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../api/axios-instance";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import { ElmTranslationError } from "../api/useQdmElmTranslationServiceApi";
 import { ValueSet } from "../api/useTerminologyServiceApi";
@@ -92,7 +92,7 @@ const invalidValueSets: CqlValueSet[] = [
   },
 ];
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const fhirValueset: ValueSet = {
