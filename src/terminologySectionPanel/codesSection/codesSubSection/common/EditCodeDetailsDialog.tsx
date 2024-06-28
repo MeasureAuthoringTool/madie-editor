@@ -32,12 +32,6 @@ export default function EditCodeDetailsDialog({
     enableReinitialize: true,
   });
 
-  const formikErrorHandler = (name: string) => {
-    if (formik.touched[name] && formik.errors[name]) {
-      return `${formik.errors[name]}`;
-    }
-  };
-
   return (
     <MadieDialog
       form={true}
@@ -90,6 +84,7 @@ export default function EditCodeDetailsDialog({
         <div tw="flex md:flex-wrap mt-4">
           <div tw="w-48">
             <TextField
+              {...formik.getFieldProps("suffix")}
               placeholder="Suffix"
               label="Suffix(Max Length 4)"
               id="code-suffix"
@@ -99,10 +94,9 @@ export default function EditCodeDetailsDialog({
                 "data-testid": "code-suffix-field-input",
                 "aria-required": true,
               }}
-              helperText={formikErrorHandler("suffix")}
+              helperText={formik.errors["suffix"]}
               size="small"
               error={formik.touched.suffix && Boolean(formik.errors.suffix)}
-              {...formik.getFieldProps("suffix")}
             />
           </div>
           <div tw="flex-grow pl-5 mt-2">
