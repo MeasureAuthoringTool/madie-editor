@@ -50,6 +50,7 @@ export default function CodesSection({
             measureStoreCql={measureStoreCql}
             cqlMetaData={cqlMetaData}
             canEdit={canEdit}
+            handleApplyCode={handleApplyCode}
             handleCodeDelete={handleCodeDelete}
             setEditorVal={setEditorVal}
             setIsCQLUnchanged={setIsCQLUnchanged}
