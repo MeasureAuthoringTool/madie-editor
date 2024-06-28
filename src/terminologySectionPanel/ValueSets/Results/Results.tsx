@@ -96,12 +96,6 @@ export default function Results(props: ResultsProps) {
     resetForm();
   };
 
-  const formikErrorHandler = (name: string) => {
-    if (formik.touched[name] && formik.errors[name]) {
-      return `${formik.errors[name]}`;
-    }
-  };
-
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
       {
@@ -370,8 +364,8 @@ export default function Results(props: ResultsProps) {
                 {...formik.getFieldProps("suffix")}
                 data-testid="suffix-max-length-text-field"
                 size="small"
-                error={formik.touched.suffix && Boolean(formik.errors.suffix)}
-                helperText={formikErrorHandler("suffix")}
+                error={Boolean(formik.errors.suffix)}
+                helperText={formik.errors.suffix}
               />
             </div>
           }
