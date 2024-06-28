@@ -21,7 +21,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import "./Results.scss";
 import { useFormik } from "formik";
-import { ValueSetSuffixSchemaValidator } from "../../../validations/ValueSetSuffixSchemaValidator";
+import { SuffixSchemaValidator } from "../../../validations/SuffixSchemaValidator";
 
 import useTerminologyServiceApi, {
   ValueSetForSearch,
@@ -157,7 +157,7 @@ export default function Results(props: ResultsProps) {
     initialValues: {
       suffix: "",
     },
-    validationSchema: ValueSetSuffixSchemaValidator,
+    validationSchema: SuffixSchemaValidator,
     onSubmit: (values) => {
       handleApplyValueSet({
         ...selectedValueSetDetails,

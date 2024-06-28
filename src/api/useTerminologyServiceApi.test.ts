@@ -28,11 +28,11 @@ const mockConfig: ServiceConfig = {
 };
 
 const mockCode: Code = {
+  fhirVersion: "https://test.org/2.40",
   name: "1963-8",
   display: "this is test code",
   codeSystem: "LOINC",
   status: CodeStatus.ACTIVE,
-  version: "2.40",
   svsVersion: "2.40",
 };
 
@@ -61,12 +61,12 @@ describe("TerminologyServiceApi test", () => {
       });
       const service: TerminologyServiceApi = await useTerminologyServiceApi();
       service
-        .getCodeDetails(mockCode.name, mockCode.codeSystem, mockCode.version)
+        .getCodeDetails(mockCode.name, mockCode.codeSystem, mockCode.svsVersion)
         .then((response) => {
           expect(response.data.name).toEqual(mockCode.name);
           expect(response.data.display).toEqual(mockCode.display);
           expect(response.data.codeSystem).toEqual(mockCode.codeSystem);
-          expect(response.data.version).toEqual(mockCode.version);
+          expect(response.data.svsVersion).toEqual(mockCode.svsVersion);
         });
     });
   });

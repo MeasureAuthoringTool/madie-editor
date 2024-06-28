@@ -19,7 +19,7 @@ describe("Results Section component", () => {
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
         code={code}
-        handleChange={jest.fn()}
+        handleApplyCode={jest.fn()}
       />
     );
     expect(
@@ -69,7 +69,7 @@ describe("Results Section component", () => {
         showResultsTable={true}
         setShowResultsTable={setShowResultsTable}
         code={undefined}
-        handleChange={jest.fn()}
+        handleApplyCode={jest.fn()}
       />
     );
 
@@ -147,12 +147,61 @@ describe("Results Section component", () => {
     });
 
     const suffixInput = screen.getByTestId(
-      "suffix-max-length-input"
+      "code-suffix-field-input"
     ) as HTMLInputElement;
     expect(suffixInput.value).toBe("");
 
     const cancelButton = screen.getByTestId("cancel-button");
     expect(cancelButton).toBeInTheDocument();
     userEvent.click(cancelButton);
+  });
+
+  it("Should validate code suffix- Edit dialog validations", async () => {
+    renderResultsTable(
+      { ...mockCode, status: CodeStatus.NA },
+      "DoNotDisturbOnIcon"
+    );
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+    const editButton = screen.getByTestId(`edit-code-0`);
+    userEvent.click(editButton);
+    await waitFor(() => {
+      expect(screen.getByTestId("dialog-form")).toBeInTheDocument();
+    });
+    const suffixInput = screen.getByTestId(
+      "code-suffix-field-input"
+    ) as HTMLInputElement;
+    // non numeric value validation
+    userEvent.type(suffixInput, "abc-pqr");
+    userEvent.tab();
+    await waitFor(() => {
+      expect(screen.getByTestId("code-suffix-helper-text").textContent).toEqual(
+        "Suffix must be numeric"
+      );
+    });
+    // apply button should be disabled, when suffix is invalid
+    expect(screen.getByTestId("apply-button")).toBeDisabled();
+    // more than 4 digit validation
+    userEvent.clear(suffixInput);
+    userEvent.type(suffixInput, "12345");
+    userEvent.tab();
+    await waitFor(() => {
+      expect(screen.getByTestId("code-suffix-helper-text").textContent).toEqual(
+        "Suffix length must be 4 digits or less"
+      );
+    });
+    // suffix is still invalid
+    expect(screen.getByTestId("apply-button")).toBeDisabled();
+    // valid suffix values
+    userEvent.clear(suffixInput);
+    userEvent.type(suffixInput, "1234");
+    userEvent.tab();
+    // apply button is enabled
+    await waitFor(() => {
+      expect(screen.getByTestId("apply-button")).toBeEnabled();
+    });
   });
 });
