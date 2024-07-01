@@ -7,6 +7,7 @@ import MadieAceEditor, {
   parseEditorContent,
   isUsingStatementEmpty,
   updateEditorContent,
+  UpdatedCqlObject,
 } from "./AceEditor/madie-ace-editor";
 import CqlEditorWithTerminology from "./cqlEditorWithTerminology/CqlEditorWithTerminology";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
@@ -44,7 +45,7 @@ export const synchingEditorCqlContent: (
   usingName: string,
   usingVersion: string,
   triggeredFrom: string
-) => any = updateEditorContent;
+) => Promise<UpdatedCqlObject> = updateEditorContent;
 
 export const isUsingEmpty: (editorVal: string) => boolean =
   isUsingStatementEmpty;

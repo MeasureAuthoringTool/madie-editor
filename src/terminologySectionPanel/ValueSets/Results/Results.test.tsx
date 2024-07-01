@@ -1,5 +1,4 @@
-import React from "react";
-
+import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
@@ -7,7 +6,6 @@ import {
   ValueSetForSearch,
   TerminologyServiceApi,
 } from "../../../api/useTerminologyServiceApi";
-import { act } from "react-dom/test-utils";
 
 const mockTerminologyServiceApi = {
   getValueSet: jest.fn().mockResolvedValue({}),
@@ -74,7 +72,6 @@ const RESULT_VALUESETS: ValueSetForSearch[] = [
   },
 ];
 
-// const { getByTestId } = screen;
 describe("ValueSets Page", () => {
   it("Should use a type ahead field to add and remove search categories", async () => {
     const handleApplyValueSet = jest.fn();
@@ -148,16 +145,14 @@ describe("ValueSets Page", () => {
         "suffix-max-length-input"
       )) as HTMLInputElement;
       userEvent.type(suffixInput, "52345");
-      userEvent.click(continueButton);
       expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
 
       userEvent.type(suffixInput, "523a");
-      userEvent.click(continueButton);
       expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
     });
   });
 
-  it("Display edit dialogue box and applying valuesets when contine button is clicked", async () => {
+  it("Display edit dialogue box and applying value sets when continue button is clicked", async () => {
     const handleApplyValueSet = jest.fn();
 
     const { getByTestId } = render(

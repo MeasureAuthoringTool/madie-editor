@@ -41,6 +41,13 @@ export interface EditorPropsType {
   setOutboundAnnotations?: Function;
 }
 
+export interface UpdatedCqlObject {
+  cql: string;
+  isLibraryStatementChanged?: boolean;
+  isUsingStatementChanged?: boolean;
+  isValueSetChanged?: boolean;
+}
+
 export const parseEditorContent = (content): CqlError[] => {
   let errors: CqlError[] = [];
   if (content) {
@@ -115,19 +122,20 @@ const parsingUsing = (parsedCql, cqlArrayToBeFiltered): Statement => {
  * @param modelVersion
  */
 const updateCql = (
-  parsedEditorCql: ParsedCql | "",
+  parsedEditorCql: ParsedCql,
   libraryName,
   libraryVersion,
   usedModel,
   modelVersion
-) => {
+): UpdatedCqlObject => {
+  const cqlUpdates = {
+    cql: "",
+    isLibraryStatementChanged: false,
+    isUsingStatementChanged: false,
+    isValueSetChanged: false,
+  } as UpdatedCqlObject;
+
   if (parsedEditorCql) {
-    const cqlUpdates = {
-      cql: undefined,
-      isLibraryStatementChanged: false,
-      isUsingStatementChanged: false,
-      isValueSetChanged: false,
-    };
     const currentLibraryName = parsedEditorCql.parsedCql?.library?.name;
     const currentLibraryVersion = parsedEditorCql.parsedCql?.library?.version;
     // library statement can't be modified
@@ -174,9 +182,8 @@ const updateCql = (
         });
     }
     cqlUpdates.cql = parsedEditorCql?.cqlArrayToBeFiltered?.join("\n");
-    return cqlUpdates;
   }
-  return parsedEditorCql;
+  return cqlUpdates;
 };
 
 export const updateEditorContent = async (
@@ -188,12 +195,12 @@ export const updateEditorContent = async (
   usingName,
   usingVersion,
   triggeredFrom
-) => {
+): Promise<UpdatedCqlObject> => {
   if (
     triggeredFrom === "measureEditor" ||
     triggeredFrom === "updateCqlLibrary"
   ) {
-    const parsedEditorCql = editorVal ? await parseCql(editorVal) : "";
+    const parsedEditorCql = await parseCql(editorVal || "");
     return updateCql(
       parsedEditorCql,
       libraryName,
@@ -213,9 +220,10 @@ export const updateEditorContent = async (
           usingVersion
         );
       }
-      return existingCql;
     }
-    return existingCql;
+    return {
+      cql: existingCql,
+    } as UpdatedCqlObject;
   }
 };
 

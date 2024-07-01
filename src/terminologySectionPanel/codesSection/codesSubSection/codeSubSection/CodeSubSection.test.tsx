@@ -3,12 +3,12 @@ import CodeSubSection from "./CodeSubSection";
 import { fireEvent, render } from "@testing-library/react";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
-import axios from "axios";
+import axios from "../../../../api/axios-instance";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../useCodeSystems");
-jest.mock("axios");
+jest.mock("../../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({

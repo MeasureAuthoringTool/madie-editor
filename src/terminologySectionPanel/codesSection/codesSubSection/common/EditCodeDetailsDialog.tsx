@@ -49,7 +49,7 @@ export default function EditCodeDetailsDialog({
       continueButtonProps={{
         continueText: "Apply",
         "data-testid": "apply-button",
-        disabled: formik.touched.suffix && Boolean(formik.errors.suffix),
+        disabled: Boolean(formik.errors.suffix),
       }}
     >
       <div tw="flex flex-col">
@@ -96,7 +96,7 @@ export default function EditCodeDetailsDialog({
               }}
               helperText={formik.errors["suffix"]}
               size="small"
-              error={formik.touched.suffix && Boolean(formik.errors.suffix)}
+              error={Boolean(formik.errors.suffix)}
             />
           </div>
           <div tw="flex-grow pl-5 mt-2">

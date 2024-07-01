@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../api/axios-instance";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import TranslateCql from "./elmTranslateValidation";
 import { ElmTranslation } from "../api/TranslatedElmModels";
@@ -58,7 +58,7 @@ jest.mock("../api/useServiceConfig", () => {
   };
 });
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("ELM Translation validation", () => {
