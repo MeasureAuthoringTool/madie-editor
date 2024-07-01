@@ -197,10 +197,10 @@ export const updateEditorContent = async (
   triggeredFrom
 ): Promise<UpdatedCqlObject> => {
   if (
-    editorVal &&
-    (triggeredFrom === "measureEditor" || triggeredFrom === "updateCqlLibrary")
+    triggeredFrom === "measureEditor" ||
+    triggeredFrom === "updateCqlLibrary"
   ) {
-    const parsedEditorCql = await parseCql(editorVal);
+    const parsedEditorCql = await parseCql(editorVal || "");
     return updateCql(
       parsedEditorCql,
       libraryName,
