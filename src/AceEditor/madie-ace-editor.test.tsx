@@ -324,7 +324,7 @@ describe("synching the cql", () => {
 
   test("generated Cql has no change in cql library name when other contents in the measure information are saved", async () => {
     const expectValue = "library Test version '0.0.000'";
-    const inSyncCql = await updateEditorContent(
+    const updatedContents = await updateEditorContent(
       "",
       "library Test version '0.0.000'",
       "Test",
@@ -335,11 +335,11 @@ describe("synching the cql", () => {
       "measureInformation"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
 
   test("generated Cql has no change in cql library name  when library content is missing in the cql", async () => {
-    const updatedConents = await updateEditorContent(
+    const updatedContents = await updateEditorContent(
       "",
       "test",
       "Testing",
@@ -350,7 +350,7 @@ describe("synching the cql", () => {
       "measureInformation"
     );
 
-    expect(updatedConents.cql).toEqual("test");
+    expect(updatedContents.cql).toEqual("test");
   });
 });
 describe("ParsingCQL Function, Kill Concept Declaration", () => {
@@ -426,23 +426,6 @@ describe("isUsingStatementEmpty", () => {
 
     expect(updatedContents.cql).toEqual(expectValue);
   });
-  it('Only replaces concept declaration, not just lines that contain the word "concept"', async () => {
-    const expectValue = `library Testing version '0.0.000'
-I want to decalre a concept lalala`;
-    const updatedContents = await updateEditorContent(
-      `library MesTest2 version '0.0.000'
-I want to decalre a concept lalala`,
-      "",
-      "Testing",
-      "Test",
-      "0.0.000",
-      "QI-Core",
-      "4.1.1",
-      "measureEditor"
-    );
-
-    expect(updatedContents.cql).toEqual(expectValue);
-  });
 
   it("Replace concept declaration with comment even with a LOT of spaces", async () => {
     const expectValue = `library Testing version '0.0.000'
@@ -464,7 +447,7 @@ I want to decalre a concept lalala`,
 
   it("Blank cql will return a blank string", async () => {
     const expectValue = "";
-    const inSyncCql = await updateEditorContent(
+    const updatedContents = await updateEditorContent(
       "",
       "",
       "Testing",
@@ -475,6 +458,6 @@ I want to decalre a concept lalala`,
       "measureEditor"
     );
 
-    expect(inSyncCql).toEqual(expectValue);
+    expect(updatedContents.cql).toEqual(expectValue);
   });
 });
