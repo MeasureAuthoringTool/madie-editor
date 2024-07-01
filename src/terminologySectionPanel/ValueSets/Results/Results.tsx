@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useRef } from "react";
+import AceEditor from "react-ace";
 
 import tw from "twin.macro";
 import "styled-components/macro";
@@ -28,11 +29,12 @@ import useTerminologyServiceApi, {
 } from "../../../api/useTerminologyServiceApi";
 
 import {
+  AppBar,
   Dialog,
   DialogTitle,
-  AppBar,
-  Toolbar,
+  Divider,
   IconButton,
+  Toolbar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -59,16 +61,17 @@ interface ResultsProps {
 export default function Results(props: ResultsProps) {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [vsJson, setVsJson] = useState<String>("Loading");
-  const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
+  const [vsJson, setVsJson] = useState<string>("Loading");
 
   let { resultValueSets, handleApplyValueSet } = props;
   const data = resultValueSets;
-
   const [openPopoverOptions, setOpenPopoverOptions] = useState<boolean>(false);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
-
-  const [selectedValueSetDetails, setSelectedValueSetDetails] = useState(null);
+  const [selectedValueSetDetails, setSelectedValueSetDetails] = useState(
+    resultValueSets[0]
+  );
+  const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
+  const aceRef = useRef<AceEditor>(null);
 
   const handleOpen = async (selectedId, event) => {
     setOpenPopoverOptions(true);
@@ -172,7 +175,7 @@ export default function Results(props: ResultsProps) {
     //get teh OID number
     //urn:oid:2.16.840.1.113762.1.4.1099.53 -> 2.16.840.1.113762.1.4.1099.53
     const oid = selectedReferenceId.slice(8);
-    const result: String = await RetrieveValueSet(oid);
+    const result: string = await RetrieveValueSet(oid);
     setVsJson(result);
     setDetailsOpen(true);
   };
@@ -283,27 +286,55 @@ export default function Results(props: ResultsProps) {
             },
           }}
         >
-          <AppBar position="static">
-            <DialogTitle>Details</DialogTitle>
+          <AppBar
+            position="static"
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignContent: "center",
+              padding: "32px",
+              paddingBottom: "16px",
+            }}
+          >
+            <DialogTitle
+              sx={{
+                fontFamily: "Rubik",
+                fontSize: 24,
+                padding: 0,
+              }}
+            >
+              Details
+            </DialogTitle>
             <Toolbar sx={{ justifyContent: "space-between" }}>
               <div />
-              <IconButton
-                sx={{
-                  "&:hover, &.Mui-focusVisible": { backgroundColor: "gray" },
-                  backgroundColor: "black",
-                  marginLeft: "auto",
-                }}
-                edge="start"
-                color="inherit"
-                onClick={() => setDetailsOpen(false)}
-                aria-label="close"
-              >
-                <CloseIcon />
-              </IconButton>
+              <div>
+                <IconButton
+                  aria-label="Close"
+                  onClick={() => setDetailsOpen(false)}
+                >
+                  <CloseIcon
+                    sx={{
+                      color: "#D92F2F",
+                    }}
+                    data-testid="close-button"
+                  />
+                </IconButton>
+              </div>
             </Toolbar>
           </AppBar>
-          <div>
-            <pre>{vsJson}</pre>
+          <Divider sx={{ borderColor: "#8c8c8c" }} />
+          <div style={{ padding: "32px" }}>
+            <AceEditor
+              mode="sql"
+              ref={aceRef}
+              theme="monokai"
+              value={vsJson}
+              width="100%"
+              wrapEnabled={true}
+              readOnly={true}
+              name="ace-editor-wrapper"
+              enableBasicAutocompletion={true}
+            />
           </div>
         </Dialog>
 
