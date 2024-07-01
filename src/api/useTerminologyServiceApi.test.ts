@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../api/axios-instance";
 import useTerminologyServiceApi, {
   Code,
   CodeStatus,
@@ -6,7 +6,7 @@ import useTerminologyServiceApi, {
 } from "./useTerminologyServiceApi";
 import { ServiceConfig } from "./useServiceConfig";
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.mock("@madie/madie-util", () => ({

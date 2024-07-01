@@ -1,5 +1,5 @@
 import { ValidationResult, useGetAllErrors } from "./editorValidation";
-import axios from "axios";
+import axios from "../api/axios-instance";
 import { ServiceConfig } from "../api/useServiceConfig";
 import { ValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
 // @ts-ignore
@@ -15,7 +15,7 @@ import {
   ElmTranslationLibrary,
 } from "../api/TranslatedElmModels";
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const mockServiceConfig: ServiceConfig = {
   qdmElmTranslationService: {

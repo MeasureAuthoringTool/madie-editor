@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import axios from "../../api/axios-instance";
 import { expect, describe, it } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -9,7 +9,7 @@ import { act } from "react-dom/test-utils";
 import { ServiceConfig } from "../../api/useServiceConfig";
 import { TerminologyServiceApi } from "../../api/useTerminologyServiceApi";
 
-jest.mock("axios");
+jest.mock("../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockConfig: ServiceConfig = {
