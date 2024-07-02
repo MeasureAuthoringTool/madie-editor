@@ -24,14 +24,6 @@ export default function CodesSectionNavTabs(props: NavTabProps) {
       >
         <Tab
           tabIndex={0}
-          aria-label="Code Systems"
-          type="B"
-          label="Code Systems"
-          data-testid="codeSystems-tab"
-          value="codeSystems"
-        />
-        <Tab
-          tabIndex={0}
           aria-label="Code"
           type="B"
           label="Code"
