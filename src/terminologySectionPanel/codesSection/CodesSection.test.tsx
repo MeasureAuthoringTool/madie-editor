@@ -61,11 +61,9 @@ const renderEditor = () => {
 describe("CodesSection", () => {
   it("should display all codes section nav tabs and navigation works as expected", async () => {
     renderEditor();
-    const codeSystems = await screen.findByText("Code Systems");
-    const code = await screen.findByText("Code");
+    const code = await screen.findByTestId("code-tab");
     const savedCodes = await screen.findByText("Saved Codes");
 
-    expect(codeSystems).toHaveAttribute("aria-selected", "true");
     act(() => {
       fireEvent.click(code);
     });
@@ -79,27 +77,11 @@ describe("CodesSection", () => {
     await waitFor(() => {
       expect(savedCodes).toHaveAttribute("aria-selected", "true");
     });
-    act(() => {
-      fireEvent.click(codeSystems);
-    });
-    await waitFor(() => {
-      expect(codeSystems).toHaveAttribute("aria-selected", "true");
-    });
-  });
-
-  it("should display code systems sub tab section", async () => {
-    renderEditor();
-    const codeSystemsSubTab = await screen.findByText("Code Systems");
-    expect(codeSystemsSubTab).toBeInTheDocument();
-    expect(codeSystemsSubTab).toHaveAttribute("aria-selected", "true");
-
-    const codeSystemsSection = await screen.findByText("Code Systems Section");
-    expect(codeSystemsSection).toBeInTheDocument();
   });
 
   it("should render code sub tab section", async () => {
     renderEditor();
-    const codeSubTab = await screen.findByText("Code");
+    const codeSubTab = await screen.findByTestId("code-tab");
     expect(codeSubTab).toBeInTheDocument();
     act(() => {
       fireEvent.click(codeSubTab);
