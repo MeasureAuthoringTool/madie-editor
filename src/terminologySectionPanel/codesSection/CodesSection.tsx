@@ -30,13 +30,12 @@ export default function CodesSection({
   isCQLUnchanged,
   handleApplyCode,
 }: CodesSectionProps) {
-  const [activeTab, setActiveTab] = useState<string>("codeSystems");
+  const [activeTab, setActiveTab] = useState<string>("code");
   const { codeSystems } = useCodeSystems();
   return (
     <>
       <CodesSectionNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <div tw="mt-4">
-        {activeTab === "codeSystems" && "Code Systems Section"}
         {activeTab === "code" && (
           <CodeSubSection
             allCodeSystems={codeSystems}
