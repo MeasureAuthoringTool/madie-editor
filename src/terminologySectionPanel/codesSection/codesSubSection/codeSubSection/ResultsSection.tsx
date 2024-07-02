@@ -31,7 +31,7 @@ type ResultsColumnRow = {
   display: string;
   codeSystem: string;
   svsVersion: string;
-  isVersionIncluded?: string;
+  versionIncluded?: string;
 };
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
