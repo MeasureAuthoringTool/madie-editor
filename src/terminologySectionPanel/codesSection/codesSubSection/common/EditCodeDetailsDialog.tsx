@@ -15,15 +15,15 @@ export default function EditCodeDetailsDialog({
   const formik = useFormik({
     initialValues: {
       suffix: selectedCodeDetails?.suffix,
-      isVersionIncluded: selectedCodeDetails?.isVersionIncluded || false,
+      versionIncluded: selectedCodeDetails?.versionIncluded || false,
     },
     validationSchema: SuffixSchemaValidator,
-    onSubmit: ({ suffix, isVersionIncluded }) => {
+    onSubmit: ({ suffix, versionIncluded }) => {
       const updatedCode = {
         ...selectedCodeDetails,
         display: selectedCodeDetails.display,
         suffix: suffix,
-        isVersionIncluded: isVersionIncluded,
+        versionIncluded: versionIncluded,
       };
       formik.resetForm();
       onApplyCode(updatedCode);
@@ -106,10 +106,10 @@ export default function EditCodeDetailsDialog({
                   sx={{
                     color: "#717171",
                   }}
-                  name="isVersionIncluded"
+                  name="versionIncluded"
                   id="include-code-system-version-checkbox"
                   data-testid="include-code-system-version-checkbox"
-                  checked={formik.values.isVersionIncluded}
+                  checked={formik.values.versionIncluded}
                   onChange={formik.handleChange}
                 />
               }

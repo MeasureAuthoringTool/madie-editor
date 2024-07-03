@@ -43,12 +43,12 @@ type CodesList = {
   oid: string;
   suffix: string;
   version: string;
-  isVersionIncluded: boolean;
+  versionIncluded: boolean;
 };
 
 export type SelectedCodeDetails = SavedCodesColumnRow & {
   codeSystemOid?: string;
-  isVersionIncluded?: boolean;
+  versionIncluded?: boolean;
   status?: string;
   suffix?: string;
   fhirVersion?: string;
@@ -149,7 +149,7 @@ export default function SavedCodesSubSection({
             version: codeSystemVersion,
             oid: matchedCodeSystem?.oid,
             suffix: getCodeSuffix(code),
-            isVersionIncluded: code.codeSystem.includes(codeSystemVersion),
+            versionIncluded: code.codeSystem.includes(codeSystemVersion),
           };
         });
         setParsedCodesList(codesList);
@@ -351,7 +351,7 @@ export default function SavedCodesSubSection({
     setSelectedCodeDetails({
       ...selectedCodeDetails,
       suffix: parsedCode?.suffix,
-      isVersionIncluded: parsedCode.isVersionIncluded,
+      versionIncluded: parsedCode.versionIncluded,
     });
   };
 
