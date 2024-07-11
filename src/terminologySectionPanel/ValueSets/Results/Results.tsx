@@ -1,6 +1,11 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import AceEditor from "react-ace";
-
 import tw from "twin.macro";
 import "styled-components/macro";
 import {
@@ -8,7 +13,6 @@ import {
   Popover,
   MadieDialog,
   TextField,
-  Button,
 } from "@madie/madie-design-system/dist/react";
 
 import {
@@ -19,7 +23,6 @@ import {
 } from "@tanstack/react-table";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 import "./Results.scss";
 import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../validations/SuffixSchemaValidator";
@@ -55,8 +58,8 @@ type TCRow = {
 };
 
 interface ResultsProps {
-  resultValueSets: ValueSetForSearch[];
   resultBundle: string;
+  filteredValueSets: ValueSetForSearch[]; //should be type casted to ValueSetForSearch but importing from test file json breaks
   handleApplyValueSet: Function;
 }
 
@@ -65,13 +68,68 @@ export default function Results(props: ResultsProps) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [vsJson, setVsJson] = useState<string>("Loading");
 
-  let { resultValueSets, handleApplyValueSet } = props;
-  const data = resultValueSets;
+  let { filteredValueSets, handleApplyValueSet } = props;
+  // pagination lives here
+  const [visibleFilteredValuesets, setVisibleFilteredValuesets] = useState<
+    ValueSetForSearch[]
+  >([]);
+  const data = visibleFilteredValuesets;
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [visibleItems, setVisibleItems] = useState<number>(0);
   const [openPopoverOptions, setOpenPopoverOptions] = useState<boolean>(false);
+  const [offset, setOffset] = useState<number>(0);
+  const [currentLimit, setCurrentLimit] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [selectedValueSetDetails, setSelectedValueSetDetails] = useState(
-    resultValueSets[0]
+    filteredValueSets[0]
   );
+  const managePagination = useCallback(() => {
+    if (filteredValueSets.length < currentLimit) {
+      setOffset(0);
+      setVisibleFilteredValuesets([...filteredValueSets]);
+      setVisibleItems(filteredValueSets.length);
+      setTotalItems(filteredValueSets.length);
+      setTotalPages(1);
+    } else {
+      const start = (currentPage - 1) * currentLimit;
+      const end = start + currentLimit;
+      const newVisibleValueSets = [...filteredValueSets].slice(start, end);
+      setVisibleFilteredValuesets(newVisibleValueSets);
+      setOffset(start);
+      setVisibleItems(newVisibleValueSets.length);
+      setTotalItems(filteredValueSets.length);
+      setTotalPages(Math.ceil(filteredValueSets.length / currentLimit));
+    }
+  }, [
+    currentLimit,
+    currentPage,
+    filteredValueSets,
+    setOffset,
+    setVisibleFilteredValuesets,
+    setVisibleItems,
+    setTotalItems,
+    setTotalPages,
+  ]);
+
+  const canGoNext = (() => {
+    return currentPage < totalPages;
+  })();
+  const canGoPrev = currentPage > 1;
+
+  const handlePageChange = (e, v) => {
+    setCurrentPage(v);
+  };
+  const handleLimitChange = (e) => {
+    setCurrentLimit(e.target.value);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    managePagination();
+  }, [filteredValueSets, currentPage, currentLimit]);
+
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
   const aceRef = useRef<AceEditor>(null);
 
@@ -212,8 +270,8 @@ export default function Results(props: ResultsProps) {
               </tr>
             ))}
           </thead>
-          <tbody>
-            {!resultValueSets?.length ? (
+          <tbody data-testid="vs-results-table-body">
+            {!visibleFilteredValuesets?.length ? (
               <tr>
                 <td colSpan={columns.length} tw="text-center p-2">
                   No Results were found
@@ -221,7 +279,7 @@ export default function Results(props: ResultsProps) {
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr key={row.id} data-test-id={row.id}>
+                <tr key={row.id} data-test-id={`row-${row.id}`}>
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} tw="p-2">
                       {flexRender(
@@ -404,21 +462,22 @@ export default function Results(props: ResultsProps) {
           }
         />
 
-        {resultValueSets?.length > 0 && (
+        {filteredValueSets?.length > 0 && (
           <div className="pagination-container">
             <Pagination
-              totalItems={resultValueSets?.length || 0}
+              data-testid="vs-pagination"
+              totalItems={totalItems}
               limitOptions={[5, 10, 25, 50]}
               // to fill in later.
-              // visibleItems={visibleItems}
-              // offset={offset}
-              // handlePageChange={handlePageChange}
-              // handleLimitChange={handleLimitChange}
-              // page={currentPage}
-              // limit={currentLimit}
-              // count={totalPages}
-              // hideNextButton={!canGoNext}
-              // hidePrevButton={!canGoPrev}
+              visibleItems={visibleItems}
+              offset={offset}
+              handlePageChange={handlePageChange}
+              handleLimitChange={handleLimitChange}
+              page={currentPage}
+              limit={currentLimit}
+              count={totalPages}
+              hideNextButton={!canGoNext}
+              hidePrevButton={!canGoPrev}
               shape="rounded"
             />
           </div>
