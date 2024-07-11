@@ -33,8 +33,10 @@ export default function ValueSets(props: ValueSetsProps) {
     const nonEmptyValues = {};
     SEARCH_CATEGORIES.forEach(({ value }) => {
       // blank the value if it exists and it is still a search category
+
       if (values[value]) {
-        nonEmptyValues[value] = values[value];
+        const trimmedFieldValue = values[value].toString().trim();
+        nonEmptyValues[value] = trimmedFieldValue;
       }
     });
     // eslint-disable-next-line
@@ -67,7 +69,7 @@ export default function ValueSets(props: ValueSetsProps) {
         nonEmptyValues[value] = values[value].toLowerCase();
       }
     });
-    const filteredValueSets = resultValueSets.filter((valueSet) => {
+    const filteredValueSets = resultValueSets?.filter((valueSet) => {
       for (const key in nonEmptyValues) {
         const filterTerm = nonEmptyValues[key];
         const valueSetPropValue = valueSet[key];

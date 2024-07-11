@@ -60,7 +60,9 @@ export default function Search(props: SearchProps) {
     enableReinitialize: true,
     onSubmit: async (values) => await handleSearch(values),
   });
-
+  const trimField = (fieldName) => {
+    formik.setFieldValue(fieldName, formik.values[fieldName].trim());
+  };
   // check if any keys are dirty aside from searchCategories.
   const isDirty = (() => {
     for (const { value } of SEARCH_CATEGORIES) {
@@ -140,6 +142,7 @@ export default function Search(props: SearchProps) {
                       fieldProps={formik.getFieldProps(value)}
                       prefix="Search"
                       label={SEARCH_MAP[value]}
+                      trimField={trimField}
                     />
                     <div style={{ width: "100%" }} />
                   </>
@@ -150,6 +153,7 @@ export default function Search(props: SearchProps) {
                   fieldProps={formik.getFieldProps(value)}
                   prefix="Search"
                   label={SEARCH_MAP[value]}
+                  trimField={trimField}
                 />
               );
             })}

@@ -31,8 +31,14 @@ const mockValueSet = {
   url: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105",
   version: "20201122",
 };
+const mockResult = jest
+  .fn()
+  .mockImplementation(
+    (x) => x?.code === "test" && Promise.resolve([mockValueSet])
+  );
+
 const mockTerminologyServiceApi = {
-  searchValueSets: jest.fn().mockResolvedValue([mockValueSet]),
+  searchValueSets: mockResult,
 } as unknown as TerminologyServiceApi;
 
 jest.mock("../../api/useTerminologyServiceApi", () =>
@@ -41,6 +47,63 @@ jest.mock("../../api/useTerminologyServiceApi", () =>
 
 const { getByTestId, getByRole, getByText, queryByTestId, getByLabelText } =
   screen;
+describe("Add Tests for MAT-7328 Trim Whitespace", () => {
+  it("Should enable submit button when a dynamic Filter field has text in it, should remove all values on clear", async () => {
+    render(<ValueSets canEdit />);
+
+    const categoriesSelectButton = getByRole("button", {
+      name: "Open",
+    });
+    userEvent.click(categoriesSelectButton);
+    userEvent.click(getByText("Code"));
+    const codeTextInput = (await screen.findByRole("textbox", {
+      name: "Search Code",
+    })) as HTMLInputElement;
+    expect(codeTextInput).toBeInTheDocument();
+    userEvent.clear(codeTextInput);
+    userEvent.type(codeTextInput, "  test");
+    expect(codeTextInput.value).toEqual("  test");
+    await waitFor(() => {
+      expect(getByTestId("valuesets-search-btn")).toBeEnabled();
+      expect(getByTestId("clear-valuesets-btn")).toBeEnabled();
+    });
+    act(() => {
+      userEvent.click(getByTestId("valuesets-search-btn"));
+    });
+    await waitFor(() => {
+      expect(getByTestId("madie-spinner")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("madie-editor-search-results")).toBeInTheDocument();
+    });
+
+    const filterRow = getByTestId("terminology-section-Filter-sub-heading");
+    const openRow = within(filterRow).getByRole("button");
+
+    userEvent.click(openRow);
+
+    const filterSelectButton = within(filterRow).getByRole("button", {
+      name: "Open",
+    });
+    userEvent.click(filterSelectButton);
+    userEvent.click(getByText("Author"));
+    const filterInput = (await screen.findByRole("textbox", {
+      name: "Filter by Author",
+    })) as HTMLInputElement;
+    expect(filterInput).toBeInTheDocument();
+    userEvent.clear(filterInput);
+    userEvent.type(filterInput, "test");
+    expect(filterInput.value).toEqual("test");
+    await waitFor(() => {
+      expect(getByTestId("valuesets-filter-btn")).toBeEnabled();
+      expect(getByTestId("clear-filters-btn")).toBeEnabled();
+    });
+    act(() => {
+      userEvent.click(getByTestId("valuesets-filter-btn"));
+    });
+  });
+});
 describe("ValueSets Page", () => {
   it("Should not catch fire, should display all categories", () => {
     render(<ValueSets canEdit />);
