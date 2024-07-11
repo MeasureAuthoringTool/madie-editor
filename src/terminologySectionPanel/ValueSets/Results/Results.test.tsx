@@ -6,6 +6,7 @@ import {
   ValueSetForSearch,
   TerminologyServiceApi,
 } from "../../../api/useTerminologyServiceApi";
+import { find } from "styled-components/test-utils";
 
 const mockTerminologyServiceApi = {
   getValueSet: jest.fn().mockResolvedValue({}),
@@ -121,7 +122,7 @@ describe("ValueSets Results", () => {
   it("Display edit dialogue box and show errors when user enters invalid input", async () => {
     const handleApplyValueSet = jest.fn();
 
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
         resultBundle={"{}"}
@@ -129,36 +130,42 @@ describe("ValueSets Results", () => {
       />
     );
 
-    const selectButton = screen.getByTestId(`select-action-0_apply`);
+    const selectButton = await findByTestId(`select-action-0_apply`);
     userEvent.click(selectButton);
-    const editButton = getByTestId(
+    const editButton = await findByTestId(
       `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
     );
     userEvent.click(editButton);
+    const continueButton = await findByTestId("apply-suffix-continue-button");
+    const cancelButton = await findByTestId("apply-suffix-cancel-button");
 
+    expect(continueButton).toBeInTheDocument();
+    expect(continueButton).toBeDisabled();
+    expect(cancelButton).toBeInTheDocument();
+
+    const suffixInput = (await findByTestId(
+      "suffix-max-length-input"
+    )) as HTMLInputElement;
+
+    userEvent.type(suffixInput, "52345");
     await waitFor(async () => {
-      const continueButton = getByTestId("apply-suffix-continue-button");
-      const cancelButton = getByTestId("apply-suffix-cancel-button");
+      expect(
+        await findByTestId("suffix-max-length-helper-text")
+      ).toBeInTheDocument();
+    });
 
-      expect(continueButton).toBeInTheDocument();
-      expect(continueButton).toBeDisabled();
-      expect(cancelButton).toBeInTheDocument();
-
-      const suffixInput = (await getByTestId(
-        "suffix-max-length-input"
-      )) as HTMLInputElement;
-      userEvent.type(suffixInput, "52345");
-      expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
-
-      userEvent.type(suffixInput, "523a");
-      expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
+    userEvent.type(suffixInput, "523a");
+    await waitFor(async () => {
+      expect(
+        await findByTestId("suffix-max-length-helper-text")
+      ).toBeInTheDocument();
     });
   });
 
   it("Display edit dialogue box and applying value sets when continue button is clicked", async () => {
     const handleApplyValueSet = jest.fn();
 
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
         resultValueSets={RESULT_VALUESETS}
@@ -168,28 +175,30 @@ describe("ValueSets Results", () => {
 
     const selectButton = screen.getByTestId(`select-action-0_apply`);
     userEvent.click(selectButton);
-    const editButton = getByTestId(
+    const editButton = await findByTestId(
       `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
     );
     userEvent.click(editButton);
 
+    const continueButton = await findByTestId("apply-suffix-continue-button");
+    const cancelButton = await findByTestId("apply-suffix-cancel-button");
+
+    expect(continueButton).toBeInTheDocument();
+    expect(continueButton).toBeDisabled();
+    expect(cancelButton).toBeInTheDocument();
+
+    const suffixInput = (await findByTestId(
+      "suffix-max-length-input"
+    )) as HTMLInputElement;
+
+    userEvent.type(suffixInput, "5");
     await waitFor(async () => {
-      const continueButton = getByTestId("apply-suffix-continue-button");
-      const cancelButton = getByTestId("apply-suffix-cancel-button");
-
-      expect(continueButton).toBeInTheDocument();
-      expect(continueButton).toBeDisabled();
-      expect(cancelButton).toBeInTheDocument();
-
-      const suffixInput = (await getByTestId(
-        "suffix-max-length-input"
-      )) as HTMLInputElement;
-
-      userEvent.type(suffixInput, "5");
       expect(suffixInput.value).toBe("5");
       expect(continueButton).not.toBeDisabled();
+    });
 
-      userEvent.click(continueButton);
+    userEvent.click(continueButton);
+    await waitFor(async () => {
       expect(handleApplyValueSet).toHaveBeenCalled();
     });
   });
