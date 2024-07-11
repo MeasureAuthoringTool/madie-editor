@@ -55,6 +55,12 @@ export interface Code {
 export declare type CqlMetaData = {
   codeSystemMap: Map<string, CodeSystem>;
 };
+
+export interface ValueSetSearchResult {
+  resultBundle: string;
+  valueSets: ValueSetForSearch[];
+}
+
 export interface ValueSetForSearch {
   codeSystem?: string;
   name?: string;
@@ -160,7 +166,7 @@ export class TerminologyServiceApi {
     }
   }
   // https://cts.nlm.nih.gov/fhir/ValueSet?usage=VSAC$covid
-  async searchValueSets(values): Promise<any> {
+  async searchValueSets(values): Promise<ValueSetSearchResult> {
     const keys = Object.keys(values);
     let qString = "?";
     for (let i = 0; i < keys.length; i++) {
@@ -172,7 +178,7 @@ export class TerminologyServiceApi {
       qString = qString.concat(`${key}=${value}`);
     }
     try {
-      const response = await axios.get(
+      const response = await axios.get<ValueSetSearchResult>(
         `${this.baseUrl}/terminology/search-value-sets${qString}`,
         {
           headers: {

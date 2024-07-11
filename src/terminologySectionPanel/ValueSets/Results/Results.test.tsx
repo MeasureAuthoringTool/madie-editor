@@ -72,7 +72,7 @@ const RESULT_VALUESETS: ValueSetForSearch[] = [
   },
 ];
 
-describe("ValueSets Page", () => {
+describe("ValueSets Results", () => {
   it("Should use a type ahead field to add and remove search categories", async () => {
     const handleApplyValueSet = jest.fn();
 
@@ -80,6 +80,7 @@ describe("ValueSets Page", () => {
       <Results
         handleApplyValueSet={handleApplyValueSet}
         resultValueSets={RESULT_VALUESETS}
+        resultBundle={"{}"}
       />
     );
 
@@ -102,6 +103,7 @@ describe("ValueSets Page", () => {
       <Results
         handleApplyValueSet={handleApplyValueSet}
         resultValueSets={RESULT_VALUESETS}
+        resultBundle={"{}"}
       />
     );
 
@@ -122,6 +124,7 @@ describe("ValueSets Page", () => {
     const { getByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
+        resultBundle={"{}"}
         resultValueSets={RESULT_VALUESETS}
       />
     );
@@ -159,6 +162,7 @@ describe("ValueSets Page", () => {
       <Results
         handleApplyValueSet={handleApplyValueSet}
         resultValueSets={RESULT_VALUESETS}
+        resultBundle={"{}"}
       />
     );
 
