@@ -58,7 +58,12 @@ export default function Search(props: SearchProps) {
       title: "",
     },
     enableReinitialize: true,
-    onSubmit: async (values) => await handleSearch(values),
+    onSubmit: async (values) => {
+      SEARCH_CATEGORIES.forEach((obj) => {
+        formik.setFieldValue(obj.value, formik.values[obj.value].trim());
+      });
+      await handleSearch(values);
+    },
   });
   const trimField = (fieldName) => {
     formik.setFieldValue(fieldName, formik.values[fieldName].trim());
