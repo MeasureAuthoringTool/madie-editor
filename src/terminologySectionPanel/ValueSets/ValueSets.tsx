@@ -22,6 +22,7 @@ export default function ValueSets(props: ValueSetsProps) {
   const [filteredValueSets, setFilteredValueSets] = useState<
     ValueSetForSearch[]
   >([]);
+  const [resultBundle, setResultBundle] = useState<string>("");
   // Calls can be pretty heavy and very slow.
   // This route limits calls to vsac, but state may be heavier. This will allow users to immediately update filters
   // on clear can be implemented after to reset
@@ -42,8 +43,9 @@ export default function ValueSets(props: ValueSetsProps) {
     terminologyService
       .searchValueSets(nonEmptyValues)
       .then((data) => {
-        setResultValuesSets(data);
-        setFilteredValueSets(data);
+        setResultValuesSets(data.valueSets);
+        setFilteredValueSets(data.valueSets);
+        setResultBundle(data.resultBundle);
         setLoading(false);
         setResultsOpen(true);
       })
@@ -106,6 +108,7 @@ export default function ValueSets(props: ValueSetsProps) {
       <TerminologySection title="Results" showHeaderContent={resultsOpen}>
         <Results
           resultValueSets={filteredValueSets}
+          resultBundle={resultBundle}
           handleApplyValueSet={handleApplyValueSet}
         />
       </TerminologySection>

@@ -37,6 +37,7 @@ import {
   Toolbar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { ValueSet } from "fhir/r4";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -55,6 +56,7 @@ type TCRow = {
 
 interface ResultsProps {
   resultValueSets: ValueSetForSearch[];
+  resultBundle: string;
   handleApplyValueSet: Function;
 }
 
@@ -164,19 +166,19 @@ export default function Results(props: ResultsProps) {
     },
   });
   const { resetForm } = formik;
-  const RetrieveValueSet = async (oid) => {
-    const terminologyService = await useTerminologyServiceApi();
-    const result = await terminologyService.getValueSet(oid, undefined, true);
-    return JSON.stringify(result, null, 2);
+
+  const getValueSetEntryFromBundle = (oid: string): ValueSet => {
+    return JSON.parse(props?.resultBundle)?.entry?.find((entry) => {
+      const valueSet: ValueSet = entry.resource as ValueSet;
+      return valueSet.identifier[0].value === oid;
+    }).resource as ValueSet;
   };
 
   const handleDetailsClick = async () => {
     setOpenPopoverOptions(false);
-    //get teh OID number
-    //urn:oid:2.16.840.1.113762.1.4.1099.53 -> 2.16.840.1.113762.1.4.1099.53
-    const oid = selectedReferenceId.slice(8);
-    const result: string = await RetrieveValueSet(oid);
-    setVsJson(result);
+    console.error("findMe:" + props.resultBundle);
+    const bundleEntry = getValueSetEntryFromBundle(selectedReferenceId);
+    bundleEntry && setVsJson(JSON.stringify(bundleEntry, null, 2));
     setDetailsOpen(true);
   };
 
