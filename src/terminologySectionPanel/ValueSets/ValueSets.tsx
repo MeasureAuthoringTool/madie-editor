@@ -107,8 +107,8 @@ export default function ValueSets(props: ValueSetsProps) {
       </TerminologySection>
       <TerminologySection title="Results" showHeaderContent={resultsOpen}>
         <Results
-          resultValueSets={filteredValueSets}
           resultBundle={resultBundle}
+          filteredValueSets={filteredValueSets}
           handleApplyValueSet={handleApplyValueSet}
         />
       </TerminologySection>

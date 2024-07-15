@@ -2,6 +2,7 @@ import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
+import filteredTestResults from "./mockValueSetResults.json";
 import {
   ValueSetForSearch,
   TerminologyServiceApi,
@@ -15,7 +16,8 @@ const mockTerminologyServiceApi = {
 jest.mock("../../../api/useTerminologyServiceApi", () =>
   jest.fn(() => mockTerminologyServiceApi)
 );
-
+// @ts-ignore;
+const mockValueSetResults = filteredTestResults as ValueSetForSearch[]; // can't stop making ts upset
 const RESULT_VALUESETS: ValueSetForSearch[] = [
   {
     title: "Emergency Department Evaluation",
@@ -80,8 +82,8 @@ describe("ValueSets Results", () => {
     const { getByTestId, queryByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
         resultBundle={"{}"}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
@@ -103,8 +105,8 @@ describe("ValueSets Results", () => {
     const { getByTestId, queryByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
         resultBundle={"{}"}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
@@ -126,7 +128,7 @@ describe("ValueSets Results", () => {
       <Results
         handleApplyValueSet={handleApplyValueSet}
         resultBundle={"{}"}
-        resultValueSets={RESULT_VALUESETS}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
@@ -168,8 +170,8 @@ describe("ValueSets Results", () => {
     const { findByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
         resultBundle={"{}"}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
@@ -200,6 +202,83 @@ describe("ValueSets Results", () => {
     userEvent.click(continueButton);
     await waitFor(async () => {
       expect(handleApplyValueSet).toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Results pagination", () => {
+  const { getByTestId, getByRole, findByRole, findAllByRole, findByLabelText } =
+    screen;
+
+  it("renders with the right number of visible elements", async () => {
+    const handleApplyValueSet = jest.fn();
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    const tableBody = getByTestId("vs-results-table-body");
+    await waitFor(() => {
+      expect(tableBody.children.length).toBe(10);
+    });
+  });
+  it("handles limit change as expected", async () => {
+    const handleApplyValueSet = jest.fn();
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    const limitChangeButton = await findByRole("button", { expanded: false });
+    expect(limitChangeButton).toBeInTheDocument();
+    userEvent.click(limitChangeButton);
+    const options = await findAllByRole("option");
+    expect(options).toHaveLength(4);
+    userEvent.click(options[3]);
+    const tableBody = getByTestId("vs-results-table-body");
+    await waitFor(() => {
+      expect(tableBody.children.length).toBe(30);
+    });
+  });
+  it("handles page change by next and prev", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    const nextButton = await findByLabelText("Go to next page");
+    userEvent.click(nextButton);
+    const previousButton = await findByLabelText("Go to previous page");
+    expect(previousButton).toBeInTheDocument();
+  });
+  it("handles page change by pagination number click", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    // select limit as 25 items;
+    const limitChangeButton = await findByRole("button", { expanded: false });
+    expect(limitChangeButton).toBeInTheDocument();
+    userEvent.click(limitChangeButton);
+    const options = await findAllByRole("option");
+    expect(options).toHaveLength(4);
+    userEvent.click(options[2]);
+    // select second nav item
+    const page2 = await findByLabelText("Go to page 2");
+    userEvent.click(page2);
+    // confirm there are 5 items on page
+    const tableBody = getByTestId("vs-results-table-body");
+    await waitFor(() => {
+      expect(tableBody.children.length).toBe(5);
     });
   });
 });
