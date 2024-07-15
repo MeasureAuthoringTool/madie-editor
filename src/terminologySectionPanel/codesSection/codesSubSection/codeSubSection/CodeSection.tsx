@@ -70,6 +70,7 @@ export default function CodeSection({
     if (formik.values.title) {
       const availableVersions = allCodeSystems
         .filter((c) => c.name === formik.values.title)
+        .filter((c) => c.qdmDisplayVersion !== null)
         .sort((a, b) => {
           const dateA = new Date(a.lastUpdatedUpstream);
           const dateB = new Date(b.lastUpdatedUpstream);
