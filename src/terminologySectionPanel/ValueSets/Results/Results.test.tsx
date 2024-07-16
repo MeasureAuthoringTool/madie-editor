@@ -2,10 +2,12 @@ import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Results from "./Results";
+import filteredTestResults from "./mockValueSetResults.json";
 import {
   ValueSetForSearch,
   TerminologyServiceApi,
 } from "../../../api/useTerminologyServiceApi";
+import { find } from "styled-components/test-utils";
 
 const mockTerminologyServiceApi = {
   getValueSet: jest.fn().mockResolvedValue({}),
@@ -14,7 +16,8 @@ const mockTerminologyServiceApi = {
 jest.mock("../../../api/useTerminologyServiceApi", () =>
   jest.fn(() => mockTerminologyServiceApi)
 );
-
+// @ts-ignore;
+const mockValueSetResults = filteredTestResults as ValueSetForSearch[]; // can't stop making ts upset
 const RESULT_VALUESETS: ValueSetForSearch[] = [
   {
     title: "Emergency Department Evaluation",
@@ -72,14 +75,15 @@ const RESULT_VALUESETS: ValueSetForSearch[] = [
   },
 ];
 
-describe("ValueSets Page", () => {
+describe("ValueSets Results", () => {
   it("Should use a type ahead field to add and remove search categories", async () => {
     const handleApplyValueSet = jest.fn();
 
     const { getByTestId, queryByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
+        resultBundle={"{}"}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
@@ -101,7 +105,8 @@ describe("ValueSets Page", () => {
     const { getByTestId, queryByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
+        resultBundle={"{}"}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
@@ -119,74 +124,161 @@ describe("ValueSets Page", () => {
   it("Display edit dialogue box and show errors when user enters invalid input", async () => {
     const handleApplyValueSet = jest.fn();
 
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
+        resultBundle={"{}"}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
-    const selectButton = screen.getByTestId(`select-action-0_apply`);
+    const selectButton = await findByTestId(`select-action-0_apply`);
     userEvent.click(selectButton);
-    const editButton = getByTestId(
+    const editButton = await findByTestId(
       `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
     );
     userEvent.click(editButton);
+    const continueButton = await findByTestId("apply-suffix-continue-button");
+    const cancelButton = await findByTestId("apply-suffix-cancel-button");
 
+    expect(continueButton).toBeInTheDocument();
+    expect(continueButton).toBeDisabled();
+    expect(cancelButton).toBeInTheDocument();
+
+    const suffixInput = (await findByTestId(
+      "suffix-max-length-input"
+    )) as HTMLInputElement;
+
+    userEvent.type(suffixInput, "52345");
     await waitFor(async () => {
-      const continueButton = getByTestId("apply-suffix-continue-button");
-      const cancelButton = getByTestId("apply-suffix-cancel-button");
+      expect(
+        await findByTestId("suffix-max-length-helper-text")
+      ).toBeInTheDocument();
+    });
 
-      expect(continueButton).toBeInTheDocument();
-      expect(continueButton).toBeDisabled();
-      expect(cancelButton).toBeInTheDocument();
-
-      const suffixInput = (await getByTestId(
-        "suffix-max-length-input"
-      )) as HTMLInputElement;
-      userEvent.type(suffixInput, "52345");
-      expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
-
-      userEvent.type(suffixInput, "523a");
-      expect(getByTestId("suffix-max-length-helper-text")).toBeInTheDocument();
+    userEvent.type(suffixInput, "523a");
+    await waitFor(async () => {
+      expect(
+        await findByTestId("suffix-max-length-helper-text")
+      ).toBeInTheDocument();
     });
   });
 
   it("Display edit dialogue box and applying value sets when continue button is clicked", async () => {
     const handleApplyValueSet = jest.fn();
 
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <Results
         handleApplyValueSet={handleApplyValueSet}
-        resultValueSets={RESULT_VALUESETS}
+        resultBundle={"{}"}
+        filteredValueSets={RESULT_VALUESETS}
       />
     );
 
     const selectButton = screen.getByTestId(`select-action-0_apply`);
     userEvent.click(selectButton);
-    const editButton = getByTestId(
+    const editButton = await findByTestId(
       `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
     );
     userEvent.click(editButton);
 
+    const continueButton = await findByTestId("apply-suffix-continue-button");
+    const cancelButton = await findByTestId("apply-suffix-cancel-button");
+
+    expect(continueButton).toBeInTheDocument();
+    expect(continueButton).toBeDisabled();
+    expect(cancelButton).toBeInTheDocument();
+
+    const suffixInput = (await findByTestId(
+      "suffix-max-length-input"
+    )) as HTMLInputElement;
+
+    userEvent.type(suffixInput, "5");
     await waitFor(async () => {
-      const continueButton = getByTestId("apply-suffix-continue-button");
-      const cancelButton = getByTestId("apply-suffix-cancel-button");
-
-      expect(continueButton).toBeInTheDocument();
-      expect(continueButton).toBeDisabled();
-      expect(cancelButton).toBeInTheDocument();
-
-      const suffixInput = (await getByTestId(
-        "suffix-max-length-input"
-      )) as HTMLInputElement;
-
-      userEvent.type(suffixInput, "5");
       expect(suffixInput.value).toBe("5");
       expect(continueButton).not.toBeDisabled();
+    });
 
-      userEvent.click(continueButton);
+    userEvent.click(continueButton);
+    await waitFor(async () => {
       expect(handleApplyValueSet).toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Results pagination", () => {
+  const { getByTestId, getByRole, findByRole, findAllByRole, findByLabelText } =
+    screen;
+
+  it("renders with the right number of visible elements", async () => {
+    const handleApplyValueSet = jest.fn();
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    const tableBody = getByTestId("vs-results-table-body");
+    await waitFor(() => {
+      expect(tableBody.children.length).toBe(10);
+    });
+  });
+  it("handles limit change as expected", async () => {
+    const handleApplyValueSet = jest.fn();
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    const limitChangeButton = await findByRole("button", { expanded: false });
+    expect(limitChangeButton).toBeInTheDocument();
+    userEvent.click(limitChangeButton);
+    const options = await findAllByRole("option");
+    expect(options).toHaveLength(4);
+    userEvent.click(options[3]);
+    const tableBody = getByTestId("vs-results-table-body");
+    await waitFor(() => {
+      expect(tableBody.children.length).toBe(30);
+    });
+  });
+  it("handles page change by next and prev", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    const nextButton = await findByLabelText("Go to next page");
+    userEvent.click(nextButton);
+    const previousButton = await findByLabelText("Go to previous page");
+    expect(previousButton).toBeInTheDocument();
+  });
+  it("handles page change by pagination number click", async () => {
+    const handleApplyValueSet = jest.fn();
+
+    await render(
+      <Results
+        handleApplyValueSet={handleApplyValueSet}
+        filteredValueSets={mockValueSetResults}
+      />
+    );
+    // select limit as 25 items;
+    const limitChangeButton = await findByRole("button", { expanded: false });
+    expect(limitChangeButton).toBeInTheDocument();
+    userEvent.click(limitChangeButton);
+    const options = await findAllByRole("option");
+    expect(options).toHaveLength(4);
+    userEvent.click(options[2]);
+    // select second nav item
+    const page2 = await findByLabelText("Go to page 2");
+    userEvent.click(page2);
+    // confirm there are 5 items on page
+    const tableBody = getByTestId("vs-results-table-body");
+    await waitFor(() => {
+      expect(tableBody.children.length).toBe(5);
     });
   });
 });

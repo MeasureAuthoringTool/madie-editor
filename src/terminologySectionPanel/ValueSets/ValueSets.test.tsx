@@ -38,7 +38,9 @@ const mockResult = jest
   );
 
 const mockTerminologyServiceApi = {
-  searchValueSets: mockResult,
+  searchValueSets: jest
+    .fn()
+    .mockResolvedValue({ valueSets: [mockValueSet], resultBundle: "" }),
 } as unknown as TerminologyServiceApi;
 
 jest.mock("../../api/useTerminologyServiceApi", () =>
@@ -119,6 +121,7 @@ describe("ValueSets Page", () => {
       getByTestId("terminology-section-Results-sub-heading")
     ).toBeInTheDocument();
   });
+
   it("Should use a type ahead field to add and remove search categories", async () => {
     render(<ValueSets canEdit />);
     const categoriesSelectButton = getByRole("button", {
