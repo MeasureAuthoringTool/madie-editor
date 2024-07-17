@@ -5,7 +5,6 @@ import { TextField } from "@madie/madie-design-system/dist/react";
 
 interface FormikFieldProps {
   name: string;
-  onBlur: Function;
   onChange: Function;
   value: string;
 }
@@ -14,12 +13,14 @@ interface SearchFieldProps {
   fieldProps: FormikFieldProps;
   label: string;
   prefix: string;
+  trimField?: Function;
 }
 
 const SearchField: React.FC<SearchFieldProps> = ({
   fieldProps,
   label,
   prefix,
+  trimField,
 }) => {
   const searchInputProps = {
     startAdornment: (
@@ -42,6 +43,9 @@ const SearchField: React.FC<SearchFieldProps> = ({
       data-testid={`${name}-text`}
       InputProps={searchInputProps}
       disabled={false}
+      onBlur={(e) => {
+        trimField(name);
+      }}
     />
   );
 };

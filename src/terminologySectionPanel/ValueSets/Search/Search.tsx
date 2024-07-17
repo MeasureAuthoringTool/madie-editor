@@ -58,9 +58,16 @@ export default function Search(props: SearchProps) {
       title: "",
     },
     enableReinitialize: true,
-    onSubmit: async (values) => await handleSearch(values),
+    onSubmit: async (values) => {
+      SEARCH_CATEGORIES.forEach((obj) => {
+        formik.setFieldValue(obj.value, formik.values[obj.value].trim());
+      });
+      await handleSearch(formik.values);
+    },
   });
-
+  const trimField = (fieldName) => {
+    formik.setFieldValue(fieldName, formik.values[fieldName].trim());
+  };
   // check if any keys are dirty aside from searchCategories.
   const isDirty = (() => {
     for (const { value } of SEARCH_CATEGORIES) {
@@ -140,6 +147,7 @@ export default function Search(props: SearchProps) {
                       fieldProps={formik.getFieldProps(value)}
                       prefix="Search"
                       label={SEARCH_MAP[value]}
+                      trimField={trimField}
                     />
                     <div style={{ width: "100%" }} />
                   </>
@@ -150,6 +158,7 @@ export default function Search(props: SearchProps) {
                   fieldProps={formik.getFieldProps(value)}
                   prefix="Search"
                   label={SEARCH_MAP[value]}
+                  trimField={trimField}
                 />
               );
             })}

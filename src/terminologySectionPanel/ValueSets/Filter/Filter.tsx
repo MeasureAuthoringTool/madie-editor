@@ -112,6 +112,7 @@ const Filter = (props) => {
                       fieldProps={formik.getFieldProps(value)}
                       prefix="Filter by"
                       label={FILTER_MAP[value]}
+                      trimField={() => {}}
                     />
                     <div style={{ width: "100%" }} />
                   </>
@@ -122,6 +123,7 @@ const Filter = (props) => {
                   fieldProps={formik.getFieldProps(value)}
                   prefix="Filter by"
                   label={FILTER_MAP[value]}
+                  trimField={() => {}}
                 />
               );
             })}
