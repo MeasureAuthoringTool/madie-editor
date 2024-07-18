@@ -18,7 +18,7 @@ export default function TerminologySectionPanel({
   handleApplyValueSet,
 }) {
   const featureFlags = useFeatureFlags();
-  const { QDMValueSetSearch } = featureFlags;
+  const { QDMValueSetSearch, CQLBuilderDefinitions } = featureFlags;
   const [activeTab, setActiveTab] = useState<string>(
     QDMValueSetSearch ? "valueSets" : "codes"
   );
@@ -31,6 +31,7 @@ export default function TerminologySectionPanel({
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           QDMValueSetSearch={QDMValueSetSearch}
+          CQLBuilderDefinitions={CQLBuilderDefinitions}
         />
       </div>
       <div className="panel-content">

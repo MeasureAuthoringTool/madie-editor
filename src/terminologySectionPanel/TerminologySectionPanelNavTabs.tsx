@@ -5,10 +5,17 @@ export interface NavTabProps {
   setActiveTab: (value: string) => void;
   canEdit: boolean;
   QDMValueSetSearch: boolean;
+  CQLBuilderDefinitions: boolean;
 }
 
 export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab, canEdit, QDMValueSetSearch } = props;
+  const {
+    activeTab,
+    setActiveTab,
+    canEdit,
+    QDMValueSetSearch,
+    CQLBuilderDefinitions,
+  } = props;
 
   return (
     <Tabs
@@ -37,14 +44,16 @@ export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
         data-testid="codes-tab"
         value="codes"
       />
-      <Tab
-        tabIndex={0}
-        aria-label="Definitions"
-        type="D"
-        value="definitions"
-        label="Definitions"
-        data-testid="definitions-tab"
-      />
+      {CQLBuilderDefinitions && (
+        <Tab
+          tabIndex={0}
+          aria-label="Definitions"
+          type="D"
+          value="definitions"
+          label="Definitions"
+          data-testid="definitions-tab"
+        />
+      )}
     </Tabs>
   );
 }
