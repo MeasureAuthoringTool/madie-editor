@@ -3,6 +3,7 @@ declare module "@madie/madie-util" {
 
   interface FeatureFlags {
     QDMValueSetSearch: boolean;
+    CQLBuilderDefinitions: boolean;
   }
 
   export const useOktaTokens: (storageKey?: string) => {
