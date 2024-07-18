@@ -8,7 +8,7 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import TerminologySection from "../../../../common/TerminologySection";
+import ExpandingSection from "../../../../common/ExpandingSection";
 import { useFormik } from "formik";
 import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
 import { uniq } from "lodash";
@@ -123,7 +123,7 @@ export default function CodeSection({
 
   return (
     <div>
-      <TerminologySection
+      <ExpandingSection
         title="Code(s)"
         children={
           <>

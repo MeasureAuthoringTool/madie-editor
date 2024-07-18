@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import TerminologySectionPanelNavTabs from "./TerminologySectionPanelNavTabs";
+import CqlBuilderSectionPanelNavTabs from "./CqlBuilderSectionPanelNavTabs";
 import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 import { useFeatureFlags } from "@madie/madie-util";
 
-export default function TerminologySectionPanel({
+export default function CqlBuilderPanel({
   canEdit,
   measureStoreCql,
   cqlMetaData,
@@ -26,7 +26,7 @@ export default function TerminologySectionPanel({
   return (
     <div className="right-panel">
       <div className="tab-container">
-        <TerminologySectionPanelNavTabs
+        <CqlBuilderSectionPanelNavTabs
           canEdit={canEdit}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -54,7 +54,7 @@ export default function TerminologySectionPanel({
             handleApplyCode={handleApplyCode}
           />
         )}
-        {activeTab === "definitions" && <DefinitionsSection />}
+        {activeTab === "definitions" && <DefinitionsSection canEdit />}
       </div>
     </div>
   );

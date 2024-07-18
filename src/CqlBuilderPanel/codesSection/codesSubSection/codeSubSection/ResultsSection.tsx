@@ -4,7 +4,7 @@ import "styled-components/macro";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
-import TerminologySection from "../../../../common/TerminologySection";
+import ExpandingSection from "../../../../common/ExpandingSection";
 
 import {
   useReactTable,
@@ -154,7 +154,7 @@ export default function ResultsSection({
 
   return (
     <div>
-      <TerminologySection
+      <ExpandingSection
         title="Results"
         showHeaderContent={showResultsTable}
         setShowHeaderContent={setShowResultsTable}

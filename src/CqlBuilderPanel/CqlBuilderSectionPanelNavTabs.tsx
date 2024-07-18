@@ -8,7 +8,7 @@ export interface NavTabProps {
   CQLBuilderDefinitions: boolean;
 }
 
-export default function TerminologySectionPanelNavTabs(props: NavTabProps) {
+export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
   const {
     activeTab,
     setActiveTab,

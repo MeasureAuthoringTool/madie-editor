@@ -2,14 +2,14 @@ import * as React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent, waitFor, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import TerminologySection from "./TerminologySection";
+import ExpandingSection from "./ExpandingSection";
 
 const { findByText, findByTestId, getByTestId } = screen;
 
 describe("TabHeadings", () => {
   test("TabHeading does in fact exist with specified text", async () => {
     const title = "FakeTitle";
-    render(<TerminologySection title={title} />);
+    render(<ExpandingSection title={title} />);
     const foundTitle = await findByText(title);
     expect(foundTitle).toBeInTheDocument();
   });
@@ -19,7 +19,7 @@ describe("TabHeadings", () => {
     const expectedId = `terminology-section-sub-header-content-${title}`;
     const setShowHeaderContent = jest.fn();
     render(
-      <TerminologySection
+      <ExpandingSection
         title={title}
         setShowHeaderContent={setShowHeaderContent}
       />
