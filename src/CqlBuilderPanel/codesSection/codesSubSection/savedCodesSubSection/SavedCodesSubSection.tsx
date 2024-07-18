@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import TerminologySection from "../../../../common/TerminologySection";
+import ExpandingSection from "../../../../common/ExpandingSection";
 import {
   ColumnDef,
   flexRender,
@@ -357,7 +357,7 @@ export default function SavedCodesSubSection({
 
   return (
     <div>
-      <TerminologySection
+      <ExpandingSection
         title="Saved Codes"
         children={
           <>

@@ -1,0 +1,98 @@
+#definition-form {
+  font-family: Rubik, sans-serif;
+  grid-column: span 5 / span 14;
+  display: flex;
+  flex-direction: column;
+  padding-top: 32px;
+  > .full-row {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    margin-bottom: 24px;
+    > .spacer {
+      display: flex;
+      flex-direction: row;
+      flex-grow: 1;
+      width: 100%;
+    }
+  }
+  textArea {
+    box-sizing: border-box;
+    border-radius: 3px;
+    border: solid 1px #8c8c8c;
+    background-color: #fff;
+    opacity: 1;
+    height: 100%;
+    font-size: 14px;
+    font-weight: 400;
+    resize: both;
+    color: #333;
+    &::placeholder {
+      color: #717171;
+      opacity: 1;
+    }
+  }
+  > .content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
+    .subTitle {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 8px;
+      margin-bottom: 33px;
+      border-bottom: solid 1px;
+      position: relative;
+      h2 {
+        font-size: 24px;
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+    }
+    h3 {
+      font-weight: 400;
+      font-size: 32px;
+      line-height: 48px;
+      display: flex;
+      flex-direction: row;
+      padding-bottom: 8px;
+      border-bottom: solid 1px #8c8c8c;
+    }
+    label:not(.Mui-disabled) {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 17px;
+      color: #333333;
+      text-transform: none;
+      margin-bottom: 7px;
+    }
+  }
+  .form-actions {
+    display: flex;
+    flex-direction: row;
+    min-width: 100%;
+    justify-content: end;
+    > .cancel-button {
+      margin-top: 1rem;
+      margin-right: 32px;
+    }
+    > button[type="submit"] {
+      margin-top: 0;
+    }
+  }
+  .left-box {
+    width: 40%;
+    float: left;
+  }
+  .right-box {
+    width: 55%;
+    font-family: Rubik, sans-serif;
+    margin-left: 30px;
+    height: 80%;
+    float: right;
+  }
+}

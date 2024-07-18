@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./TerminologySection.scss";
 
-interface TerminologySectionProps {
+interface ExpandingSectionProps {
   title: string;
   children?: any;
   showHeaderContent?: boolean;
   setShowHeaderContent?: Function;
 }
 
-const TerminologySection = (props: TerminologySectionProps) => {
+const ExpandingSection = (props: ExpandingSectionProps) => {
   const {
     title,
     children,
@@ -63,4 +63,4 @@ const TerminologySection = (props: TerminologySectionProps) => {
   );
 };
 
-export default TerminologySection;
+export default ExpandingSection;

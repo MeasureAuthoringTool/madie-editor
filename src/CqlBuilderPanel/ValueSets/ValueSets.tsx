@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import TerminologySection from "../../common/TerminologySection";
+import ExpandingSection from "../../common/ExpandingSection";
 import Filter, { FILTER_CATEGORIES } from "./Filter/Filter";
 import Search, { SEARCH_CATEGORIES } from "./Search/Search";
 import Results from "./Results/Results";
@@ -97,23 +97,23 @@ export default function ValueSets(props: ValueSetsProps) {
           </div>
         </div>
       )}
-      <TerminologySection title="Search" showHeaderContent={true}>
+      <ExpandingSection title="Search" showHeaderContent={true}>
         <Search canEdit={canEdit} handleSearch={handleSearch} />
-      </TerminologySection>
-      <TerminologySection title="Filter" showHeaderContent={false}>
+      </ExpandingSection>
+      <ExpandingSection title="Filter" showHeaderContent={false}>
         <Filter
           canEdit={canEdit}
           onFilter={onFilter}
           onFilterClear={onFilterClear}
         />
-      </TerminologySection>
-      <TerminologySection title="Results" showHeaderContent={resultsOpen}>
+      </ExpandingSection>
+      <ExpandingSection title="Results" showHeaderContent={resultsOpen}>
         <Results
           resultBundle={resultBundle}
           filteredValueSets={filteredValueSets}
           handleApplyValueSet={handleApplyValueSet}
         />
-      </TerminologySection>
+      </ExpandingSection>
     </div>
   );
 }

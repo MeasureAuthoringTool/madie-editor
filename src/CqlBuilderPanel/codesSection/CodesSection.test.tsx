@@ -14,8 +14,11 @@ import { ServiceConfig } from "../../api/useServiceConfig";
 jest.mock("./useCodeSystems");
 
 const mockConfig: ServiceConfig = {
-  elmTranslationService: {
+  qdmElmTranslationService: {
     baseUrl: "elm.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir.elm.com",
   },
   terminologyService: {
     baseUrl: "terminology.com",
@@ -55,6 +58,7 @@ mockUseCodeSystems.mockReturnValue({
   codeSystems: mockCodeSystems,
 });
 const renderEditor = () => {
+  // @ts-ignore: required props not required for tests
   return render(<CodesSection canEdit={true} />);
 };
 
