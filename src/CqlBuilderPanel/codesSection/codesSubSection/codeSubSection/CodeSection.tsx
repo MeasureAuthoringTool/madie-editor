@@ -89,9 +89,7 @@ export default function CodeSection({
             return true;
           })
       );
-      if (availableVersions?.length > 0) {
-        formik.setFieldValue("version", availableVersions[0].version);
-      }
+      formik.setFieldValue("version", availableVersions[0]?.version);
     } else {
       setAvailableVersions([]);
       formik.setFieldValue("version", "");
