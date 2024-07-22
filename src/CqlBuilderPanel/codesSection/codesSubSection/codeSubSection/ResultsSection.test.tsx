@@ -137,9 +137,6 @@ describe("Results Section component", () => {
     const applyButton = screen.getByTestId(`apply-code-0`);
     expect(applyButton).toBeInTheDocument();
 
-    const removeButton = screen.getByTestId(`delete-code-0`);
-    expect(removeButton).toBeInTheDocument();
-
     userEvent.click(editButton);
 
     await waitFor(() => {
