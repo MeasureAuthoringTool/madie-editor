@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { useFormik } from "formik";
@@ -8,25 +8,46 @@ import {
   Button,
 } from "@madie/madie-design-system/dist/react";
 import "./Definitions.scss";
-import ExpandingSection from "../../common/ExpandingSection";
 import { DefinitionSectionSchemaValidator } from "../../validations/DefinitionSectionSchemaValidator";
+import ExpressionEditor from "./expressionSection/ExpressionEditor";
 
-interface DefinitionProps {
-  canEdit: boolean;
+export interface Definition {
+  definitionName?: string;
+  comment?: string;
+  expressionType?: string;
+  expressionName?: string;
+  expressionValue?: string;
 }
 
-export default function DefinitionSection({ canEdit }: DefinitionProps) {
+export interface DefinitionProps {
+  canEdit: boolean;
+  handleApplyDefinition: Function;
+}
+
+export default function DefinitionSection({
+  canEdit,
+  handleApplyDefinition,
+}: DefinitionProps) {
+  const [expressionValue, setExpressionValue] = useState("");
+  const [expressionEditorOpen, setExpressionEditorOpen] =
+    useState<boolean>(false);
+
   const handleFormSubmit = async (values) => {
-    if (values && values.name && values.body) {
-      // save it.
-    }
+    values.definitionName = trimInput("definitionName");
+    values.comment = trimInput("comment");
+    // save it with handleApplyDefinition
+    formik.resetForm();
+    setExpressionValue("");
+    setExpressionEditorOpen(false);
+    // }
   };
 
   const formik = useFormik({
     initialValues: {
       definitionName: "",
       comment: "",
-      body: "",
+      type: "",
+      name: "",
     },
     validationSchema: DefinitionSectionSchemaValidator,
     enableReinitialize: true,
@@ -35,6 +56,12 @@ export default function DefinitionSection({ canEdit }: DefinitionProps) {
     },
   });
   const { resetForm } = formik;
+
+  useEffect(() => {
+    if (formik.values.definitionName) {
+      setExpressionEditorOpen(true);
+    }
+  }, [formik.values]);
 
   function trimInput(field: string) {
     formik.setFieldValue(field, formik.values[field].trim());
@@ -49,16 +76,14 @@ export default function DefinitionSection({ canEdit }: DefinitionProps) {
             name="definitionName"
             tw="w-full"
             readOnly={!canEdit}
-            // disabled={!canEdit}
+            disabled={!canEdit}
             label="Definition Name"
             placeholder=""
             inputProps={{
               "data-testid": "definition-name-text-input",
             }}
-            data-testid="definition-name-text"
             onChange={formik.handleChange}
-            value={formik.values.definitionName}
-            onBlur={() => trimInput("definitionName")}
+            {...formik.getFieldProps("definitionName")}
           />
           <div className="spacer" />
         </div>
@@ -71,17 +96,18 @@ export default function DefinitionSection({ canEdit }: DefinitionProps) {
           inputProps={{
             "data-testid": "definition-comment-text-input",
           }}
-          data-testid="definition-name-text"
-          // InputProps={searchInputProps}
+          data-testid="definition-comment-text"
           onChange={formik.handleChange}
           value={formik.values.comment}
-          onBlur={() => trimInput("comment")}
           name="comment"
         />
-        <div style={{ marginTop: "48px" }} />
-        <ExpandingSection
-          title="Expression Editor"
-          children={<div>Expression Editor</div>}
+        <div style={{ marginTop: "36px" }} />
+        <ExpressionEditor
+          canEdit={canEdit}
+          expressionEditorOpen={expressionEditorOpen}
+          formik={formik}
+          expressionValue={expressionValue}
+          setExpressionValue={setExpressionValue}
         />
         <div className="form-actions">
           <Button
@@ -91,6 +117,7 @@ export default function DefinitionSection({ canEdit }: DefinitionProps) {
             tw="mr-4"
             onClick={() => {
               resetForm();
+              setExpressionValue("");
             }}
           >
             Clear
@@ -98,7 +125,12 @@ export default function DefinitionSection({ canEdit }: DefinitionProps) {
           <Button
             type="submit"
             data-testid="definition-apply-btn"
-            disabled={!(formik.isValid && formik.dirty) || !canEdit}
+            disabled={
+              !formik.values.definitionName ||
+              !formik.values.type ||
+              !canEdit ||
+              !expressionValue
+            }
           >
             Apply
           </Button>
