@@ -223,14 +223,6 @@ export default function ResultsSection({
                     toImplementFunction: () => handleEditCode(),
                     dataTestId: `edit-code-${selectedReferenceId}`,
                   },
-                  {
-                    label: "Delete",
-                    toImplementFunction: () => {
-                      //handleClick(selectedReferenceId, "delete");
-                      setOptionsOpen(false);
-                    },
-                    dataTestId: `delete-code-${selectedReferenceId}`,
-                  },
                 ]}
               />
             </table>
