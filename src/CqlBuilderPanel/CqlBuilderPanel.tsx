@@ -16,6 +16,7 @@ export default function CqlBuilderPanel({
   isCQLUnchanged,
   handleApplyCode,
   handleApplyValueSet,
+  handleApplyDefinition,
 }) {
   const featureFlags = useFeatureFlags();
   const { QDMValueSetSearch, CQLBuilderDefinitions } = featureFlags;
@@ -54,7 +55,13 @@ export default function CqlBuilderPanel({
             handleApplyCode={handleApplyCode}
           />
         )}
-        {activeTab === "definitions" && <DefinitionsSection canEdit />}
+
+        {activeTab === "definitions" && (
+          <DefinitionsSection
+            canEdit={canEdit}
+            handleApplyDefinition={handleApplyDefinition}
+          />
+        )}
       </div>
     </div>
   );

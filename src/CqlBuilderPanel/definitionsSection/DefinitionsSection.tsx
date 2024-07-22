@@ -7,9 +7,13 @@ import DefinitionSection from "./DefinitionSection";
 
 interface DefinitionProps {
   canEdit: boolean;
+  handleApplyDefinition: Function;
 }
 
-export default function DefinitionsSection({ canEdit }: DefinitionProps) {
+export default function DefinitionsSection({
+  canEdit,
+  handleApplyDefinition,
+}: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
   return (
@@ -19,7 +23,12 @@ export default function DefinitionsSection({ canEdit }: DefinitionProps) {
         setActiveTab={setActiveTab}
       />
       <div>
-        {activeTab === "definition" && <DefinitionSection canEdit={canEdit} />}
+        {activeTab === "definition" && (
+          <DefinitionSection
+            canEdit={canEdit}
+            handleApplyDefinition={handleApplyDefinition}
+          />
+        )}
         {activeTab === "savedDefinitions" && (
           <div>Saved Definitions Placeholder</div>
         )}

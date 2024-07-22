@@ -13,6 +13,7 @@ const CqlEditorWithTerminology: FC<EditorPropsType> = ({
   handleCodeDelete,
   handleApplyCode,
   handleApplyValueSet,
+  handleApplyDefinition,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -63,6 +64,7 @@ const CqlEditorWithTerminology: FC<EditorPropsType> = ({
             isCQLUnchanged={isCQLUnchanged}
             handleApplyCode={handleApplyCode}
             handleApplyValueSet={handleApplyValueSet}
+            handleApplyDefinition={handleApplyDefinition}
           />
         </Allotment.Pane>
       </Allotment>

@@ -17,12 +17,14 @@ import {
   CqlMetaData,
   ValueSetForSearch,
 } from "../api/useTerminologyServiceApi";
+import { Definition } from "../CqlBuilderPanel/definitionsSection/DefinitionSection";
 
 export interface EditorPropsType {
   value: string;
   onChange?: (value: string) => void;
   handleApplyCode?: (code: string) => void;
   handleApplyValueSet?: (vs: ValueSetForSearch) => void;
+  handleApplyDefinition?: (def: Definition) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];
