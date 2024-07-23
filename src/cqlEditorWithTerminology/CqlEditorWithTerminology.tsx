@@ -1,11 +1,13 @@
-import React from "react";
-import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
+import React, { FC } from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import "./CqlEditorWithTerminology.scss";
 import CqlBuilderPanel from "../CqlBuilderPanel/CqlBuilderPanel";
+import { useLocation } from "react-router-dom"
+import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
 
-const CqlEditorWithTerminology = ({
+const CqlEditorWithTerminology: FC<EditorPropsType> = ({
   value,
   onChange,
   handleCodeDelete,
@@ -24,7 +26,10 @@ const CqlEditorWithTerminology = ({
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
-}: EditorPropsType) => {
+}) => {
+  const { pathname } = useLocation();
+  console.log('pathname is', pathname);
+
   return (
     <div className="allotment-wrapper" id="cql-editor-with-terminology">
       <Allotment defaultSizes={[175, 125]} vertical={false}>
@@ -65,4 +70,22 @@ const CqlEditorWithTerminology = ({
   );
 };
 
-export default CqlEditorWithTerminology;
+const CqlEditorWithTerminologyWrapper: FC = (props) => {
+  //@ts-ignore
+  return <CqlEditorWithTerminology {...props} />;
+};
+
+export const routesConfig = [
+  {
+    path: "/*",
+    element: <CqlEditorWithTerminologyWrapper />,
+  },
+];
+
+const router = createBrowserRouter(routesConfig);
+
+const EditorBrowserRouter: FC<EditorPropsType> = (props) => {
+  return <RouterProvider router={router} />;
+}
+
+export default EditorBrowserRouter;
