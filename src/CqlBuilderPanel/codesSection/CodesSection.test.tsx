@@ -53,7 +53,7 @@ const mockCodeSystems = [
 ];
 
 const mockCql =
-  "code \"Birth date\": '21112-8' from \"LOINC\" display 'Birth date'";
+  "code \"Birth date\": '21112-8' from \"LOINC\" display 'Birth date'\ncodesystem \"LOINC\": 'urn:oid:2.16.840.1.113883.6.1'";
 
 const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<
   typeof useCodeSystems
