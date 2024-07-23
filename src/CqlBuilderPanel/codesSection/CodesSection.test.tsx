@@ -55,6 +55,9 @@ const mockCodeSystems = [
 const mockCql =
   "code \"Birth date\": '21112-8' from \"LOINC\" display 'Birth date'\ncodesystem \"LOINC\": 'urn:oid:2.16.840.1.113883.6.1'";
 
+const mockCqlWithNoCode =
+  "valueset \"Emergency Department Visit\": 'urn:oid:2.16.840.1.113883.3.117.1.7.1.292'";
+
 const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<
   typeof useCodeSystems
 >;
@@ -129,6 +132,28 @@ describe("CodesSection", () => {
       />
     );
     const savedCodesSubTab = await screen.findByText("Saved Codes(1)");
+    expect(savedCodesSubTab).toBeInTheDocument();
+    act(() => {
+      fireEvent.click(savedCodesSubTab);
+    });
+    expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("should render saved codes tab sectio with 0 saved code", async () => {
+    render(
+      <CodesSection
+        canEdit={true}
+        measureStoreCql={mockCqlWithNoCode}
+        cqlMetaData={{} as CqlMetaData}
+        measureModel=""
+        handleCodeDelete={jest.fn()}
+        setEditorVal={jest.fn()}
+        setIsCQLUnchanged={jest.fn()}
+        isCQLUnchanged={true}
+        handleApplyCode={jest.fn()}
+      />
+    );
+    const savedCodesSubTab = await screen.findByText("Saved Codes(0)");
     expect(savedCodesSubTab).toBeInTheDocument();
     act(() => {
       fireEvent.click(savedCodesSubTab);
