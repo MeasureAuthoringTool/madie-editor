@@ -10,6 +10,7 @@ import * as React from "react";
 import CodesSection from "./CodesSection";
 import { useCodeSystems } from "./useCodeSystems";
 import { ServiceConfig } from "../../api/useServiceConfig";
+import { CqlMetaData } from "../../api/useTerminologyServiceApi";
 
 jest.mock("./useCodeSystems");
 
@@ -51,6 +52,9 @@ const mockCodeSystems = [
   },
 ];
 
+const mockCql =
+  "code \"Birth date\": '21112-8' from \"LOINC\" display 'Birth date'";
+
 const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<
   typeof useCodeSystems
 >;
@@ -66,7 +70,7 @@ describe("CodesSection", () => {
   it("should display all codes section nav tabs and navigation works as expected", async () => {
     renderEditor();
     const code = await screen.findByTestId("code-tab");
-    const savedCodes = await screen.findByText("Saved Codes");
+    const savedCodes = await screen.findByText("Saved Codes(0)");
 
     act(() => {
       fireEvent.click(code);
@@ -102,7 +106,35 @@ describe("CodesSection", () => {
 
   it("should render saved codes tab section", async () => {
     renderEditor();
-    const savedCodesSubTab = await screen.findByText("Saved Codes");
+    const savedCodesSubTab = await screen.findByText("Saved Codes(0)");
+    expect(savedCodesSubTab).toBeInTheDocument();
+    act(() => {
+      fireEvent.click(savedCodesSubTab);
+    });
+    expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
+
+    const savedCodesSectionButton = await screen.findAllByRole("button");
+    const savedCodesSectionHeading = within(
+      savedCodesSectionButton[0]
+    ).getByText("Saved Codes");
+    expect(savedCodesSectionHeading).toBeInTheDocument();
+  });
+
+  it("should render saved codes tab sectio with 1 saved code", async () => {
+    render(
+      <CodesSection
+        canEdit={true}
+        measureStoreCql={mockCql}
+        cqlMetaData={{} as CqlMetaData}
+        measureModel=""
+        handleCodeDelete={jest.fn()}
+        setEditorVal={jest.fn()}
+        setIsCQLUnchanged={jest.fn()}
+        isCQLUnchanged={true}
+        handleApplyCode={jest.fn()}
+      />
+    );
+    const savedCodesSubTab = await screen.findByText("Saved Codes(1)");
     expect(savedCodesSubTab).toBeInTheDocument();
     act(() => {
       fireEvent.click(savedCodesSubTab);
