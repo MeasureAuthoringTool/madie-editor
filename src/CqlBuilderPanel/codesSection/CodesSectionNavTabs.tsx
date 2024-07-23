@@ -4,10 +4,11 @@ import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
+  savedCodes: number;
 }
 
 export default function CodesSectionNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab } = props;
+  const { activeTab, setActiveTab, savedCodes } = props;
 
   return (
     <div style={{ borderBottom: "1px solid #b0b0b0" }} tw="flex flex-row">
@@ -34,7 +35,7 @@ export default function CodesSectionNavTabs(props: NavTabProps) {
           tabIndex={0}
           aria-label="Saved Codes"
           type="B"
-          label="Saved Codes"
+          label={`Saved Codes(${savedCodes})`}
           data-testid="savedCodes-tab"
           value="savedCodes"
         />
