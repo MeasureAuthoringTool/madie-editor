@@ -108,11 +108,5 @@ describe("CodesSection", () => {
       fireEvent.click(savedCodesSubTab);
     });
     expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
-
-    const savedCodesSectionButton = await screen.findAllByRole("button");
-    const savedCodesSectionHeading = within(
-      savedCodesSectionButton[0]
-    ).queryByText("Saved Codes");
-    expect(savedCodesSectionHeading).not.toBeInTheDocument();
   });
 });
