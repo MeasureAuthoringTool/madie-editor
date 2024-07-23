@@ -37,7 +37,7 @@ type SavedCodesColumnRow = {
   svsVersion: string;
 };
 
-type CodesList = {
+export type CodesList = {
   code: string;
   codeSystem: string;
   oid: string;
@@ -52,6 +52,41 @@ export type SelectedCodeDetails = SavedCodesColumnRow & {
   status?: string;
   suffix?: string;
   fhirVersion?: string;
+};
+
+export const getCodeVersion = (
+  code,
+  parsedCodeSystem,
+  oid,
+  codeSystemMap,
+  matchedCodeSystemVersion
+) => {
+  if (codeSystemMap && !matchedCodeSystemVersion) {
+    //if version is added through UI, then check inn the cql meta data
+    if (code && oid && parsedCodeSystem) {
+      const parsedOid = getOidFromString(oid, "QDM")?.replace("'", "");
+      if (
+        codeSystemMap[code] &&
+        codeSystemMap[code]?.codeSystemOid === parsedOid &&
+        codeSystemMap[code]?.codeSystem === parsedCodeSystem
+      ) {
+        return codeSystemMap[code]?.svsVersion;
+      }
+    }
+  }
+  // if version is added in the cql
+  const version = matchedCodeSystemVersion?.replace(/['"]+/g, "");
+  return version && version.split(":").pop();
+};
+
+export const getCodeSuffix = (code: CqlCode) => {
+  const name = code?.name.replace(/['"]+/g, "");
+  const pattern = /\((\d+)\)/;
+  const match = name.match(pattern);
+  if (match) {
+    return match[1];
+  }
+  return null;
 };
 
 export default function SavedCodesSubSection({
@@ -157,41 +192,6 @@ export default function SavedCodesSubSection({
       }
     }
   }, [measureStoreCql]);
-
-  const getCodeVersion = (
-    code,
-    parsedCodeSystem,
-    oid,
-    codeSystemMap,
-    matchedCodeSystemVersion
-  ) => {
-    if (codeSystemMap && !matchedCodeSystemVersion) {
-      //if version is added through UI, then check inn the cql meta data
-      if (code && oid && parsedCodeSystem) {
-        const parsedOid = getOidFromString(oid, "QDM")?.replace("'", "");
-        if (
-          codeSystemMap[code] &&
-          codeSystemMap[code]?.codeSystemOid === parsedOid &&
-          codeSystemMap[code]?.codeSystem === parsedCodeSystem
-        ) {
-          return codeSystemMap[code]?.svsVersion;
-        }
-      }
-    }
-    // if version is added in the cql
-    const version = matchedCodeSystemVersion?.replace(/['"]+/g, "");
-    return version && version.split(":").pop();
-  };
-
-  const getCodeSuffix = (code: CqlCode) => {
-    const name = code?.name.replace(/['"]+/g, "");
-    const pattern = /\((\d+)\)/;
-    const match = name.match(pattern);
-    if (match) {
-      return match[1];
-    }
-    return null;
-  };
 
   const managePagination = useCallback(() => {
     if (codes?.length > 0) {
