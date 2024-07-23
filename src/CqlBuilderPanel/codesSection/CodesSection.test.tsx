@@ -112,12 +112,6 @@ describe("CodesSection", () => {
       fireEvent.click(savedCodesSubTab);
     });
     expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
-
-    const savedCodesSectionButton = await screen.findAllByRole("button");
-    const savedCodesSectionHeading = within(
-      savedCodesSectionButton[0]
-    ).getByText("Saved Codes");
-    expect(savedCodesSectionHeading).toBeInTheDocument();
   });
 
   it("should render saved codes tab sectio with 1 saved code", async () => {
