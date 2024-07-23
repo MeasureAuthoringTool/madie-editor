@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import ExpandingSection from "../../../../common/ExpandingSection";
 import {
   ColumnDef,
   flexRender,
