@@ -357,119 +357,112 @@ export default function SavedCodesSubSection({
 
   return (
     <div>
-      <ExpandingSection
-        title="Saved Codes"
-        children={
-          <>
-            {showCqlHasErrorsAlert && (
-              <MadieAlert
-                type="warning"
-                content={
-                  <div aria-live="polite" role="alert">
-                    {
-                      <div>
-                        <div tw="font-medium">
-                          Your Measure CQL contains errors. Due to that, your
-                          saved codes table and CQL may not be consistent.
-                        </div>
-                      </div>
-                    }
+      {showCqlHasErrorsAlert && (
+        <MadieAlert
+          type="warning"
+          content={
+            <div aria-live="polite" role="alert">
+              {
+                <div>
+                  <div tw="font-medium">
+                    Your Measure CQL contains errors. Due to that, your saved
+                    codes table and CQL may not be consistent.
                   </div>
-                }
-                canClose={false}
-              />
-            )}
+                </div>
+              }
+            </div>
+          }
+          canClose={false}
+        />
+      )}
 
-            <table
-              tw="min-w-full"
-              data-testid="saved-codes-tbl"
-              style={{
-                borderBottom: "solid 1px #8c8c8c",
-                borderSpacing: "0 2em !important",
-              }}
-            >
-              <thead tw="bg-slate">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TH key={header.id} scope="col">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TH>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody data-testid="saved-codes-tbl-body">
-                {!loading ? (
-                  _.isEmpty(codes) ? (
-                    <tr>
-                      <td colSpan={columns.length} tw="text-center p-2">
-                        No Results were found
-                      </td>
-                    </tr>
-                  ) : (
-                    table.getRowModel().rows.map((row) => (
-                      <tr key={row.id} data-testid={`saved-code-row-${row.id}`}>
-                        {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id} tw="p-2">
-                            {cell.column.id === "status"
-                              ? getCodeStatus(cell.getValue())
-                              : flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  )
-                ) : (
-                  <div data-testid="saved-codes-loading-spinner">
-                    <MadieSpinner style={{ height: 50, width: 50 }} />
-                  </div>
-                )}
-              </tbody>
+      <table
+        tw="min-w-full"
+        data-testid="saved-codes-tbl"
+        style={{
+          borderBottom: "solid 1px #8c8c8c",
+          borderSpacing: "0 2em !important",
+        }}
+      >
+        <thead tw="bg-slate">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TH key={header.id} scope="col">
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TH>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody data-testid="saved-codes-tbl-body">
+          {!loading ? (
+            _.isEmpty(codes) ? (
+              <tr>
+                <td colSpan={columns.length} tw="text-center p-2">
+                  No Results were found
+                </td>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id} data-testid={`saved-code-row-${row.id}`}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} tw="p-2">
+                      {cell.column.id === "status"
+                        ? getCodeStatus(cell.getValue())
+                        : flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )
+          ) : (
+            <div data-testid="saved-codes-loading-spinner">
+              <MadieSpinner style={{ height: 50, width: 50 }} />
+            </div>
+          )}
+        </tbody>
 
-              <Popover
-                optionsOpen={optionsOpen}
-                anchorEl={anchorEl}
-                handleClose={handleClose}
-                canEdit={true}
-                editViewSelectOptionProps={{
-                  label: "Remove",
-                  toImplementFunction: () => {
-                    setOptionsOpen(false);
-                    if (!isCQLUnchanged) {
-                      setDiscardDialogOpen(true);
-                    } else {
-                      setDeleteDialogModalOpen(true);
-                    }
-                  },
-                  dataTestId: `remove-code-${selectedReferenceId}`,
-                }}
-                otherSelectOptionProps={[
-                  {
-                    label: "Edit",
-                    toImplementFunction: () => handleEditCode(),
-                    dataTestId: `edit-code-${selectedReferenceId}`,
-                  },
-                ]}
-              />
-            </table>
+        <Popover
+          optionsOpen={optionsOpen}
+          anchorEl={anchorEl}
+          handleClose={handleClose}
+          canEdit={true}
+          editViewSelectOptionProps={{
+            label: "Remove",
+            toImplementFunction: () => {
+              setOptionsOpen(false);
+              if (!isCQLUnchanged) {
+                setDiscardDialogOpen(true);
+              } else {
+                setDeleteDialogModalOpen(true);
+              }
+            },
+            dataTestId: `remove-code-${selectedReferenceId}`,
+          }}
+          otherSelectOptionProps={[
+            {
+              label: "Edit",
+              toImplementFunction: () => handleEditCode(),
+              dataTestId: `edit-code-${selectedReferenceId}`,
+            },
+          ]}
+        />
+      </table>
 
-            <EditCodeDetailsDialog
-              selectedCodeDetails={selectedCodeDetails}
-              onApplyCode={handleApplyCode}
-              open={openEditCodeDialog}
-              onClose={toggleEditCodeDialogState}
-            />
-          </>
-        }
+      <EditCodeDetailsDialog
+        selectedCodeDetails={selectedCodeDetails}
+        onApplyCode={handleApplyCode}
+        open={openEditCodeDialog}
+        onClose={toggleEditCodeDialogState}
       />
       <Toast
         toastKey="fetch-code-toast"

@@ -112,7 +112,7 @@ describe("CodesSection", () => {
     const savedCodesSectionButton = await screen.findAllByRole("button");
     const savedCodesSectionHeading = within(
       savedCodesSectionButton[0]
-    ).getByText("Saved Codes");
-    expect(savedCodesSectionHeading).toBeInTheDocument();
+    ).queryByText("Saved Codes");
+    expect(savedCodesSectionHeading).not.toBeInTheDocument();
   });
 });
