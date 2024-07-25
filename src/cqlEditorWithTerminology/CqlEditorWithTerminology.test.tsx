@@ -16,6 +16,8 @@ jest.mock("@madie/madie-util", () => ({
     return {
       QDMValueSetSearch: true,
       CQLBuilderDefinitions: true,
+      CQLBuilderIncludes: true,
+      qdmCodeSearch: true,
     };
   }),
   useOktaTokens: () => ({
@@ -47,19 +49,21 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 
 describe("CqlEditorWithTerminology component", () => {
-  it("should have madie editor and terminology panel", async () => {
+  it("should have madie editor and CQL Builder panel", async () => {
     const props = {
       value: "",
       onChange: jest.fn(),
       handleClick: true,
       handleApplyValueSet: jest.fn(),
+      measureModel: "QDM 5.6",
     };
     render(<CqlEditorWithTerminology {...props} />);
     const valueSets = await screen.findByText("Value Sets");
     const codes = await screen.findByText("Codes");
     const definitions = await screen.findByText("Definitions");
+    const includes = await screen.findByText("Includes");
 
-    expect(valueSets).toHaveAttribute("aria-selected", "true");
+    expect(includes).toHaveAttribute("aria-selected", "true");
 
     act(() => {
       fireEvent.click(codes);

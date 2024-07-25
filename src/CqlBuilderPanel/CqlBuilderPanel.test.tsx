@@ -3,6 +3,19 @@ import CqlBuilderPanel from "./CqlBuilderPanel";
 import { useFeatureFlags } from "@madie/madie-util";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { ServiceConfig } from "../api/useServiceConfig";
+
+const mockConfig: ServiceConfig = {
+  qdmElmTranslationService: {
+    baseUrl: "qdm.elm.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir.elm.com",
+  },
+  terminologyService: {
+    baseUrl: "terminology.com",
+  },
+};
 
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn(),
@@ -12,11 +25,17 @@ jest.mock("@madie/madie-util", () => ({
   getOidFromString: () => "oid",
 }));
 
+jest.mock("../api/useServiceConfig", () => {
+  return {
+    useServiceConfig: jest.fn(() => Promise.resolve(mockConfig)),
+  };
+});
+
 const props = {
   canEdit: true,
   measureStoreCql: "",
   cqlMetaData: {},
-  measureModel: "",
+  measureModel: "QDM 5.6",
   handleCodeDelete: jest.fn(),
   setEditorVal: jest.fn(),
   setIsCQLUnchanged: jest.fn(),
@@ -31,6 +50,7 @@ describe("CqlBuilderPanel", () => {
       CQLBuilderIncludes: true,
       CQLBuilderDefinitions: true,
       QDMValueSetSearch: true,
+      qdmCodeSearch: true,
     }));
     render(<CqlBuilderPanel {...props} />);
     await waitFor(() => {
@@ -61,15 +81,19 @@ describe("CqlBuilderPanel", () => {
       );
     });
   });
-  it("Should load to codes", async () => {
+  it("Should load to includes tab", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: false,
-      QDMValueSetSearch: false,
-      CQLBuilderDefinitions: false,
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
     }));
     render(<CqlBuilderPanel {...props} />);
     await waitFor(() => {
-      expect(getByTestId("codes-tab")).toHaveAttribute("aria-selected", "true");
+      expect(getByTestId("includes-tab")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
     });
   });
 });
