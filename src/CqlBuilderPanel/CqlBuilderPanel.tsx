@@ -54,7 +54,9 @@ export default function CqlBuilderPanel({
             handleApplyCode={handleApplyCode}
           />
         )}
-        {activeTab === "definitions" && <DefinitionsSection canEdit />}
+        {activeTab === "definitions" && (
+          <DefinitionsSection canEdit={canEdit} />
+        )}
       </div>
     </div>
   );

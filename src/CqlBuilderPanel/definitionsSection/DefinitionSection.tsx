@@ -49,7 +49,7 @@ export default function DefinitionSection({ canEdit }: DefinitionProps) {
             name="definitionName"
             tw="w-full"
             readOnly={!canEdit}
-            // disabled={!canEdit}
+            disabled={!canEdit}
             label="Definition Name"
             placeholder=""
             inputProps={{
@@ -67,6 +67,7 @@ export default function DefinitionSection({ canEdit }: DefinitionProps) {
           tw="w-full"
           label="Comment"
           readOnly={!canEdit}
+          disabled={!canEdit}
           placeholder=""
           inputProps={{
             "data-testid": "definition-comment-text-input",
