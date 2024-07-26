@@ -14,12 +14,6 @@ const LibraryTabContent = (props: LibraryTabContentProps) => {
     <div className="content">
       {activeLibraryTab === "library" && (
         <>
-          <TextField
-            label="Library Alias"
-            required
-            disabled={!canEdit}
-            id="library-alias"
-          />
           <ExpandingSection title="Search" showHeaderContent={true}>
             <Search canEdit={canEdit} />
           </ExpandingSection>
