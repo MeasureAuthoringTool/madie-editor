@@ -62,7 +62,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               <div tw="w-1/2">
                 <Select
                   label="Type"
-                  id={"type-selector"}
+                  id="type-selector"
                   inputProps={{
                     "data-testid": "type-selector-input",
                   }}
