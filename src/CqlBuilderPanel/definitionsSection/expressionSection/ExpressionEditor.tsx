@@ -120,7 +120,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </Button>
             </div>
             <div style={{ marginBottom: "72px" }} />
-            <div className={"full-row"}>
+            <div className="full-row">
               <ControlledTextarea
                 name="expression-textarea"
                 value={expressionValue}
