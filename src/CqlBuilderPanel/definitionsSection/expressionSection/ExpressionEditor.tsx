@@ -66,7 +66,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   inputProps={{
                     "data-testid": "type-selector-input",
                   }}
-                  data-testid={"type-selector"}
+                  data-testid="type-selector"
                   SelectDisplayProps={{
                     "aria-required": "true",
                   }}
