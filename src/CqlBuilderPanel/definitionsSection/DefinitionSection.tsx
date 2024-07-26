@@ -92,6 +92,7 @@ export default function DefinitionSection({
           tw="w-full"
           label="Comment"
           readOnly={!canEdit}
+          disabled={!canEdit}
           placeholder=""
           inputProps={{
             "data-testid": "definition-comment-text-input",
