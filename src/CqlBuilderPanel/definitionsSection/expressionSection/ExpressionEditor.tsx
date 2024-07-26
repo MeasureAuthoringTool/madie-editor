@@ -86,7 +86,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               <div tw="flex-grow pl-5">
                 <AutoComplete
                   label="Name"
-                  id={"name-selector"}
+                  id="name-selector"
                   inputProps={{
                     "data-testid": "name-selector-input",
                   }}
