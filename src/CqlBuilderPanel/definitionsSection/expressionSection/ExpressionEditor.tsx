@@ -63,6 +63,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                 <Select
                   label="Type"
                   id="type-selector"
+                  {...formik.getFieldProps("type")}
                   inputProps={{
                     "data-testid": "type-selector-input",
                   }}
@@ -80,7 +81,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   }}
                   options={renderMenuItems(availableTypes)}
                   disabled={!canEdit}
-                  {...formik.getFieldProps("type")}
                 />
               </div>
               <div tw="flex-grow pl-5">
