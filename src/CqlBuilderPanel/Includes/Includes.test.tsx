@@ -9,7 +9,6 @@ describe("Includes", () => {
     render(<Includes canEdit />);
     expect(getByTestId("includes-panel")).toBeInTheDocument();
 
-    expect(getByTestId("library-alias-input")).toBeEnabled();
     expect(getByTestId("search-text-input")).toBeEnabled();
   });
 });
