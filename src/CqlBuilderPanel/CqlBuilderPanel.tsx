@@ -20,20 +20,31 @@ export default function CqlBuilderPanel({
   handleApplyDefinition,
 }) {
   const featureFlags = useFeatureFlags();
-  const { QDMValueSetSearch, CQLBuilderDefinitions, CQLBuilderIncludes } =
-    featureFlags;
+  const {
+    QDMValueSetSearch,
+    CQLBuilderDefinitions,
+    CQLBuilderIncludes,
+    qdmCodeSearch,
+  } = featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
     // if cqlBuilderIncludes -> includes
-    // if qdmValueSetSearch -> valueSets
-    // else, codes
+    // if BuilderDefs -> definitions
+    // if QDM, then
+    //  if qdmValueSetSearch -> valueSets
+    //  else, codes
     if (CQLBuilderIncludes) {
       return "includes";
     }
-    if (QDMValueSetSearch) {
-      return "valueSets";
+    if (CQLBuilderDefinitions) {
+      return "definitions";
     }
-    return "codes";
+    if (measureModel?.includes("QDM")) {
+      if (QDMValueSetSearch) {
+        return "valueSets";
+      }
+      return "codes";
+    }
   })();
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
 
@@ -46,6 +57,8 @@ export default function CqlBuilderPanel({
           setActiveTab={setActiveTab}
           QDMValueSetSearch={QDMValueSetSearch}
           CQLBuilderDefinitions={CQLBuilderDefinitions}
+          qdmCodeSearch={qdmCodeSearch}
+          isQDM={measureModel?.includes("QDM")}
           CQLBuilderIncludes={CQLBuilderIncludes}
         />
       </div>
