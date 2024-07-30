@@ -1,0 +1,23 @@
+#includes-panel {
+  margin-top: -24px;
+
+  .terminology-section-tab-heading {
+    margin-top: 24px;
+  }
+
+  .row-end {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: end;
+
+    > button {
+      margin-left: 24px;
+
+      &[type="submit"] {
+        margin-top: 0;
+      }
+    }
+  }
+}
