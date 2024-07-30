@@ -4,6 +4,8 @@ import * as _ from "lodash";
 import tw from "twin.macro";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
+import 'ace-builds';
+import 'ace-builds/webpack-resolver';
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
