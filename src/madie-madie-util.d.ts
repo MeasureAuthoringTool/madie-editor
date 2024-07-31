@@ -2,8 +2,10 @@ declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
 
   interface FeatureFlags {
+    CQLBuilderIncludes: boolean;
     QDMValueSetSearch: boolean;
     CQLBuilderDefinitions: boolean;
+    qdmCodeSearch: boolean;
   }
 
   export const useOktaTokens: (storageKey?: string) => {

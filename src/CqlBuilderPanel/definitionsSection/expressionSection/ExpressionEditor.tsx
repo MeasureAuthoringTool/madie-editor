@@ -62,11 +62,12 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               <div tw="w-1/2">
                 <Select
                   label="Type"
-                  id={"type-selector"}
+                  id="type-selector"
+                  {...formik.getFieldProps("type")}
                   inputProps={{
                     "data-testid": "type-selector-input",
                   }}
-                  data-testid={"type-selector"}
+                  data-testid="type-selector"
                   SelectDisplayProps={{
                     "aria-required": "true",
                   }}
@@ -80,13 +81,12 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   }}
                   options={renderMenuItems(availableTypes)}
                   disabled={!canEdit}
-                  {...formik.getFieldProps("type")}
                 />
               </div>
               <div tw="flex-grow pl-5">
                 <AutoComplete
                   label="Name"
-                  id={"name-selector"}
+                  id="name-selector"
                   inputProps={{
                     "data-testid": "name-selector-input",
                   }}
@@ -120,7 +120,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </Button>
             </div>
             <div style={{ marginBottom: "72px" }} />
-            <div className={"full-row"}>
+            <div className="full-row">
               <ControlledTextarea
                 name="expression-textarea"
                 value={expressionValue}

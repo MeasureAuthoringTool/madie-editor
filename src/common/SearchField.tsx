@@ -14,6 +14,8 @@ interface SearchFieldProps {
   label: string;
   prefix: string;
   trimField?: Function;
+  placeHolder?: string;
+  disabled?: boolean;
 }
 
 const SearchField: React.FC<SearchFieldProps> = ({
@@ -21,6 +23,8 @@ const SearchField: React.FC<SearchFieldProps> = ({
   label,
   prefix,
   trimField,
+  placeHolder = "",
+  disabled = false,
 }) => {
   const searchInputProps = {
     startAdornment: (
@@ -34,15 +38,16 @@ const SearchField: React.FC<SearchFieldProps> = ({
   return (
     <TextField
       required={false}
+      disabled={disabled}
       {...fieldProps}
       id={fieldProps.name}
       label={ammendedLabel}
+      placeholder={placeHolder}
       inputProps={{
         "data-testid": `${name}-text-input`,
       }}
       data-testid={`${name}-text`}
       InputProps={searchInputProps}
-      disabled={false}
       onBlur={(e) => {
         trimField(name);
       }}
