@@ -97,6 +97,7 @@ export default function SavedCodesSubSection({
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
+  setSavedCodes,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -188,6 +189,7 @@ export default function SavedCodesSubSection({
         });
         setParsedCodesList(codesList);
         RetrieveCodeDetailsList(codesList);
+        setSavedCodes(codesList ? codesList.length : 0);
       }
     }
   }, [measureStoreCql]);
@@ -438,6 +440,7 @@ export default function SavedCodesSubSection({
           editViewSelectOptionProps={{
             label: "Remove",
             toImplementFunction: () => {
+              setSavedCodes(codes ? codes.length : 0);
               setOptionsOpen(false);
               if (!isCQLUnchanged) {
                 setDiscardDialogOpen(true);

@@ -85,6 +85,7 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
+        setSavedCodes={jest.fn()}
       />
     );
     expect(
@@ -123,6 +124,7 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
+        setSavedCodes={jest.fn()}
       />
     );
 
@@ -175,6 +177,7 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
+        setSavedCodes={jest.fn()}
       />
     );
     await waitForElementToBeRemoved(() =>
@@ -213,6 +216,7 @@ describe("Saved Codes section component", () => {
         handleCodeDelete={undefined}
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
+        setSavedCodes={jest.fn()}
       />
     );
 
@@ -262,6 +266,7 @@ describe("Saved Codes section component", () => {
         handleApplyCode={undefined}
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
+        setSavedCodes={jest.fn()}
       />
     );
     await checkRows(2);
@@ -295,6 +300,7 @@ describe("Saved Codes section component", () => {
         setEditorVal={jest.fn()}
         setIsCQLUnchanged={jest.fn()}
         handleApplyCode={undefined}
+        setSavedCodes={jest.fn()}
       />
     );
     await checkRows(2);

@@ -39,6 +39,7 @@ export default function CodesSection({
   const [activeTab, setActiveTab] = useState<string>("code");
   const { codeSystems } = useCodeSystems();
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
+  const [savedCodes, setSavedCodes] = useState(0);
 
   useEffect(() => {
     if (measureStoreCql) {
@@ -69,6 +70,7 @@ export default function CodesSection({
           };
         });
         setParsedCodesList(codesList);
+        setSavedCodes(parsedCodesList ? parsedCodesList?.length : 0);
       }
     }
   }, [measureStoreCql]);
@@ -99,6 +101,7 @@ export default function CodesSection({
             setEditorVal={setEditorVal}
             setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
+            setSavedCodes={setSavedCodes}
           />
         )}
       </div>
