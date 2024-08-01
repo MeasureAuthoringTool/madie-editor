@@ -274,13 +274,6 @@ export default function SavedCodesSubSection({
             return true;
           })
         );
-        const test = response?.data?.filter((code) => {
-          if (code === null) {
-            setShowCqlHasErrorsAlert(true);
-            return false;
-          }
-          return true;
-        });
         setLoading(false);
       })
       .catch((error) => {
