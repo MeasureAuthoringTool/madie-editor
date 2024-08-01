@@ -97,7 +97,8 @@ export default function SavedCodesSubSection({
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
-  setSavedCodes,
+  parsedCodesList,
+  setParsedCodesList,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -114,7 +115,6 @@ export default function SavedCodesSubSection({
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<SelectedCodeDetails>(null);
-  const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
   const [openEditCodeDialog, setOpenEditCodeDialog] = useState<boolean>(false);
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
     useState<boolean>(false);
@@ -160,39 +160,18 @@ export default function SavedCodesSubSection({
   //load codes when actual measure cql is changed
   useEffect(() => {
     if (measureStoreCql) {
-      const parsedCql = new CqlAntlr(measureStoreCql).parse();
-      if (!_.isEmpty(parsedCql?.codes)) {
-        setLoading(true);
-        const codesList = parsedCql.codes.map((code) => {
-          const matchedCodeSystem = parsedCql.codeSystems.find(
-            (codeSystem) =>
-              codeSystem.name?.replace(/['"]+/g, "") ===
-              code.codeSystem?.replace(/['"]+/g, "")
-          );
-          const parsedCode = code.codeId.replace(/['"]+/g, "");
-          const parsedCodeSystem = code.codeSystem.replace(/['"]+/g, "");
-          const codeSystemVersion = getCodeVersion(
-            parsedCode,
-            parsedCodeSystem,
-            matchedCodeSystem?.oid,
-            cqlMetaData?.codeSystemMap,
-            matchedCodeSystem?.version
-          );
-          return {
-            code: parsedCode,
-            codeSystem: parsedCodeSystem.replace(":" + codeSystemVersion, ""),
-            version: codeSystemVersion,
-            oid: matchedCodeSystem?.oid,
-            suffix: getCodeSuffix(code),
-            versionIncluded: code.codeSystem.includes(codeSystemVersion),
-          };
-        });
-        setParsedCodesList(codesList);
-        RetrieveCodeDetailsList(codesList);
-        setSavedCodes(codesList ? codesList.length : 0);
-      }
+      RetrieveCodeDetailsList(parsedCodesList);
     }
   }, [measureStoreCql]);
+
+  const refreshListAfterDelete = (selectedCodeDetails: SelectedCodeDetails) => {
+    const newList = parsedCodesList.filter((parsedCode) => {
+      parsedCode.code !== selectedCodeDetails.name ||
+        parsedCode.codeSystem !== selectedCodeDetails.codeSystem ||
+        parsedCode.versionIncluded !== selectedCodeDetails.versionIncluded;
+    });
+    return newList;
+  };
 
   const managePagination = useCallback(() => {
     if (codes?.length > 0) {
@@ -295,6 +274,13 @@ export default function SavedCodesSubSection({
             return true;
           })
         );
+        const test = response?.data?.filter((code) => {
+          if (code === null) {
+            setShowCqlHasErrorsAlert(true);
+            return false;
+          }
+          return true;
+        });
         setLoading(false);
       })
       .catch((error) => {
@@ -440,7 +426,6 @@ export default function SavedCodesSubSection({
           editViewSelectOptionProps={{
             label: "Remove",
             toImplementFunction: () => {
-              setSavedCodes(codes ? codes.length : 0);
               setOptionsOpen(false);
               if (!isCQLUnchanged) {
                 setDiscardDialogOpen(true);
@@ -495,6 +480,7 @@ export default function SavedCodesSubSection({
       <MadieDeleteDialog
         open={deleteDialogModalOpen}
         onContinue={() => {
+          setParsedCodesList(refreshListAfterDelete(selectedCodeDetails));
           handleCodeDelete(selectedCodeDetails);
         }}
         onClose={() => {
