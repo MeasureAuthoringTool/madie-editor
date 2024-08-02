@@ -7,6 +7,7 @@ type ControlledTextareaProps = {
   onValueChange: (value: string) => void;
   placeholder?: string;
   name?: string;
+  disabled?: boolean;
 };
 
 const sharedStyle = css`
@@ -59,6 +60,7 @@ export const ControlledTextarea = ({
   onValueChange,
   placeholder = "",
   name,
+  disabled = true,
 }: ControlledTextareaProps) => {
   const lineCount = useMemo(() => value.split("\n").length, [value]);
   const linesArr = useMemo(
@@ -101,6 +103,7 @@ export const ControlledTextarea = ({
         wrap="off"
         aria-label="expression-textarea"
         data-testid="expression-textarea"
+        disabled={disabled}
       />
     </div>
   );

@@ -126,6 +126,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                 value={expressionValue}
                 onValueChange={(value: string) => setExpressionValue(value)}
                 numOfLines={1}
+                disabled={!canEdit}
               />
             </div>
           </>
