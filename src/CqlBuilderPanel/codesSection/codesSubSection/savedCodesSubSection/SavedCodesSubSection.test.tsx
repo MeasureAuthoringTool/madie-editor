@@ -1,14 +1,12 @@
 import * as React from "react";
 import {
   fireEvent,
-  queryByText,
   render,
   screen,
   waitFor,
-  waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import SavedCodesSubSection from "./SavedCodesSubSection";
+import SavedCodesSubSection, { CodesList } from "./SavedCodesSubSection";
 import { mockMeasureStoreCql } from "../../../__mocks__/MockMeasureStoreCql";
 import { TerminologyServiceApi } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
@@ -65,6 +63,17 @@ const mockCqlMetaData = {
   },
 };
 
+const parsedCodesList: CodesList[] = [
+  {
+    code: "8462-4",
+    codeSystem: "LOINC",
+    version: "2.44",
+    oid: "'2.16.840.1.113883.6.1'",
+    suffix: "1",
+    versionIncluded: true,
+  },
+];
+
 describe("Saved Codes section component", () => {
   const checkRows = async (number: number) => {
     const tableBody = await screen.findByTestId("saved-codes-tbl-body");
@@ -85,6 +94,8 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
+        parsedCodesList={undefined}
+        setParsedCodesList={jest.fn()}
       />
     );
     expect(
@@ -109,7 +120,7 @@ describe("Saved Codes section component", () => {
     ).toBeInTheDocument();
     const savedCodesTable = await screen.findByTestId("saved-codes-tbl");
     expect(savedCodesTable).toBeInTheDocument();
-    await checkRows(1);
+    await checkRows(2);
   });
 
   it("displaying edit dialog when edit is clicked from the select actions", async () => {
@@ -123,14 +134,11 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
+        parsedCodesList={parsedCodesList}
+        setParsedCodesList={jest.fn()}
       />
     );
 
-    expect(getByTestId("saved-codes-loading-spinner")).toBeInTheDocument();
-
-    await waitForElementToBeRemoved(() =>
-      queryByTestId("saved-codes-loading-spinner")
-    );
     await checkRows(2);
 
     expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
@@ -175,10 +183,9 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
+        parsedCodesList={parsedCodesList}
+        setParsedCodesList={jest.fn()}
       />
-    );
-    await waitForElementToBeRemoved(() =>
-      queryByTestId("saved-codes-loading-spinner")
     );
     await waitFor(() => {
       const selectButton = getByTestId(`select-action-0_apply`);
@@ -213,14 +220,11 @@ describe("Saved Codes section component", () => {
         handleCodeDelete={undefined}
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
+        parsedCodesList={parsedCodesList}
+        setParsedCodesList={jest.fn()}
       />
     );
 
-    expect(getByTestId("saved-codes-loading-spinner")).toBeInTheDocument();
-
-    await waitForElementToBeRemoved(() =>
-      queryByTestId("saved-codes-loading-spinner")
-    );
     await checkRows(2);
 
     expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
@@ -262,6 +266,8 @@ describe("Saved Codes section component", () => {
         handleApplyCode={undefined}
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
+        parsedCodesList={parsedCodesList}
+        setParsedCodesList={jest.fn()}
       />
     );
     await checkRows(2);
@@ -295,6 +301,8 @@ describe("Saved Codes section component", () => {
         setEditorVal={jest.fn()}
         setIsCQLUnchanged={jest.fn()}
         handleApplyCode={undefined}
+        parsedCodesList={parsedCodesList}
+        setParsedCodesList={jest.fn()}
       />
     );
     await checkRows(2);
@@ -321,5 +329,42 @@ describe("Saved Codes section component", () => {
 
     fireEvent.click(getByTestId("delete-dialog-continue-button"));
     expect(queryByTestId("delete-dialog-body")).toBeNull();
+  });
+
+  it("test cancel delete", async () => {
+    const { getByTestId, queryByTestId } = render(
+      <SavedCodesSubSection
+        measureStoreCql={mockMeasureStoreCql}
+        canEdit={true}
+        cqlMetaData={mockCqlMetaData}
+        isCQLUnchanged={false}
+        handleCodeDelete={jest.fn()}
+        setEditorVal={jest.fn()}
+        setIsCQLUnchanged={jest.fn()}
+        handleApplyCode={undefined}
+        parsedCodesList={parsedCodesList}
+        setParsedCodesList={jest.fn()}
+      />
+    );
+    await checkRows(2);
+
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-0_apply`);
+      expect(selectButton).toBeInTheDocument();
+      userEvent.click(selectButton);
+    });
+
+    const removeButton = getByTestId(`remove-code-0`);
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(removeButton);
+    expect(getByTestId("discard-dialog")).toBeInTheDocument();
+    expect(getByTestId("discard-dialog-continue-button")).toBeInTheDocument();
+    expect(getByTestId("discard-dialog-cancel-button")).toBeInTheDocument();
+    const closeBtn = getByTestId("close-button");
+    expect(closeBtn).toBeInTheDocument();
+
+    fireEvent.click(getByTestId("discard-dialog-cancel-button"));
+    expect(queryByTestId("delete-dialog")).not.toBeInTheDocument();
   });
 });

@@ -99,6 +99,8 @@ export default function CodesSection({
             setEditorVal={setEditorVal}
             setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
+            parsedCodesList={parsedCodesList}
+            setParsedCodesList={setParsedCodesList}
           />
         )}
       </div>
