@@ -98,7 +98,6 @@ export default function SavedCodesSubSection({
   setIsCQLUnchanged,
   isCQLUnchanged,
   parsedCodesList,
-  setParsedCodesList,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -159,19 +158,10 @@ export default function SavedCodesSubSection({
 
   //load codes when actual measure cql is changed
   useEffect(() => {
-    if (measureStoreCql) {
+    if (measureStoreCql && parsedCodesList?.length > 0) {
       RetrieveCodeDetailsList(parsedCodesList);
     }
   }, [measureStoreCql]);
-
-  const refreshListAfterDelete = (selectedCodeDetails: SelectedCodeDetails) => {
-    const newList = parsedCodesList.filter((parsedCode) => {
-      parsedCode.code !== selectedCodeDetails.name ||
-        parsedCode.codeSystem !== selectedCodeDetails.codeSystem ||
-        parsedCode.versionIncluded !== selectedCodeDetails.versionIncluded;
-    });
-    return newList;
-  };
 
   const managePagination = useCallback(() => {
     if (codes?.length > 0) {
@@ -473,7 +463,6 @@ export default function SavedCodesSubSection({
       <MadieDeleteDialog
         open={deleteDialogModalOpen}
         onContinue={() => {
-          setParsedCodesList(refreshListAfterDelete(selectedCodeDetails));
           handleCodeDelete(selectedCodeDetails);
         }}
         onClose={() => {

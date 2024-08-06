@@ -50,7 +50,7 @@ const CqlEditorWithTerminology = ({
         <Allotment.Pane>
           <CqlBuilderPanel
             canEdit={!readOnly}
-            measureStoreCql={measureStoreCql}
+            measureStoreCql={value}
             cqlMetaData={cqlMetaData}
             measureModel={measureModel}
             handleCodeDelete={handleCodeDelete}

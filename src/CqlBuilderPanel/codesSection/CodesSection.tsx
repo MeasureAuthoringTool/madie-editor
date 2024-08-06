@@ -100,7 +100,6 @@ export default function CodesSection({
             setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
             parsedCodesList={parsedCodesList}
-            setParsedCodesList={setParsedCodesList}
           />
         )}
       </div>
