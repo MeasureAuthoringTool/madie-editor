@@ -94,8 +94,7 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
-        parsedCodesList={undefined}
-        setParsedCodesList={jest.fn()}
+        parsedCodesList={parsedCodesList}
       />
     );
     expect(
@@ -135,7 +134,6 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
-        setParsedCodesList={jest.fn()}
       />
     );
 
@@ -184,7 +182,6 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
-        setParsedCodesList={jest.fn()}
       />
     );
     await waitFor(() => {
@@ -221,7 +218,6 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
-        setParsedCodesList={jest.fn()}
       />
     );
 
@@ -267,7 +263,6 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
-        setParsedCodesList={jest.fn()}
       />
     );
     await checkRows(2);
@@ -302,7 +297,6 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={jest.fn()}
         handleApplyCode={undefined}
         parsedCodesList={parsedCodesList}
-        setParsedCodesList={jest.fn()}
       />
     );
     await checkRows(2);
@@ -343,7 +337,6 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={jest.fn()}
         handleApplyCode={undefined}
         parsedCodesList={parsedCodesList}
-        setParsedCodesList={jest.fn()}
       />
     );
     await checkRows(2);
