@@ -1,7 +1,6 @@
-const parameterNames = [""];
-const definitionNames = [""];
-const functionNames = [""];
-const timingNames = [
+export const definitionNames = [""];
+export const functionNames = [""];
+export const timingNames = [
   "after",
   "after end",
   "after start",
@@ -73,7 +72,7 @@ const timingNames = [
   "starts same or before end",
   "starts same or before start",
 ];
-const predefinedFunctionsNames = [
+export const predefinedFunctionsNames = [
   "Abs()",
   "AgeInDays()",
   "AgeInDaysAt()",
@@ -158,17 +157,3 @@ const predefinedFunctionsNames = [
   "Upper()",
   "Variance()",
 ];
-
-export const getNameOptionsByType = (type: string): string[] => {
-  if (type === "Parameters") {
-    return parameterNames;
-  } else if (type === "Definitions") {
-    return definitionNames;
-  } else if (type === "Functions") {
-    return functionNames;
-  } else if (type === "Timing") {
-    return timingNames;
-  } else if (type === "Pre-Defined Functions") {
-    return predefinedFunctionsNames;
-  }
-};

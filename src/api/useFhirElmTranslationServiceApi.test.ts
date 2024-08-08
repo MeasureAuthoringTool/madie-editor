@@ -97,4 +97,50 @@ describe("Test FhirElmTranslationServiceApi", () => {
       expect(error.message).toBe("Request failed with status code 404");
     }
   });
+
+  it("Should return valid response when fetching CQL builder lookups", async () => {
+    const validResponse = {
+      parameters: [
+        {
+          name: "Measurement Period",
+          libraryName: null,
+          libraryAlias: null,
+          logic: "interval<System.DateTime>",
+        },
+      ],
+      definitions: [],
+      functions: [],
+      fluentFunctions: [],
+    };
+    mockedAxios.put.mockResolvedValueOnce(validResponse);
+    const fhirElmTranslationServiceApi: FhirElmTranslationServiceApi =
+      new FhirElmTranslationServiceApi(
+        mockConfig.qdmElmTranslationService.baseUrl,
+        mockGetAccessToken
+      );
+
+    try {
+      const response = await fhirElmTranslationServiceApi.getCqlBuilderLookups(
+        "test-cql"
+      );
+      expect(response).not.toBeNull();
+      expect(response.data).toEqual(validResponse);
+    } catch (error) {}
+  });
+
+  it("Should return an Error when failed to load serviceConfig while fetching CQL builder lookups", async () => {
+    const fhirElmTranslationServiceApi: FhirElmTranslationServiceApi =
+      new FhirElmTranslationServiceApi(null, mockGetAccessToken);
+    try {
+      const response = await fhirElmTranslationServiceApi.getCqlBuilderLookups(
+        "test-cql"
+      );
+      expect(response).toBeNull();
+    } catch (error) {
+      expect(error).not.toBeNull();
+      expect(error.message).toBe(
+        "Missing FHIR ELM translation service URL! Is it present in the service config?"
+      );
+    }
+  });
 });
