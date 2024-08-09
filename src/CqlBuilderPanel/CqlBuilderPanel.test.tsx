@@ -138,7 +138,7 @@ describe("CqlBuilderPanel", () => {
     });
   });
 
-  it("Should display available parameters for building Expressions", async () => {
+  it("Should display available parameters for building Expressions for QDM", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
@@ -183,5 +183,112 @@ describe("CqlBuilderPanel", () => {
     expect(options[0]).toHaveTextContent("AIFrailLTCF.Measurement Period");
     expect(options[1]).toHaveTextContent("Hospice.Measurement Period");
     expect(options[2]).toHaveTextContent("Measurement Period");
+  });
+
+  it("Should display error message when cql builder look up api failed for QDM", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockRejectedValueOnce({
+      data: {
+        status: 500,
+        message: "Unable to parse CQL",
+      },
+    });
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    expect(
+      screen.getByText(
+        "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("Should display available parameters for building Expressions for QiCore", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    props.measureModel = "QiCore 4.1.1";
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const expressionEditorTab = screen.getByRole("button", {
+      name: "Expression Editor",
+    });
+    userEvent.click(expressionEditorTab);
+
+    const typeSelect = screen.getByTestId("type-selector");
+    const typeSelectDropdown = within(typeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(typeSelectDropdown);
+
+    const optionsList = await screen.findAllByRole("option");
+    expect(optionsList).toHaveLength(5);
+    expect(optionsList[0]).toHaveTextContent("Parameters");
+    userEvent.click(optionsList[0]);
+
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
+
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(3);
+    expect(options[0]).toHaveTextContent("AIFrailLTCF.Measurement Period");
+    expect(options[1]).toHaveTextContent("Hospice.Measurement Period");
+    expect(options[2]).toHaveTextContent("Measurement Period");
+  });
+
+  it("Should display error message when cql builder look up api failed for QiCore", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockRejectedValueOnce({
+      data: {
+        status: 500,
+        message: "Unable to parse CQL",
+      },
+    });
+    props.measureModel = "QiCore 4.1.1";
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    expect(
+      screen.getByText(
+        "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+      )
+    ).toBeInTheDocument();
   });
 });
