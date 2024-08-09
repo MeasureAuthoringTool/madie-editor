@@ -9,6 +9,7 @@ import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceAp
 import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
 import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
 import { AxiosResponse } from "axios";
+import { MadieAlert } from "@madie/madie-design-system/dist/react";
 
 export default function CqlBuilderPanel({
   canEdit,
@@ -63,11 +64,9 @@ export default function CqlBuilderPanel({
       if (measureModel?.includes("QDM")) {
         qdmElmTranslationServiceApi
           .then((qdmElmTranslationServiceApi) => {
-            console.log("got Service Config");
             qdmElmTranslationServiceApi
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                console.log("Got Response", axiosResponse?.data);
                 setAvailableParameters(
                   axiosResponse?.data?.parameters?.map((p) =>
                     p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
@@ -75,13 +74,15 @@ export default function CqlBuilderPanel({
                 );
               })
               .catch((error) => {
+                setAvailableParameters([]);
                 setErrors(
-                  "Unable to retrieve cql builder lookups, Please try again or contact Helpdesk"
+                  "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
                 console.error(error);
               });
           })
           .catch((error) => {
+            setAvailableParameters([]);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -94,17 +95,21 @@ export default function CqlBuilderPanel({
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setAvailableParameters(
-                  axiosResponse?.data?.parameters?.map((p) => p.name)
+                  axiosResponse?.data?.parameters?.map((p) =>
+                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
+                  )
                 );
               })
               .catch((error) => {
+                setAvailableParameters([]);
                 setErrors(
-                  "Unable to retrieve cql builder lookups, Please try again or contact Helpdesk"
+                  "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
                 console.error(error);
               });
           })
           .catch((error) => {
+            setAvailableParameters([]);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -128,7 +133,23 @@ export default function CqlBuilderPanel({
           CQLBuilderIncludes={CQLBuilderIncludes}
         />
       </div>
-      <div>{errors}</div>
+      {errors && (
+        <div className="panel-alert">
+          <MadieAlert
+            type="error"
+            content={
+              <div
+                aria-live="polite"
+                role="alert"
+                data-testid={"cql-builder-errors"}
+              >
+                {errors}
+              </div>
+            }
+            canClose={false}
+          />
+        </div>
+      )}
       <div className="panel-content">
         {activeTab === "includes" && <IncludesTabSection canEdit={canEdit} />}
         {activeTab === "valueSets" && (

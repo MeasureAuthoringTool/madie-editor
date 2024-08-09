@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import CqlBuilderPanel from "./CqlBuilderPanel";
 // @ts-ignore
 import { useFeatureFlags } from "@madie/madie-util";
@@ -22,6 +22,33 @@ const mockConfig: ServiceConfig = {
     baseUrl: "terminology-service.com",
   },
 };
+
+const mockCqlBuilderLookUpData = {
+  parameters: [
+    {
+      name: "Measurement Period",
+      libraryName: "HospiceQDM",
+      libraryAlias: "Hospice",
+      logic: "interval<System.DateTime>",
+    },
+    {
+      name: "Measurement Period",
+      libraryName: null,
+      libraryAlias: null,
+      logic: "interval<System.DateTime>",
+    },
+    {
+      name: "Measurement Period",
+      libraryName: "AdvancedIllnessandFrailtyQDM",
+      libraryAlias: "AIFrailLTCF",
+      logic: "interval<System.DateTime>",
+    },
+  ],
+  definitions: [],
+  functions: [],
+  fluentFunctions: [],
+};
+
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn().mockReturnValue({
     CQLBuilderIncludes: true,
@@ -29,9 +56,7 @@ jest.mock("@madie/madie-util", () => ({
     QDMValueSetSearch: true,
     qdmCodeSearch: true,
   }),
-  useOktaTokens: () => ({}),
-  getAccessToken: () => "test.jwt",
-  getOidFromString: () => "oid",
+  useOktaTokens: () => ({ getAccessToken: () => "test.jwt" }),
 }));
 
 const props = {
@@ -120,6 +145,9 @@ describe("CqlBuilderPanel", () => {
       CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
     render(<CqlBuilderPanel {...props} />);
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
@@ -144,10 +172,16 @@ describe("CqlBuilderPanel", () => {
     expect(optionsList[0]).toHaveTextContent("Parameters");
     userEvent.click(optionsList[0]);
 
-    const nameComboBox = screen.getByRole("combobox", { name: "Name" });
-    expect(nameComboBox).toBeEnabled();
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
 
-    // userEvent.click(nameComboBox);
-    // const nameOptionsList = await screen.findAllByRole(/name-selector-option/i);
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(3);
+    expect(options[0]).toHaveTextContent("AIFrailLTCF.Measurement Period");
+    expect(options[1]).toHaveTextContent("Hospice.Measurement Period");
+    expect(options[2]).toHaveTextContent("Measurement Period");
   });
 });

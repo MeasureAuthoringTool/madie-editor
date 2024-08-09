@@ -10,6 +10,11 @@
     }
     .right-panel {
       margin-left: 12px;
+      > .panel-alert {
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
       > .panel-content {
         padding-left: 16px;
         padding-right: 16px;

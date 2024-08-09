@@ -15,6 +15,7 @@ import {
   timingNames,
 } from "./ExpressionEditorHelper";
 import { ControlledTextarea } from "../../../common/ControlledTextArea";
+import * as _ from "lodash";
 
 interface ExpressionsProps {
   canEdit: boolean;
@@ -112,7 +113,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                     "aria-required": "true",
                   }}
                   {...formik.getFieldProps("name")}
-                  options={namesOptions?.map((element) => element)}
+                  options={_.sortBy(namesOptions?.map((element) => element))}
                   onChange={(
                     _event: any,
                     selectedVal: string | null,
