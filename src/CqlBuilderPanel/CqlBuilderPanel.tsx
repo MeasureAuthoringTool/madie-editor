@@ -67,6 +67,7 @@ export default function CqlBuilderPanel({
             qdmElmTranslationServiceApi
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+                setErrors(null);
                 setAvailableParameters(
                   axiosResponse?.data?.parameters?.map((p) =>
                     p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
