@@ -8,11 +8,13 @@ import DefinitionSection from "./DefinitionSection";
 interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
+  availableParameters: string[];
 }
 
 export default function DefinitionsSection({
   canEdit,
   handleApplyDefinition,
+  availableParameters,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -27,6 +29,7 @@ export default function DefinitionsSection({
           <DefinitionSection
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
+            availableParameters={availableParameters}
           />
         )}
         {activeTab === "savedDefinitions" && (

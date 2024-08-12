@@ -2,6 +2,7 @@ import axios from "./axios-instance";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 import { ElmTranslation } from "./TranslatedElmModels";
+import { AxiosResponse } from "axios";
 
 export class FhirElmTranslationServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -35,6 +36,21 @@ export class FhirElmTranslationServiceApi {
         console.warn(error.response.data.error, error.response.data.status);
         throw new Error(error.message);
       }
+    } else {
+      throw new Error(
+        "Missing FHIR ELM translation service URL! Is it present in the service config?"
+      );
+    }
+  }
+
+  getCqlBuilderLookups(cql: string): Promise<AxiosResponse> {
+    if (this.baseUrl) {
+      return axios.put(`${this.baseUrl}/fhir/cql-builder-lookups`, cql, {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+          "Content-Type": "text/plain",
+        },
+      });
     } else {
       throw new Error(
         "Missing FHIR ELM translation service URL! Is it present in the service config?"

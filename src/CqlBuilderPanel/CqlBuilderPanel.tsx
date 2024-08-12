@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CqlBuilderSectionPanelNavTabs from "./CqlBuilderSectionPanelNavTabs";
 import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 import { useFeatureFlags } from "@madie/madie-util";
 import IncludesTabSection from "./Includes/Includes";
+import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
+import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
+import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
+import { AxiosResponse } from "axios";
+import { MadieAlert } from "@madie/madie-design-system/dist/react";
 
 export default function CqlBuilderPanel({
   canEdit,
@@ -46,7 +51,73 @@ export default function CqlBuilderPanel({
       return "codes";
     }
   })();
+
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
+  const [availableParameters, setAvailableParameters] = useState<string[]>([]);
+  const [errors, setErrors] = useState<string>(null);
+
+  const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
+  const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
+
+  useEffect(() => {
+    if (measureStoreCql && measureStoreCql.trim().length > 0) {
+      if (measureModel?.includes("QDM")) {
+        qdmElmTranslationServiceApi
+          .then((qdmElmTranslationServiceApi) => {
+            qdmElmTranslationServiceApi
+              .getCqlBuilderLookups(measureStoreCql)
+              .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+                setAvailableParameters(
+                  axiosResponse?.data?.parameters?.map((p) =>
+                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
+                  )
+                );
+              })
+              .catch((error) => {
+                setAvailableParameters([]);
+                setErrors(
+                  "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+                );
+                console.error(error);
+              });
+          })
+          .catch((error) => {
+            setAvailableParameters([]);
+            setErrors(
+              "Unable to retrieve Service Config, Please try again or contact Helpdesk"
+            );
+            console.error(error);
+          });
+      } else {
+        fhirElmTranslationServiceApi
+          .then((fhirElmTranslationServiceApi) => {
+            fhirElmTranslationServiceApi
+              .getCqlBuilderLookups(measureStoreCql)
+              .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+                setAvailableParameters(
+                  axiosResponse?.data?.parameters?.map((p) =>
+                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
+                  )
+                );
+              })
+              .catch((error) => {
+                setAvailableParameters([]);
+                setErrors(
+                  "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+                );
+                console.error(error);
+              });
+          })
+          .catch((error) => {
+            setAvailableParameters([]);
+            setErrors(
+              "Unable to retrieve Service Config, Please try again or contact Helpdesk"
+            );
+            console.error(error);
+          });
+      }
+    }
+  }, [measureModel, measureStoreCql]);
 
   return (
     <div className="right-panel">
@@ -62,6 +133,23 @@ export default function CqlBuilderPanel({
           CQLBuilderIncludes={CQLBuilderIncludes}
         />
       </div>
+      {errors && (
+        <div className="panel-alert">
+          <MadieAlert
+            type="error"
+            content={
+              <div
+                aria-live="polite"
+                role="alert"
+                data-testid={"cql-builder-errors"}
+              >
+                {errors}
+              </div>
+            }
+            canClose={false}
+          />
+        </div>
+      )}
       <div className="panel-content">
         {activeTab === "includes" && <IncludesTabSection canEdit={canEdit} />}
         {activeTab === "valueSets" && (
@@ -88,6 +176,7 @@ export default function CqlBuilderPanel({
           <DefinitionsSection
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
+            availableParameters={availableParameters}
           />
         )}
       </div>

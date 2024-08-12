@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import {
@@ -8,8 +8,14 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
-import { getNameOptionsByType } from "./ExpressionEditorHelper";
+import {
+  definitionNames,
+  functionNames,
+  predefinedFunctionsNames,
+  timingNames,
+} from "./ExpressionEditorHelper";
 import { ControlledTextarea } from "../../../common/ControlledTextArea";
+import * as _ from "lodash";
 
 interface ExpressionsProps {
   canEdit: boolean;
@@ -17,6 +23,7 @@ interface ExpressionsProps {
   formik: any;
   expressionValue: string;
   setExpressionValue: Function;
+  availableParameters: string[];
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {
@@ -26,6 +33,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     formik,
     expressionValue,
     setExpressionValue,
+    availableParameters,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
 
@@ -51,6 +59,20 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     ];
   };
 
+  const getNameOptionsByType = (type: string): string[] => {
+    if (type === "Parameters") {
+      return availableParameters;
+    } else if (type === "Definitions") {
+      return definitionNames;
+    } else if (type === "Functions") {
+      return functionNames;
+    } else if (type === "Timing") {
+      return timingNames;
+    } else if (type === "Pre-Defined Functions") {
+      return predefinedFunctionsNames;
+    }
+  };
+
   return (
     <div>
       <ExpandingSection
@@ -72,11 +94,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                     "aria-required": "true",
                   }}
                   renderValue={(val) => {
-                    if (val) {
-                      const type = availableTypes.find((el) => el === val);
-                      setNamesOptions(getNameOptionsByType(type));
-                      return type;
-                    }
+                    setNamesOptions(getNameOptionsByType(val));
                     return val;
                   }}
                   options={renderMenuItems(availableTypes)}
@@ -95,7 +113,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                     "aria-required": "true",
                   }}
                   {...formik.getFieldProps("name")}
-                  options={namesOptions.map((element) => element)}
+                  options={_.sortBy(namesOptions?.map((element) => element))}
                   onChange={(
                     _event: any,
                     selectedVal: string | null,

@@ -1,17 +1,16 @@
-import React from "react";
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from "@testing-library/react";
+import * as React from "react";
+import { render, screen, waitFor } from "@testing-library/react";
 import DefinitionsSection from "./DefinitionsSection";
+import userEvent from "@testing-library/user-event";
 
 describe("DefinitionSection", () => {
-  it("Should display difinition section", async () => {
+  it("Should display definition section", async () => {
     render(
-      <DefinitionsSection canEdit={true} handleApplyDefinition={jest.fn()} />
+      <DefinitionsSection
+        canEdit={true}
+        handleApplyDefinition={jest.fn()}
+        availableParameters={null}
+      />
     );
     const definition = await screen.findByTestId("definition-tab");
     const savedDefinitions = await screen.findByText("Saved Definition(s)");
@@ -25,9 +24,13 @@ describe("DefinitionSection", () => {
     });
   });
 
-  it("Should display saved difinition section", async () => {
+  it("Should display saved definition section", async () => {
     render(
-      <DefinitionsSection canEdit={true} handleApplyDefinition={jest.fn()} />
+      <DefinitionsSection
+        canEdit={true}
+        handleApplyDefinition={jest.fn()}
+        availableParameters={null}
+      />
     );
     const definition = await screen.findByTestId("definition-tab");
     const savedDefinitions = await screen.findByText("Saved Definition(s)");
@@ -39,10 +42,7 @@ describe("DefinitionSection", () => {
     await waitFor(() => {
       expect(savedDefinitions).toHaveAttribute("aria-selected", "false");
     });
-
-    act(() => {
-      fireEvent.click(savedDefinitions);
-    });
+    userEvent.click(savedDefinitions);
     await waitFor(() => {
       expect(savedDefinitions).toHaveAttribute("aria-selected", "true");
     });

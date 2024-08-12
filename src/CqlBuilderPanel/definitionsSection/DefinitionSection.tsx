@@ -22,11 +22,13 @@ export interface Definition {
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
+  availableParameters: string[];
 }
 
 export default function DefinitionSection({
   canEdit,
   handleApplyDefinition,
+  availableParameters,
 }: DefinitionProps) {
   const [expressionValue, setExpressionValue] = useState("");
   const [expressionEditorOpen, setExpressionEditorOpen] =
@@ -109,6 +111,7 @@ export default function DefinitionSection({
           formik={formik}
           expressionValue={expressionValue}
           setExpressionValue={setExpressionValue}
+          availableParameters={availableParameters}
         />
         <div className="form-actions">
           <Button
