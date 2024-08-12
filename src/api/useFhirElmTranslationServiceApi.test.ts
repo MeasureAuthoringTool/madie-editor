@@ -16,6 +16,9 @@ const mockConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "terminology-service.com",
   },
+  cqlLibraryService: {
+    baseUrl: "library-service.com",
+  },
 };
 jest.mock("./useServiceConfig", () => {
   return {

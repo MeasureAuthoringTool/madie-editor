@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import CqlBuilderPanel from "./CqlBuilderPanel";
 // @ts-ignore
 import { useFeatureFlags } from "@madie/madie-util";
@@ -21,6 +21,7 @@ const mockConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "terminology-service.com",
   },
+  cqlLibraryService: { baseUrl: "library-service.com" },
 };
 
 const mockCqlBuilderLookUpData = {

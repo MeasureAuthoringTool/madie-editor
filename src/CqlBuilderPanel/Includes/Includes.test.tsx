@@ -6,7 +6,7 @@ const { getByTestId } = screen;
 
 describe("Includes", () => {
   it("renders Includes", async () => {
-    render(<Includes canEdit />);
+    render(<Includes canEdit measureModel={"QDM"} />);
     expect(getByTestId("includes-panel")).toBeInTheDocument();
 
     expect(getByTestId("search-text-input")).toBeEnabled();

@@ -25,6 +25,9 @@ const mockConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "terminology.com",
   },
+  cqlLibraryService: {
+    baseUrl: "library-service.com",
+  },
 };
 
 const mockCode: Code = {
