@@ -58,7 +58,22 @@ const mockCqlBuilderLookUpData = {
       name: "SDE Payer",
     },
   ],
-  functions: [],
+  functions: [
+    {
+      name: "Latest",
+      libraryName: "MATGlobalCommonFunctionsQDM",
+      libraryAlias: "Global",
+      logic:
+        'define function "Latest"(period Interval<DateTime> ):\n  if ( HasEnd(period)) then \n  end of period \n    else start of period',
+    },
+    {
+      name: "HospitalizationLengthofStay",
+      libraryName: "MATGlobalCommonFunctionsQDM",
+      libraryAlias: "Global",
+      logic:
+        'define function "HospitalizationLengthofStay"(Encounter "Encounter, Performed" ):\n  LengthInDays("Hospitalization"(Encounter))',
+    },
+  ],
   fluentFunctions: [],
 };
 
@@ -181,7 +196,7 @@ describe("CqlBuilderPanel", () => {
     userEvent.click(typeSelectDropdown);
 
     const optionsList = await screen.findAllByRole("option");
-    expect(optionsList).toHaveLength(5);
+    expect(optionsList).toHaveLength(6);
     expect(optionsList[0]).toHaveTextContent("Parameters");
     userEvent.click(optionsList[0]);
 
@@ -258,7 +273,7 @@ describe("CqlBuilderPanel", () => {
     userEvent.click(typeSelectDropdown);
 
     const optionsList = await screen.findAllByRole("option");
-    expect(optionsList).toHaveLength(5);
+    expect(optionsList).toHaveLength(6);
     expect(optionsList[0]).toHaveTextContent("Parameters");
     userEvent.click(optionsList[0]);
 
@@ -335,7 +350,7 @@ describe("CqlBuilderPanel", () => {
     userEvent.click(typeSelectDropdown);
 
     const optionsList = await screen.findAllByRole("option");
-    expect(optionsList).toHaveLength(5);
+    expect(optionsList).toHaveLength(6);
     expect(optionsList[1]).toHaveTextContent("Definitions");
     userEvent.click(optionsList[1]);
 
@@ -382,7 +397,7 @@ describe("CqlBuilderPanel", () => {
     userEvent.click(typeSelectDropdown);
 
     const optionsList = await screen.findAllByRole("option");
-    expect(optionsList).toHaveLength(5);
+    expect(optionsList).toHaveLength(6);
     expect(optionsList[1]).toHaveTextContent("Definitions");
     userEvent.click(optionsList[1]);
 

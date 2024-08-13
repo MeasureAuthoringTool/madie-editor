@@ -4,19 +4,18 @@ import "styled-components/macro";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import DefinitionSection from "./DefinitionSection";
+import { CqlBuilderAvailableLookupData } from "./expressionSection/ExpressionEditorHelper";
 
 interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
-  availableParameters: string[];
-  definitionNames: string[];
+  availabeCqlBuilderLookups: CqlBuilderAvailableLookupData | {};
 }
 
 export default function DefinitionsSection({
   canEdit,
   handleApplyDefinition,
-  availableParameters,
-  definitionNames,
+  availabeCqlBuilderLookups,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -31,8 +30,7 @@ export default function DefinitionsSection({
           <DefinitionSection
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
-            availableParameters={availableParameters}
-            definitionNames={definitionNames}
+            availabeCqlBuilderLookups={availabeCqlBuilderLookups}
           />
         )}
         {activeTab === "savedDefinitions" && (
