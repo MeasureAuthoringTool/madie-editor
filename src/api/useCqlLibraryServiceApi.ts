@@ -15,6 +15,9 @@ export interface CqlLibrary {
   draft: boolean;
 }
 
+export const fetchVersionedLibrariesErrorMessage =
+  "An error occurred while fetching the CQL libraries. Please try again. If problem persists, contact MADiE Helpdesk";
+
 export class CqlLibraryServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
@@ -37,10 +40,8 @@ export class CqlLibraryServiceApi {
       );
       return response.data;
     } catch (err) {
-      const message =
-        "An error occurred while fetching the CQL libraries. Please try again. If problem persists, contact MADiE Helpdesk";
-      console.error(message, err);
-      throw new Error(message);
+      console.error(fetchVersionedLibrariesErrorMessage, err);
+      throw new Error(fetchVersionedLibrariesErrorMessage);
     }
   }
 }
