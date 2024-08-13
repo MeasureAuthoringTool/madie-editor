@@ -15,6 +15,9 @@ export const Search = ({ canEdit, onSearch, onClear }) => {
     onReset: () => onClear(),
   });
   const { resetForm } = formik;
+  const trimField = (fieldName) => {
+    formik.setFieldValue(fieldName, formik.values[fieldName].trim());
+  };
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -23,7 +26,7 @@ export const Search = ({ canEdit, onSearch, onClear }) => {
         label="Search"
         prefix="Library"
         disabled={!canEdit}
-        trimField={() => {}}
+        trimField={trimField}
         placeHolder="Search"
       />
       <div className="row-end">

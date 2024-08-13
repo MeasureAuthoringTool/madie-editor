@@ -112,6 +112,7 @@ const Results = ({ cqlLibraries }: PropTypes) => {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
   return (
     <>
       <div className="search-results-container">
