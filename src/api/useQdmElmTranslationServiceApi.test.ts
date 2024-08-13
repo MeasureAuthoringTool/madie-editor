@@ -1,28 +1,14 @@
 import { QdmElmTranslationServiceApi } from "./useQdmElmTranslationServiceApi";
-import { ServiceConfig } from "./useServiceConfig";
 import axios from "../api/axios-instance";
 import { ElmTranslation } from "./TranslatedElmModels";
+import { mockServiceConfig } from "../__mocks__/mockServiceConfig";
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-const mockConfig: ServiceConfig = {
-  qdmElmTranslationService: {
-    baseUrl: "qdm-elm-translator.com",
-  },
-  fhirElmTranslationService: {
-    baseUrl: "fhir-elm-translator.com",
-  },
-  terminologyService: {
-    baseUrl: "terminology-service.com",
-  },
-  cqlLibraryService: {
-    baseUrl: "library-service.com",
-  },
-};
 jest.mock("./useServiceConfig", () => {
   return {
-    useServiceConfig: jest.fn(() => Promise.reject(mockConfig)),
+    useServiceConfig: jest.fn(() => Promise.reject(mockServiceConfig)),
   };
 });
 
@@ -118,7 +104,7 @@ describe("Test QdmElmTranslationServiceApi", () => {
     mockedAxios.put.mockResolvedValueOnce(validResponse);
     const qdmElmTranslationServiceApi: QdmElmTranslationServiceApi =
       new QdmElmTranslationServiceApi(
-        mockConfig.qdmElmTranslationService.baseUrl,
+        mockServiceConfig.qdmElmTranslationService.baseUrl,
         mockGetAccessToken
       );
 

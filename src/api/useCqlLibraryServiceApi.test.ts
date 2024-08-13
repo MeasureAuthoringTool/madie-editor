@@ -1,31 +1,17 @@
 import axios from "./axios-instance";
-import { ServiceConfig } from "./useServiceConfig";
 import {
   CqlLibrary,
   CqlLibraryServiceApi,
   fetchVersionedLibrariesErrorMessage,
 } from "./useCqlLibraryServiceApi";
+import { mockServiceConfig } from "../__mocks__/mockServiceConfig";
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-const mockConfig: ServiceConfig = {
-  qdmElmTranslationService: {
-    baseUrl: "qdm-elm-translator.com",
-  },
-  fhirElmTranslationService: {
-    baseUrl: "fhir-elm-translator.com",
-  },
-  terminologyService: {
-    baseUrl: "terminology-service.com",
-  },
-  cqlLibraryService: {
-    baseUrl: "library-service.com",
-  },
-};
 jest.mock("./useServiceConfig", () => {
   return {
-    useServiceConfig: jest.fn(() => Promise.reject(mockConfig)),
+    useServiceConfig: jest.fn(() => Promise.reject(mockServiceConfig)),
   };
 });
 
@@ -50,7 +36,7 @@ const cqlLibraries = [
 
 describe("CqlLibraryServiceApi Tests", () => {
   const cqlLibraryServiceApi = new CqlLibraryServiceApi(
-    mockConfig.cqlLibraryService.baseUrl,
+    mockServiceConfig.cqlLibraryService.baseUrl,
     mockGetAccessToken
   );
 
