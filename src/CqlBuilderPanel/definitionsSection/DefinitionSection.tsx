@@ -23,12 +23,14 @@ export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
   availableParameters: string[];
+  definitionNames: string[];
 }
 
 export default function DefinitionSection({
   canEdit,
   handleApplyDefinition,
   availableParameters,
+  definitionNames,
 }: DefinitionProps) {
   const [expressionValue, setExpressionValue] = useState("");
   const [expressionEditorOpen, setExpressionEditorOpen] =
@@ -112,6 +114,7 @@ export default function DefinitionSection({
           expressionValue={expressionValue}
           setExpressionValue={setExpressionValue}
           availableParameters={availableParameters}
+          definitionNames={definitionNames}
         />
         <div className="form-actions">
           <Button

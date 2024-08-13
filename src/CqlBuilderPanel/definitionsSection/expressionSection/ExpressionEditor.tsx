@@ -9,7 +9,6 @@ import {
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import {
-  definitionNames,
   functionNames,
   predefinedFunctionsNames,
   timingNames,
@@ -24,6 +23,7 @@ interface ExpressionsProps {
   expressionValue: string;
   setExpressionValue: Function;
   availableParameters: string[];
+  definitionNames: string[];
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {
@@ -34,6 +34,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     expressionValue,
     setExpressionValue,
     availableParameters,
+    definitionNames,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
 

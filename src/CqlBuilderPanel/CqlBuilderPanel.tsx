@@ -54,6 +54,7 @@ export default function CqlBuilderPanel({
 
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
   const [availableParameters, setAvailableParameters] = useState<string[]>([]);
+  const [definitionNames, setDefinitionNames] = useState<string[]>([]);
   const [errors, setErrors] = useState<string>(null);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
@@ -68,6 +69,11 @@ export default function CqlBuilderPanel({
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setErrors(null);
+                setDefinitionNames(
+                  axiosResponse?.data?.definitions?.map((p) =>
+                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
+                  )
+                );
                 setAvailableParameters(
                   axiosResponse?.data?.parameters?.map((p) =>
                     p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
@@ -76,6 +82,7 @@ export default function CqlBuilderPanel({
               })
               .catch((error) => {
                 setAvailableParameters([]);
+                setDefinitionNames([]);
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -95,6 +102,11 @@ export default function CqlBuilderPanel({
             fhirElmTranslationServiceApi
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+                setDefinitionNames(
+                  axiosResponse?.data?.definitions?.map((p) =>
+                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
+                  )
+                );
                 setAvailableParameters(
                   axiosResponse?.data?.parameters?.map((p) =>
                     p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
@@ -103,6 +115,7 @@ export default function CqlBuilderPanel({
               })
               .catch((error) => {
                 setAvailableParameters([]);
+                setDefinitionNames([]);
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -111,6 +124,7 @@ export default function CqlBuilderPanel({
           })
           .catch((error) => {
             setAvailableParameters([]);
+            setDefinitionNames([]);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -178,6 +192,7 @@ export default function CqlBuilderPanel({
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
             availableParameters={availableParameters}
+            definitionNames={definitionNames}
           />
         )}
       </div>
