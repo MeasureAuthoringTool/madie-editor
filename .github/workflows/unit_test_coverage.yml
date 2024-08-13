@@ -44,8 +44,8 @@ jobs:
       - name: Install node dependencies
         run: npm ci
 
-      # - name: Audit dependencies for security vulnerabilities
-      #   run: npm audit --production
+      - name: Audit dependencies for security vulnerabilities
+        run: npm audit --omit=dev --audit-level=${{ env.NPM_AUDIT_LEVEL }}
 
       - name: Lint the source code
         run: npm run-script lint
