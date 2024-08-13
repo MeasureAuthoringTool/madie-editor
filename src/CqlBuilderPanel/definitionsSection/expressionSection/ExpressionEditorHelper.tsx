@@ -1,4 +1,3 @@
-export const definitionNames = [""];
 export const functionNames = [""];
 export const timingNames = [
   "after",

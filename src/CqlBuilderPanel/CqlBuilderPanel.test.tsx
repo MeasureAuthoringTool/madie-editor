@@ -45,7 +45,20 @@ const mockCqlBuilderLookUpData = {
       logic: "interval<System.DateTime>",
     },
   ],
-  definitions: [],
+  definitions: [
+    {
+      libraryAlias: "CQMCommon",
+      libraryName: "CQMCommon",
+      logic: `define "Inpatient Encounter":\n  [Encounter: "Encounter Inpatient"] EncounterInpatient\n\t\twhere EncounterInpatient.status = 'finished'\n\t\tand EncounterInpatient.period ends during day of "Measurement Period"`,
+      name: "Inpatient Encounter",
+    },
+    {
+      libraryAlias: null,
+      libraryName: null,
+      logic: 'define "SDE Payer":\n  SDE."SDE Payer"',
+      name: "SDE Payer",
+    },
+  ],
   functions: [],
   fluentFunctions: [],
 };
@@ -291,5 +304,98 @@ describe("CqlBuilderPanel", () => {
         "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
       )
     ).toBeInTheDocument();
+  });
+
+  it("Should display available definitions for building Expressions for QDM", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const expressionEditorTab = screen.getByRole("button", {
+      name: "Expression Editor",
+    });
+    userEvent.click(expressionEditorTab);
+
+    const typeSelect = screen.getByTestId("type-selector");
+    const typeSelectDropdown = within(typeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(typeSelectDropdown);
+
+    const optionsList = await screen.findAllByRole("option");
+    expect(optionsList).toHaveLength(5);
+    expect(optionsList[1]).toHaveTextContent("Definitions");
+    userEvent.click(optionsList[1]);
+
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
+
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(2);
+    expect(options[0]).toHaveTextContent("CQMCommon");
+    expect(options[1]).toHaveTextContent("SDE Payer");
+  });
+
+  it("Should display available parameters for building Expressions for QiCore", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    props.measureModel = "QiCore 4.1.1";
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const expressionEditorTab = screen.getByRole("button", {
+      name: "Expression Editor",
+    });
+    userEvent.click(expressionEditorTab);
+
+    const typeSelect = screen.getByTestId("type-selector");
+    const typeSelectDropdown = within(typeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(typeSelectDropdown);
+
+    const optionsList = await screen.findAllByRole("option");
+    expect(optionsList).toHaveLength(5);
+    expect(optionsList[1]).toHaveTextContent("Definitions");
+    userEvent.click(optionsList[1]);
+
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
+
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(2);
+    expect(options[0]).toHaveTextContent("CQMCommon");
+    expect(options[1]).toHaveTextContent("SDE Payer");
   });
 });
