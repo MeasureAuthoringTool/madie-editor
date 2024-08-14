@@ -9,12 +9,12 @@ import {
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import {
-  CqlBuilderAvailableLookupData,
   predefinedFunctionsNames,
   timingNames,
 } from "./ExpressionEditorHelper";
 import { ControlledTextarea } from "../../../common/ControlledTextArea";
 import * as _ from "lodash";
+import { CqlBuilderAvailableLookupData } from "../../../model/CqlBuilderLookup";
 
 interface ExpressionsProps {
   canEdit: boolean;

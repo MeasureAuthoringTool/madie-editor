@@ -1,10 +1,3 @@
-export interface CqlBuilderAvailableLookupData {
-  parameters: string[];
-  definitions: string[];
-  functions: string[];
-  fluentFunctions: string[];
-}
-
 export const timingNames = [
   "after",
   "after end",

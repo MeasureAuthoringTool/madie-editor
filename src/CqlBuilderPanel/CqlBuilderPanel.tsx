@@ -7,10 +7,12 @@ import { useFeatureFlags } from "@madie/madie-util";
 import IncludesTabSection from "./Includes/Includes";
 import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
 import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
-import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
+import {
+  CqlBuilderAvailableLookupData,
+  CqlBuilderLookup,
+} from "../model/CqlBuilderLookup";
 import { AxiosResponse } from "axios";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
-import { CqlBuilderAvailableLookupData } from "./definitionsSection/expressionSection/ExpressionEditorHelper";
 
 export default function CqlBuilderPanel({
   canEdit,

@@ -4,7 +4,7 @@ import "styled-components/macro";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import DefinitionSection from "./DefinitionSection";
-import { CqlBuilderAvailableLookupData } from "./expressionSection/ExpressionEditorHelper";
+import { CqlBuilderAvailableLookupData } from "../../model/CqlBuilderLookup";
 
 interface DefinitionProps {
   canEdit: boolean;
