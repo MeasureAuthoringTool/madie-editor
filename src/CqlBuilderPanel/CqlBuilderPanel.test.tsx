@@ -74,7 +74,22 @@ const mockCqlBuilderLookUpData = {
         'define function "HospitalizationLengthofStay"(Encounter "Encounter, Performed" ):\n  LengthInDays("Hospitalization"(Encounter))',
     },
   ],
-  fluentFunctions: [],
+  fluentFunctions: [
+    {
+      name: "Latest",
+      libraryName: "MATGlobalCommonFunctionsQDM",
+      libraryAlias: "Global",
+      logic:
+        'define function "Latest"(period Interval<DateTime> ):\n  if ( HasEnd(period)) then \n  end of period \n    else start of period',
+    },
+    {
+      name: "HospitalizationLengthofStay",
+      libraryName: "MATGlobalCommonFunctionsQDM",
+      libraryAlias: "Global",
+      logic:
+        'define function "HospitalizationLengthofStay"(Encounter "Encounter, Performed" ):\n  LengthInDays("Hospitalization"(Encounter))',
+    },
+  ],
 };
 
 jest.mock("@madie/madie-util", () => ({
@@ -411,5 +426,191 @@ describe("CqlBuilderPanel", () => {
     expect(options.length).toBe(2);
     expect(options[0]).toHaveTextContent("CQMCommon");
     expect(options[1]).toHaveTextContent("SDE Payer");
+  });
+
+  it("Should display available functions for building Expressions for QDM", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const expressionEditorTab = screen.getByRole("button", {
+      name: "Expression Editor",
+    });
+    userEvent.click(expressionEditorTab);
+
+    const typeSelect = screen.getByTestId("type-selector");
+    const typeSelectDropdown = within(typeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(typeSelectDropdown);
+
+    const optionsList = await screen.findAllByRole("option");
+    expect(optionsList).toHaveLength(6);
+    expect(optionsList[2]).toHaveTextContent("Functions");
+    userEvent.click(optionsList[2]);
+
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
+
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(2);
+    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
+    expect(options[1]).toHaveTextContent("Global.Latest");
+  });
+
+  it("Should display available functions for building Expressions for QiCore", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    props.measureModel = "QiCore 4.1.1";
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const expressionEditorTab = screen.getByRole("button", {
+      name: "Expression Editor",
+    });
+    userEvent.click(expressionEditorTab);
+
+    const typeSelect = screen.getByTestId("type-selector");
+    const typeSelectDropdown = within(typeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(typeSelectDropdown);
+
+    const optionsList = await screen.findAllByRole("option");
+    expect(optionsList).toHaveLength(6);
+    expect(optionsList[2]).toHaveTextContent("Functions");
+    userEvent.click(optionsList[2]);
+
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
+
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(2);
+    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
+    expect(options[1]).toHaveTextContent("Global.Latest");
+  });
+
+  it("Should display available fluent functions for building Expressions for QDM", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const expressionEditorTab = screen.getByRole("button", {
+      name: "Expression Editor",
+    });
+    userEvent.click(expressionEditorTab);
+
+    const typeSelect = screen.getByTestId("type-selector");
+    const typeSelectDropdown = within(typeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(typeSelectDropdown);
+
+    const optionsList = await screen.findAllByRole("option");
+    expect(optionsList).toHaveLength(6);
+    expect(optionsList[3]).toHaveTextContent("Fluent Functions");
+    userEvent.click(optionsList[3]);
+
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
+
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(2);
+    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
+    expect(options[1]).toHaveTextContent("Global.Latest");
+  });
+
+  it("Should display available fluent functions for building Expressions for QiCore", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    props.measureModel = "QiCore 4.1.1";
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const expressionEditorTab = screen.getByRole("button", {
+      name: "Expression Editor",
+    });
+    userEvent.click(expressionEditorTab);
+
+    const typeSelect = screen.getByTestId("type-selector");
+    const typeSelectDropdown = within(typeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(typeSelectDropdown);
+
+    const optionsList = await screen.findAllByRole("option");
+    expect(optionsList).toHaveLength(6);
+    expect(optionsList[3]).toHaveTextContent("Fluent Functions");
+    userEvent.click(optionsList[3]);
+
+    const nameSelect = screen.getByTestId("name-selector");
+    expect(nameSelect).toBeEnabled();
+
+    const nameSelectDropDown = within(nameSelect).getByTitle("Open");
+    userEvent.click(nameSelectDropDown);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.length).toBe(2);
+    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
+    expect(options[1]).toHaveTextContent("Global.Latest");
   });
 });
