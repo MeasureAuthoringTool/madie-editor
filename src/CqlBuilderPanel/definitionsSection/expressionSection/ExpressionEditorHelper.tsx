@@ -1,4 +1,3 @@
-export const functionNames = [""];
 export const timingNames = [
   "after",
   "after end",

@@ -7,7 +7,10 @@ import { useFeatureFlags } from "@madie/madie-util";
 import IncludesTabSection from "./Includes/Includes";
 import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
 import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
-import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
+import {
+  CqlBuilderLookupData,
+  CqlBuilderLookup,
+} from "../model/CqlBuilderLookup";
 import { AxiosResponse } from "axios";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 
@@ -53,12 +56,25 @@ export default function CqlBuilderPanel({
   })();
 
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
-  const [availableParameters, setAvailableParameters] = useState<string[]>([]);
-  const [definitionNames, setDefinitionNames] = useState<string[]>([]);
+  const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] = useState<
+    CqlBuilderLookupData | {}
+  >({});
   const [errors, setErrors] = useState<string>(null);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
   const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
+
+  const generateCqlBuilderLookupTypes = (
+    cqlBuilderLookupsData
+  ): CqlBuilderLookupData | {} => {
+    const result = {};
+    for (const key in cqlBuilderLookupsData) {
+      result[key] = cqlBuilderLookupsData[key].map((p) =>
+        p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
+      );
+    }
+    return result;
+  };
 
   useEffect(() => {
     if (measureStoreCql && measureStoreCql.trim().length > 0) {
@@ -69,20 +85,12 @@ export default function CqlBuilderPanel({
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setErrors(null);
-                setDefinitionNames(
-                  axiosResponse?.data?.definitions?.map((p) =>
-                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
-                  )
-                );
-                setAvailableParameters(
-                  axiosResponse?.data?.parameters?.map((p) =>
-                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
-                  )
+                setCqlBuilderLookupsTypes(
+                  generateCqlBuilderLookupTypes(axiosResponse?.data)
                 );
               })
               .catch((error) => {
-                setAvailableParameters([]);
-                setDefinitionNames([]);
+                setCqlBuilderLookupsTypes({});
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -90,7 +98,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setAvailableParameters([]);
+            setCqlBuilderLookupsTypes({});
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -102,20 +110,12 @@ export default function CqlBuilderPanel({
             fhirElmTranslationServiceApi
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                setDefinitionNames(
-                  axiosResponse?.data?.definitions?.map((p) =>
-                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
-                  )
-                );
-                setAvailableParameters(
-                  axiosResponse?.data?.parameters?.map((p) =>
-                    p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
-                  )
+                setCqlBuilderLookupsTypes(
+                  generateCqlBuilderLookupTypes(axiosResponse?.data)
                 );
               })
               .catch((error) => {
-                setAvailableParameters([]);
-                setDefinitionNames([]);
+                setCqlBuilderLookupsTypes({});
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -123,8 +123,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setAvailableParameters([]);
-            setDefinitionNames([]);
+            setCqlBuilderLookupsTypes({});
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -193,8 +192,7 @@ export default function CqlBuilderPanel({
           <DefinitionsSection
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
-            availableParameters={availableParameters}
-            definitionNames={definitionNames}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
           />
         )}
       </div>

@@ -9,12 +9,12 @@ import {
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import {
-  functionNames,
   predefinedFunctionsNames,
   timingNames,
 } from "./ExpressionEditorHelper";
 import { ControlledTextarea } from "../../../common/ControlledTextArea";
 import * as _ from "lodash";
+import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
 
 interface ExpressionsProps {
   canEdit: boolean;
@@ -22,8 +22,7 @@ interface ExpressionsProps {
   formik: any;
   expressionValue: string;
   setExpressionValue: Function;
-  availableParameters: string[];
-  definitionNames: string[];
+  cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {
@@ -33,8 +32,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     formik,
     expressionValue,
     setExpressionValue,
-    availableParameters,
-    definitionNames,
+    cqlBuilderLookupsTypes,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
 
@@ -42,6 +40,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     "Parameters",
     "Definitions",
     "Functions",
+    "Fluent Functions",
     "Timing",
     "Pre-Defined Functions",
   ];
@@ -62,11 +61,13 @@ export default function ExpressionEditor(props: ExpressionsProps) {
 
   const getNameOptionsByType = (type: string): string[] => {
     if (type === "Parameters") {
-      return availableParameters;
+      return cqlBuilderLookupsTypes["parameters"];
     } else if (type === "Definitions") {
-      return definitionNames;
+      return cqlBuilderLookupsTypes["definitions"];
     } else if (type === "Functions") {
-      return functionNames;
+      return cqlBuilderLookupsTypes["functions"];
+    } else if (type === "Fluent Functions") {
+      return cqlBuilderLookupsTypes["fluentFunctions"];
     } else if (type === "Timing") {
       return timingNames;
     } else if (type === "Pre-Defined Functions") {
