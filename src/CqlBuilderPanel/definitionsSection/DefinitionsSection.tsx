@@ -4,12 +4,12 @@ import "styled-components/macro";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import DefinitionSection from "./DefinitionSection";
-import { CqlBuilderAvailableLookupData } from "../../model/CqlBuilderLookup";
+import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
 
 interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
-  availabeCqlBuilderLookups: CqlBuilderAvailableLookupData | {};
+  availabeCqlBuilderLookups: CqlBuilderLookupData | {};
 }
 
 export default function DefinitionsSection({

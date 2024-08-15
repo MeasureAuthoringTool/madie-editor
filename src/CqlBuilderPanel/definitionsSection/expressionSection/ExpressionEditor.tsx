@@ -14,7 +14,7 @@ import {
 } from "./ExpressionEditorHelper";
 import { ControlledTextarea } from "../../../common/ControlledTextArea";
 import * as _ from "lodash";
-import { CqlBuilderAvailableLookupData } from "../../../model/CqlBuilderLookup";
+import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
 
 interface ExpressionsProps {
   canEdit: boolean;
@@ -22,7 +22,7 @@ interface ExpressionsProps {
   formik: any;
   expressionValue: string;
   setExpressionValue: Function;
-  availabeCqlBuilderLookups: CqlBuilderAvailableLookupData | {};
+  availabeCqlBuilderLookups: CqlBuilderLookupData | {};
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {

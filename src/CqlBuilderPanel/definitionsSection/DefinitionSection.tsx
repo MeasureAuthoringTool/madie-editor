@@ -10,7 +10,7 @@ import {
 import "./Definitions.scss";
 import { DefinitionSectionSchemaValidator } from "../../validations/DefinitionSectionSchemaValidator";
 import ExpressionEditor from "./expressionSection/ExpressionEditor";
-import { CqlBuilderAvailableLookupData } from "../../model/CqlBuilderLookup";
+import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
 
 export interface Definition {
   definitionName?: string;
@@ -23,7 +23,7 @@ export interface Definition {
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
-  availabeCqlBuilderLookups: CqlBuilderAvailableLookupData | {};
+  availabeCqlBuilderLookups: CqlBuilderLookupData | {};
 }
 
 export default function DefinitionSection({

@@ -8,7 +8,7 @@ import IncludesTabSection from "./Includes/Includes";
 import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
 import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
 import {
-  CqlBuilderAvailableLookupData,
+  CqlBuilderLookupData,
   CqlBuilderLookup,
 } from "../model/CqlBuilderLookup";
 import { AxiosResponse } from "axios";
@@ -59,7 +59,7 @@ export default function CqlBuilderPanel({
   const [
     cqlBuilderLookupsAvailableTypeNames,
     setCqlBuilderLookupsAvailableTypeNames,
-  ] = useState<CqlBuilderAvailableLookupData | {}>({});
+  ] = useState<CqlBuilderLookupData | {}>({});
   const [errors, setErrors] = useState<string>(null);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
@@ -67,7 +67,7 @@ export default function CqlBuilderPanel({
 
   const generateCqlBuilderLookupAvailableTypeNames = (
     cqlBuilderLookupsData
-  ): CqlBuilderAvailableLookupData | {} => {
+  ): CqlBuilderLookupData | {} => {
     const result = {};
     for (const key in cqlBuilderLookupsData) {
       result[key] = cqlBuilderLookupsData[key].map((p) =>

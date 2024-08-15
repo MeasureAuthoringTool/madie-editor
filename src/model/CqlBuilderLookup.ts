@@ -10,7 +10,7 @@ export interface Lookup {
   libraryAlias: string;
   logic: string;
 }
-export interface CqlBuilderAvailableLookupData {
+export interface CqlBuilderLookupData {
   parameters: string[];
   definitions: string[];
   functions: string[];
