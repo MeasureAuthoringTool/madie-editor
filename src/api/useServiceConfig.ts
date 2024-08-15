@@ -10,6 +10,9 @@ export interface ServiceConfig {
   terminologyService: {
     baseUrl: string;
   };
+  cqlLibraryService: {
+    baseUrl: string;
+  };
 }
 
 export async function useServiceConfig(): Promise<ServiceConfig> {

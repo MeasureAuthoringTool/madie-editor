@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "@madie/cql-antlr-parser": "^1.0.2",
-    "@madie/madie-design-system": "^1.2.23",
+    "@madie/madie-design-system": "^1.2.24",
     "@material-ui/core": "^4.12.4",
     "@mui/icons-material": "^5.5.1",
     "@mui/lab": "^5.0.0-alpha.73",
