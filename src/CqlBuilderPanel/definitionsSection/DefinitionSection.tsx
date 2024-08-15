@@ -23,13 +23,13 @@ export interface Definition {
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
-  availabeCqlBuilderLookups: CqlBuilderLookupData | {};
+  cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
 export default function DefinitionSection({
   canEdit,
   handleApplyDefinition,
-  availabeCqlBuilderLookups,
+  cqlBuilderLookupsTypes,
 }: DefinitionProps) {
   const [expressionValue, setExpressionValue] = useState("");
   const [expressionEditorOpen, setExpressionEditorOpen] =
@@ -112,7 +112,7 @@ export default function DefinitionSection({
           formik={formik}
           expressionValue={expressionValue}
           setExpressionValue={setExpressionValue}
-          availabeCqlBuilderLookups={availabeCqlBuilderLookups}
+          cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
         />
         <div className="form-actions">
           <Button

@@ -22,7 +22,7 @@ interface ExpressionsProps {
   formik: any;
   expressionValue: string;
   setExpressionValue: Function;
-  availabeCqlBuilderLookups: CqlBuilderLookupData | {};
+  cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {
@@ -32,7 +32,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     formik,
     expressionValue,
     setExpressionValue,
-    availabeCqlBuilderLookups,
+    cqlBuilderLookupsTypes,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
 
@@ -61,13 +61,13 @@ export default function ExpressionEditor(props: ExpressionsProps) {
 
   const getNameOptionsByType = (type: string): string[] => {
     if (type === "Parameters") {
-      return availabeCqlBuilderLookups["parameters"];
+      return cqlBuilderLookupsTypes["parameters"];
     } else if (type === "Definitions") {
-      return availabeCqlBuilderLookups["definitions"];
+      return cqlBuilderLookupsTypes["definitions"];
     } else if (type === "Functions") {
-      return availabeCqlBuilderLookups["functions"];
+      return cqlBuilderLookupsTypes["functions"];
     } else if (type === "Fluent Functions") {
-      return availabeCqlBuilderLookups["fluentFunctions"];
+      return cqlBuilderLookupsTypes["fluentFunctions"];
     } else if (type === "Timing") {
       return timingNames;
     } else if (type === "Pre-Defined Functions") {

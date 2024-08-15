@@ -56,16 +56,15 @@ export default function CqlBuilderPanel({
   })();
 
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
-  const [
-    cqlBuilderLookupsAvailableTypeNames,
-    setCqlBuilderLookupsAvailableTypeNames,
-  ] = useState<CqlBuilderLookupData | {}>({});
+  const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] = useState<
+    CqlBuilderLookupData | {}
+  >({});
   const [errors, setErrors] = useState<string>(null);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
   const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
 
-  const generateCqlBuilderLookupAvailableTypeNames = (
+  const generateCqlBuilderLookupTypes = (
     cqlBuilderLookupsData
   ): CqlBuilderLookupData | {} => {
     const result = {};
@@ -86,14 +85,12 @@ export default function CqlBuilderPanel({
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setErrors(null);
-                setCqlBuilderLookupsAvailableTypeNames(
-                  generateCqlBuilderLookupAvailableTypeNames(
-                    axiosResponse?.data
-                  )
+                setCqlBuilderLookupsTypes(
+                  generateCqlBuilderLookupTypes(axiosResponse?.data)
                 );
               })
               .catch((error) => {
-                setCqlBuilderLookupsAvailableTypeNames({});
+                setCqlBuilderLookupsTypes({});
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -101,7 +98,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setCqlBuilderLookupsAvailableTypeNames({});
+            setCqlBuilderLookupsTypes({});
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -113,14 +110,12 @@ export default function CqlBuilderPanel({
             fhirElmTranslationServiceApi
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                setCqlBuilderLookupsAvailableTypeNames(
-                  generateCqlBuilderLookupAvailableTypeNames(
-                    axiosResponse?.data
-                  )
+                setCqlBuilderLookupsTypes(
+                  generateCqlBuilderLookupTypes(axiosResponse?.data)
                 );
               })
               .catch((error) => {
-                setCqlBuilderLookupsAvailableTypeNames({});
+                setCqlBuilderLookupsTypes({});
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -128,7 +123,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setCqlBuilderLookupsAvailableTypeNames({});
+            setCqlBuilderLookupsTypes({});
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -197,7 +192,7 @@ export default function CqlBuilderPanel({
           <DefinitionsSection
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
-            availabeCqlBuilderLookups={cqlBuilderLookupsAvailableTypeNames}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
           />
         )}
       </div>

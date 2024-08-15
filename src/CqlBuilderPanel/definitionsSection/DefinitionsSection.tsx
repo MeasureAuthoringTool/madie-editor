@@ -9,13 +9,13 @@ import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
 interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
-  availabeCqlBuilderLookups: CqlBuilderLookupData | {};
+  cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
 export default function DefinitionsSection({
   canEdit,
   handleApplyDefinition,
-  availabeCqlBuilderLookups,
+  cqlBuilderLookupsTypes,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -30,7 +30,7 @@ export default function DefinitionsSection({
           <DefinitionSection
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
-            availabeCqlBuilderLookups={availabeCqlBuilderLookups}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
           />
         )}
         {activeTab === "savedDefinitions" && (
