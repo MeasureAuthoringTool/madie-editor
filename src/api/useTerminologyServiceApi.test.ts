@@ -4,7 +4,7 @@ import useTerminologyServiceApi, {
   CodeStatus,
   TerminologyServiceApi,
 } from "./useTerminologyServiceApi";
-import { ServiceConfig } from "./useServiceConfig";
+import { mockServiceConfig } from "../__mocks__/mockServiceConfig";
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -14,18 +14,6 @@ jest.mock("@madie/madie-util", () => ({
     getAccessToken: () => "test.jwt",
   }),
 }));
-
-const mockConfig: ServiceConfig = {
-  qdmElmTranslationService: {
-    baseUrl: "qdm-elm.com",
-  },
-  fhirElmTranslationService: {
-    baseUrl: "fhir-elm.com",
-  },
-  terminologyService: {
-    baseUrl: "terminology.com",
-  },
-};
 
 const mockCode: Code = {
   fhirVersion: "https://test.org/2.40",
@@ -40,7 +28,7 @@ describe("TerminologyServiceApi test", () => {
   it("should return an instance of TerminologyServiceApi", async () => {
     mockedAxios.get.mockImplementation((url) => {
       if (url === "/env-config/serviceConfig.json") {
-        return Promise.resolve({ data: mockConfig });
+        return Promise.resolve({ data: mockServiceConfig });
       }
     });
     const service: TerminologyServiceApi = await useTerminologyServiceApi();
@@ -51,10 +39,11 @@ describe("TerminologyServiceApi test", () => {
     it("should return a code object for given code and code system", async () => {
       mockedAxios.get.mockImplementation((url) => {
         if (url === "/env-config/serviceConfig.json") {
-          return Promise.resolve({ data: mockConfig });
+          return Promise.resolve({ data: mockServiceConfig });
         }
         if (
-          url === `${mockConfig.terminologyService.baseUrl}/terminology/code`
+          url ===
+          `${mockServiceConfig.terminologyService.baseUrl}/terminology/code`
         ) {
           return Promise.resolve({ data: mockCode });
         }
@@ -106,12 +95,13 @@ describe("TerminologyServiceApi test", () => {
       ];
       mockedAxios.get.mockImplementation((url) => {
         if (url === "/env-config/serviceConfig.json") {
-          return Promise.resolve({ data: mockConfig });
+          return Promise.resolve({ data: mockServiceConfig });
         }
       });
       mockedAxios.post.mockImplementation((url) => {
         if (
-          url === `${mockConfig.terminologyService.baseUrl}/terminology/codes`
+          url ===
+          `${mockServiceConfig.terminologyService.baseUrl}/terminology/codes`
         ) {
           return Promise.resolve({ data: mockeCodeDetailsList });
         }

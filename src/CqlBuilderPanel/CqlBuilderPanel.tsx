@@ -166,7 +166,9 @@ export default function CqlBuilderPanel({
         </div>
       )}
       <div className="panel-content">
-        {activeTab === "includes" && <IncludesTabSection canEdit={canEdit} />}
+        {activeTab === "includes" && (
+          <IncludesTabSection canEdit={canEdit} measureModel={measureModel} />
+        )}
         {activeTab === "valueSets" && (
           <ValueSetsSection
             canEdit={canEdit}
