@@ -10,6 +10,7 @@ import {
 import "./Definitions.scss";
 import { DefinitionSectionSchemaValidator } from "../../validations/DefinitionSectionSchemaValidator";
 import ExpressionEditor from "./expressionSection/ExpressionEditor";
+import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
 
 export interface Definition {
   definitionName?: string;
@@ -22,15 +23,13 @@ export interface Definition {
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
-  availableParameters: string[];
-  definitionNames: string[];
+  cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
 export default function DefinitionSection({
   canEdit,
   handleApplyDefinition,
-  availableParameters,
-  definitionNames,
+  cqlBuilderLookupsTypes,
 }: DefinitionProps) {
   const [expressionValue, setExpressionValue] = useState("");
   const [expressionEditorOpen, setExpressionEditorOpen] =
@@ -113,8 +112,7 @@ export default function DefinitionSection({
           formik={formik}
           expressionValue={expressionValue}
           setExpressionValue={setExpressionValue}
-          availableParameters={availableParameters}
-          definitionNames={definitionNames}
+          cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
         />
         <div className="form-actions">
           <Button
