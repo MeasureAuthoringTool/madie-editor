@@ -60,13 +60,13 @@ describe("LibrarySearch component tests", () => {
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
         mockCqlLibraries[0].librarySet.owner,
-        "",
+        "View/Apply",
       ],
       [
         mockCqlLibraries[1].cqlLibraryName,
         mockCqlLibraries[1].version,
         mockCqlLibraries[1].librarySet.owner,
-        "",
+        "View/Apply",
       ],
     ];
     await waitFor(() => {
