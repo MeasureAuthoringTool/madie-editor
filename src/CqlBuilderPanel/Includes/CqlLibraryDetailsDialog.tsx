@@ -56,9 +56,9 @@ const CqlLibraryDetailsDialog = ({
       dialogProps={{
         open,
         onClose: onClose,
-        id: "view-apply-library-dialog",
         fullWidth: true,
         maxWidth: "md",
+        "data-testid": "view-apply-library-dialog",
       }}
       cancelButtonProps={{
         cancelText: "Cancel",
@@ -71,10 +71,9 @@ const CqlLibraryDetailsDialog = ({
       }}
     >
       <div tw="flex flex-row">
-        <div tw="basis-1/3 -my-1" data-testid="library-name">
+        <div tw="basis-1/3 -my-1">
           <TextField
             {...formik.getFieldProps("libraryAlias")}
-            placeholder="Library Alias"
             label="Library Alias"
             id="library-alias"
             name="libraryAlias"
@@ -91,7 +90,7 @@ const CqlLibraryDetailsDialog = ({
           <p className="result-label">Library Name</p>
           <span className="result-value">{library?.name}</span>
         </div>
-        <div tw="flex-1 ml-5" data-testid="library-version">
+        <div tw="flex-1 ml-5">
           <Select
             {...formik.getFieldProps("version")}
             placeHolder={{ name: "Version", value: "" }}

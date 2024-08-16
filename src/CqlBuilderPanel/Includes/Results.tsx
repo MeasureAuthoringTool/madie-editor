@@ -130,7 +130,7 @@ const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
   };
 
   // get the cql for selected library and set selected library
-  const handleViewOrApply = async (index) => {
+  const showLibraryDetails = async (index) => {
     const rowModal = table.getRow(index).original;
     const versions = getLibraryVersionsForSetId(rowModal.librarySetId);
     (await libraryService)
@@ -200,7 +200,7 @@ const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
           return (
             <Button
               variant="outline"
-              onClick={() => handleViewOrApply(row.cell.row.id)}
+              onClick={() => showLibraryDetails(row.cell.row.id)}
               data-testid={`view-apply-btn-${row.cell.id}`}
               aria-label={`view-apply-btn-${row.cell.id}`}
             >

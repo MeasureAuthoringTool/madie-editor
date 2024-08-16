@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, waitFor } from "@testing-library/react";
+import {fireEvent, render, waitFor} from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import LibrarySearch from "./LibrarySearch";
 import userEvent from "@testing-library/user-event";
@@ -136,5 +136,46 @@ describe("LibrarySearch component tests", () => {
       // should show remaining 2 libraries
       expect(tableBody.children.length).toBe(2);
     });
+  });
+
+  it("should show library details dialog on view/apply btn click", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.includes("/all-versioned")) {
+        return Promise.resolve({
+          data: [mockCqlLibraries[0], mockCqlLibraries[1]],
+          status: 200,
+        });
+      } else {
+        return Promise.resolve({
+          data: "cql string",
+          status: 200,
+        });
+      }
+    });
+
+    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    const searchInput = screen.getByRole("textbox", {
+      name: /Library Search/i,
+    });
+    userEvent.type(searchInput, "Helper");
+    const searchBtn = screen.getByTestId("search-btn");
+    userEvent.click(searchBtn);
+    await waitFor(() => {
+      const viewApplyBtn = screen.getByRole("button", {
+        name: /view-apply-btn-0_apply/i,
+      });
+      userEvent.click(viewApplyBtn);
+    });
+    expect(screen.getByTestId("view-apply-library-dialog")).toBeInTheDocument();
+    expect(screen.getByTestId("library-alias-input")).toBeEmptyDOMElement();
+    expect(screen.getByTestId("library-name")).toHaveTextContent(
+      mockCqlLibraries[0].cqlLibraryName
+    );
+    expect(screen.getByTestId("version-select-input").value).toEqual(
+      mockCqlLibraries[0].version
+    );
+    expect(screen.getByTestId("library-owner")).toHaveTextContent(
+      mockCqlLibraries[0].librarySet.owner
+    );
   });
 });
