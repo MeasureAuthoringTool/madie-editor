@@ -1,5 +1,5 @@
 import * as React from "react";
-import {fireEvent, render, waitFor} from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import LibrarySearch from "./LibrarySearch";
 import userEvent from "@testing-library/user-event";
