@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import {
   ColumnDef,
   flexRender,
@@ -7,23 +13,51 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { CqlLibrary } from "../../api/useCqlLibraryServiceApi";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import useCqlLibraryServiceApi, {
+  CqlLibrary,
+} from "../../api/useCqlLibraryServiceApi";
+import {
+  Pagination,
+  Button,
+  Toast,
+} from "@madie/madie-design-system/dist/react";
+import CqlLibraryDetailsDialog, {
+  SelectedLibrary,
+} from "./CqlLibraryDetailsDialog";
+import toastReducer, { Action } from "../../common/ToastReducer";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
+  measureModel: string;
 };
 
 type RowDef = {
-  name?: string; // we want the human friendly
-  version?: string;
-  owner?: string;
+  id: string;
+  name: string;
+  version: string;
+  owner: string;
+  librarySetId: string;
 };
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
-const Results = ({ cqlLibraries }: PropTypes) => {
+const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
+  const libraryService = useCqlLibraryServiceApi();
+  const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
+  const [selectedLibrary, setSelectedLibrary] = useState<SelectedLibrary>();
+
+  // toast utilities
+  const [toastState, dispatch] = useReducer(
+    toastReducer,
+    {
+      open: false,
+      type: "danger",
+      message: "",
+    },
+    undefined
+  );
+
   // pagination utilities
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -77,13 +111,73 @@ const Results = ({ cqlLibraries }: PropTypes) => {
     managePagination();
   }, [cqlLibraries, currentPage, currentLimit]);
 
+  // table data
   const data = visibleLibraries.map((library) => {
     return {
+      id: library.id,
+      librarySetId: library.librarySet.librarySetId,
       name: library.cqlLibraryName,
       version: library.version,
       owner: library.librarySet.owner,
     };
   });
+
+  // get all available versions for the selected library
+  const getLibraryVersionsForSetId = (setId: string): Array<string> => {
+    return cqlLibraries
+      .filter((cqlLibrary) => cqlLibrary.librarySet.librarySetId === setId)
+      .map((cqlLibrary) => cqlLibrary.version);
+  };
+
+  // get the cql for selected library and set selected library
+  const handleViewOrApply = async (index) => {
+    const rowModal = table.getRow(index).original;
+    const versions = getLibraryVersionsForSetId(rowModal.librarySetId);
+    (await libraryService)
+      .fetchLibraryCql(rowModal.name, rowModal.version, measureModel)
+      .then((cql) => {
+        setSelectedLibrary({
+          ...rowModal,
+          cql: cql,
+          otherVersions: versions,
+        } as SelectedLibrary);
+        setOpenLibraryDialog(true);
+      })
+      .catch((error) => {
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "danger", message: error.message },
+        });
+      });
+  };
+
+  // get the cql for selected version and update selected library
+  const handleVersionChange = async (version: string, setId: string) => {
+    const library = cqlLibraries.find(
+      (l) => l.version === version && l.librarySet.librarySetId == setId
+    );
+    const versions = getLibraryVersionsForSetId(setId);
+    (await libraryService)
+      .fetchLibraryCql(library.cqlLibraryName, version, measureModel)
+      .then((cql) => {
+        setSelectedLibrary({
+          id: library.id,
+          name: library.cqlLibraryName,
+          owner: library.librarySet.owner,
+          librarySetId: setId,
+          version: version,
+          cql: cql,
+          otherVersions: versions,
+        } as SelectedLibrary);
+        setOpenLibraryDialog(true);
+      })
+      .catch((error) => {
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "danger", message: error.message },
+        });
+      });
+  };
 
   const columns = useMemo<ColumnDef<RowDef>[]>(
     () => [
@@ -102,9 +196,21 @@ const Results = ({ cqlLibraries }: PropTypes) => {
       {
         header: "Action",
         accessorKey: "apply",
+        cell: (row: any) => {
+          return (
+            <Button
+              variant="outline"
+              onClick={() => handleViewOrApply(row.cell.row.id)}
+              data-testid={`view-apply-btn-${row.cell.id}`}
+              aria-label={`view-apply-btn-${row.cell.id}`}
+            >
+              View/Apply
+            </Button>
+          );
+        },
       },
     ],
-    []
+    [cqlLibraries]
   );
 
   const table = useReactTable({
@@ -183,6 +289,21 @@ const Results = ({ cqlLibraries }: PropTypes) => {
           </div>
         )}
       </div>
+      <CqlLibraryDetailsDialog
+        library={selectedLibrary}
+        onClose={() => setOpenLibraryDialog(false)}
+        open={openLibraryDialog}
+        onVersionChange={handleVersionChange}
+      />
+      <Toast
+        toastKey="search-library-toast"
+        testId="search-library-toast"
+        toastType={toastState.type}
+        open={toastState.open}
+        message={toastState.message}
+        onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        autoHideDuration={8000}
+      />
     </>
   );
 };
