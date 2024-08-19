@@ -90,7 +90,7 @@ const CqlLibraryDetailsDialog = ({
           <p className="result-label">Library Name</p>
           <span className="result-value">{library?.name}</span>
         </div>
-        <div tw="flex-1 ml-5">
+        <div tw="flex-1 ml-5 -my-1">
           <Select
             {...formik.getFieldProps("version")}
             placeHolder={{ name: "Version", value: "" }}
