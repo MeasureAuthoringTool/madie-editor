@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import ExpandingSection from "../../common/ExpandingSection";
 import Search from "./Search";
 import useCqlLibraryServiceApi, {
@@ -6,6 +6,7 @@ import useCqlLibraryServiceApi, {
 } from "../../api/useCqlLibraryServiceApi";
 import { Toast } from "@madie/madie-design-system/dist/react";
 import Results from "./Results";
+import toastReducer from "../../common/ToastReducer";
 
 export interface LibraryTabContentProps {
   canEdit: boolean;
@@ -15,21 +16,18 @@ export interface LibraryTabContentProps {
 const LibrarySearch = (props: LibraryTabContentProps) => {
   const { measureModel, canEdit } = props;
   const libraryService = useCqlLibraryServiceApi();
-  // toast utilities
-  const [toastOpen, setToastOpen] = useState<boolean>(false);
-  const [toastType, setToastType] = useState<string>("danger");
-  const [toastMessage, setToastMessage] = useState<string>("");
   const [cqlLibraries, setCqlLibraries] = useState<CqlLibrary[]>([]);
-  const closeToast = () => {
-    setToastMessage("");
-    setToastOpen(false);
-  };
 
-  const showToast = (type: string, message: string) => {
-    setToastType(type);
-    setToastMessage(message);
-    setToastOpen(true);
-  };
+  // toast reducer
+  const [toastState, dispatch] = useReducer(
+    toastReducer,
+    {
+      open: false,
+      type: "danger",
+      message: "",
+    },
+    undefined
+  );
 
   const handleSearch = async (searchTerm: string) => {
     (await libraryService)
@@ -38,7 +36,10 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
         setCqlLibraries(libraries);
       })
       .catch((error) => {
-        showToast("danger", error.message);
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "danger", message: error.message },
+        });
       });
   };
 
@@ -54,15 +55,15 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
         />
       </ExpandingSection>
       <ExpandingSection title="Library Results" showHeaderContent={true}>
-        <Results cqlLibraries={cqlLibraries} />
+        <Results cqlLibraries={cqlLibraries} measureModel={measureModel} />
       </ExpandingSection>
       <Toast
-        toastKey="include-library-toast"
-        testId="include-library-toast"
-        toastType={toastType}
-        open={toastOpen}
-        message={toastMessage}
-        onClose={closeToast}
+        toastKey="search-library-toast"
+        testId="search-library-toast"
+        toastType={toastState.type}
+        open={toastState.open}
+        message={toastState.message}
+        onClose={() => dispatch({ type: "HIDE_TOAST" })}
         autoHideDuration={8000}
       />
     </div>

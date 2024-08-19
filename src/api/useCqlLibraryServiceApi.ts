@@ -3,7 +3,6 @@ import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 
 interface LibrarySet {
-  id: string;
   librarySetId: string;
   owner: string;
 }
@@ -15,8 +14,12 @@ export interface CqlLibrary {
   draft: boolean;
 }
 
+const tryAgainMessage =
+  "Please try again. If problem persists, contact MADiE Helpdesk";
 export const fetchVersionedLibrariesErrorMessage =
-  "An error occurred while fetching the CQL libraries. Please try again. If problem persists, contact MADiE Helpdesk";
+  "An error occurred while fetching the CQL libraries. " + tryAgainMessage;
+export const fetchCqlErrorMessage =
+  "An error occurred while fetching the CQL. " + tryAgainMessage;
 
 export class CqlLibraryServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -42,6 +45,32 @@ export class CqlLibraryServiceApi {
     } catch (err) {
       console.error(fetchVersionedLibrariesErrorMessage, err);
       throw new Error(fetchVersionedLibrariesErrorMessage);
+    }
+  }
+
+  async fetchLibraryCql(
+    name: string,
+    version: string,
+    model: string
+  ): Promise<string> {
+    try {
+      const response = await axios.get<string>(
+        `${this.baseUrl}/cql-libraries/cql`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+          params: {
+            name,
+            version,
+            model,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error(fetchCqlErrorMessage, err);
+      throw new Error(fetchCqlErrorMessage);
     }
   }
 }

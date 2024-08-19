@@ -1,10 +1,13 @@
 import * as React from "react";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, within } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import LibrarySearch from "./LibrarySearch";
 import userEvent from "@testing-library/user-event";
 import axios from "../../api/axios-instance";
-import { fetchVersionedLibrariesErrorMessage } from "../../api/useCqlLibraryServiceApi";
+import {
+  fetchCqlErrorMessage,
+  fetchVersionedLibrariesErrorMessage,
+} from "../../api/useCqlLibraryServiceApi";
 import { mockServiceConfig } from "../../__mocks__/mockServiceConfig";
 import { mockCqlLibraries } from "../__mocks__/MockCqlLibraries";
 
@@ -60,13 +63,13 @@ describe("LibrarySearch component tests", () => {
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
         mockCqlLibraries[0].librarySet.owner,
-        "",
+        "View/Apply",
       ],
       [
         mockCqlLibraries[1].cqlLibraryName,
         mockCqlLibraries[1].version,
         mockCqlLibraries[1].librarySet.owner,
-        "",
+        "View/Apply",
       ],
     ];
     await waitFor(() => {
@@ -136,5 +139,84 @@ describe("LibrarySearch component tests", () => {
       // should show remaining 2 libraries
       expect(tableBody.children.length).toBe(2);
     });
+  });
+
+  it("should show library details dialog on view/apply btn click", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.includes("/all-versioned")) {
+        return Promise.resolve({
+          data: [mockCqlLibraries[0], mockCqlLibraries[1], mockCqlLibraries[2]],
+          status: 200,
+        });
+      } else {
+        return Promise.resolve({
+          data: "cql string",
+          status: 200,
+        });
+      }
+    });
+
+    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    const searchInput = screen.getByRole("textbox", {
+      name: /Library Search/i,
+    });
+    userEvent.type(searchInput, "Helper");
+    const searchBtn = screen.getByTestId("search-btn");
+    userEvent.click(searchBtn);
+    await waitFor(() => {
+      const viewApplyBtn = screen.getByRole("button", {
+        name: /view-apply-btn-0_apply/i,
+      });
+      userEvent.click(viewApplyBtn);
+    });
+    const versionSelect = screen.getByTestId("version-select");
+    expect(screen.getByTestId("view-apply-library-dialog")).toBeInTheDocument();
+    expect(screen.getByTestId("library-alias-input")).toBeEmptyDOMElement();
+    expect(screen.getByTestId("library-name")).toHaveTextContent(
+      mockCqlLibraries[0].cqlLibraryName
+    );
+    expect(versionSelect).toHaveTextContent(mockCqlLibraries[0].version);
+    expect(screen.getByTestId("library-owner")).toHaveTextContent(
+      mockCqlLibraries[0].librarySet.owner
+    );
+    // Change the version
+    userEvent.click(await within(versionSelect).getByRole("button"));
+    const versionOptions = await screen.findAllByRole("option");
+    expect(versionOptions.length).toBe(3);
+    // select 2nd option
+    userEvent.click(versionOptions[1]);
+    await waitFor(() => {
+      expect(versionSelect).toHaveTextContent(mockCqlLibraries[1].version);
+    });
+  });
+
+  it("should show error if opening library details dialog error out", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.includes("/all-versioned")) {
+        return Promise.resolve({
+          data: [mockCqlLibraries[0], mockCqlLibraries[1]],
+          status: 200,
+        });
+      } else {
+        return Promise.reject({
+          status: 500,
+        });
+      }
+    });
+
+    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    const searchInput = screen.getByRole("textbox", {
+      name: /Library Search/i,
+    });
+    userEvent.type(searchInput, "Helper");
+    const searchBtn = screen.getByTestId("search-btn");
+    userEvent.click(searchBtn);
+    await waitFor(() => {
+      const viewApplyBtn = screen.getByRole("button", {
+        name: /view-apply-btn-0_apply/i,
+      });
+      userEvent.click(viewApplyBtn);
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(fetchCqlErrorMessage);
   });
 });
