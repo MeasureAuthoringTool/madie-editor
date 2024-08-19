@@ -9,7 +9,6 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import AceEditor from "react-ace";
 import { useFormik } from "formik";
-import { SuffixSchemaValidator } from "../../validations/SuffixSchemaValidator";
 
 export interface SelectedLibrary {
   id: string;
@@ -39,13 +38,11 @@ const CqlLibraryDetailsDialog = ({
       libraryAlias: "",
       version: library?.version,
     },
-    validationSchema: SuffixSchemaValidator,
     onSubmit: () => {},
     enableReinitialize: true,
   });
 
   const handleVersionChange = (selectedVersion) => {
-    formik.setFieldValue("version", selectedVersion);
     onVersionChange(selectedVersion, library.librarySetId);
   };
 
