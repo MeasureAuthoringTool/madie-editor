@@ -1,10 +1,13 @@
 import * as React from "react";
-import {fireEvent, render, waitFor, within} from "@testing-library/react";
+import { render, waitFor, within } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import LibrarySearch from "./LibrarySearch";
 import userEvent from "@testing-library/user-event";
 import axios from "../../api/axios-instance";
-import {fetchCqlErrorMessage, fetchVersionedLibrariesErrorMessage} from "../../api/useCqlLibraryServiceApi";
+import {
+  fetchCqlErrorMessage,
+  fetchVersionedLibrariesErrorMessage,
+} from "../../api/useCqlLibraryServiceApi";
 import { mockServiceConfig } from "../../__mocks__/mockServiceConfig";
 import { mockCqlLibraries } from "../__mocks__/MockCqlLibraries";
 
