@@ -3,7 +3,7 @@ export const mockCqlLibraries = [
     id: "12",
     cqlLibraryName: "Test_12",
     version: "2.2.000",
-    librarySet: { owner: "John" },
+    librarySet: { owner: "John", librarySetId: "10-12" },
     draft: false,
   },
   {
