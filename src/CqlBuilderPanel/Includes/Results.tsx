@@ -129,30 +129,7 @@ const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
       .map((cqlLibrary) => cqlLibrary.version);
   };
 
-  // get the cql for selected library and set selected library
-  const showLibraryDetails = async (index) => {
-    const rowModal = table.getRow(index).original;
-    const versions = getLibraryVersionsForSetId(rowModal.librarySetId);
-    (await libraryService)
-      .fetchLibraryCql(rowModal.name, rowModal.version, measureModel)
-      .then((cql) => {
-        setSelectedLibrary({
-          ...rowModal,
-          cql: cql,
-          otherVersions: versions,
-        } as SelectedLibrary);
-        setOpenLibraryDialog(true);
-      })
-      .catch((error) => {
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: { type: "danger", message: error.message },
-        });
-      });
-  };
-
-  // get the cql for selected version and update selected library
-  const handleVersionChange = async (version: string, setId: string) => {
+  const updateLibrarySelection = async (version: string, setId: string) => {
     const library = cqlLibraries.find(
       (l) => l.version === version && l.librarySet.librarySetId == setId
     );
@@ -177,6 +154,12 @@ const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
           payload: { type: "danger", message: error.message },
         });
       });
+  };
+
+  // get the cql for selected library and set selected library
+  const showLibraryDetails = async (index) => {
+    const rowModal = table.getRow(index).original;
+    await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
   };
 
   const columns = useMemo<ColumnDef<RowDef>[]>(
@@ -293,7 +276,7 @@ const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
         library={selectedLibrary}
         onClose={() => setOpenLibraryDialog(false)}
         open={openLibraryDialog}
-        onVersionChange={handleVersionChange}
+        onVersionChange={updateLibrarySelection}
       />
       <Toast
         toastKey="search-library-toast"
