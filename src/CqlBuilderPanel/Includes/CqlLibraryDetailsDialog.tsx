@@ -52,7 +52,7 @@ const CqlLibraryDetailsDialog = ({
   return (
     <MadieDialog
       form={true}
-      title={"Details"}
+      title="Details"
       dialogProps={{
         open,
         onClose: onClose,
@@ -93,7 +93,6 @@ const CqlLibraryDetailsDialog = ({
         <div tw="flex-1 ml-5 -my-1">
           <Select
             {...formik.getFieldProps("version")}
-            placeHolder={{ name: "Version", value: "" }}
             required
             label="Version"
             id="version-select"

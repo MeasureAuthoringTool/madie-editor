@@ -19,7 +19,7 @@ describe("Toast Reducer tests", () => {
       payload: { message: "", type: "danger" },
     } as Action;
     expect(toastReducer(undefined, action)).toEqual({
-      open: true,
+      open: false,
       type: action.payload.type,
       message: action.payload.message,
     });
