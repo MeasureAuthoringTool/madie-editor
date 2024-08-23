@@ -23,6 +23,7 @@ export default function CqlBuilderPanel({
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
+  handleApplyLibrary,
   handleApplyCode,
   handleApplyValueSet,
   handleApplyDefinition,
@@ -166,7 +167,11 @@ export default function CqlBuilderPanel({
       )}
       <div className="panel-content">
         {activeTab === "includes" && (
-          <IncludesTabSection canEdit={canEdit} measureModel={measureModel} />
+          <IncludesTabSection
+            canEdit={canEdit}
+            measureModel={measureModel}
+            handleApplyLibrary={handleApplyLibrary}
+          />
         )}
         {activeTab === "valueSets" && (
           <ValueSetsSection

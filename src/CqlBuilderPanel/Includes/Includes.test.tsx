@@ -6,7 +6,9 @@ const { getByTestId } = screen;
 
 describe("Includes", () => {
   it("Should renders Includes component", async () => {
-    render(<Includes canEdit measureModel={"QDM"} />);
+    render(
+      <Includes canEdit measureModel={"QDM"} handleApplyLibrary={jest.fn} />
+    );
     expect(getByTestId("includes-panel")).toBeInTheDocument();
 
     expect(getByTestId("searchTerm-text-input")).toBeEnabled();
