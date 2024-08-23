@@ -471,8 +471,10 @@ describe("CqlBuilderPanel", () => {
 
     const options = await screen.findAllByRole("option");
     expect(options.length).toBe(2);
-    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
-    expect(options[1]).toHaveTextContent("Global.Latest");
+    expect(options[0]).toHaveTextContent(
+      "Global.HospitalizationLengthofStay()"
+    );
+    expect(options[1]).toHaveTextContent("Global.Latest()");
   });
 
   it("Should display available functions for building Expressions for QiCore", async () => {
@@ -518,8 +520,10 @@ describe("CqlBuilderPanel", () => {
 
     const options = await screen.findAllByRole("option");
     expect(options.length).toBe(2);
-    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
-    expect(options[1]).toHaveTextContent("Global.Latest");
+    expect(options[0]).toHaveTextContent(
+      "Global.HospitalizationLengthofStay()"
+    );
+    expect(options[1]).toHaveTextContent("Global.Latest()");
   });
 
   it("Should display available fluent functions for building Expressions for QDM", async () => {
@@ -564,8 +568,8 @@ describe("CqlBuilderPanel", () => {
 
     const options = await screen.findAllByRole("option");
     expect(options.length).toBe(2);
-    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
-    expect(options[1]).toHaveTextContent("Global.Latest");
+    expect(options[0]).toHaveTextContent("HospitalizationLengthofStay()");
+    expect(options[1]).toHaveTextContent("Latest()");
   });
 
   it("Should display available fluent functions for building Expressions for QiCore", async () => {
@@ -611,7 +615,7 @@ describe("CqlBuilderPanel", () => {
 
     const options = await screen.findAllByRole("option");
     expect(options.length).toBe(2);
-    expect(options[0]).toHaveTextContent("Global.HospitalizationLengthofStay");
-    expect(options[1]).toHaveTextContent("Global.Latest");
+    expect(options[0]).toHaveTextContent("HospitalizationLengthofStay()");
+    expect(options[1]).toHaveTextContent("Latest()");
   });
 });
