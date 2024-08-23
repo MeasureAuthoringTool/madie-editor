@@ -70,9 +70,15 @@ export default function CqlBuilderPanel({
   ): CqlBuilderLookupData | {} => {
     const result = {};
     for (const key in cqlBuilderLookupsData) {
-      result[key] = cqlBuilderLookupsData[key].map((p) =>
-        p.libraryAlias ? p.libraryAlias + "." + p.name : p.name
-      );
+      result[key] = cqlBuilderLookupsData[key].map((p) => {
+        const lookupTypeName =
+          p.libraryAlias && key !== "fluentFunctions"
+            ? p.libraryAlias + "." + p.name
+            : p.name;
+        return key === "fluentFunctions" || key === "functions"
+          ? lookupTypeName + "()"
+          : lookupTypeName;
+      });
     }
     return result;
   };
