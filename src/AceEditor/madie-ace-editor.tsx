@@ -18,6 +18,7 @@ import {
   ValueSetForSearch,
 } from "../api/useTerminologyServiceApi";
 import { Definition } from "../CqlBuilderPanel/definitionsSection/DefinitionSection";
+import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 
 export interface EditorPropsType {
   value: string;
@@ -25,6 +26,7 @@ export interface EditorPropsType {
   handleApplyCode?: (code: string) => void;
   handleApplyValueSet?: (vs: ValueSetForSearch) => void;
   handleApplyDefinition?: (def: Definition) => void;
+  handleApplyLibrary?: (lib: SelectedLibrary) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];
@@ -119,7 +121,7 @@ const parsingUsing = (parsedCql, cqlArrayToBeFiltered): Statement => {
  * If any of the above change encountered, it will be reverted
  * @param parsedEditorCql
  * @param libraryName
- * @param versionString
+ * @param libraryVersion
  * @param usedModel
  * @param modelVersion
  */
