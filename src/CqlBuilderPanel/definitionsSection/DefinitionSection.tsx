@@ -40,12 +40,15 @@ export default function DefinitionSection({
 
   const handleExpressionEditorInsert = async (values) => {
     const cursorPosition = textAreaRef?.current?.selectionStart;
-    const newItem = values?.name + "\n";
+    const newExpression =
+      (values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
+        ? `"${values?.name}"`
+        : values?.name) + "\n";
 
     // Insert the new item at the cursor position or at the end
     const updatedExpressionValue =
       definitionToApply?.expressionValue?.slice(0, cursorPosition) +
-      newItem +
+      newExpression +
       definitionToApply?.expressionValue?.slice(cursorPosition);
 
     setDefinitionToApply({
