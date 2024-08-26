@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { useFormik } from "formik";
@@ -15,8 +15,6 @@ import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
 export interface Definition {
   definitionName?: string;
   comment?: string;
-  expressionType?: string;
-  expressionName?: string;
   expressionValue?: string;
 }
 
@@ -31,18 +29,32 @@ export default function DefinitionSection({
   handleApplyDefinition,
   cqlBuilderLookupsTypes,
 }: DefinitionProps) {
-  const [expressionValue, setExpressionValue] = useState("");
   const [expressionEditorOpen, setExpressionEditorOpen] =
     useState<boolean>(false);
+  const textAreaRef = useRef(null);
+  const [definitionToApply, setDefinitionToApply] = useState<Definition>({
+    definitionName: "",
+    comment: "",
+    expressionValue: "",
+  });
 
-  const handleFormSubmit = async (values) => {
-    values.definitionName = trimInput("definitionName");
-    values.comment = trimInput("comment");
-    // save it with handleApplyDefinition
-    formik.resetForm();
-    setExpressionValue("");
-    setExpressionEditorOpen(false);
-    // }
+  const handleExpressionEditorInsert = async (values) => {
+    const cursorPosition = textAreaRef?.current?.selectionStart;
+    const newItem = values?.name + "\n";
+
+    // Insert the new item at the cursor position or at the end
+    const updatedExpressionValue =
+      definitionToApply?.expressionValue?.slice(0, cursorPosition) +
+      newItem +
+      definitionToApply?.expressionValue?.slice(cursorPosition);
+
+    setDefinitionToApply({
+      definitionName: values?.definitionName?.trim(),
+      comment: values?.comment?.trim(),
+      expressionValue: updatedExpressionValue,
+    });
+    formik.setFieldValue("type", "");
+    formik.setFieldValue("name", "");
   };
 
   const formik = useFormik({
@@ -55,7 +67,7 @@ export default function DefinitionSection({
     validationSchema: DefinitionSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {
-      handleFormSubmit(values);
+      handleExpressionEditorInsert(values);
     },
   });
   const { resetForm } = formik;
@@ -64,11 +76,8 @@ export default function DefinitionSection({
     if (formik.values.definitionName) {
       setExpressionEditorOpen(true);
     }
-  }, [formik.values]);
+  }, [formik.values.definitionName]);
 
-  function trimInput(field: string) {
-    formik.setFieldValue(field, formik.values[field].trim());
-  }
   return (
     <div>
       <form id="definition-form" onSubmit={formik.handleSubmit}>
@@ -110,9 +119,10 @@ export default function DefinitionSection({
           canEdit={canEdit}
           expressionEditorOpen={expressionEditorOpen}
           formik={formik}
-          expressionValue={expressionValue}
-          setExpressionValue={setExpressionValue}
           cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+          textAreaRef={textAreaRef}
+          definitionToApply={definitionToApply}
+          setDefinitionToApply={setDefinitionToApply}
         />
         <div className="form-actions">
           <Button
@@ -122,20 +132,23 @@ export default function DefinitionSection({
             tw="mr-4"
             onClick={() => {
               resetForm();
-              setExpressionValue("");
+              setDefinitionToApply({
+                definitionName: "",
+                comment: "",
+                expressionValue: "",
+              });
             }}
           >
             Clear
           </Button>
           <Button
-            type="submit"
             data-testid="definition-apply-btn"
             disabled={
               !formik.values.definitionName ||
-              !formik.values.type ||
               !canEdit ||
-              !expressionValue
+              !definitionToApply?.expressionValue
             }
+            onClick={() => handleApplyDefinition}
           >
             Apply
           </Button>

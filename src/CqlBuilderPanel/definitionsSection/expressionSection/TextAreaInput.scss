@@ -1,0 +1,25 @@
+.line-numbers {
+  background-color: #ededed;
+  padding: 16px;
+  text-align: right;
+  border-right: 1px solid #ededed;
+  min-width: 30px;
+}
+
+.line-number {
+  color: #333333;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.text-area {
+  flex: 1;
+  padding: 16px;
+  border: 0px 1px 0px 0px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  gap: 8px;
+}

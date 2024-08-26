@@ -319,6 +319,6 @@ describe("CQL Definition Builder Section", () => {
     const definitionName = (await screen.findByTestId(
       "definition-name-text-input"
     )) as HTMLInputElement;
-    expect(definitionName.value).toBe("");
+    expect(definitionName.value).toBe("IP");
   });
 });

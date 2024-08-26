@@ -7,22 +7,24 @@ import {
   AutoComplete,
 } from "@madie/madie-design-system/dist/react";
 import ExpandingSection from "../../../common/ExpandingSection";
-import { MenuItem } from "@mui/material";
+import { Box, MenuItem } from "@mui/material";
 import {
   predefinedFunctionsNames,
   timingNames,
 } from "./ExpressionEditorHelper";
-import { ControlledTextarea } from "../../../common/ControlledTextArea";
 import * as _ from "lodash";
 import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
+import "./TextAreaInput.scss";
+import { Definition } from "../DefinitionSection";
 
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;
   formik: any;
-  expressionValue: string;
-  setExpressionValue: Function;
   cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
+  textAreaRef;
+  definitionToApply: Definition;
+  setDefinitionToApply: Function;
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {
@@ -30,12 +32,12 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     canEdit,
     expressionEditorOpen,
     formik,
-    expressionValue,
-    setExpressionValue,
     cqlBuilderLookupsTypes,
+    textAreaRef,
+    definitionToApply,
+    setDefinitionToApply,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
-
   const availableTypes = [
     "Parameters",
     "Definitions",
@@ -44,6 +46,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     "Timing",
     "Pre-Defined Functions",
   ];
+  const lineNumbers = definitionToApply?.expressionValue?.split("\n")?.length;
 
   const renderMenuItems = (options: string[]) => {
     return [
@@ -73,6 +76,23 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     } else if (type === "Pre-Defined Functions") {
       return predefinedFunctionsNames;
     }
+  };
+
+  // Automatically adjust the height of the textarea based on the content
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height =
+        textAreaRef.current.scrollHeight + "px";
+    }
+  }, [definitionToApply?.expressionValue]);
+
+  // Allow manual editing of the textarea
+  const handleContentChange = (e) => {
+    setDefinitionToApply({
+      ...definitionToApply,
+      expressionValue: e.target.value,
+    });
   };
 
   return (
@@ -140,14 +160,31 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </Button>
             </div>
             <div style={{ marginBottom: "72px" }} />
-            <div className="full-row">
-              <ControlledTextarea
-                name="expression-textarea"
-                value={expressionValue}
-                onValueChange={(value: string) => setExpressionValue(value)}
-                numOfLines={1}
-                disabled={!canEdit}
-              />
+            <div>
+              <Box
+                display="flex"
+                border="1px solid #e0e0e0"
+                borderRadius="4px"
+                width="100%"
+                fontFamily="monospace"
+              >
+                <Box className="line-numbers">
+                  {Array.from({ length: lineNumbers }, (_, i) => (
+                    <div key={i} className="line-number">
+                      {i + 1}
+                    </div>
+                  ))}
+                </Box>
+                <textarea
+                  ref={textAreaRef}
+                  value={definitionToApply?.expressionValue}
+                  rows={lineNumbers} // Start with one row
+                  onChange={handleContentChange}
+                  disabled={!canEdit}
+                  className="text-area"
+                  data-testid="expression-textarea"
+                />
+              </Box>
             </div>
           </>
         }
