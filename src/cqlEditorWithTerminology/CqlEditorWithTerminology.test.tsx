@@ -6,7 +6,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
-import axios from "../api/axios-instance";
 import * as React from "react";
 import { ServiceConfig } from "../api/useServiceConfig";
 
@@ -27,6 +26,7 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 const mockConfig: ServiceConfig = {
+  cqlLibraryService: { baseUrl: "cql.library.service" },
   qdmElmTranslationService: {
     baseUrl: "qdm.elm.com",
   },
@@ -55,6 +55,7 @@ describe("CqlEditorWithTerminology component", () => {
       onChange: jest.fn(),
       handleClick: true,
       handleApplyValueSet: jest.fn(),
+      handleApplyLibrary: jest.fn(),
       measureModel: "QDM 5.6",
     };
     render(<CqlEditorWithTerminology {...props} />);

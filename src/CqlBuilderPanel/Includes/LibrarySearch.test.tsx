@@ -24,9 +24,21 @@ jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({ getAccessToken: () => "test.jwt" }),
 }));
 
+const handleApplyLibrary = jest.fn();
+
 describe("LibrarySearch component tests", () => {
+  const renderLibrarySearchComponent = () => {
+    render(
+      <LibrarySearch
+        canEdit={true}
+        measureModel="QDM"
+        handleApplyLibrary={handleApplyLibrary}
+      />
+    );
+  };
+
   it("should render default state of LibrarySearch component", () => {
-    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    renderLibrarySearchComponent();
     const searchInput = screen.getByRole("textbox", {
       name: /Library Search/i,
     });
@@ -48,8 +60,7 @@ describe("LibrarySearch component tests", () => {
         status: 200,
       })
     );
-
-    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    renderLibrarySearchComponent();
     const searchInput = screen.getByRole("textbox", {
       name: /Library Search/i,
     });
@@ -87,8 +98,7 @@ describe("LibrarySearch component tests", () => {
     mockedAxios.get.mockImplementation((url) =>
       Promise.reject({ status: 400 })
     );
-
-    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    renderLibrarySearchComponent();
     const searchInput = screen.getByRole("textbox", {
       name: /Library Search/i,
     });
@@ -108,7 +118,7 @@ describe("LibrarySearch component tests", () => {
       Promise.resolve({ data: mockCqlLibraries, status: 200 })
     );
 
-    await render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    renderLibrarySearchComponent();
     const searchInput = screen.getByRole("textbox", {
       name: /Library Search/i,
     });
@@ -155,8 +165,7 @@ describe("LibrarySearch component tests", () => {
         });
       }
     });
-
-    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    renderLibrarySearchComponent();
     const searchInput = screen.getByRole("textbox", {
       name: /Library Search/i,
     });
@@ -188,6 +197,18 @@ describe("LibrarySearch component tests", () => {
     await waitFor(() => {
       expect(versionSelect).toHaveTextContent(mockCqlLibraries[1].version);
     });
+    const applyBtn = screen.getByRole("button", { name: /Apply/i });
+    expect(applyBtn).toBeDisabled();
+    // type alias value
+    userEvent.type(
+      screen.getByRole("textbox", { name: /Library Alias/i }),
+      "Test"
+    );
+    expect(applyBtn).toBeEnabled();
+    userEvent.click(applyBtn);
+    await waitFor(() => {
+      expect(handleApplyLibrary).toHaveBeenCalled();
+    });
   });
 
   it("should show error if opening library details dialog error out", async () => {
@@ -203,8 +224,7 @@ describe("LibrarySearch component tests", () => {
         });
       }
     });
-
-    render(<LibrarySearch canEdit={true} measureModel="QDM" />);
+    renderLibrarySearchComponent();
     const searchInput = screen.getByRole("textbox", {
       name: /Library Search/i,
     });
