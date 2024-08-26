@@ -10,6 +10,7 @@ import { describe, it } from "@jest/globals";
 import "@testing-library/jest-dom";
 import DefinitionsSection from "./DefinitionsSection";
 import { within } from "@testing-library/dom";
+import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
 
 describe("CQL Definition Builder Section", () => {
   it("Should display name and comment fields", async () => {
@@ -17,7 +18,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameTextBox = await screen.findByRole("textbox", {
@@ -41,7 +42,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={false}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
 
@@ -59,7 +60,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -88,7 +89,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -122,7 +123,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -180,7 +181,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -241,7 +242,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -320,5 +321,76 @@ describe("CQL Definition Builder Section", () => {
       "definition-name-text-input"
     )) as HTMLInputElement;
     expect(definitionName.value).toBe("IP");
+  });
+
+  it("expression is inserted into text area when insert button is clicked", async () => {
+    render(
+      <DefinitionsSection
+        canEdit={true}
+        handleApplyDefinition={jest.fn()}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+      />
+    );
+    const definitionNameInput = (await screen.findByTestId(
+      "definition-name-text-input"
+    )) as HTMLInputElement;
+    expect(definitionNameInput).toBeInTheDocument();
+    expect(definitionNameInput.value).toBe("");
+    fireEvent.change(definitionNameInput, {
+      target: { value: "IP" },
+    });
+    expect(definitionNameInput.value).toBe("IP");
+
+    const definitionCommentTextBox = await screen.findByRole("textbox", {
+      name: "Comment",
+    });
+    expect(definitionCommentTextBox).toBeInTheDocument();
+    const definitionCommentInput = (await screen.findByTestId(
+      "definition-comment-text"
+    )) as HTMLInputElement;
+    expect(definitionCommentInput.value).toBe("");
+    fireEvent.change(definitionCommentInput, {
+      target: { value: "comment" },
+    });
+    expect(definitionCommentInput.value).toBe("comment");
+
+    expect(
+      screen.getByTestId("terminology-section-Expression Editor-sub-heading")
+    ).toBeInTheDocument();
+    const typeInput = screen.getByTestId(
+      "type-selector-input"
+    ) as HTMLInputElement;
+    expect(typeInput).toBeInTheDocument();
+    expect(typeInput.value).toBe("");
+
+    fireEvent.change(typeInput, {
+      target: { value: "Timing" },
+    });
+    expect(typeInput.value).toBe("Timing");
+
+    const nameAutoComplete = screen.getByTestId("name-selector");
+    expect(nameAutoComplete).toBeInTheDocument();
+    const nameComboBox = within(nameAutoComplete).getByRole("combobox");
+    //name dropdown is populated with values based on type
+    await waitFor(() => expect(nameComboBox).toBeEnabled());
+
+    const nameDropDown = await screen.findByTestId("name-selector");
+    fireEvent.keyDown(nameDropDown, { key: "ArrowDown" });
+
+    const nameOptions = await screen.findAllByRole("option");
+    expect(nameOptions).toHaveLength(70);
+    const insertBtn = screen.getByTestId("expression-insert-btn");
+
+    expect(insertBtn).toBeInTheDocument();
+    expect(insertBtn).toBeDisabled();
+
+    fireEvent.click(nameOptions[0]);
+    expect(insertBtn).toBeEnabled();
+
+    fireEvent.click(insertBtn);
+    const expressionValue = (await screen.findByTestId(
+      "expression-textarea"
+    )) as HTMLInputElement;
+    expect(expressionValue.value).toContain("after");
   });
 });
