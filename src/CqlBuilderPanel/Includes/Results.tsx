@@ -29,6 +29,7 @@ import toastReducer, { Action } from "../../common/ToastReducer";
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
   measureModel: string;
+  handleApplyLibrary: (library) => void;
 };
 
 type RowDef = {
@@ -41,7 +42,11 @@ type RowDef = {
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
-const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
+const Results = ({
+  cqlLibraries,
+  measureModel,
+  handleApplyLibrary,
+}: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
   const libraryService = useCqlLibraryServiceApi();
   const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
@@ -277,6 +282,7 @@ const Results = ({ cqlLibraries, measureModel }: PropTypes) => {
         onClose={() => setOpenLibraryDialog(false)}
         open={openLibraryDialog}
         onVersionChange={updateLibrarySelection}
+        onApply={handleApplyLibrary}
       />
       <Toast
         toastKey="search-library-toast"

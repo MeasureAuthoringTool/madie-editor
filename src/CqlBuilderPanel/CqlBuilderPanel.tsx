@@ -23,6 +23,7 @@ export default function CqlBuilderPanel({
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
+  handleApplyLibrary,
   handleApplyCode,
   handleApplyValueSet,
   handleApplyDefinition,
@@ -56,9 +57,8 @@ export default function CqlBuilderPanel({
   })();
 
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
-  const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] = useState<
-    CqlBuilderLookupData | {}
-  >({});
+  const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
+    useState<CqlBuilderLookupData>();
   const [errors, setErrors] = useState<string>(null);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
@@ -66,8 +66,8 @@ export default function CqlBuilderPanel({
 
   const generateCqlBuilderLookupTypes = (
     cqlBuilderLookupsData
-  ): CqlBuilderLookupData | {} => {
-    const result = {};
+  ): CqlBuilderLookupData => {
+    const result: CqlBuilderLookupData = {} as unknown as CqlBuilderLookupData;
     for (const key in cqlBuilderLookupsData) {
       result[key] = cqlBuilderLookupsData[key].map((p) => {
         const lookupTypeName =
@@ -96,7 +96,9 @@ export default function CqlBuilderPanel({
                 );
               })
               .catch((error) => {
-                setCqlBuilderLookupsTypes({});
+                setCqlBuilderLookupsTypes(
+                  {} as unknown as CqlBuilderLookupData
+                );
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -104,7 +106,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setCqlBuilderLookupsTypes({});
+            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookupData);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -121,7 +123,9 @@ export default function CqlBuilderPanel({
                 );
               })
               .catch((error) => {
-                setCqlBuilderLookupsTypes({});
+                setCqlBuilderLookupsTypes(
+                  {} as unknown as CqlBuilderLookupData
+                );
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -129,7 +133,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setCqlBuilderLookupsTypes({});
+            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookupData);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -172,7 +176,11 @@ export default function CqlBuilderPanel({
       )}
       <div className="panel-content">
         {activeTab === "includes" && (
-          <IncludesTabSection canEdit={canEdit} measureModel={measureModel} />
+          <IncludesTabSection
+            canEdit={canEdit}
+            measureModel={measureModel}
+            handleApplyLibrary={handleApplyLibrary}
+          />
         )}
         {activeTab === "valueSets" && (
           <ValueSetsSection

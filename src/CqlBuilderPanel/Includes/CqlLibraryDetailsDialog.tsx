@@ -12,33 +12,44 @@ import { useFormik } from "formik";
 
 export interface SelectedLibrary {
   id: string;
-  librarySetId: string;
   name: string;
   version: string;
-  owner: string;
-  otherVersions: string[];
-  cql: string;
+  librarySetId?: string;
+  owner?: string;
+  otherVersions?: string[];
+  cql?: string;
+  alias?: string;
 }
 interface PropTypes {
   library: SelectedLibrary;
   open: boolean;
   onClose: Function;
   onVersionChange: Function;
+  onApply: Function;
 }
 const CqlLibraryDetailsDialog = ({
   library,
   open,
   onClose,
   onVersionChange,
+  onApply,
 }: PropTypes) => {
   const aceRef = useRef<AceEditor>(null);
 
   const formik = useFormik({
     initialValues: {
-      libraryAlias: "",
+      libraryAlias: library?.alias || "",
       version: library?.version,
     },
-    onSubmit: () => {},
+    onSubmit: ({ version, libraryAlias }) => {
+      onApply({
+        name: library.name,
+        version: version,
+        alias: libraryAlias,
+      });
+      formik.resetForm();
+      onClose();
+    },
     enableReinitialize: true,
   });
 
@@ -53,6 +64,7 @@ const CqlLibraryDetailsDialog = ({
       dialogProps={{
         open,
         onClose: onClose,
+        onSubmit: formik.handleSubmit,
         fullWidth: true,
         maxWidth: "md",
         "data-testid": "view-apply-library-dialog",
@@ -62,9 +74,10 @@ const CqlLibraryDetailsDialog = ({
         "data-testid": "cancel-button",
       }}
       continueButtonProps={{
+        type: "submit",
         continueText: "Apply",
+        disabled: !(formik.isValid && formik.dirty),
         "data-testid": "apply-button",
-        disabled: true,
       }}
     >
       <div tw="flex flex-row">

@@ -13,7 +13,7 @@ describe("DefinitionSection", () => {
       />
     );
     const definition = await screen.findByTestId("definition-tab");
-    const savedDefinitions = await screen.findByText("Saved Definition(s)");
+    const savedDefinitions = await screen.findByText("Saved Definition(s) (0)");
     expect(definition).toBeInTheDocument();
     expect(savedDefinitions).toBeInTheDocument();
     await waitFor(() => {
@@ -33,7 +33,7 @@ describe("DefinitionSection", () => {
       />
     );
     const definition = await screen.findByTestId("definition-tab");
-    const savedDefinitions = await screen.findByText("Saved Definition(s)");
+    const savedDefinitions = await screen.findByText("Saved Definition(s) (0)");
     expect(definition).toBeInTheDocument();
     expect(savedDefinitions).toBeInTheDocument();
     await waitFor(() => {

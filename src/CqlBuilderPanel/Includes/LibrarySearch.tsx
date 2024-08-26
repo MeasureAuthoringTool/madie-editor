@@ -11,10 +11,11 @@ import toastReducer from "../../common/ToastReducer";
 export interface LibraryTabContentProps {
   canEdit: boolean;
   measureModel: string;
+  handleApplyLibrary: (library) => void;
 }
 
 const LibrarySearch = (props: LibraryTabContentProps) => {
-  const { measureModel, canEdit } = props;
+  const { measureModel, canEdit, handleApplyLibrary } = props;
   const libraryService = useCqlLibraryServiceApi();
   const [cqlLibraries, setCqlLibraries] = useState<CqlLibrary[]>([]);
 
@@ -55,7 +56,11 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
         />
       </ExpandingSection>
       <ExpandingSection title="Library Results" showHeaderContent={true}>
-        <Results cqlLibraries={cqlLibraries} measureModel={measureModel} />
+        <Results
+          cqlLibraries={cqlLibraries}
+          measureModel={measureModel}
+          handleApplyLibrary={handleApplyLibrary}
+        />
       </ExpandingSection>
       <Toast
         toastKey="search-library-toast"
