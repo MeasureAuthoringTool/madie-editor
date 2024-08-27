@@ -37,21 +37,43 @@ export default function DefinitionSection({
     comment: "",
     expressionValue: "",
   });
+  const [lastInsertionWasInline, setLastInsertionWasInline] =
+    useState<boolean>(false);
 
-  const handleExpressionEditorInsert = async (values) => {
-    const cursorPosition = textAreaRef?.current?.selectionStart;
+  const handleExpressionEditorInsert = (values) => {
+    const editor = textAreaRef.current.editor;
+    const cursorPosition = editor.getCursorPosition();
+    const lineIndex = cursorPosition.row;
+    const lineContent = editor.session.getLine(lineIndex);
     const newExpression =
-      values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
+      (values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
         ? `"${values?.name}"`
-        : values?.name;
+        : values?.name) + "\n";
 
-    // Insert the new item at the cursor position or at the end
-    const updatedExpressionValue =
-      definitionToApply?.expressionValue?.slice(0, cursorPosition) +
-      (definitionToApply?.expressionValue?.slice(cursorPosition) === ""
-        ? newExpression + "\n"
-        : newExpression) +
-      definitionToApply?.expressionValue?.slice(cursorPosition);
+    // Insert based on the cursor position or at the end if the cursor is at the start
+    let updatedExpressionValue;
+    // Check if cursor is at the end of the current line
+    if (
+      cursorPosition.column === lineContent.length &&
+      !lastInsertionWasInline
+    ) {
+      // Add inline if last insertion was not inline
+      updatedExpressionValue =
+        definitionToApply?.expressionValue.slice(
+          0,
+          editor.session.doc.positionToIndex(cursorPosition)
+        ) +
+        newExpression +
+        definitionToApply?.expressionValue.slice(
+          editor.session.doc.positionToIndex(cursorPosition)
+        );
+      setLastInsertionWasInline(true);
+    } else {
+      // Otherwise, append on a new line
+      updatedExpressionValue =
+        definitionToApply?.expressionValue + newExpression;
+      setLastInsertionWasInline(false);
+    }
 
     setDefinitionToApply({
       definitionName: values?.definitionName?.trim(),

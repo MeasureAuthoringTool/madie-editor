@@ -16,6 +16,8 @@ import * as _ from "lodash";
 import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
 import "./TextAreaInput.scss";
 import { Definition } from "../DefinitionSection";
+import AceEditor from "react-ace";
+import { Ace } from "ace-builds";
 
 interface ExpressionsProps {
   canEdit: boolean;
@@ -47,6 +49,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     "Pre-Defined Functions",
   ];
   const lineNumbers = definitionToApply?.expressionValue?.split("\n")?.length;
+  const [editor, setEditor] = useState<Ace.Editor>();
+  const [editorHeight, setEditorHeight] = useState("100px"); // Start with a minimal height
 
   const renderMenuItems = (options: string[]) => {
     return [
@@ -78,20 +82,20 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     }
   };
 
-  // Automatically adjust the height of the textarea based on the content
+  // Automatically adjust the height of the ace editor based on the content
   useEffect(() => {
     if (textAreaRef.current) {
-      textAreaRef.current.style.height = "auto";
-      textAreaRef.current.style.height =
-        textAreaRef.current.scrollHeight + "px";
+      const lineCount = textAreaRef.current.editor.session.getLength();
+      const newHeight = Math.max(lineCount * 20, 100) + "px"; // Calculate height based on lines, minimum 20px
+      setEditorHeight(newHeight);
     }
-  }, [definitionToApply?.expressionValue]);
+  }, [definitionToApply?.expressionValue]); // Recalculate height whenever content changes
 
   // Allow manual editing of the textarea
-  const handleContentChange = (e) => {
+  const handleContentChange = (value) => {
     setDefinitionToApply({
       ...definitionToApply,
-      expressionValue: e.target.value,
+      expressionValue: value,
     });
   };
 
@@ -160,32 +164,28 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </Button>
             </div>
             <div style={{ marginBottom: "72px" }} />
-            <div>
-              <Box
-                display="flex"
-                border="1px solid #e0e0e0"
-                borderRadius="4px"
+            <>
+              <AceEditor
+                mode="sql"
+                ref={textAreaRef}
+                theme="monokai"
+                value={definitionToApply?.expressionValue}
+                onChange={(value) => {
+                  handleContentChange(value);
+                }}
+                onLoad={(aceEditor) => {
+                  // On load we want to tell the ace editor that it's inside of a scrollabel page
+                  aceEditor.setOption("autoScrollEditorIntoView", true);
+                  setEditor(aceEditor);
+                }}
                 width="100%"
-                fontFamily="monospace"
-              >
-                <Box className="line-numbers">
-                  {Array.from({ length: lineNumbers }, (_, i) => (
-                    <div key={i} className="line-number">
-                      {i + 1}
-                    </div>
-                  ))}
-                </Box>
-                <textarea
-                  ref={textAreaRef}
-                  value={definitionToApply?.expressionValue}
-                  rows={lineNumbers} // Start with one row
-                  onChange={handleContentChange}
-                  disabled={!canEdit}
-                  className="text-area"
-                  data-testid="expression-textarea"
-                />
-              </Box>
-            </div>
+                height={editorHeight}
+                wrapEnabled={true}
+                readOnly={false}
+                name="ace-editor-wrapper"
+                enableBasicAutocompletion={true}
+              />
+            </>
           </>
         }
       />
