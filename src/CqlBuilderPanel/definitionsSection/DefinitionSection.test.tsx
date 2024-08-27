@@ -12,7 +12,33 @@ import DefinitionsSection from "./DefinitionsSection";
 import { within } from "@testing-library/dom";
 import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
 
+const mockEditor = { resize: jest.fn() };
+jest.mock("react-ace", () => ({ setEditor, value, onChange, readOnly }) => {
+  const React = require("react");
+  React.useEffect(() => {
+    if (setEditor) {
+      setEditor(mockEditor);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <input
+      data-testid="ace-editor"
+      readOnly={readOnly}
+      value={value}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange(e.target.value);
+      }}
+    />
+  );
+});
+
 describe("CQL Definition Builder Section", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("Should display name and comment fields", async () => {
     render(
       <DefinitionsSection
@@ -305,13 +331,11 @@ describe("CQL Definition Builder Section", () => {
     expect(applyBtn).toBeInTheDocument();
     expect(applyBtn).toBeDisabled();
 
-    const expressionText = screen.getByTestId(
-      "expression-textarea"
-    ) as HTMLInputElement;
-    fireEvent.change(expressionText, {
+    const editor = screen.getByTestId("ace-editor") as HTMLInputElement;
+    fireEvent.change(editor, {
       target: { value: "test expression" },
     });
-    expect(expressionText.value).toBe("test expression");
+    expect(editor.value).toBe("test expression");
     expect(applyBtn).toBeEnabled();
 
     act(() => {
@@ -388,9 +412,9 @@ describe("CQL Definition Builder Section", () => {
     expect(insertBtn).toBeEnabled();
 
     fireEvent.click(insertBtn);
-    const expressionValue = (await screen.findByTestId(
-      "expression-textarea"
+    const definitionName = (await screen.findByTestId(
+      "definition-name-text-input"
     )) as HTMLInputElement;
-    expect(expressionValue.value).toContain("after");
+    expect(definitionName.value).toBe("IP");
   });
 });

@@ -40,15 +40,24 @@ export default function DefinitionSection({
   const [lastInsertionWasInline, setLastInsertionWasInline] =
     useState<boolean>(false);
 
+  const formatExpression = (values) => {
+    return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
+      ? values?.type === "Functions" || values?.type === "Fluent Functions"
+        ? values?.name?.replace(/(\w+)\(\)/g, '"$1"()')
+        : `"${values?.name}"`
+      : values?.name;
+  };
+
+  // need to fix:
+  // 1. syntax of displaying functions and fluent functions - done
+  // 2. fix test cases
+  // 3. Inserting on top
   const handleExpressionEditorInsert = (values) => {
     const editor = textAreaRef.current.editor;
     const cursorPosition = editor.getCursorPosition();
     const lineIndex = cursorPosition.row;
     const lineContent = editor.session.getLine(lineIndex);
-    const newExpression =
-      (values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
-        ? `"${values?.name}"`
-        : values?.name) + "\n";
+    const formattedExpression = formatExpression(values);
 
     // Insert based on the cursor position or at the end if the cursor is at the start
     let updatedExpressionValue;
@@ -63,7 +72,7 @@ export default function DefinitionSection({
           0,
           editor.session.doc.positionToIndex(cursorPosition)
         ) +
-        newExpression +
+        formattedExpression +
         definitionToApply?.expressionValue.slice(
           editor.session.doc.positionToIndex(cursorPosition)
         );
@@ -71,7 +80,7 @@ export default function DefinitionSection({
     } else {
       // Otherwise, append on a new line
       updatedExpressionValue =
-        definitionToApply?.expressionValue + newExpression;
+        definitionToApply?.expressionValue + ("\n" + formattedExpression);
       setLastInsertionWasInline(false);
     }
 

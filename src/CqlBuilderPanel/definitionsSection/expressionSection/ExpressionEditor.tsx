@@ -14,7 +14,6 @@ import {
 } from "./ExpressionEditorHelper";
 import * as _ from "lodash";
 import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
-import "./TextAreaInput.scss";
 import { Definition } from "../DefinitionSection";
 import AceEditor from "react-ace";
 import { Ace } from "ace-builds";
@@ -164,7 +163,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </Button>
             </div>
             <div style={{ marginBottom: "72px" }} />
-            <>
+            <div data-testId="expression-ace-editor">
               <AceEditor
                 mode="sql"
                 ref={textAreaRef}
@@ -185,7 +184,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                 name="ace-editor-wrapper"
                 enableBasicAutocompletion={true}
               />
-            </>
+            </div>
           </>
         }
       />
