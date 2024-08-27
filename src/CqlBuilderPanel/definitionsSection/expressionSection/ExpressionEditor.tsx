@@ -7,7 +7,7 @@ import {
   AutoComplete,
 } from "@madie/madie-design-system/dist/react";
 import ExpandingSection from "../../../common/ExpandingSection";
-import { Box, MenuItem } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import {
   predefinedFunctionsNames,
   timingNames,
@@ -86,10 +86,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   useEffect(() => {
     if (textAreaRef.current) {
       const lineCount = textAreaRef.current.editor.session.getLength();
-      const newHeight = Math.max(lineCount * 20, 100) + "px"; // Calculate height based on lines, minimum 20px
+      const newHeight = Math.max(lineCount * 20, 100) + "px"; // Calculate height based on lines, minimum 100px
       setEditorHeight(newHeight);
     }
-  }, [definitionToApply?.expressionValue]); // Recalculate height whenever content changes
+  }, [definitionToApply?.expressionValue]);
 
   // Allow manual editing of the textarea
   const handleContentChange = (value) => {
