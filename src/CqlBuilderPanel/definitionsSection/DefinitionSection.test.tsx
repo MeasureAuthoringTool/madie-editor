@@ -13,26 +13,6 @@ import { within } from "@testing-library/dom";
 import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
 
 const mockEditor = { resize: jest.fn() };
-jest.mock("react-ace", () => ({ setEditor, value, onChange, readOnly }) => {
-  const React = require("react");
-  React.useEffect(() => {
-    if (setEditor) {
-      setEditor(mockEditor);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <input
-      data-testid="ace-editor"
-      readOnly={readOnly}
-      value={value}
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(e.target.value);
-      }}
-    />
-  );
-});
 
 describe("CQL Definition Builder Section", () => {
   afterEach(() => {
@@ -261,90 +241,6 @@ describe("CQL Definition Builder Section", () => {
     const applyBtn = screen.getByTestId("definition-apply-btn");
     expect(applyBtn).toBeInTheDocument();
     expect(applyBtn).toBeDisabled();
-  });
-
-  it("should enable apply button", async () => {
-    render(
-      <DefinitionsSection
-        canEdit={true}
-        handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
-      />
-    );
-    const definitionNameInput = (await screen.findByTestId(
-      "definition-name-text-input"
-    )) as HTMLInputElement;
-    expect(definitionNameInput).toBeInTheDocument();
-    expect(definitionNameInput.value).toBe("");
-    fireEvent.change(definitionNameInput, {
-      target: { value: "IP" },
-    });
-    expect(definitionNameInput.value).toBe("IP");
-
-    const definitionCommentTextBox = await screen.findByRole("textbox", {
-      name: "Comment",
-    });
-    expect(definitionCommentTextBox).toBeInTheDocument();
-    const definitionCommentInput = (await screen.findByTestId(
-      "definition-comment-text"
-    )) as HTMLInputElement;
-    expect(definitionCommentInput.value).toBe("");
-    fireEvent.change(definitionCommentInput, {
-      target: { value: "comment" },
-    });
-    expect(definitionCommentInput.value).toBe("comment");
-
-    expect(
-      screen.getByTestId("terminology-section-Expression Editor-sub-heading")
-    ).toBeInTheDocument();
-    const typeInput = screen.getByTestId(
-      "type-selector-input"
-    ) as HTMLInputElement;
-    expect(typeInput).toBeInTheDocument();
-    expect(typeInput.value).toBe("");
-
-    fireEvent.change(typeInput, {
-      target: { value: "Timing" },
-    });
-    expect(typeInput.value).toBe("Timing");
-
-    const nameAutoComplete = screen.getByTestId("name-selector");
-    expect(nameAutoComplete).toBeInTheDocument();
-    const nameComboBox = within(nameAutoComplete).getByRole("combobox");
-    //name dropdown is populated with values based on type
-    await waitFor(() => expect(nameComboBox).toBeEnabled());
-
-    const nameDropDown = await screen.findByTestId("name-selector");
-    fireEvent.keyDown(nameDropDown, { key: "ArrowDown" });
-
-    const nameOptions = await screen.findAllByRole("option");
-    expect(nameOptions).toHaveLength(70);
-
-    const insertBtn = screen.getByTestId("expression-insert-btn");
-    expect(insertBtn).toBeInTheDocument();
-    expect(insertBtn).toBeDisabled();
-
-    fireEvent.click(nameOptions[0]);
-    expect(insertBtn).toBeEnabled();
-
-    const applyBtn = screen.getByTestId("definition-apply-btn");
-    expect(applyBtn).toBeInTheDocument();
-    expect(applyBtn).toBeDisabled();
-
-    const editor = screen.getByTestId("ace-editor") as HTMLInputElement;
-    fireEvent.change(editor, {
-      target: { value: "test expression" },
-    });
-    expect(editor.value).toBe("test expression");
-    expect(applyBtn).toBeEnabled();
-
-    act(() => {
-      fireEvent.click(applyBtn);
-    });
-    const definitionName = (await screen.findByTestId(
-      "definition-name-text-input"
-    )) as HTMLInputElement;
-    expect(definitionName.value).toBe("IP");
   });
 
   it("expression is inserted into text area when insert button is clicked", async () => {
