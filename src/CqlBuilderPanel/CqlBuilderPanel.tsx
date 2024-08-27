@@ -175,6 +175,7 @@ export default function CqlBuilderPanel({
         {activeTab === "includes" && (
           <IncludesTabSection
             canEdit={canEdit}
+            cql={measureStoreCql}
             measureModel={measureModel}
             handleApplyLibrary={handleApplyLibrary}
           />

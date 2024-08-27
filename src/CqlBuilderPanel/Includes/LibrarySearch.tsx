@@ -5,7 +5,7 @@ import useCqlLibraryServiceApi, {
   CqlLibrary,
 } from "../../api/useCqlLibraryServiceApi";
 import { Toast } from "@madie/madie-design-system/dist/react";
-import Results from "./Results";
+import Results from "./Results/Results";
 import toastReducer from "../../common/ToastReducer";
 
 export interface LibraryTabContentProps {
@@ -32,7 +32,7 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
 
   const handleSearch = async (searchTerm: string) => {
     (await libraryService)
-      .fetchVersionedCqlLibraries(searchTerm, measureModel)
+      .fetchVersionedCqlLibrariesBySearchTermAndModel(searchTerm, measureModel)
       .then((libraries) => {
         setCqlLibraries(libraries);
       })

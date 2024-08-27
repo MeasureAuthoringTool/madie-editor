@@ -15,16 +15,15 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
-} from "../../api/useCqlLibraryServiceApi";
-import {
-  Pagination,
-  Button,
-  Toast,
-} from "@madie/madie-design-system/dist/react";
+} from "../../../api/useCqlLibraryServiceApi";
+import { Pagination, Toast } from "@madie/madie-design-system/dist/react";
 import CqlLibraryDetailsDialog, {
   SelectedLibrary,
-} from "./CqlLibraryDetailsDialog";
-import toastReducer, { Action } from "../../common/ToastReducer";
+} from "../CqlLibraryDetailsDialog";
+import toastReducer, { Action } from "../../../common/ToastReducer";
+import { IconButton, Stack } from "@mui/material";
+import DeleteIcon from "../../../icons/DeleteIcon";
+import EditIcon from "../../../icons/EditIcon";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
@@ -128,6 +127,8 @@ const Results = ({
   });
 
   // get all available versions for the selected library
+  // TODO: we should get it from database
+  //  because we might miss some versions if the library name is completely different from search term
   const getLibraryVersionsForSetId = (setId: string): Array<string> => {
     return cqlLibraries
       .filter((cqlLibrary) => cqlLibrary.librarySet.librarySetId === setId)
@@ -186,14 +187,24 @@ const Results = ({
         accessorKey: "apply",
         cell: (row: any) => {
           return (
-            <Button
-              variant="outline"
-              onClick={() => showLibraryDetails(row.cell.row.id)}
-              data-testid={`view-apply-btn-${row.cell.id}`}
-              aria-label={`view-apply-btn-${row.cell.id}`}
-            >
-              View/Apply
-            </Button>
+            <Stack direction="row" alignItems="center">
+              <IconButton
+                data-testid={`delete-btn-${row.cell.id}`}
+                aria-label={`delete-btn-${row.cell.id}`}
+                size="small"
+                onClick={() => {}} // do nothing for now
+              >
+                <DeleteIcon />
+              </IconButton>
+              <IconButton
+                data-testid={`view-apply-btn-${row.cell.id}`}
+                aria-label={`view-apply-button-${row.cell.id}`}
+                size="small"
+                onClick={() => showLibraryDetails(row.cell.row.id)}
+              >
+                <EditIcon />
+              </IconButton>
+            </Stack>
           );
         },
       },
