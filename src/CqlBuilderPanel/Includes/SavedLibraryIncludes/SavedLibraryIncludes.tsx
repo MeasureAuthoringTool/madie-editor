@@ -51,19 +51,17 @@ const SavedLibraryIncludes = ({ cql, measureModel }: PropTypes) => {
 
         Promise.all(promises)
           .then((responses) => {
-            if (responses) {
-              const cqlLibraries = responses.map((response) => {
-                const lib = response.data;
-                return {
-                  id: lib.id,
-                  cqlLibraryName: lib.cqlLibraryName,
-                  version: lib.version,
-                  librarySet: lib.librarySet,
-                  draft: false,
-                } as CqlLibrary;
-              });
-              setLibraries(cqlLibraries);
-            }
+            const cqlLibraries = responses.map((response) => {
+              const lib = response.data;
+              return {
+                id: lib.id,
+                cqlLibraryName: lib.cqlLibraryName,
+                version: lib.version,
+                librarySet: lib.librarySet,
+                draft: false,
+              } as CqlLibrary;
+            });
+            setLibraries(cqlLibraries);
           })
           .catch((err) => {
             console.error("Error while fetching library: ", err);
