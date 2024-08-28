@@ -26,6 +26,8 @@ interface ExpressionsProps {
   textAreaRef;
   definitionToApply: Definition;
   setDefinitionToApply: Function;
+  setCursorPosition: Function;
+  setAutoInsert: Function;
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {
@@ -37,6 +39,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     textAreaRef,
     definitionToApply,
     setDefinitionToApply,
+    setCursorPosition,
+    setAutoInsert,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
   const availableTypes = [
@@ -47,8 +51,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     "Timing",
     "Pre-Defined Functions",
   ];
-  const lineNumbers = definitionToApply?.expressionValue?.split("\n")?.length;
-  const [editor, setEditor] = useState<Ace.Editor>();
   const [editorHeight, setEditorHeight] = useState("100px"); // Start with a minimal height
 
   const renderMenuItems = (options: string[]) => {
@@ -63,6 +65,11 @@ export default function ExpressionEditor(props: ExpressionsProps) {
         </MenuItem>
       )),
     ];
+  };
+
+  const handleCursorChange = (newCursorPosition) => {
+    setCursorPosition(newCursorPosition);
+    setAutoInsert(false); // If the cursor moves, disable auto-insert mode
   };
 
   const getNameOptionsByType = (type: string): string[] => {
@@ -175,8 +182,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                 onLoad={(aceEditor) => {
                   // On load we want to tell the ace editor that it's inside of a scrollabel page
                   aceEditor.setOption("autoScrollEditorIntoView", true);
-                  setEditor(aceEditor);
                 }}
+                onCursorChange={(selection) =>
+                  handleCursorChange(selection.getCursor())
+                }
                 width="100%"
                 height={editorHeight}
                 wrapEnabled={true}

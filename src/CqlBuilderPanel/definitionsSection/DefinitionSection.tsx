@@ -24,10 +24,10 @@ export interface DefinitionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
-export const formatExpression = (values) => {
+export const formatExpressionName = (values) => {
   return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
     ? values?.type === "Functions" || values?.type === "Fluent Functions"
-      ? values?.name?.replace(/(\w+)\(\)/g, '"$1"()')
+      ? values?.name?.replace(/([\w\s]+)\(\)/g, '"$1"()')
       : `"${values?.name}"`
     : values?.name;
 };
@@ -45,52 +45,60 @@ export default function DefinitionSection({
     comment: "",
     expressionValue: "",
   });
-  const [lastInsertionWasInline, setLastInsertionWasInline] =
-    useState<boolean>(false);
+  const [cursorPosition, setCursorPosition] = useState(null);
+  const [autoInsert, setAutoInsert] = useState(false);
 
-  // need to fix:
-  // 1. syntax of displaying functions and fluent functions - done
-  // 2. fix test cases
-  // 3. Inserting on top
   const handleExpressionEditorInsert = (values) => {
-    const editor = textAreaRef.current.editor;
-    const cursorPosition = editor.getCursorPosition();
-    const lineIndex = cursorPosition.row;
-    const lineContent = editor.session.getLine(lineIndex);
-    const formattedExpression = formatExpression(values);
+    const formattedExpression = formatExpressionName(values);
+    let editorExpressionValue = definitionToApply?.expressionValue;
+    let newCursorPosition = cursorPosition;
 
-    // Insert based on the cursor position or at the end if the cursor is at the start
-    let updatedExpressionValue;
-    // Check if cursor is at the end of the current line
-    if (
-      cursorPosition.column === lineContent.length &&
-      !lastInsertionWasInline
-    ) {
-      // Add inline if last insertion was not inline
-      updatedExpressionValue =
-        definitionToApply?.expressionValue.slice(
-          0,
-          editor.session.doc.positionToIndex(cursorPosition)
-        ) +
+    if (cursorPosition && !autoInsert) {
+      // Insert at cursor position
+      const { row, column } = cursorPosition;
+      const lines = definitionToApply?.expressionValue.split("\n");
+      const currentLine = lines[row];
+      const newLine =
+        currentLine.slice(0, column) +
         formattedExpression +
-        definitionToApply?.expressionValue.slice(
-          editor.session.doc.positionToIndex(cursorPosition)
-        );
-      setLastInsertionWasInline(true);
+        currentLine.slice(column);
+      lines[row] = newLine;
+      editorExpressionValue = lines.join("\n");
+      newCursorPosition = { row, column: column + formattedExpression.length };
     } else {
-      // Otherwise, append on a new line
-      updatedExpressionValue =
-        definitionToApply?.expressionValue + ("\n" + formattedExpression);
-      setLastInsertionWasInline(false);
+      // Append to a new line
+      const lines = editorExpressionValue.split("\n");
+      const newLineIndex = lines.length;
+      editorExpressionValue +=
+        (editorExpressionValue ? "\n" : "") + formattedExpression;
+      newCursorPosition = {
+        row: newLineIndex,
+        column: formattedExpression.length,
+      };
     }
 
     setDefinitionToApply({
       definitionName: values?.definitionName?.trim(),
       comment: values?.comment?.trim(),
-      expressionValue: updatedExpressionValue,
+      expressionValue: editorExpressionValue,
     });
     formik.setFieldValue("type", "");
     formik.setFieldValue("name", "");
+
+    textAreaRef.current.editor.setValue(editorExpressionValue, 1);
+
+    // Set the cursor to the end of the inserted text
+    textAreaRef.current.editor.moveCursorTo(
+      newCursorPosition.row,
+      newCursorPosition.column
+    );
+    textAreaRef.current.editor.clearSelection();
+
+    // After inserting, set autoInsert to true for next insertion
+    setAutoInsert(true);
+
+    // Clear the cursor position to allow the next item to auto-insert at the end
+    setCursorPosition(null);
   };
 
   const formik = useFormik({
@@ -159,6 +167,8 @@ export default function DefinitionSection({
           textAreaRef={textAreaRef}
           definitionToApply={definitionToApply}
           setDefinitionToApply={setDefinitionToApply}
+          setCursorPosition={setCursorPosition}
+          setAutoInsert={setAutoInsert}
         />
         <div className="form-actions">
           <Button

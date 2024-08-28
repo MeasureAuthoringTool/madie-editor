@@ -11,15 +11,11 @@ import "@testing-library/jest-dom";
 import DefinitionsSection from "./DefinitionsSection";
 import { within } from "@testing-library/dom";
 import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
-import { formatExpression } from "./DefinitionSection";
+import { formatExpressionName } from "./DefinitionSection";
 
 const mockEditor = { resize: jest.fn() };
 
 describe("CQL Definition Builder Section", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("Should display name and comment fields", async () => {
     render(
       <DefinitionsSection
@@ -322,24 +318,24 @@ describe("CQL Definition Builder Section", () => {
       type: "Parameters",
       name: "Measurement Period",
     };
-    expect(formatExpression(expressionValues)).toBe('"Measurement Period"');
+    expect(formatExpressionName(expressionValues)).toBe('"Measurement Period"');
 
     expressionValues.type = "Definitions";
-    expect(formatExpression(expressionValues)).toBe('"Measurement Period"');
+    expect(formatExpressionName(expressionValues)).toBe('"Measurement Period"');
 
     expressionValues.type = "Functions";
     expressionValues.name = "Abs()";
-    expect(formatExpression(expressionValues)).toBe('"Abs"()');
+    expect(formatExpressionName(expressionValues)).toBe('"Abs"()');
 
     expressionValues.type = "Fluent Functions";
-    expect(formatExpression(expressionValues)).toBe('"Abs"()');
+    expect(formatExpressionName(expressionValues)).toBe('"Abs"()');
 
     expressionValues.type = "Timing";
     expressionValues.name = "after";
-    expect(formatExpression(expressionValues)).toBe("after");
+    expect(formatExpressionName(expressionValues)).toBe("after");
 
     expressionValues.type = "Pre-Defined Functions";
     expressionValues.name = "AgeInDays()";
-    expect(formatExpression(expressionValues)).toBe("AgeInDays()");
+    expect(formatExpressionName(expressionValues)).toBe("AgeInDays()");
   });
 });
