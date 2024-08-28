@@ -11,6 +11,7 @@ import "@testing-library/jest-dom";
 import DefinitionsSection from "./DefinitionsSection";
 import { within } from "@testing-library/dom";
 import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
+import { formatExpression } from "./DefinitionSection";
 
 const mockEditor = { resize: jest.fn() };
 
@@ -312,5 +313,33 @@ describe("CQL Definition Builder Section", () => {
       "definition-name-text-input"
     )) as HTMLInputElement;
     expect(definitionName.value).toBe("IP");
+  });
+
+  it("To check if expressions are formatted as expected before inserting in ace editor", () => {
+    const expressionValues = {
+      definitionName: "Test",
+      comment: "",
+      type: "Parameters",
+      name: "Measurement Period",
+    };
+    expect(formatExpression(expressionValues)).toBe('"Measurement Period"');
+
+    expressionValues.type = "Definitions";
+    expect(formatExpression(expressionValues)).toBe('"Measurement Period"');
+
+    expressionValues.type = "Functions";
+    expressionValues.name = "Abs()";
+    expect(formatExpression(expressionValues)).toBe('"Abs"()');
+
+    expressionValues.type = "Fluent Functions";
+    expect(formatExpression(expressionValues)).toBe('"Abs"()');
+
+    expressionValues.type = "Timing";
+    expressionValues.name = "after";
+    expect(formatExpression(expressionValues)).toBe("after");
+
+    expressionValues.type = "Pre-Defined Functions";
+    expressionValues.name = "AgeInDays()";
+    expect(formatExpression(expressionValues)).toBe("AgeInDays()");
   });
 });

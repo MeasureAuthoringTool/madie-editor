@@ -24,6 +24,14 @@ export interface DefinitionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
+export const formatExpression = (values) => {
+  return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
+    ? values?.type === "Functions" || values?.type === "Fluent Functions"
+      ? values?.name?.replace(/(\w+)\(\)/g, '"$1"()')
+      : `"${values?.name}"`
+    : values?.name;
+};
+
 export default function DefinitionSection({
   canEdit,
   handleApplyDefinition,
@@ -39,14 +47,6 @@ export default function DefinitionSection({
   });
   const [lastInsertionWasInline, setLastInsertionWasInline] =
     useState<boolean>(false);
-
-  const formatExpression = (values) => {
-    return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
-      ? values?.type === "Functions" || values?.type === "Fluent Functions"
-        ? values?.name?.replace(/(\w+)\(\)/g, '"$1"()')
-        : `"${values?.name}"`
-      : values?.name;
-  };
 
   // need to fix:
   // 1. syntax of displaying functions and fluent functions - done
