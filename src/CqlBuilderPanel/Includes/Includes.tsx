@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import LibrarySearch from "./LibrarySearch";
+import LibrarySearch from "./Search/LibrarySearch";
 import LibraryTabs from "./LibraryTabs";
 import "./Includes.scss";
-import SavedLibraryIncludes from "./SavedLibraryIncludes";
+import SavedLibraryIncludes from "./SavedLibraryIncludes/SavedLibraryIncludes";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
 interface IncludesProps {

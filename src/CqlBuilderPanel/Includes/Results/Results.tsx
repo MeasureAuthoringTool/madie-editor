@@ -198,7 +198,7 @@ const Results = ({
               </IconButton>
               <IconButton
                 data-testid={`view-apply-btn-${row.cell.id}`}
-                aria-label={`view-apply-button-${row.cell.id}`}
+                aria-label={`view-apply-btn-${row.cell.id}`}
                 size="small"
                 onClick={() => showLibraryDetails(row.cell.row.id)}
               >

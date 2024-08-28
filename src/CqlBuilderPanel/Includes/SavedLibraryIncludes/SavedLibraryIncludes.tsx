@@ -7,12 +7,12 @@ import React, {
 } from "react";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import { Toast } from "@madie/madie-design-system/dist/react";
-import Results from "./Results/Results";
+import Results from "../Results/Results";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
   fetchVersionedLibrariesErrorMessage,
-} from "../../api/useCqlLibraryServiceApi";
-import toastReducer from "../../common/ToastReducer";
+} from "../../../api/useCqlLibraryServiceApi";
+import toastReducer from "../../../common/ToastReducer";
 
 interface PropTypes {
   cql: string;

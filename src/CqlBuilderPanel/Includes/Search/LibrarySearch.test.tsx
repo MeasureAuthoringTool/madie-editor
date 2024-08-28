@@ -3,18 +3,18 @@ import { render, waitFor, within } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import LibrarySearch from "./LibrarySearch";
 import userEvent from "@testing-library/user-event";
-import axios from "../../api/axios-instance";
+import axios from "../../../api/axios-instance";
 import {
   fetchCqlErrorMessage,
   fetchVersionedLibrariesErrorMessage,
-} from "../../api/useCqlLibraryServiceApi";
-import { mockServiceConfig } from "../../__mocks__/mockServiceConfig";
-import { mockCqlLibraries } from "../__mocks__/MockCqlLibraries";
+} from "../../../api/useCqlLibraryServiceApi";
+import { mockServiceConfig } from "../../../__mocks__/mockServiceConfig";
+import { mockCqlLibraries } from "../../__mocks__/MockCqlLibraries";
 
-jest.mock("../../api/axios-instance");
+jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-jest.mock("../../api/useServiceConfig", () => {
+jest.mock("../../../api/useServiceConfig", () => {
   return {
     useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
   };
@@ -74,13 +74,13 @@ describe("LibrarySearch component tests", () => {
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
         mockCqlLibraries[0].librarySet.owner,
-        "View/Apply",
+        "",
       ],
       [
         mockCqlLibraries[1].cqlLibraryName,
         mockCqlLibraries[1].version,
         mockCqlLibraries[1].librarySet.owner,
-        "View/Apply",
+        "",
       ],
     ];
     await waitFor(() => {
