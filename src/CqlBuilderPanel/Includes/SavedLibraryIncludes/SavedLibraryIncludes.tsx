@@ -38,7 +38,7 @@ const SavedLibraryIncludes = ({ cql, measureModel }: PropTypes) => {
   const fetchIncludedLibraries = useCallback(
     async (cql) => {
       const parsedCql = new CqlAntlr(cql).parse();
-      if (parsedCql?.includes) {
+      if (parsedCql.includes) {
         const promises = parsedCql?.includes.map(async (l) => {
           return (
             await libraryService.current

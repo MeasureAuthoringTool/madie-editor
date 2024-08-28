@@ -56,6 +56,17 @@ describe("SavedLibraryIncludes Component tests", () => {
     });
   });
 
+  it("Should render no includes if cql does not include one", async () => {
+    const cql =
+      "library CaseWhenThen version '0.3.000'\nusing QDM version '5.6'";
+    render(
+      <SavedLibraryIncludes cql={cql} canEdit={true} measureModel="QDM" />
+    );
+    const table = screen.getByRole("table");
+    const tableBody = table.querySelector("tbody");
+    expect(tableBody).toHaveTextContent("No Results were found");
+  });
+
   it("Should render an error if fetching included libraries failed", async () => {
     mockedAxios.get.mockImplementation((url) =>
       Promise.reject({
