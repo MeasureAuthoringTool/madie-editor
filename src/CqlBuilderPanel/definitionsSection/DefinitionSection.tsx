@@ -87,17 +87,17 @@ export default function DefinitionSection({
 
     textAreaRef.current.editor.setValue(editorExpressionValue, 1);
 
-    // Set the cursor to the end of the inserted text
+    // set the cursor to the end of the inserted text
     textAreaRef.current.editor.moveCursorTo(
       newCursorPosition.row,
       newCursorPosition.column
     );
     textAreaRef.current.editor.clearSelection();
 
-    // After inserting, set autoInsert to true for next insertion
+    // set autoInsert to true for next insertion
     setAutoInsert(true);
 
-    // Clear the cursor position to allow the next item to auto-insert at the end
+    // clear cursor position to allow the next item to auto-insert at the end
     setCursorPosition(null);
   };
 

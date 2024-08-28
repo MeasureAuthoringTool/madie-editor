@@ -51,7 +51,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     "Timing",
     "Pre-Defined Functions",
   ];
-  const [editorHeight, setEditorHeight] = useState("100px"); // Start with a minimal height
+  const [editorHeight, setEditorHeight] = useState("100px");
 
   const renderMenuItems = (options: string[]) => {
     return [
@@ -69,7 +69,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
 
   const handleCursorChange = (newCursorPosition) => {
     setCursorPosition(newCursorPosition);
-    setAutoInsert(false); // If the cursor moves, disable auto-insert mode
+    setAutoInsert(false); // disable auto-insert when cursor moves
   };
 
   const getNameOptionsByType = (type: string): string[] => {
@@ -88,16 +88,16 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     }
   };
 
-  // Automatically adjust the height of the ace editor based on the content
+  // adjusting the height of the editor based on the inserted text
   useEffect(() => {
     if (textAreaRef.current) {
       const lineCount = textAreaRef.current.editor.session.getLength();
-      const newHeight = Math.max(lineCount * 20, 100) + "px"; // Calculate height based on lines, minimum 100px
+      const newHeight = Math.max(lineCount * 20, 100) + "px";
       setEditorHeight(newHeight);
     }
   }, [definitionToApply?.expressionValue]);
 
-  // Allow manual editing of the textarea
+  // allow manual edit
   const handleContentChange = (value) => {
     setDefinitionToApply({
       ...definitionToApply,
