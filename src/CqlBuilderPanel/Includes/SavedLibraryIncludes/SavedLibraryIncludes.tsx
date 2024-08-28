@@ -20,7 +20,7 @@ interface PropTypes {
   measureModel: string;
 }
 
-const SavedLibraryIncludes = ({ cql, measureModel }: PropTypes) => {
+const SavedLibraryIncludes = ({ canEdit, cql, measureModel }: PropTypes) => {
   const [libraries, setLibraries] = useState<CqlLibrary[]>([]);
   const libraryService = useRef(useCqlLibraryServiceApi());
 
@@ -90,6 +90,7 @@ const SavedLibraryIncludes = ({ cql, measureModel }: PropTypes) => {
     <div style={{ marginTop: "20px" }}>
       <Results
         cqlLibraries={libraries}
+        canEdit={canEdit}
         measureModel={measureModel}
         handleApplyLibrary={() => {}} // do nothing for now
       />

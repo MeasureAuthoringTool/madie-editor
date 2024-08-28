@@ -60,6 +60,7 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
           cqlLibraries={cqlLibraries}
           measureModel={measureModel}
           handleApplyLibrary={handleApplyLibrary}
+          canEdit={canEdit}
         />
       </ExpandingSection>
       <Toast

@@ -22,12 +22,14 @@ import CqlLibraryDetailsDialog, {
 } from "../CqlLibraryDetailsDialog";
 import toastReducer, { Action } from "../../../common/ToastReducer";
 import { IconButton, Stack } from "@mui/material";
-import DeleteIcon from "../../../icons/DeleteIcon";
-import EditIcon from "../../../icons/EditIcon";
+import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
   measureModel: string;
+  canEdit: boolean;
   handleApplyLibrary: (library) => void;
 };
 
@@ -44,6 +46,7 @@ const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const Results = ({
   cqlLibraries,
   measureModel,
+  canEdit,
   handleApplyLibrary,
 }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
@@ -193,16 +196,26 @@ const Results = ({
                 aria-label={`delete-btn-${row.cell.id}`}
                 size="small"
                 onClick={() => {}} // do nothing for now
+                disabled={!canEdit}
               >
-                <DeleteIcon />
+                <DeleteOutlineIcon color="error" />
               </IconButton>
               <IconButton
-                data-testid={`view-apply-btn-${row.cell.id}`}
-                aria-label={`view-apply-btn-${row.cell.id}`}
+                data-testid={`edit-btn-${row.cell.id}`}
+                aria-label={`edit-btn-${row.cell.id}`}
+                size="small"
+                onClick={() => showLibraryDetails(row.cell.row.id)}
+                disabled={!canEdit}
+              >
+                <BorderColorOutlinedIcon color="primary" />
+              </IconButton>
+              <IconButton
+                data-testid={`view-btn-${row.cell.id}`}
+                aria-label={`view-btn-${row.cell.id}`}
                 size="small"
                 onClick={() => showLibraryDetails(row.cell.row.id)}
               >
-                <EditIcon />
+                <CodeOffOutlinedIcon color="primary" />
               </IconButton>
             </Stack>
           );
@@ -289,6 +302,7 @@ const Results = ({
         )}
       </div>
       <CqlLibraryDetailsDialog
+        canEdit={canEdit}
         library={selectedLibrary}
         onClose={() => setOpenLibraryDialog(false)}
         open={openLibraryDialog}

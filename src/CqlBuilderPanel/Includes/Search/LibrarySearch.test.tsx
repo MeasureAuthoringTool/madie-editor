@@ -174,7 +174,7 @@ describe("LibrarySearch component tests", () => {
     userEvent.click(searchBtn);
     await waitFor(() => {
       const viewApplyBtn = screen.getByRole("button", {
-        name: /view-apply-btn-0_apply/i,
+        name: /edit-btn-0_apply/i,
       });
       userEvent.click(viewApplyBtn);
     });
@@ -233,7 +233,7 @@ describe("LibrarySearch component tests", () => {
     userEvent.click(searchBtn);
     await waitFor(() => {
       const viewApplyBtn = screen.getByRole("button", {
-        name: /view-apply-btn-0_apply/i,
+        name: /edit-btn-0_apply/i,
       });
       userEvent.click(viewApplyBtn);
     });
