@@ -27,7 +27,7 @@ const IncludeResultActions = ({
             data-testid={`delete-btn-${id}`}
             aria-label={`delete-btn-${id}`}
             size="small"
-            onClick={() => onDelete}
+            onClick={() => onDelete(id)}
           >
             <DeleteOutlineIcon color="error" />
           </IconButton>
