@@ -3,14 +3,16 @@ import { IconButton, Tooltip } from "@mui/material";
 
 export default function ToolTippedIcon({
   tooltipMessage,
+  buttonProps,
   children,
 }: {
   tooltipMessage: string;
+  buttonProps?: { [key: string]: any };
   children: any;
 }) {
   return (
     <Tooltip title={tooltipMessage}>
-      <IconButton>{children}</IconButton>
+      <IconButton {...buttonProps}>{children}</IconButton>
     </Tooltip>
   );
 }

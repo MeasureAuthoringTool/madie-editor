@@ -3,6 +3,8 @@ import { IconButton, Stack } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
+import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
+import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 
 interface PropTypes {
   id: number;
@@ -23,32 +25,41 @@ const IncludeResultActions = ({
     <Stack direction="row" alignItems="center">
       {canEdit && (
         <>
-          <IconButton
-            data-testid={`delete-btn-${id}`}
-            aria-label={`delete-btn-${id}`}
-            size="small"
-            onClick={() => onDelete(id)}
+          <ToolTippedIcon
+            tooltipMessage="Delete"
+            buttonProps={{
+              "data-testid": `delete-btn-${id}`,
+              "aria-label": `delete-btn-${id}`,
+              size: "small",
+              onClick: () => onDelete(id),
+            }}
           >
             <DeleteOutlineIcon color="error" />
-          </IconButton>
-          <IconButton
-            data-testid={`edit-btn-${id}`}
-            aria-label={`edit-btn-${id}`}
-            size="small"
-            onClick={() => onEdit(id)}
+          </ToolTippedIcon>
+          <ToolTippedIcon
+            tooltipMessage="Edit"
+            buttonProps={{
+              "data-testid": `edit-button-${id}`,
+              "aria-label": `edit-button-${id}`,
+              size: "small",
+              onClick: () => onEdit(id),
+            }}
           >
             <BorderColorOutlinedIcon color="primary" />
-          </IconButton>
+          </ToolTippedIcon>
         </>
       )}
-      <IconButton
-        data-testid={`view-btn-${id}`}
-        aria-label={`view-btn-${id}`}
-        size="small"
-        onClick={() => onView(id)}
+      <ToolTippedIcon
+        tooltipMessage="View"
+        buttonProps={{
+          "data-testid": `view-button-${id}`,
+          "aria-label": `view-button-${id}`,
+          size: "small",
+          onClick: () => onView(id),
+        }}
       >
         <CodeOffOutlinedIcon color="primary" />
-      </IconButton>
+      </ToolTippedIcon>
     </Stack>
   );
 };
