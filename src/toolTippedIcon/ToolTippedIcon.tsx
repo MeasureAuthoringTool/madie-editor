@@ -11,7 +11,7 @@ export default function ToolTippedIcon({
   children: any;
 }) {
   return (
-    <Tooltip title={tooltipMessage}>
+    <Tooltip title={tooltipMessage} arrow>
       <IconButton {...buttonProps}>{children}</IconButton>
     </Tooltip>
   );
