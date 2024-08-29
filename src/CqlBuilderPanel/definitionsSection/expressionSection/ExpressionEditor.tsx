@@ -12,17 +12,22 @@ import {
   predefinedFunctionsNames,
   timingNames,
 } from "./ExpressionEditorHelper";
-import { ControlledTextarea } from "../../../common/ControlledTextArea";
 import * as _ from "lodash";
 import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
+import { Definition } from "../DefinitionSection";
+import AceEditor from "react-ace";
+import { Ace } from "ace-builds";
 
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;
   formik: any;
-  expressionValue: string;
-  setExpressionValue: Function;
   cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
+  textAreaRef;
+  definitionToApply: Definition;
+  setDefinitionToApply: Function;
+  setCursorPosition: Function;
+  setAutoInsert: Function;
 }
 
 export default function ExpressionEditor(props: ExpressionsProps) {
@@ -30,12 +35,14 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     canEdit,
     expressionEditorOpen,
     formik,
-    expressionValue,
-    setExpressionValue,
     cqlBuilderLookupsTypes,
+    textAreaRef,
+    definitionToApply,
+    setDefinitionToApply,
+    setCursorPosition,
+    setAutoInsert,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
-
   const availableTypes = [
     "Parameters",
     "Definitions",
@@ -44,6 +51,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     "Timing",
     "Pre-Defined Functions",
   ];
+  const [editorHeight, setEditorHeight] = useState("100px");
 
   const renderMenuItems = (options: string[]) => {
     return [
@@ -57,6 +65,11 @@ export default function ExpressionEditor(props: ExpressionsProps) {
         </MenuItem>
       )),
     ];
+  };
+
+  const handleCursorChange = (newCursorPosition) => {
+    setCursorPosition(newCursorPosition);
+    setAutoInsert(false); // disable auto-insert when cursor moves
   };
 
   const getNameOptionsByType = (type: string): string[] => {
@@ -73,6 +86,23 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     } else if (type === "Pre-Defined Functions") {
       return predefinedFunctionsNames;
     }
+  };
+
+  // adjusting the height of the editor based on the inserted text
+  useEffect(() => {
+    if (textAreaRef.current) {
+      const lineCount = textAreaRef.current.editor.session.getLength();
+      const newHeight = Math.max(lineCount * 20, 100) + "px";
+      setEditorHeight(newHeight);
+    }
+  }, [definitionToApply?.expressionValue]);
+
+  // allow manual edit
+  const handleContentChange = (value) => {
+    setDefinitionToApply({
+      ...definitionToApply,
+      expressionValue: value,
+    });
   };
 
   return (
@@ -140,13 +170,28 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </Button>
             </div>
             <div style={{ marginBottom: "72px" }} />
-            <div className="full-row">
-              <ControlledTextarea
-                name="expression-textarea"
-                value={expressionValue}
-                onValueChange={(value: string) => setExpressionValue(value)}
-                numOfLines={1}
-                disabled={!canEdit}
+            <div data-testId="expression-ace-editor">
+              <AceEditor
+                mode="sql"
+                ref={textAreaRef}
+                theme="monokai"
+                value={definitionToApply?.expressionValue}
+                onChange={(value) => {
+                  handleContentChange(value);
+                }}
+                onLoad={(aceEditor) => {
+                  // On load we want to tell the ace editor that it's inside of a scrollabel page
+                  aceEditor.setOption("autoScrollEditorIntoView", true);
+                }}
+                onCursorChange={(selection) =>
+                  handleCursorChange(selection.getCursor())
+                }
+                width="100%"
+                height={editorHeight}
+                wrapEnabled={true}
+                readOnly={false}
+                name="ace-editor-wrapper"
+                enableBasicAutocompletion={true}
               />
             </div>
           </>

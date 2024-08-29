@@ -10,6 +10,10 @@ import { describe, it } from "@jest/globals";
 import "@testing-library/jest-dom";
 import DefinitionsSection from "./DefinitionsSection";
 import { within } from "@testing-library/dom";
+import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
+import { formatExpressionName } from "./DefinitionSection";
+
+const mockEditor = { resize: jest.fn() };
 
 describe("CQL Definition Builder Section", () => {
   it("Should display name and comment fields", async () => {
@@ -17,7 +21,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameTextBox = await screen.findByRole("textbox", {
@@ -41,7 +45,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={false}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
 
@@ -59,7 +63,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -88,7 +92,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -122,7 +126,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -180,7 +184,7 @@ describe("CQL Definition Builder Section", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -236,12 +240,12 @@ describe("CQL Definition Builder Section", () => {
     expect(applyBtn).toBeDisabled();
   });
 
-  it("should enable apply button", async () => {
+  it("expression is inserted into text area when insert button is clicked", async () => {
     render(
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        availableParameters={null}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -292,33 +296,52 @@ describe("CQL Definition Builder Section", () => {
 
     const nameOptions = await screen.findAllByRole("option");
     expect(nameOptions).toHaveLength(70);
-
     const insertBtn = screen.getByTestId("expression-insert-btn");
+
     expect(insertBtn).toBeInTheDocument();
     expect(insertBtn).toBeDisabled();
 
     fireEvent.click(nameOptions[0]);
     expect(insertBtn).toBeEnabled();
 
-    const applyBtn = screen.getByTestId("definition-apply-btn");
-    expect(applyBtn).toBeInTheDocument();
-    expect(applyBtn).toBeDisabled();
-
-    const expressionText = screen.getByTestId(
-      "expression-textarea"
-    ) as HTMLInputElement;
-    fireEvent.change(expressionText, {
-      target: { value: "test expression" },
-    });
-    expect(expressionText.value).toBe("test expression");
-    expect(applyBtn).toBeEnabled();
-
-    act(() => {
-      fireEvent.click(applyBtn);
-    });
+    fireEvent.click(insertBtn);
     const definitionName = (await screen.findByTestId(
       "definition-name-text-input"
     )) as HTMLInputElement;
-    expect(definitionName.value).toBe("");
+    expect(definitionName.value).toBe("IP");
+  });
+
+  it("To check if expressions are formatted as expected before inserting in ace editor", () => {
+    const expressionValues = {
+      definitionName: "Test",
+      comment: "",
+      type: "Parameters",
+      name: "Measurement Period",
+    };
+    expect(formatExpressionName(expressionValues)).toBe('"Measurement Period"');
+
+    expressionValues.type = "Definitions";
+    expect(formatExpressionName(expressionValues)).toBe('"Measurement Period"');
+
+    expressionValues.type = "Definitions";
+    expressionValues.name = "Global.Measurement Period";
+    expect(formatExpressionName(expressionValues)).toBe(
+      'Global."Measurement Period"'
+    );
+
+    expressionValues.type = "Functions";
+    expressionValues.name = "Abs()";
+    expect(formatExpressionName(expressionValues)).toBe('"Abs"()');
+
+    expressionValues.type = "Fluent Functions";
+    expect(formatExpressionName(expressionValues)).toBe('"Abs"()');
+
+    expressionValues.type = "Timing";
+    expressionValues.name = "after";
+    expect(formatExpressionName(expressionValues)).toBe("after");
+
+    expressionValues.type = "Pre-Defined Functions";
+    expressionValues.name = "AgeInDays()";
+    expect(formatExpressionName(expressionValues)).toBe("AgeInDays()");
   });
 });
