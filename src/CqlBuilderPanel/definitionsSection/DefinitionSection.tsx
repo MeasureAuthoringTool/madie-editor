@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { useFormik } from "formik";
@@ -15,8 +15,6 @@ import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
 export interface Definition {
   definitionName?: string;
   comment?: string;
-  expressionType?: string;
-  expressionName?: string;
   expressionValue?: string;
 }
 
@@ -26,23 +24,83 @@ export interface DefinitionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
 }
 
+export const formatExpressionName = (values) => {
+  return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
+    ? values?.type === "Functions" || values?.type === "Fluent Functions"
+      ? values?.name?.replace(/([\w\s]+)\(\)/g, '"$1"()')
+      : values?.name.includes(".")
+      ? values?.name.replace(/(.*\.)(.*)/, '$1"$2"')
+      : `"${values?.name}"`
+    : values?.name;
+};
+
 export default function DefinitionSection({
   canEdit,
   handleApplyDefinition,
   cqlBuilderLookupsTypes,
 }: DefinitionProps) {
-  const [expressionValue, setExpressionValue] = useState("");
   const [expressionEditorOpen, setExpressionEditorOpen] =
     useState<boolean>(false);
+  const textAreaRef = useRef(null);
+  const [definitionToApply, setDefinitionToApply] = useState<Definition>({
+    definitionName: "",
+    comment: "",
+    expressionValue: "",
+  });
+  const [cursorPosition, setCursorPosition] = useState(null);
+  const [autoInsert, setAutoInsert] = useState(false);
 
-  const handleFormSubmit = async (values) => {
-    values.definitionName = trimInput("definitionName");
-    values.comment = trimInput("comment");
-    // save it with handleApplyDefinition
-    formik.resetForm();
-    setExpressionValue("");
-    setExpressionEditorOpen(false);
-    // }
+  const handleExpressionEditorInsert = (values) => {
+    const formattedExpression = formatExpressionName(values);
+    let editorExpressionValue = definitionToApply?.expressionValue;
+    let newCursorPosition = cursorPosition;
+
+    if (cursorPosition && !autoInsert) {
+      // Insert at cursor position
+      const { row, column } = cursorPosition;
+      const lines = definitionToApply?.expressionValue.split("\n");
+      const currentLine = lines[row];
+      const newLine =
+        currentLine.slice(0, column) +
+        formattedExpression +
+        currentLine.slice(column);
+      lines[row] = newLine;
+      editorExpressionValue = lines.join("\n");
+      newCursorPosition = { row, column: column + formattedExpression.length };
+    } else {
+      // Append to a new line
+      const lines = editorExpressionValue.split("\n");
+      const newLineIndex = lines.length;
+      editorExpressionValue +=
+        (editorExpressionValue ? "\n" : "") + formattedExpression;
+      newCursorPosition = {
+        row: newLineIndex,
+        column: formattedExpression.length,
+      };
+    }
+
+    setDefinitionToApply({
+      definitionName: values?.definitionName?.trim(),
+      comment: values?.comment?.trim(),
+      expressionValue: editorExpressionValue,
+    });
+    formik.setFieldValue("type", "");
+    formik.setFieldValue("name", "");
+
+    textAreaRef.current.editor.setValue(editorExpressionValue, 1);
+
+    // set the cursor to the end of the inserted text
+    textAreaRef.current.editor.moveCursorTo(
+      newCursorPosition.row,
+      newCursorPosition.column
+    );
+    textAreaRef.current.editor.clearSelection();
+
+    // set autoInsert to true for next insertion
+    setAutoInsert(true);
+
+    // clear cursor position to allow the next item to auto-insert at the end
+    setCursorPosition(null);
   };
 
   const formik = useFormik({
@@ -55,7 +113,7 @@ export default function DefinitionSection({
     validationSchema: DefinitionSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {
-      handleFormSubmit(values);
+      handleExpressionEditorInsert(values);
     },
   });
   const { resetForm } = formik;
@@ -64,11 +122,8 @@ export default function DefinitionSection({
     if (formik.values.definitionName) {
       setExpressionEditorOpen(true);
     }
-  }, [formik.values]);
+  }, [formik.values.definitionName]);
 
-  function trimInput(field: string) {
-    formik.setFieldValue(field, formik.values[field].trim());
-  }
   return (
     <div>
       <form id="definition-form" onSubmit={formik.handleSubmit}>
@@ -110,9 +165,12 @@ export default function DefinitionSection({
           canEdit={canEdit}
           expressionEditorOpen={expressionEditorOpen}
           formik={formik}
-          expressionValue={expressionValue}
-          setExpressionValue={setExpressionValue}
           cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+          textAreaRef={textAreaRef}
+          definitionToApply={definitionToApply}
+          setDefinitionToApply={setDefinitionToApply}
+          setCursorPosition={setCursorPosition}
+          setAutoInsert={setAutoInsert}
         />
         <div className="form-actions">
           <Button
@@ -122,20 +180,23 @@ export default function DefinitionSection({
             tw="mr-4"
             onClick={() => {
               resetForm();
-              setExpressionValue("");
+              setDefinitionToApply({
+                definitionName: "",
+                comment: "",
+                expressionValue: "",
+              });
             }}
           >
             Clear
           </Button>
           <Button
-            type="submit"
             data-testid="definition-apply-btn"
             disabled={
               !formik.values.definitionName ||
-              !formik.values.type ||
               !canEdit ||
-              !expressionValue
+              !definitionToApply?.expressionValue
             }
+            onClick={() => handleApplyDefinition}
           >
             Apply
           </Button>
