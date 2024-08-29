@@ -150,6 +150,7 @@ const Results = ({
         setSelectedLibrary({
           id: library.id,
           name: library.cqlLibraryName,
+          alias: library.alias,
           owner: library.librarySet.owner,
           librarySetId: setId,
           version: version,
