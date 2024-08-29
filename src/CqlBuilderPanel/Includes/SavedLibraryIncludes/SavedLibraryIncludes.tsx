@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
+import { CqlAntlr, CqlInclude } from "@madie/cql-antlr-parser/dist/src";
 import { Toast } from "@madie/madie-design-system/dist/react";
 import Results from "../Results/Results";
 import useCqlLibraryServiceApi, {
@@ -35,6 +35,14 @@ const SavedLibraryIncludes = ({ canEdit, cql, measureModel }: PropTypes) => {
     undefined
   );
 
+  const getAlias = (includes: CqlInclude[], library: CqlLibrary): string => {
+    return includes.find(
+      (include) =>
+        include.name === library.cqlLibraryName &&
+        include.version.replace(/["']/g, "") === library.version
+    ).called;
+  };
+
   const fetchIncludedLibraries = useCallback(
     async (cql) => {
       const parsedCql = new CqlAntlr(cql).parse();
@@ -57,6 +65,7 @@ const SavedLibraryIncludes = ({ canEdit, cql, measureModel }: PropTypes) => {
                 id: lib.id,
                 cqlLibraryName: lib.cqlLibraryName,
                 version: lib.version,
+                alias: getAlias(parsedCql.includes, lib),
                 librarySet: lib.librarySet,
                 draft: false,
               } as CqlLibrary;
@@ -91,6 +100,7 @@ const SavedLibraryIncludes = ({ canEdit, cql, measureModel }: PropTypes) => {
       <Results
         cqlLibraries={libraries}
         canEdit={canEdit}
+        showAlias={true}
         measureModel={measureModel}
         handleApplyLibrary={() => {}} // do nothing for now
       />

@@ -61,6 +61,7 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
           measureModel={measureModel}
           handleApplyLibrary={handleApplyLibrary}
           canEdit={canEdit}
+          showAlias={false}
         />
       </ExpandingSection>
       <Toast

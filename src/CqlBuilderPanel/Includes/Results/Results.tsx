@@ -21,15 +21,13 @@ import CqlLibraryDetailsDialog, {
   SelectedLibrary,
 } from "../CqlLibraryDetailsDialog";
 import toastReducer, { Action } from "../../../common/ToastReducer";
-import { IconButton, Stack } from "@mui/material";
-import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import IncludeResultActions from "./IncludeResultActions";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
   measureModel: string;
   canEdit: boolean;
+  showAlias: boolean;
   handleApplyLibrary: (library) => void;
 };
 
@@ -37,6 +35,7 @@ type RowDef = {
   id: string;
   name: string;
   version: string;
+  alias: string;
   owner: string;
   librarySetId: string;
 };
@@ -47,6 +46,7 @@ const Results = ({
   cqlLibraries,
   measureModel,
   canEdit,
+  showAlias,
   handleApplyLibrary,
 }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
@@ -125,6 +125,7 @@ const Results = ({
       librarySetId: library.librarySet.librarySetId,
       name: library.cqlLibraryName,
       version: library.version,
+      alias: library.alias,
       owner: library.librarySet.owner,
     };
   });
@@ -171,8 +172,8 @@ const Results = ({
     await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
   };
 
-  const columns = useMemo<ColumnDef<RowDef>[]>(
-    () => [
+  const columns = useMemo<ColumnDef<RowDef>[]>(() => {
+    const columnDefs = [
       {
         header: "name",
         accessorKey: "name",
@@ -190,40 +191,28 @@ const Results = ({
         accessorKey: "apply",
         cell: (row: any) => {
           return (
-            <Stack direction="row" alignItems="center">
-              <IconButton
-                data-testid={`delete-btn-${row.cell.id}`}
-                aria-label={`delete-btn-${row.cell.id}`}
-                size="small"
-                onClick={() => {}} // do nothing for now
-                disabled={!canEdit}
-              >
-                <DeleteOutlineIcon color="error" />
-              </IconButton>
-              <IconButton
-                data-testid={`edit-btn-${row.cell.id}`}
-                aria-label={`edit-btn-${row.cell.id}`}
-                size="small"
-                onClick={() => showLibraryDetails(row.cell.row.id)}
-                disabled={!canEdit}
-              >
-                <BorderColorOutlinedIcon color="primary" />
-              </IconButton>
-              <IconButton
-                data-testid={`view-btn-${row.cell.id}`}
-                aria-label={`view-btn-${row.cell.id}`}
-                size="small"
-                onClick={() => showLibraryDetails(row.cell.row.id)}
-              >
-                <CodeOffOutlinedIcon color="primary" />
-              </IconButton>
-            </Stack>
+            <IncludeResultActions
+              id={row.cell.row.id}
+              canEdit={canEdit}
+              onDelete={() => {}} //do nothing for now
+              onEdit={showLibraryDetails}
+              onView={showLibraryDetails}
+            />
           );
         },
       },
-    ],
-    [cqlLibraries]
-  );
+    ];
+    // we need to display aliases for saved libraries, so check if showAlias is true
+    return showAlias
+      ? [
+          {
+            header: "alias",
+            accessorKey: "alias",
+          },
+          ...columnDefs,
+        ]
+      : columnDefs;
+  }, [cqlLibraries]);
 
   const table = useReactTable({
     data,

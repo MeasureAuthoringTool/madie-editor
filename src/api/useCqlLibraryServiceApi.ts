@@ -13,6 +13,7 @@ export interface CqlLibrary {
   version: string;
   librarySet: LibrarySet;
   draft: boolean;
+  alias?: string;
 }
 
 const tryAgainMessage =

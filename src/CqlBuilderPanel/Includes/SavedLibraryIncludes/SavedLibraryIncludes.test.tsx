@@ -23,7 +23,7 @@ jest.mock("@madie/madie-util", () => ({
 const cql =
   "library CaseWhenThen version '0.3.000'\n" +
   "using QDM version '5.6'\n" +
-  "include CancerLinQ version '1.5.000' called CancerLinQQ";
+  "include Test12 version '2.2.000' called Test";
 
 describe("SavedLibraryIncludes Component tests", () => {
   it("Should render included libraries", async () => {
@@ -38,6 +38,7 @@ describe("SavedLibraryIncludes Component tests", () => {
     );
     const expectation = [
       [
+        mockCqlLibraries[0].alias,
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
         mockCqlLibraries[0].librarySet.owner,
