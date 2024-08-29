@@ -23,7 +23,7 @@ interface DefinitionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookupData;
 }
 
-type Definition = {
+export type Definition = {
   name: string;
   comment: string;
 };
