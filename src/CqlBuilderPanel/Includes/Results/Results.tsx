@@ -15,20 +15,19 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
-} from "../../api/useCqlLibraryServiceApi";
-import {
-  Pagination,
-  Button,
-  Toast,
-} from "@madie/madie-design-system/dist/react";
+} from "../../../api/useCqlLibraryServiceApi";
+import { Pagination, Toast } from "@madie/madie-design-system/dist/react";
 import CqlLibraryDetailsDialog, {
   SelectedLibrary,
-} from "./CqlLibraryDetailsDialog";
-import toastReducer, { Action } from "../../common/ToastReducer";
+} from "../CqlLibraryDetailsDialog";
+import toastReducer, { Action } from "../../../common/ToastReducer";
+import IncludeResultActions from "./IncludeResultActions";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
   measureModel: string;
+  canEdit: boolean;
+  showAlias: boolean;
   handleApplyLibrary: (library) => void;
 };
 
@@ -36,6 +35,7 @@ type RowDef = {
   id: string;
   name: string;
   version: string;
+  alias: string;
   owner: string;
   librarySetId: string;
 };
@@ -45,6 +45,8 @@ const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const Results = ({
   cqlLibraries,
   measureModel,
+  canEdit,
+  showAlias,
   handleApplyLibrary,
 }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
@@ -123,11 +125,14 @@ const Results = ({
       librarySetId: library.librarySet.librarySetId,
       name: library.cqlLibraryName,
       version: library.version,
+      alias: library.alias,
       owner: library.librarySet.owner,
     };
   });
 
   // get all available versions for the selected library
+  // TODO: we should get it from database
+  //  because we might miss some versions if the library name is completely different from search term
   const getLibraryVersionsForSetId = (setId: string): Array<string> => {
     return cqlLibraries
       .filter((cqlLibrary) => cqlLibrary.librarySet.librarySetId === setId)
@@ -145,6 +150,7 @@ const Results = ({
         setSelectedLibrary({
           id: library.id,
           name: library.cqlLibraryName,
+          alias: library.alias,
           owner: library.librarySet.owner,
           librarySetId: setId,
           version: version,
@@ -167,8 +173,8 @@ const Results = ({
     await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
   };
 
-  const columns = useMemo<ColumnDef<RowDef>[]>(
-    () => [
+  const columns = useMemo<ColumnDef<RowDef>[]>(() => {
+    const columnDefs = [
       {
         header: "name",
         accessorKey: "name",
@@ -186,20 +192,28 @@ const Results = ({
         accessorKey: "apply",
         cell: (row: any) => {
           return (
-            <Button
-              variant="outline"
-              onClick={() => showLibraryDetails(row.cell.row.id)}
-              data-testid={`view-apply-btn-${row.cell.id}`}
-              aria-label={`view-apply-btn-${row.cell.id}`}
-            >
-              View/Apply
-            </Button>
+            <IncludeResultActions
+              id={row.cell.row.id}
+              canEdit={canEdit}
+              onDelete={() => {}} //do nothing for now
+              onEdit={showLibraryDetails}
+              onView={showLibraryDetails}
+            />
           );
         },
       },
-    ],
-    [cqlLibraries]
-  );
+    ];
+    // we need to display aliases for saved libraries, so check if showAlias is true
+    return showAlias
+      ? [
+          {
+            header: "alias",
+            accessorKey: "alias",
+          },
+          ...columnDefs,
+        ]
+      : columnDefs;
+  }, [cqlLibraries]);
 
   const table = useReactTable({
     data,
@@ -278,6 +292,7 @@ const Results = ({
         )}
       </div>
       <CqlLibraryDetailsDialog
+        canEdit={canEdit}
         library={selectedLibrary}
         onClose={() => setOpenLibraryDialog(false)}
         open={openLibraryDialog}

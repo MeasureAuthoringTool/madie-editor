@@ -1,12 +1,12 @@
 import React, { useReducer, useState } from "react";
-import ExpandingSection from "../../common/ExpandingSection";
-import Search from "./Search";
+import ExpandingSection from "../../../common/ExpandingSection";
+import Search from "../Search";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
-} from "../../api/useCqlLibraryServiceApi";
+} from "../../../api/useCqlLibraryServiceApi";
 import { Toast } from "@madie/madie-design-system/dist/react";
-import Results from "./Results";
-import toastReducer from "../../common/ToastReducer";
+import Results from "../Results/Results";
+import toastReducer from "../../../common/ToastReducer";
 
 export interface LibraryTabContentProps {
   canEdit: boolean;
@@ -32,7 +32,7 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
 
   const handleSearch = async (searchTerm: string) => {
     (await libraryService)
-      .fetchVersionedCqlLibraries(searchTerm, measureModel)
+      .fetchVersionedCqlLibrariesBySearchTermAndModel(searchTerm, measureModel)
       .then((libraries) => {
         setCqlLibraries(libraries);
       })
@@ -60,6 +60,8 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
           cqlLibraries={cqlLibraries}
           measureModel={measureModel}
           handleApplyLibrary={handleApplyLibrary}
+          canEdit={canEdit}
+          showAlias={false}
         />
       </ExpandingSection>
       <Toast

@@ -23,6 +23,7 @@ export interface SelectedLibrary {
 interface PropTypes {
   library: SelectedLibrary;
   open: boolean;
+  canEdit: boolean;
   onClose: Function;
   onVersionChange: Function;
   onApply: Function;
@@ -30,6 +31,7 @@ interface PropTypes {
 const CqlLibraryDetailsDialog = ({
   library,
   open,
+  canEdit,
   onClose,
   onVersionChange,
   onApply,
@@ -76,7 +78,7 @@ const CqlLibraryDetailsDialog = ({
       continueButtonProps={{
         type: "submit",
         continueText: "Apply",
-        disabled: !(formik.isValid && formik.dirty),
+        disabled: !canEdit || !(formik.isValid && formik.dirty),
         "data-testid": "apply-button",
       }}
     >
@@ -94,6 +96,7 @@ const CqlLibraryDetailsDialog = ({
             }}
             required={true}
             size="small"
+            disabled={!canEdit}
           />
         </div>
         <div tw="flex-1 ml-5" data-testid="library-name">
@@ -109,6 +112,7 @@ const CqlLibraryDetailsDialog = ({
             data-testid="version-select"
             inputProps={{ "data-testid": "version-select-input" }}
             name="version"
+            disabled={!canEdit}
             SelectDisplayProps={{
               "aria-required": "true",
             }}
