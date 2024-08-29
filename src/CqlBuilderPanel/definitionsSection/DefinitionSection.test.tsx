@@ -323,6 +323,12 @@ describe("CQL Definition Builder Section", () => {
     expressionValues.type = "Definitions";
     expect(formatExpressionName(expressionValues)).toBe('"Measurement Period"');
 
+    expressionValues.type = "Definitions";
+    expressionValues.name = "Global.Measurement Period";
+    expect(formatExpressionName(expressionValues)).toBe(
+      'Global."Measurement Period"'
+    );
+
     expressionValues.type = "Functions";
     expressionValues.name = "Abs()";
     expect(formatExpressionName(expressionValues)).toBe('"Abs"()');

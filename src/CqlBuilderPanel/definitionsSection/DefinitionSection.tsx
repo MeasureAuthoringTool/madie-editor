@@ -28,6 +28,8 @@ export const formatExpressionName = (values) => {
   return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
     ? values?.type === "Functions" || values?.type === "Fluent Functions"
       ? values?.name?.replace(/([\w\s]+)\(\)/g, '"$1"()')
+      : values?.name.includes(".")
+      ? values?.name.replace(/(.*\.)(.*)/, '$1"$2"')
       : `"${values?.name}"`
     : values?.name;
 };
