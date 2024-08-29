@@ -21,24 +21,26 @@ const IncludeResultActions = ({
 }: PropTypes) => {
   return (
     <Stack direction="row" alignItems="center">
-      <IconButton
-        data-testid={`delete-btn-${id}`}
-        aria-label={`delete-btn-${id}`}
-        size="small"
-        onClick={() => onDelete}
-        disabled={!canEdit}
-      >
-        <DeleteOutlineIcon color="error" />
-      </IconButton>
-      <IconButton
-        data-testid={`edit-btn-${id}`}
-        aria-label={`edit-btn-${id}`}
-        size="small"
-        onClick={() => onEdit(id)}
-        disabled={!canEdit}
-      >
-        <BorderColorOutlinedIcon color="primary" />
-      </IconButton>
+      {canEdit && (
+        <>
+          <IconButton
+            data-testid={`delete-btn-${id}`}
+            aria-label={`delete-btn-${id}`}
+            size="small"
+            onClick={() => onDelete}
+          >
+            <DeleteOutlineIcon color="error" />
+          </IconButton>
+          <IconButton
+            data-testid={`edit-btn-${id}`}
+            aria-label={`edit-btn-${id}`}
+            size="small"
+            onClick={() => onEdit(id)}
+          >
+            <BorderColorOutlinedIcon color="primary" />
+          </IconButton>
+        </>
+      )}
       <IconButton
         data-testid={`view-btn-${id}`}
         aria-label={`view-btn-${id}`}
