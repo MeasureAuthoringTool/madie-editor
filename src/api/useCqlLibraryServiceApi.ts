@@ -1,6 +1,7 @@
 import axios from "./axios-instance";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
+import { AxiosResponse } from "axios";
 
 interface LibrarySet {
   librarySetId: string;
@@ -12,6 +13,7 @@ export interface CqlLibrary {
   version: string;
   librarySet: LibrarySet;
   draft: boolean;
+  alias?: string;
 }
 
 const tryAgainMessage =
@@ -24,7 +26,7 @@ export const fetchCqlErrorMessage =
 export class CqlLibraryServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
-  async fetchVersionedCqlLibraries(
+  async fetchVersionedCqlLibrariesBySearchTermAndModel(
     searchTerm: string,
     model: string
   ): Promise<CqlLibrary[]> {
@@ -46,6 +48,24 @@ export class CqlLibraryServiceApi {
       console.error(fetchVersionedLibrariesErrorMessage, err);
       throw new Error(fetchVersionedLibrariesErrorMessage);
     }
+  }
+
+  getVersionedCqlLibraryByNameVersionAndModel(
+    name: string,
+    version: string,
+    model: string
+  ): Promise<AxiosResponse<CqlLibrary>> {
+    return axios.get(`${this.baseUrl}/cql-libraries/versioned`, {
+      headers: {
+        Authorization: `Bearer ${this.getAccessToken()}`,
+      },
+      params: {
+        name,
+        version,
+        model,
+        includeElm: false,
+      },
+    });
   }
 
   async fetchLibraryCql(

@@ -2,11 +2,12 @@ import React from "react";
 import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface LibraryTabsProps {
   activeTab: string;
+  includedLibraryCount: number;
   setActiveTab: (value: string) => void;
 }
 
 export default function LibraryTabs(props: LibraryTabsProps) {
-  const { activeTab, setActiveTab } = props;
+  const { activeTab, includedLibraryCount, setActiveTab } = props;
 
   return (
     <Tabs
@@ -29,7 +30,7 @@ export default function LibraryTabs(props: LibraryTabsProps) {
         tabIndex={0}
         aria-label="Saved Libraries"
         type="B"
-        label="Saved Libraries (0)"
+        label={`Saved Libraries (${includedLibraryCount})`}
         data-testid="saved-libraries-tab"
         value="saved-libraries"
       />
