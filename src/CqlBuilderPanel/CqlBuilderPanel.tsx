@@ -27,6 +27,7 @@ export default function CqlBuilderPanel({
   handleApplyCode,
   handleApplyValueSet,
   handleApplyDefinition,
+  handleDefinitionDelete,
 }) {
   const featureFlags = useFeatureFlags();
   const {
@@ -207,7 +208,10 @@ export default function CqlBuilderPanel({
           <DefinitionsSection
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
+            handleDefinitionDelete={handleDefinitionDelete}
             cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+            setIsCQLUnchanged={setIsCQLUnchanged}
+            isCQLUnchanged={isCQLUnchanged}
           />
         )}
       </div>

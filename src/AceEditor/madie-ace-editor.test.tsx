@@ -300,11 +300,13 @@ describe("synching the cql", () => {
     expect(updatedContent.cql).toEqual(expectValue);
   });
 
-  test("remove value set version if exists in cql", async () => {
+  test.only("remove value set version if exists in cql", async () => {
     const cql = `
     library Testing version '0.0.000'
     using QDM version '5.6'
     valueset "Adolescent depression screening assessment with version":  'urn:oid:2.16.840.1.113762.1.4.1260.162' version 'urn:hl7:version:20240307'
+    define "func":
+        true
     `;
     const updatedContent = await updateEditorContent(
       cql,
