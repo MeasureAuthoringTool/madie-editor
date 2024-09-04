@@ -9,11 +9,19 @@ interface IncludesProps {
   cql: string;
   canEdit: boolean;
   measureModel: string;
-  handleApplyLibrary: () => void;
+  isCQLUnchanged: boolean;
+  handleApplyLibrary: (library: string) => void;
+  handleDeleteLibrary: (library: string) => void;
 }
 
-export default function Includes(props: IncludesProps) {
-  const { cql, measureModel, canEdit, handleApplyLibrary } = props;
+export default function Includes({
+  cql,
+  measureModel,
+  canEdit,
+  isCQLUnchanged,
+  handleApplyLibrary,
+  handleDeleteLibrary,
+}: IncludesProps) {
   const [activeLibraryTab, setActiveLibraryTab] = useState<string>("library");
   const [includedLibraryCount, setIncludedLibraryCount] = useState<number>(0);
 
@@ -43,6 +51,8 @@ export default function Includes(props: IncludesProps) {
           canEdit={canEdit}
           cql={cql}
           measureModel={measureModel}
+          isCQLUnchanged={isCQLUnchanged}
+          handleDeleteLibrary={handleDeleteLibrary}
         />
       )}
     </div>

@@ -16,7 +16,12 @@ import "styled-components/macro";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
 } from "../../../api/useCqlLibraryServiceApi";
-import { Pagination, Toast } from "@madie/madie-design-system/dist/react";
+import {
+  MadieDeleteDialog,
+  MadieDiscardDialog,
+  Pagination,
+  Toast,
+} from "@madie/madie-design-system/dist/react";
 import CqlLibraryDetailsDialog, {
   SelectedLibrary,
 } from "../CqlLibraryDetailsDialog";
@@ -29,6 +34,8 @@ type PropTypes = {
   canEdit: boolean;
   showAlias: boolean;
   handleApplyLibrary: (library) => void;
+  isCQLUnchanged?: boolean;
+  handleDeleteLibrary?: (library) => void;
 };
 
 type RowDef = {
@@ -47,12 +54,17 @@ const Results = ({
   measureModel,
   canEdit,
   showAlias,
+  isCQLUnchanged,
   handleApplyLibrary,
+  handleDeleteLibrary,
 }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
   const libraryService = useCqlLibraryServiceApi();
   const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
   const [selectedLibrary, setSelectedLibrary] = useState<SelectedLibrary>();
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
 
   // toast utilities
   const [toastState, dispatch] = useReducer(
@@ -173,6 +185,20 @@ const Results = ({
     await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
   };
 
+  const showDeleteConfirmation = (index) => {
+    const rowModal = table.getRow(index).original;
+    setSelectedLibrary({
+      name: rowModal.name,
+      version: rowModal.version,
+      alias: rowModal.alias,
+    } as SelectedLibrary);
+    if (!isCQLUnchanged) {
+      setDiscardDialogOpen(true);
+    } else {
+      setDeleteDialogOpen(true);
+    }
+  };
+
   const columns = useMemo<ColumnDef<RowDef>[]>(() => {
     const columnDefs = [
       {
@@ -195,7 +221,8 @@ const Results = ({
             <IncludeResultActions
               id={row.cell.row.id}
               canEdit={canEdit}
-              onDelete={() => {}} //do nothing for now
+              showDeleteAction={showAlias}
+              onDelete={showDeleteConfirmation}
               onEdit={showLibraryDetails}
               onView={showLibraryDetails}
             />
@@ -213,7 +240,7 @@ const Results = ({
           ...columnDefs,
         ]
       : columnDefs;
-  }, [cqlLibraries]);
+  }, [cqlLibraries, isCQLUnchanged]);
 
   const table = useReactTable({
     data,
@@ -307,6 +334,21 @@ const Results = ({
         message={toastState.message}
         onClose={() => dispatch({ type: "HIDE_TOAST" })}
         autoHideDuration={8000}
+      />
+      <MadieDeleteDialog
+        open={deleteDialogOpen}
+        onContinue={() => handleDeleteLibrary(selectedLibrary)}
+        onClose={() => setDeleteDialogOpen(false)}
+        dialogTitle="Are you sure?"
+        name={"this Library"}
+      />
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onContinue={() => {
+          setDeleteDialogOpen(true);
+          setDiscardDialogOpen(false);
+        }}
+        onClose={() => setDiscardDialogOpen(false)}
       />
     </>
   );

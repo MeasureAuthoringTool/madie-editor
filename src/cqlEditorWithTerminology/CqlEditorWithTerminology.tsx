@@ -14,6 +14,7 @@ const CqlEditorWithTerminology = ({
   handleApplyValueSet,
   handleApplyDefinition,
   handleApplyLibrary,
+  handleDeleteLibrary,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -90,6 +91,7 @@ const CqlEditorWithTerminology = ({
               handleApplyValueSet={handleApplyValueSet}
               handleApplyDefinition={handleApplyDefinition}
               handleApplyLibrary={handleApplyLibrary}
+              handleDeleteLibrary={handleDeleteLibrary}
             />
           </Allotment.Pane>
         )}

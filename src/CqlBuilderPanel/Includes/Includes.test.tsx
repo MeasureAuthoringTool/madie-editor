@@ -17,6 +17,8 @@ describe("Includes", () => {
         measureModel={"QDM"}
         handleApplyLibrary={jest.fn}
         cql={cql}
+        handleDeleteLibrary={jest.fn}
+        isCQLUnchanged={false}
       />
     );
     expect(getByTestId("includes-panel")).toBeInTheDocument();

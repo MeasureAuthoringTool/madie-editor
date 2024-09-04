@@ -34,7 +34,13 @@ describe("SavedLibraryIncludes Component tests", () => {
       })
     );
     render(
-      <SavedLibraryIncludes cql={cql} canEdit={true} measureModel="QDM" />
+      <SavedLibraryIncludes
+        cql={cql}
+        canEdit={true}
+        measureModel="QDM"
+        handleDeleteLibrary={jest.fn}
+        isCQLUnchanged
+      />
     );
     const expectation = [
       [
@@ -61,7 +67,13 @@ describe("SavedLibraryIncludes Component tests", () => {
     const cql =
       "library CaseWhenThen version '0.3.000'\nusing QDM version '5.6'";
     render(
-      <SavedLibraryIncludes cql={cql} canEdit={true} measureModel="QDM" />
+      <SavedLibraryIncludes
+        cql={cql}
+        canEdit={true}
+        measureModel="QDM"
+        handleDeleteLibrary={jest.fn}
+        isCQLUnchanged
+      />
     );
     const table = screen.getByRole("table");
     const tableBody = table.querySelector("tbody");
@@ -75,7 +87,13 @@ describe("SavedLibraryIncludes Component tests", () => {
       })
     );
     render(
-      <SavedLibraryIncludes cql={cql} canEdit={true} measureModel="QDM" />
+      <SavedLibraryIncludes
+        cql={cql}
+        canEdit={true}
+        measureModel="QDM"
+        handleDeleteLibrary={jest.fn}
+        isCQLUnchanged
+      />
     );
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(
