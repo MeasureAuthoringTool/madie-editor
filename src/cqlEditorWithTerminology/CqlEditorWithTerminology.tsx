@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { MouseEvent, useState } from "react";
 import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
@@ -10,6 +10,7 @@ const CqlEditorWithTerminology = ({
   value,
   onChange,
   handleCodeDelete,
+  handleDefinitionDelete,
   handleApplyCode,
   handleApplyValueSet,
   handleApplyDefinition,
@@ -90,6 +91,7 @@ const CqlEditorWithTerminology = ({
               handleApplyCode={handleApplyCode}
               handleApplyValueSet={handleApplyValueSet}
               handleApplyDefinition={handleApplyDefinition}
+              handleDefinitionDelete={(e: MouseEvent<HTMLDivElement>) => {}}
               handleApplyLibrary={handleApplyLibrary}
               handleDeleteLibrary={handleDeleteLibrary}
             />
