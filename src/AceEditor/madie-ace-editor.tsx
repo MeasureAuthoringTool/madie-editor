@@ -37,6 +37,7 @@ export interface EditorPropsType {
   cqlMetaData?: CqlMetaData;
   measureModel?: string;
   handleCodeDelete?: (code: string) => void;
+  handleDefinitionDelete?: (definition: string) => void;
   setEditorVal?: Function;
   setIsCQLUnchanged?: Function;
   isCQLUnchanged?: boolean;

@@ -4,10 +4,11 @@ import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
+  definitionCount: number;
 }
 
 export default function DefinitionSectionNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab } = props;
+  const { activeTab, setActiveTab, definitionCount } = props;
 
   return (
     <div style={{ borderBottom: "1px solid #b0b0b0" }} tw="flex flex-row">
@@ -32,9 +33,9 @@ export default function DefinitionSectionNavTabs(props: NavTabProps) {
         />
         <Tab
           tabIndex={0}
-          aria-label="Saved Definition(s)"
+          aria-label={`Saved Definition(s)`}
           type="B"
-          label="Saved Definition(s)"
+          label={`Saved Definition(s) (${definitionCount})`}
           data-testid="savedDefinitions-tab"
           value="savedDefinitions"
         />
