@@ -10,9 +10,9 @@ interface IncludesProps {
   canEdit: boolean;
   measureModel: string;
   isCQLUnchanged: boolean;
-  setEditorValue: (cql: string) => void;
-  handleApplyLibrary: (library: string) => void;
-  handleDeleteLibrary: (library: string) => void;
+  setEditorValue: (cql) => void;
+  handleApplyLibrary: (library) => void;
+  handleDeleteLibrary: (library) => void;
 }
 
 export default function Includes({
