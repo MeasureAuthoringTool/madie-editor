@@ -116,7 +116,7 @@ const SavedLibraryIncludes = ({
         isCQLUnchanged={isCQLUnchanged}
         setEditorValue={setEditorValue}
         handleApplyLibrary={() => {}} // do nothing for now
-        handleDeleteLibrary={handleDeleteLibrary} // do nothing for now
+        handleDeleteLibrary={handleDeleteLibrary}
       />
       <Toast
         toastKey="saved-library-toast"
