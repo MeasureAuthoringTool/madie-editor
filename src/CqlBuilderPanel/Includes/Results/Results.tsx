@@ -196,10 +196,10 @@ const Results = ({
       version: rowModal.version,
       alias: rowModal.alias,
     } as SelectedLibrary);
-    if (!isCQLUnchanged) {
-      setDiscardDialogOpen(true);
-    } else {
+    if (isCQLUnchanged) {
       setDeleteDialogOpen(true);
+    } else {
+      setDiscardDialogOpen(true);
     }
   };
 
