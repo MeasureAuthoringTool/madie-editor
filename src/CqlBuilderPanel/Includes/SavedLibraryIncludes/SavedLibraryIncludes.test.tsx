@@ -6,6 +6,7 @@ import { render, waitFor } from "@testing-library/react";
 import SavedLibraryIncludes from "./SavedLibraryIncludes";
 import { screen } from "@testing-library/dom";
 import { fetchVersionedLibrariesErrorMessage } from "../../../api/useCqlLibraryServiceApi";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -25,23 +26,27 @@ const cql =
   "using QDM version '5.6'\n" +
   "include Test12 version '2.2.000' called Test";
 
+const props = {
+  cql: cql,
+  canEdit: true,
+  measureModel: "QDM",
+  handleDeleteLibrary: jest.fn(),
+  isCQLUnchanged: true,
+  setEditorValue: jest.fn(),
+};
+
 describe("SavedLibraryIncludes Component tests", () => {
-  it("Should render included libraries", async () => {
+  beforeEach(() => {
     mockedAxios.get.mockImplementation((url) =>
       Promise.resolve({
         data: mockCqlLibraries[0],
         status: 200,
       })
     );
-    render(
-      <SavedLibraryIncludes
-        cql={cql}
-        canEdit={true}
-        measureModel="QDM"
-        handleDeleteLibrary={jest.fn}
-        isCQLUnchanged
-      />
-    );
+  });
+
+  it("Should render included libraries", async () => {
+    render(<SavedLibraryIncludes {...props} />);
     const expectation = [
       [
         mockCqlLibraries[0].alias,
@@ -66,15 +71,7 @@ describe("SavedLibraryIncludes Component tests", () => {
   it("Should render no includes if cql does not include one", async () => {
     const cql =
       "library CaseWhenThen version '0.3.000'\nusing QDM version '5.6'";
-    render(
-      <SavedLibraryIncludes
-        cql={cql}
-        canEdit={true}
-        measureModel="QDM"
-        handleDeleteLibrary={jest.fn}
-        isCQLUnchanged
-      />
-    );
+    render(<SavedLibraryIncludes {...props} />);
     const table = screen.getByRole("table");
     const tableBody = table.querySelector("tbody");
     expect(tableBody).toHaveTextContent("No Results were found");
@@ -86,19 +83,47 @@ describe("SavedLibraryIncludes Component tests", () => {
         status: 500,
       })
     );
-    render(
-      <SavedLibraryIncludes
-        cql={cql}
-        canEdit={true}
-        measureModel="QDM"
-        handleDeleteLibrary={jest.fn}
-        isCQLUnchanged
-      />
-    );
+    render(<SavedLibraryIncludes {...props} />);
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(
         fetchVersionedLibrariesErrorMessage
       );
     });
+  });
+
+  it("Should delete included library when clicked on delete button", async () => {
+    render(<SavedLibraryIncludes {...props} />);
+
+    await waitFor(() => {
+      const deleteBtn = screen.getByRole("button", {
+        name: /delete-button-0/i,
+      });
+      userEvent.click(deleteBtn);
+    });
+    const confirmationDialog = screen.getByRole("dialog");
+    expect(confirmationDialog).toBeInTheDocument();
+    const confirmDelete = screen.getByRole("button", {
+      name: /Yes, Delete/i,
+    });
+    userEvent.click(confirmDelete);
+    expect(props.handleDeleteLibrary).toHaveBeenCalled();
+  });
+
+  it("Should show discard change dialog if cql is changes before proceeding to delete included library", async () => {
+    render(<SavedLibraryIncludes {...props} isCQLUnchanged={false} />);
+
+    await waitFor(() => {
+      const deleteBtn = screen.getByRole("button", {
+        name: /delete-button-0/i,
+      });
+      userEvent.click(deleteBtn);
+    });
+    const discardChangeDialog = screen.getByRole("dialog");
+    expect(discardChangeDialog).toBeInTheDocument();
+    const discardChangeButton = screen.getByRole("button", {
+      name: /Yes, Discard All Changes/i,
+    });
+    userEvent.click(discardChangeButton);
+    expect(props.setEditorValue).toHaveBeenCalled();
   });
 });

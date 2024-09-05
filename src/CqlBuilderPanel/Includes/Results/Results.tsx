@@ -35,6 +35,8 @@ type PropTypes = {
   showAlias: boolean;
   handleApplyLibrary: (library) => void;
   isCQLUnchanged?: boolean;
+  cql?: string;
+  setEditorValue?: (cql) => void;
   handleDeleteLibrary?: (library) => void;
 };
 
@@ -55,6 +57,8 @@ const Results = ({
   canEdit,
   showAlias,
   isCQLUnchanged,
+  cql,
+  setEditorValue,
   handleApplyLibrary,
   handleDeleteLibrary,
 }: PropTypes) => {
@@ -345,6 +349,7 @@ const Results = ({
       <MadieDiscardDialog
         open={discardDialogOpen}
         onContinue={() => {
+          setEditorValue(cql);
           setDeleteDialogOpen(true);
           setDiscardDialogOpen(false);
         }}

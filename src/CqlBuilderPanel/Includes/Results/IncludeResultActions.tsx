@@ -30,8 +30,8 @@ const IncludeResultActions = ({
             <ToolTippedIcon
               tooltipMessage="Delete"
               buttonProps={{
-                "data-testid": `delete-btn-${id}`,
-                "aria-label": `delete-btn-${id}`,
+                "data-testid": `delete-button-${id}`,
+                "aria-label": `delete-button-${id}`,
                 size: "small",
                 onClick: () => onDelete(id),
               }}

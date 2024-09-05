@@ -19,6 +19,7 @@ describe("Includes", () => {
         cql={cql}
         handleDeleteLibrary={jest.fn}
         isCQLUnchanged={false}
+        setEditorValue={jest.fn}
       />
     );
     expect(getByTestId("includes-panel")).toBeInTheDocument();
