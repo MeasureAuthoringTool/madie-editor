@@ -1,14 +1,14 @@
 import React from "react";
-import { IconButton, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
-import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 
 interface PropTypes {
   id: number;
   canEdit: boolean;
+  showDeleteAction: boolean;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
   onView: (id: number) => void;
@@ -17,6 +17,7 @@ interface PropTypes {
 const IncludeResultActions = ({
   id,
   canEdit,
+  showDeleteAction,
   onEdit,
   onDelete,
   onView,
@@ -25,17 +26,19 @@ const IncludeResultActions = ({
     <Stack direction="row" alignItems="center">
       {canEdit && (
         <>
-          <ToolTippedIcon
-            tooltipMessage="Delete"
-            buttonProps={{
-              "data-testid": `delete-btn-${id}`,
-              "aria-label": `delete-btn-${id}`,
-              size: "small",
-              onClick: () => onDelete(id),
-            }}
-          >
-            <DeleteOutlineIcon color="error" />
-          </ToolTippedIcon>
+          {showDeleteAction && (
+            <ToolTippedIcon
+              tooltipMessage="Delete"
+              buttonProps={{
+                "data-testid": `delete-button-${id}`,
+                "aria-label": `delete-button-${id}`,
+                size: "small",
+                onClick: () => onDelete(id),
+              }}
+            >
+              <DeleteOutlineIcon color="error" />
+            </ToolTippedIcon>
+          )}
           <ToolTippedIcon
             tooltipMessage="Edit"
             buttonProps={{

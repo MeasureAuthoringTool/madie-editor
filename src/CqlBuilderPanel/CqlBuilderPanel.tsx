@@ -24,6 +24,7 @@ export default function CqlBuilderPanel({
   setIsCQLUnchanged,
   isCQLUnchanged,
   handleApplyLibrary,
+  handleDeleteLibrary,
   handleApplyCode,
   handleApplyValueSet,
   handleApplyDefinition,
@@ -181,7 +182,10 @@ export default function CqlBuilderPanel({
             canEdit={canEdit}
             cql={measureStoreCql}
             measureModel={measureModel}
+            isCQLUnchanged={isCQLUnchanged}
+            setEditorValue={setEditorVal}
             handleApplyLibrary={handleApplyLibrary}
+            handleDeleteLibrary={handleDeleteLibrary}
           />
         )}
         {activeTab === "valueSets" && (

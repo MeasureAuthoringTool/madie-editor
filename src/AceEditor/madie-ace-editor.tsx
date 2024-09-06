@@ -27,6 +27,7 @@ export interface EditorPropsType {
   handleApplyValueSet?: (vs: ValueSetForSearch) => void;
   handleApplyDefinition?: (def: Definition) => void;
   handleApplyLibrary?: (lib: SelectedLibrary) => void;
+  handleDeleteLibrary?: (lib: SelectedLibrary) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];
