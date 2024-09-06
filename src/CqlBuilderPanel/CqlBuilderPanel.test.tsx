@@ -115,7 +115,9 @@ const props = {
   handleApplyCode: jest.fn(),
   handleApplyValueSet: jest.fn(),
   handleApplyDefinition: jest.fn(),
+  handleDefinitionDelete: jest.fn(),
   handleApplyLibrary: jest.fn(),
+  handleDeleteLibrary: jest.fn(),
 };
 const { getByTestId } = screen;
 

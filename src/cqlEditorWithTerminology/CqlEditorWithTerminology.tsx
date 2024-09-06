@@ -15,6 +15,7 @@ const CqlEditorWithTerminology = ({
   handleApplyValueSet,
   handleApplyDefinition,
   handleApplyLibrary,
+  handleDeleteLibrary,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -92,6 +93,7 @@ const CqlEditorWithTerminology = ({
               handleApplyDefinition={handleApplyDefinition}
               handleDefinitionDelete={(e: MouseEvent<HTMLDivElement>) => {}}
               handleApplyLibrary={handleApplyLibrary}
+              handleDeleteLibrary={handleDeleteLibrary}
             />
           </Allotment.Pane>
         )}

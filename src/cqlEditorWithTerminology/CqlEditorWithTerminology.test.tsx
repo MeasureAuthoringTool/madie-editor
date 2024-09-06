@@ -56,6 +56,7 @@ describe("CqlEditorWithTerminology component", () => {
       handleClick: true,
       handleApplyValueSet: jest.fn(),
       handleApplyLibrary: jest.fn(),
+      handleDeleteLibrary: jest.fn(),
       measureModel: "QDM 5.6",
     };
     render(<CqlEditorWithTerminology {...props} />);
