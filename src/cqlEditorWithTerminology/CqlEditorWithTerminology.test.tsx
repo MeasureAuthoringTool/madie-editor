@@ -61,7 +61,7 @@ describe("CqlEditorWithTerminology component", () => {
     render(<CqlEditorWithTerminology {...props} />);
 
     expect(screen.getByTestId("split-view-view")).toBeInTheDocument();
-    expect(screen.getByTestId("expanded")).toBeInTheDocument();
+    expect(screen.getByTestId("expanded-button")).toBeInTheDocument();
     expect(screen.queryByTestId("valueSets-tab")).not.toBeInTheDocument();
   });
 
@@ -77,13 +77,16 @@ describe("CqlEditorWithTerminology component", () => {
     render(<CqlEditorWithTerminology {...props} />);
 
     expect(screen.getByTestId("split-view-view")).toBeInTheDocument();
-    const expandIcon = screen.getByTestId("expanded");
-    expect(expandIcon).toBeInTheDocument();
+    const expandBtn = screen.getByTestId("expanded-button");
+    expect(expandBtn).toBeInTheDocument();
 
-    fireEvent.click(expandIcon);
+    act(() => {
+      fireEvent.click(expandBtn);
+    });
 
-    const collapseIcon = screen.getByTestId("collapsed");
-    expect(collapseIcon).toBeInTheDocument();
+    const collapseBtn = screen.getByTestId("collapsed-button");
+    expect(collapseBtn).toBeInTheDocument();
+
     expect(await screen.findByTestId("valueSets-tab")).toBeInTheDocument();
 
     const valueSets = await screen.findByText("Value Sets");
@@ -113,7 +116,7 @@ describe("CqlEditorWithTerminology component", () => {
       expect(valueSets).toHaveAttribute("aria-selected", "true");
     });
 
-    fireEvent.click(collapseIcon);
+    fireEvent.click(collapseBtn);
     expect(await screen.queryByTestId("valueSets-tab")).not.toBeInTheDocument();
   });
 });
