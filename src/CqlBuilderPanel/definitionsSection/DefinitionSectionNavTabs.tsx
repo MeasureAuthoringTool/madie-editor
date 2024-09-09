@@ -33,11 +33,11 @@ export default function DefinitionSectionNavTabs(props: NavTabProps) {
         />
         <Tab
           tabIndex={0}
-          aria-label={`Saved Definition(s)`}
+          aria-label="Saved Definitions"
           type="B"
-          label={`Saved Definition(s) (${definitionCount})`}
-          data-testid="savedDefinitions-tab"
-          value="savedDefinitions"
+          label={`Saved Definitions (${definitionCount})`}
+          data-testid="saved-definitions-tab"
+          value="saved-definitions"
         />
       </Tabs>
     </div>

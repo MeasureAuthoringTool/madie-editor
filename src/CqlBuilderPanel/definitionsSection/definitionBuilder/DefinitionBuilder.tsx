@@ -7,10 +7,10 @@ import {
   TextField,
   Button,
 } from "@madie/madie-design-system/dist/react";
-import "./Definitions.scss";
-import { DefinitionSectionSchemaValidator } from "../../validations/DefinitionSectionSchemaValidator";
-import ExpressionEditor from "./expressionSection/ExpressionEditor";
-import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
+import "../Definitions.scss";
+import { DefinitionSectionSchemaValidator } from "../../../validations/DefinitionSectionSchemaValidator";
+import ExpressionEditor from "../expressionSection/ExpressionEditor";
+import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
 
 export interface Definition {
   definitionName?: string;
@@ -34,7 +34,7 @@ export const formatExpressionName = (values) => {
     : values?.name;
 };
 
-export default function DefinitionSection({
+export default function DefinitionBuilder({
   canEdit,
   handleApplyDefinition,
   cqlBuilderLookupsTypes,

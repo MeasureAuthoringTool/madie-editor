@@ -14,9 +14,8 @@ import {
 } from "./ExpressionEditorHelper";
 import * as _ from "lodash";
 import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
-import { Definition } from "../DefinitionSection";
+import { Definition } from "../definitionBuilder/DefinitionBuilder";
 import AceEditor from "react-ace";
-import { Ace } from "ace-builds";
 
 interface ExpressionsProps {
   canEdit: boolean;
