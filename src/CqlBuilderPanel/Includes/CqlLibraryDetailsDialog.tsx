@@ -96,6 +96,12 @@ const CqlLibraryDetailsDialog = ({
             }}
             required={true}
             size="small"
+            onBlur={() =>
+              formik.setFieldValue(
+                "libraryAlias",
+                formik.values["libraryAlias"].trim()
+              )
+            }
             disabled={!canEdit}
           />
         </div>

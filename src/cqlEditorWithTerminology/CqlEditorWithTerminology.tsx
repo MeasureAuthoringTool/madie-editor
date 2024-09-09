@@ -15,6 +15,7 @@ const CqlEditorWithTerminology = ({
   handleApplyValueSet,
   handleApplyDefinition,
   handleApplyLibrary,
+  handleDeleteLibrary,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -36,28 +37,40 @@ const CqlEditorWithTerminology = ({
         <Allotment.Pane>
           <div style={{ borderWidth: "24px", borderColor: "#ededed" }}>
             {expanded && (
-              <ExpansionIcon
+              <button
+                data-testid="expanded-button"
+                aria-label="editor-expanded"
                 style={{
                   float: "right",
                   color: "#0073c8",
-                  transform: "rotate(180deg)",
+                  marginTop: "-15px",
                 }}
-                data-testid="expanded"
-                aria-label="editor-expanded"
                 onClick={() => {
                   setExpanded(false);
                 }}
-              />
+              >
+                <ExpansionIcon
+                  style={{
+                    transform: "rotate(180deg)",
+                  }}
+                />
+              </button>
             )}
             {!expanded && (
-              <ExpansionIcon
-                style={{ float: "right", color: "#0073c8" }}
-                data-testid="collapsed"
+              <button
+                data-testid="collapsed-button"
                 aria-label="editor-collapsed"
+                style={{
+                  float: "right",
+                  color: "#0073c8",
+                  marginTop: "-15px",
+                }}
                 onClick={() => {
                   setExpanded(true);
                 }}
-              />
+              >
+                <ExpansionIcon />
+              </button>
             )}
           </div>
           <div className="left-panel">
@@ -92,6 +105,7 @@ const CqlEditorWithTerminology = ({
               handleApplyDefinition={handleApplyDefinition}
               handleDefinitionDelete={(e: MouseEvent<HTMLDivElement>) => {}}
               handleApplyLibrary={handleApplyLibrary}
+              handleDeleteLibrary={handleDeleteLibrary}
             />
           </Allotment.Pane>
         )}
