@@ -73,18 +73,20 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   };
 
   const getNameOptionsByType = (type: string): string[] => {
-    if (type === "Parameters" && cqlBuilderLookupsTypes) {
-      return cqlBuilderLookupsTypes["parameters"];
-    } else if (type === "Definitions") {
-      return cqlBuilderLookupsTypes["definitions"];
-    } else if (type === "Functions") {
-      return cqlBuilderLookupsTypes["functions"];
-    } else if (type === "Fluent Functions") {
-      return cqlBuilderLookupsTypes["fluentFunctions"];
-    } else if (type === "Timing") {
-      return timingNames;
-    } else if (type === "Pre-Defined Functions") {
-      return predefinedFunctionsNames;
+    if (cqlBuilderLookupsTypes) {
+      if (type === "Parameters") {
+        return cqlBuilderLookupsTypes["parameters"];
+      } else if (type === "Definitions") {
+        return cqlBuilderLookupsTypes["definitions"];
+      } else if (type === "Functions") {
+        return cqlBuilderLookupsTypes["functions"];
+      } else if (type === "Fluent Functions") {
+        return cqlBuilderLookupsTypes["fluentFunctions"];
+      } else if (type === "Timing") {
+        return timingNames;
+      } else if (type === "Pre-Defined Functions") {
+        return predefinedFunctionsNames;
+      }
     }
   };
 
