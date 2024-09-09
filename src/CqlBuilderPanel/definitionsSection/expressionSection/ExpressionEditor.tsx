@@ -73,7 +73,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   };
 
   const getNameOptionsByType = (type: string): string[] => {
-    if (type === "Parameters") {
+    if (type === "Parameters" && cqlBuilderLookupsTypes) {
       return cqlBuilderLookupsTypes["parameters"];
     } else if (type === "Definitions") {
       return cqlBuilderLookupsTypes["definitions"];
