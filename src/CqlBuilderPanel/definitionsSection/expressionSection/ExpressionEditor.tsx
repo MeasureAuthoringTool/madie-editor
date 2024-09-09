@@ -87,6 +87,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       } else if (type === "Pre-Defined Functions") {
         return predefinedFunctionsNames;
       }
+    } else {
+      return [];
     }
   };
 
@@ -128,7 +130,9 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                     "aria-required": "true",
                   }}
                   renderValue={(val) => {
-                    setNamesOptions(getNameOptionsByType(val));
+                    if (val && cqlBuilderLookupsTypes) {
+                      setNamesOptions(getNameOptionsByType(val));
+                    }
                     return val;
                   }}
                   options={renderMenuItems(availableTypes)}
