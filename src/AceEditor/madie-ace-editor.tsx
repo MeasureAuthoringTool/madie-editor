@@ -4,11 +4,14 @@ import * as _ from "lodash";
 import tw from "twin.macro";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
-import "ace-builds";
-import "ace-builds/webpack-resolver";
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
+import 'ace-builds/src-noconflict/ext-searchbox';
+
+const ace = require("ace-builds/src-noconflict/ace");
+ace.config.set('basePath', require('ace-builds').config.basePath);
+
 import CqlMode from "./cql-mode";
 import { Ace, Range } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
