@@ -24,8 +24,8 @@ interface ExpressionsProps {
   formik: any;
   cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
   textAreaRef;
-  definitionToApply: Definition;
-  setDefinitionToApply: Function;
+  expressionEditorValue: string;
+  setExpressionEditorValue: Function;
   setCursorPosition: Function;
   setAutoInsert: Function;
 }
@@ -37,8 +37,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     formik,
     cqlBuilderLookupsTypes,
     textAreaRef,
-    definitionToApply,
-    setDefinitionToApply,
+    expressionEditorValue,
+    setExpressionEditorValue,
     setCursorPosition,
     setAutoInsert,
   } = props;
@@ -73,7 +73,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   };
 
   const getNameOptionsByType = (type: string): string[] => {
-    if (type === "Parameters") {
+    if (type === "Parameters" && cqlBuilderLookupsTypes) {
       return cqlBuilderLookupsTypes["parameters"];
     } else if (type === "Definitions") {
       return cqlBuilderLookupsTypes["definitions"];
@@ -95,14 +95,11 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       const newHeight = Math.max(lineCount * 20, 100) + "px";
       setEditorHeight(newHeight);
     }
-  }, [definitionToApply?.expressionValue]);
+  }, [expressionEditorValue]);
 
   // allow manual edit
   const handleContentChange = (value) => {
-    setDefinitionToApply({
-      ...definitionToApply,
-      expressionValue: value,
-    });
+    setExpressionEditorValue(value);
   };
 
   return (
@@ -175,7 +172,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                 mode="sql"
                 ref={textAreaRef}
                 theme="monokai"
-                value={definitionToApply?.expressionValue}
+                value={expressionEditorValue}
                 onChange={(value) => {
                   handleContentChange(value);
                 }}
