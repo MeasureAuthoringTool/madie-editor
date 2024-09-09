@@ -125,7 +125,9 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                     "aria-required": "true",
                   }}
                   renderValue={(val) => {
-                    setNamesOptions(getNameOptionsByType(val));
+                    if (val && cqlBuilderLookupsTypes) {
+                      setNamesOptions(getNameOptionsByType(val));
+                    }
                     return val;
                   }}
                   options={renderMenuItems(availableTypes)}
