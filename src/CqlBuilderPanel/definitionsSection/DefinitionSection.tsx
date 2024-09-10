@@ -190,6 +190,8 @@ export default function DefinitionSection({
                 comment: formik.values.comment,
                 expressionValue: expressionEditorValue,
               };
+              resetForm();
+              setExpressionEditorValue("");
               handleApplyDefinition(definitionToApply);
             }}
           >

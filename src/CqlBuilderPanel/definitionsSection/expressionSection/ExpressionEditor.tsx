@@ -14,9 +14,9 @@ import {
 } from "./ExpressionEditorHelper";
 import * as _ from "lodash";
 import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
-import { Definition } from "../DefinitionSection";
 import AceEditor from "react-ace";
 import { Ace } from "ace-builds";
+import Skeleton from "@mui/material/Skeleton";
 
 interface ExpressionsProps {
   canEdit: boolean;
@@ -54,17 +54,23 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   const [editorHeight, setEditorHeight] = useState("100px");
 
   const renderMenuItems = (options: string[]) => {
-    return [
-      ...options.map((value) => (
-        <MenuItem
-          key={`${value}-option`}
-          value={value}
-          data-testid={`${value}-option`}
-        >
-          {value}
-        </MenuItem>
-      )),
-    ];
+    return cqlBuilderLookupsTypes
+      ? [
+          ...options.map((value) => (
+            <MenuItem
+              key={`${value}-option`}
+              value={value}
+              data-testid={`${value}-option`}
+            >
+              {value}
+            </MenuItem>
+          )),
+        ]
+      : Array.from(new Array(3)).map((_, index) => (
+          <MenuItem key={index} value="" disabled>
+            <Skeleton animation="wave" width="100%" height={20} />
+          </MenuItem>
+        ));
   };
 
   const handleCursorChange = (newCursorPosition) => {
