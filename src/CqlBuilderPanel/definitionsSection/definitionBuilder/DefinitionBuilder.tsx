@@ -42,23 +42,19 @@ export default function DefinitionBuilder({
   const [expressionEditorOpen, setExpressionEditorOpen] =
     useState<boolean>(false);
   const textAreaRef = useRef(null);
-  const [definitionToApply, setDefinitionToApply] = useState<Definition>({
-    definitionName: "",
-    comment: "",
-    expressionValue: "",
-  });
+  const [expressionEditorValue, setExpressionEditorValue] = useState("");
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
 
   const handleExpressionEditorInsert = (values) => {
     const formattedExpression = formatExpressionName(values);
-    let editorExpressionValue = definitionToApply?.expressionValue;
+    let editorExpressionValue = expressionEditorValue;
     let newCursorPosition = cursorPosition;
 
     if (cursorPosition && !autoInsert) {
       // Insert at cursor position
       const { row, column } = cursorPosition;
-      const lines = definitionToApply?.expressionValue.split("\n");
+      const lines = expressionEditorValue.split("\n");
       const currentLine = lines[row];
       const newLine =
         currentLine.slice(0, column) +
@@ -79,11 +75,7 @@ export default function DefinitionBuilder({
       };
     }
 
-    setDefinitionToApply({
-      definitionName: values?.definitionName?.trim(),
-      comment: values?.comment?.trim(),
-      expressionValue: editorExpressionValue,
-    });
+    setExpressionEditorValue(editorExpressionValue);
     formik.setFieldValue("type", "");
     formik.setFieldValue("name", "");
 
@@ -167,8 +159,8 @@ export default function DefinitionBuilder({
           formik={formik}
           cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
           textAreaRef={textAreaRef}
-          definitionToApply={definitionToApply}
-          setDefinitionToApply={setDefinitionToApply}
+          expressionEditorValue={expressionEditorValue}
+          setExpressionEditorValue={setExpressionEditorValue}
           setCursorPosition={setCursorPosition}
           setAutoInsert={setAutoInsert}
         />
@@ -180,11 +172,7 @@ export default function DefinitionBuilder({
             tw="mr-4"
             onClick={() => {
               resetForm();
-              setDefinitionToApply({
-                definitionName: "",
-                comment: "",
-                expressionValue: "",
-              });
+              setExpressionEditorValue("");
             }}
           >
             Clear
@@ -194,9 +182,18 @@ export default function DefinitionBuilder({
             disabled={
               !formik.values.definitionName ||
               !canEdit ||
-              !definitionToApply?.expressionValue
+              !expressionEditorValue
             }
-            onClick={() => handleApplyDefinition}
+            onClick={() => {
+              const definitionToApply: Definition = {
+                definitionName: formik.values.definitionName,
+                comment: formik.values.comment,
+                expressionValue: expressionEditorValue,
+              };
+              resetForm();
+              setExpressionEditorValue("");
+              handleApplyDefinition(definitionToApply);
+            }}
           >
             Apply
           </Button>
