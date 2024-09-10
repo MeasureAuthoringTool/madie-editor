@@ -17,7 +17,7 @@ import {
   CqlMetaData,
   ValueSetForSearch,
 } from "../api/useTerminologyServiceApi";
-import { Definition } from "../CqlBuilderPanel/definitionsSection/DefinitionSection";
+import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuilder/DefinitionBuilder";
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 
 export interface EditorPropsType {

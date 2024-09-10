@@ -15,9 +15,7 @@ import {
 import * as _ from "lodash";
 import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
 import AceEditor from "react-ace";
-import { Ace } from "ace-builds";
 import Skeleton from "@mui/material/Skeleton";
-
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;

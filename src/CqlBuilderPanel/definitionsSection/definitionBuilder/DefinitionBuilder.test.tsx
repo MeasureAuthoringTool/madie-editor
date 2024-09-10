@@ -1,24 +1,15 @@
 import * as React from "react";
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it } from "@jest/globals";
 import "@testing-library/jest-dom";
-import DefinitionsSection from "./DefinitionsSection";
 import { within } from "@testing-library/dom";
-import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
-import { formatExpressionName } from "./DefinitionSection";
+import DefinitionBuilder, { formatExpressionName } from "./DefinitionBuilder";
+import { cqlBuilderLookupsTypes } from "../../__mocks__/MockCqlBuilderLookupsTypes";
 
-const mockEditor = { resize: jest.fn() };
-
-describe("CQL Definition Builder Section", () => {
+describe("CQL Definition Builder Tests", () => {
   it("Should display name and comment fields", async () => {
     render(
-      <DefinitionsSection
+      <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
         cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
@@ -40,9 +31,9 @@ describe("CQL Definition Builder Section", () => {
     expect(screen.queryByTestId("type-selector-input")).not.toBeInTheDocument();
   });
 
-  it("Should disable Apply buton with canEdit being false", async () => {
+  it("Should disable Apply button with canEdit being false", async () => {
     render(
-      <DefinitionsSection
+      <DefinitionBuilder
         canEdit={false}
         handleApplyDefinition={jest.fn()}
         cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
@@ -60,7 +51,7 @@ describe("CQL Definition Builder Section", () => {
 
   it("Should open Expression Editor when definition name is entered", async () => {
     render(
-      <DefinitionsSection
+      <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
         cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
@@ -89,7 +80,7 @@ describe("CQL Definition Builder Section", () => {
 
   it("Should should clear value when clear button is clicked", async () => {
     render(
-      <DefinitionsSection
+      <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
         cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
@@ -123,7 +114,7 @@ describe("CQL Definition Builder Section", () => {
 
   it("Should populate name dropdown list", async () => {
     render(
-      <DefinitionsSection
+      <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
         cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
@@ -181,7 +172,7 @@ describe("CQL Definition Builder Section", () => {
 
   it("should enable insert button", async () => {
     render(
-      <DefinitionsSection
+      <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
         cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
@@ -242,7 +233,7 @@ describe("CQL Definition Builder Section", () => {
 
   it("expression is inserted into text area when insert button is clicked", async () => {
     render(
-      <DefinitionsSection
+      <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
         cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
