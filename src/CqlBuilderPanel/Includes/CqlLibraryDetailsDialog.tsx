@@ -63,6 +63,7 @@ const CqlLibraryDetailsDialog = ({
 
   const handleClose = () => {
     formik.setErrors({});
+    formik.resetForm();
     setOpenLibraryDialog(false);
   };
 
