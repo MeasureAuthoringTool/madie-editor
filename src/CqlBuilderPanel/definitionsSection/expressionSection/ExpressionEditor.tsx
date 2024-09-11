@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import {
@@ -13,14 +13,19 @@ import {
   timingNames,
 } from "./ExpressionEditorHelper";
 import * as _ from "lodash";
-import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
-import AceEditor from "react-ace";
+
 import Skeleton from "@mui/material/Skeleton";
+
+import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
+
+import AceEditor from "react-ace";
+import { Ace } from "ace-builds";
+import { useFormikContext } from "formik";
+
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;
-  formik: any;
-  cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
+  cqlBuilderLookupsTypes: CqlBuilderLookup;
   textAreaRef;
   expressionEditorValue: string;
   setExpressionEditorValue: Function;
@@ -28,11 +33,11 @@ interface ExpressionsProps {
   setAutoInsert: Function;
 }
 
+const localJunkData = ["Five", "Six,", "Seven", "Eight"];
 export default function ExpressionEditor(props: ExpressionsProps) {
   const {
     canEdit,
     expressionEditorOpen,
-    formik,
     cqlBuilderLookupsTypes,
     textAreaRef,
     expressionEditorValue,
@@ -50,6 +55,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     "Pre-Defined Functions",
   ];
   const [editorHeight, setEditorHeight] = useState("100px");
+  const formik: any = useFormikContext();
 
   const renderMenuItems = (options: string[]) => {
     return cqlBuilderLookupsTypes
@@ -76,20 +82,14 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     setAutoInsert(false); // disable auto-insert when cursor moves
   };
 
-  const getNameOptionsByType = (type: string): string[] => {
-    if (type === "Parameters") {
-      return cqlBuilderLookupsTypes["parameters"];
-    } else if (type === "Definitions") {
-      return cqlBuilderLookupsTypes["definitions"];
-    } else if (type === "Functions") {
-      return cqlBuilderLookupsTypes["functions"];
-    } else if (type === "Fluent Functions") {
-      return cqlBuilderLookupsTypes["fluentFunctions"];
-    } else if (type === "Timing") {
-      return timingNames;
-    } else if (type === "Pre-Defined Functions") {
-      return predefinedFunctionsNames;
-    }
+  const getDefinitionNameWithAlias = (def: Lookup, type: string) => {
+    const lookupTypeName =
+      def.libraryAlias && type !== "fluentFunctions"
+        ? def.libraryAlias + "." + def.name
+        : def.name;
+    return type === "fluentFunctions" || type === "functions"
+      ? lookupTypeName + "()"
+      : lookupTypeName;
   };
 
   // adjusting the height of the editor based on the inserted text
@@ -100,6 +100,36 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       setEditorHeight(newHeight);
     }
   }, [expressionEditorValue]);
+
+  useEffect(() => {
+    const type = formik.values.type;
+    if (
+      type === "Parameters" ||
+      type === "Definitions" ||
+      type === "Functions"
+    ) {
+      setNamesOptions(
+        cqlBuilderLookupsTypes[type.toLowerCase()].map((def) =>
+          getDefinitionNameWithAlias(def, type.toLowerCase())
+        )
+      );
+    } else if (type === "Fluent Functions") {
+      setNamesOptions(
+        cqlBuilderLookupsTypes["fluentFunctions"].map((def) =>
+          getDefinitionNameWithAlias(def, "fluentFunctions")
+        )
+      );
+    } else if (type === "Timing") {
+      setNamesOptions(timingNames);
+    } else if (type === "Pre-Defined Functions") {
+      setNamesOptions(predefinedFunctionsNames);
+    }
+  }, [
+    formik.values.type,
+    cqlBuilderLookupsTypes,
+    timingNames,
+    predefinedFunctionsNames,
+  ]);
 
   // allow manual edit
   const handleContentChange = (value) => {
@@ -125,12 +155,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   data-testid="type-selector"
                   SelectDisplayProps={{
                     "aria-required": "true",
-                  }}
-                  renderValue={(val) => {
-                    if (val && cqlBuilderLookupsTypes) {
-                      setNamesOptions(getNameOptionsByType(val));
-                    }
-                    return val;
                   }}
                   options={renderMenuItems(availableTypes)}
                   disabled={!canEdit}

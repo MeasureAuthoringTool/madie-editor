@@ -7,10 +7,7 @@ import { useFeatureFlags } from "@madie/madie-util";
 import IncludesTabSection from "./Includes/Includes";
 import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
 import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
-import {
-  CqlBuilderLookupData,
-  CqlBuilderLookup,
-} from "../model/CqlBuilderLookup";
+import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
 import { AxiosResponse } from "axios";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 
@@ -60,29 +57,11 @@ export default function CqlBuilderPanel({
 
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
   const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
-    useState<CqlBuilderLookupData>();
+    useState<CqlBuilderLookup>();
   const [errors, setErrors] = useState<string>(null);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
   const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
-
-  const generateCqlBuilderLookupTypes = (
-    cqlBuilderLookupsData
-  ): CqlBuilderLookupData => {
-    const result: CqlBuilderLookupData = {} as unknown as CqlBuilderLookupData;
-    for (const key in cqlBuilderLookupsData) {
-      result[key] = cqlBuilderLookupsData[key].map((p) => {
-        const lookupTypeName =
-          p.libraryAlias && key !== "fluentFunctions"
-            ? p.libraryAlias + "." + p.name
-            : p.name;
-        return key === "fluentFunctions" || key === "functions"
-          ? lookupTypeName + "()"
-          : lookupTypeName;
-      });
-    }
-    return result;
-  };
 
   useEffect(() => {
     if (measureStoreCql && measureStoreCql.trim().length > 0) {
@@ -93,14 +72,10 @@ export default function CqlBuilderPanel({
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setErrors(null);
-                setCqlBuilderLookupsTypes(
-                  generateCqlBuilderLookupTypes(axiosResponse?.data)
-                );
+                setCqlBuilderLookupsTypes(axiosResponse?.data);
               })
               .catch((error) => {
-                setCqlBuilderLookupsTypes(
-                  {} as unknown as CqlBuilderLookupData
-                );
+                setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -108,7 +83,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookupData);
+            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -120,14 +95,10 @@ export default function CqlBuilderPanel({
             fhirElmTranslationServiceApi
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                setCqlBuilderLookupsTypes(
-                  generateCqlBuilderLookupTypes(axiosResponse?.data)
-                );
+                setCqlBuilderLookupsTypes(axiosResponse?.data);
               })
               .catch((error) => {
-                setCqlBuilderLookupsTypes(
-                  {} as unknown as CqlBuilderLookupData
-                );
+                setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -135,7 +106,7 @@ export default function CqlBuilderPanel({
               });
           })
           .catch((error) => {
-            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookupData);
+            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
