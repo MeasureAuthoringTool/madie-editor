@@ -33,6 +33,7 @@ const props = {
   handleDeleteLibrary: jest.fn(),
   isCQLUnchanged: true,
   setEditorValue: jest.fn(),
+  setIsCQLUnchanged: jest.fn(),
 };
 
 describe("SavedLibraryIncludes Component tests", () => {
