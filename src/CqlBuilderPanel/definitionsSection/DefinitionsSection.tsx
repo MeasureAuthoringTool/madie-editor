@@ -12,11 +12,6 @@ interface DefinitionProps {
   setIsCQLUnchanged: boolean;
   isCQLUnchanged: boolean;
 }
-export type Definition = {
-  id: number;
-  name: string;
-  comment: string;
-};
 
 export default function DefinitionsSection({
   canEdit,
@@ -47,7 +42,7 @@ export default function DefinitionsSection({
           />
         )}
         {activeTab === "saved-definitions" && (
-          <Definitions definitions={cqlBuilderLookupsTypes?.definitions} />
+          <Definitions cqlBuilderLookupsTypes={cqlBuilderLookupsTypes} />
         )}
       </div>
     </>

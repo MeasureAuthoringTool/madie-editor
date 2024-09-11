@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { useFormik } from "formik";
 import {
+  Button,
   TextArea,
   TextField,
-  Button,
 } from "@madie/madie-design-system/dist/react";
 import "../Definitions.scss";
 import { DefinitionSectionSchemaValidator } from "../../../validations/DefinitionSectionSchemaValidator";
@@ -22,6 +22,7 @@ export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
   cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
+  definition?: Definition;
 }
 
 export const formatExpressionName = (values) => {
@@ -38,11 +39,14 @@ export default function DefinitionBuilder({
   canEdit,
   handleApplyDefinition,
   cqlBuilderLookupsTypes,
+  definition,
 }: DefinitionProps) {
   const [expressionEditorOpen, setExpressionEditorOpen] =
     useState<boolean>(false);
   const textAreaRef = useRef(null);
-  const [expressionEditorValue, setExpressionEditorValue] = useState("");
+  const [expressionEditorValue, setExpressionEditorValue] = useState(
+    definition?.expressionValue || ""
+  );
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
 
@@ -56,11 +60,10 @@ export default function DefinitionBuilder({
       const { row, column } = cursorPosition;
       const lines = expressionEditorValue.split("\n");
       const currentLine = lines[row];
-      const newLine =
+      lines[row] =
         currentLine.slice(0, column) +
         formattedExpression +
         currentLine.slice(column);
-      lines[row] = newLine;
       editorExpressionValue = lines.join("\n");
       newCursorPosition = { row, column: column + formattedExpression.length };
     } else {
@@ -97,8 +100,8 @@ export default function DefinitionBuilder({
 
   const formik = useFormik({
     initialValues: {
-      definitionName: "",
-      comment: "",
+      definitionName: definition?.definitionName || "",
+      comment: definition?.comment || "",
       type: "",
       name: "",
     },
@@ -119,24 +122,29 @@ export default function DefinitionBuilder({
   return (
     <div>
       <form id="definition-form" onSubmit={formik.handleSubmit}>
-        <div className={"full-row"}>
-          <TextField
-            required="required"
-            id="definition-name"
-            name="definitionName"
-            tw="w-full"
-            readOnly={!canEdit}
-            disabled={!canEdit}
-            label="Definition Name"
-            placeholder=""
-            inputProps={{
-              "data-testid": "definition-name-text-input",
-            }}
-            onChange={formik.handleChange}
-            {...formik.getFieldProps("definitionName")}
-          />
-          <div className="spacer" />
+        <div tw="flex space-x-5">
+          <div tw="w-1/2">
+            <TextField
+              required="required"
+              id="definition-name"
+              name="definitionName"
+              tw="w-full"
+              readOnly={!canEdit}
+              disabled={!canEdit}
+              label="Definition Name"
+              placeholder=""
+              inputProps={{
+                "data-testid": "definition-name-text-input",
+              }}
+              {...formik.getFieldProps("definitionName")}
+            />
+          </div>
+          <div tw="w-1/2 ml-10 my-1">
+            <p className="result-label">Return Type</p>
+            <span className="result-value">-</span>
+          </div>
         </div>
+        <br />
         <TextArea
           id="definition-comment"
           tw="w-full"
@@ -151,6 +159,7 @@ export default function DefinitionBuilder({
           onChange={formik.handleChange}
           value={formik.values.comment}
           name="comment"
+          {...formik.getFieldProps("comment")}
         />
         <div style={{ marginTop: "36px" }} />
         <ExpressionEditor
@@ -168,7 +177,12 @@ export default function DefinitionBuilder({
           <Button
             variant="outline"
             data-testid="clear-definition-btn"
-            disabled={!formik.dirty || !canEdit}
+            disabled={
+              (!formik.dirty &&
+                expressionEditorValue ===
+                  (definition?.expressionValue || "")) ||
+              !canEdit
+            }
             tw="mr-4"
             onClick={() => {
               resetForm();
@@ -195,7 +209,7 @@ export default function DefinitionBuilder({
               handleApplyDefinition(definitionToApply);
             }}
           >
-            Apply
+            {definition ? "Save" : "Apply"}
           </Button>
         </div>
       </form>
