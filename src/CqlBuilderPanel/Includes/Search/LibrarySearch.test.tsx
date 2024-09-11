@@ -33,6 +33,10 @@ describe("LibrarySearch component tests", () => {
         canEdit={true}
         measureModel="QDM"
         handleApplyLibrary={handleApplyLibrary}
+        cql={""}
+        isCQLUnchanged={true}
+        setIsCQLUnchanged={jest.fn()}
+        setEditorValue={jest.fn()}
       />
     );
   };

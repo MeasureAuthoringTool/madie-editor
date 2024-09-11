@@ -19,6 +19,7 @@ interface PropTypes {
   canEdit: boolean;
   measureModel: string;
   isCQLUnchanged: boolean;
+  setIsCQLUnchanged: Function;
   setEditorValue: (cql) => void;
   handleDeleteLibrary: (library) => void;
 }
@@ -28,6 +29,7 @@ const SavedLibraryIncludes = ({
   cql,
   measureModel,
   isCQLUnchanged,
+  setIsCQLUnchanged,
   setEditorValue,
   handleDeleteLibrary,
 }: PropTypes) => {
@@ -114,6 +116,7 @@ const SavedLibraryIncludes = ({
         showAlias={true}
         measureModel={measureModel}
         isCQLUnchanged={isCQLUnchanged}
+        setIsCQLUnchanged={setIsCQLUnchanged}
         setEditorValue={setEditorValue}
         handleApplyLibrary={() => {}} // do nothing for now
         handleDeleteLibrary={handleDeleteLibrary}

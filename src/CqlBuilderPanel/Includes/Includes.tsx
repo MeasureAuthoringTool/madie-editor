@@ -10,6 +10,7 @@ interface IncludesProps {
   canEdit: boolean;
   measureModel: string;
   isCQLUnchanged: boolean;
+  setIsCQLUnchanged: Function;
   setEditorValue: (cql) => void;
   handleApplyLibrary: (library) => void;
   handleDeleteLibrary: (library) => void;
@@ -20,6 +21,7 @@ export default function Includes({
   measureModel,
   canEdit,
   isCQLUnchanged,
+  setIsCQLUnchanged,
   setEditorValue,
   handleApplyLibrary,
   handleDeleteLibrary,
@@ -46,6 +48,10 @@ export default function Includes({
           canEdit={canEdit}
           measureModel={measureModel}
           handleApplyLibrary={handleApplyLibrary}
+          cql={cql}
+          isCQLUnchanged={isCQLUnchanged}
+          setIsCQLUnchanged={setIsCQLUnchanged}
+          setEditorValue={setEditorValue}
         />
       )}
       {activeLibraryTab === "saved-libraries" && (
@@ -54,6 +60,7 @@ export default function Includes({
           cql={cql}
           measureModel={measureModel}
           isCQLUnchanged={isCQLUnchanged}
+          setIsCQLUnchanged={setIsCQLUnchanged}
           setEditorValue={setEditorValue}
           handleDeleteLibrary={handleDeleteLibrary}
         />

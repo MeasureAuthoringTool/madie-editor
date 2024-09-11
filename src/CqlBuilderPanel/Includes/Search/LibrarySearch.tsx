@@ -11,11 +11,23 @@ import toastReducer from "../../../common/ToastReducer";
 export interface LibraryTabContentProps {
   canEdit: boolean;
   measureModel: string;
+  cql: string;
+  isCQLUnchanged: boolean;
+  setIsCQLUnchanged: Function;
+  setEditorValue: (cql) => void;
   handleApplyLibrary: (library) => void;
 }
 
 const LibrarySearch = (props: LibraryTabContentProps) => {
-  const { measureModel, canEdit, handleApplyLibrary } = props;
+  const {
+    measureModel,
+    canEdit,
+    cql,
+    isCQLUnchanged,
+    setIsCQLUnchanged,
+    setEditorValue,
+    handleApplyLibrary,
+  } = props;
   const libraryService = useCqlLibraryServiceApi();
   const [cqlLibraries, setCqlLibraries] = useState<CqlLibrary[]>([]);
 
@@ -62,6 +74,10 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
           handleApplyLibrary={handleApplyLibrary}
           canEdit={canEdit}
           showAlias={false}
+          cql={cql}
+          isCQLUnchanged={true} //to stop triggering discard changes from search library results edit
+          setIsCQLUnchanged={setIsCQLUnchanged}
+          setEditorValue={setEditorValue}
         />
       </ExpandingSection>
       <Toast
