@@ -346,8 +346,8 @@ const Results = ({
       <CqlLibraryDetailsDialog
         canEdit={canEdit}
         library={selectedLibrary}
-        onClose={() => setOpenLibraryDialog(false)}
         open={openLibraryDialog}
+        setOpenLibraryDialog={setOpenLibraryDialog}
         onVersionChange={updateLibrarySelection}
         onApply={handleApplyLibrary}
       />
