@@ -11,25 +11,16 @@ import { Pagination } from "@madie/madie-design-system/dist/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
-import { Definition } from "../DefinitionsSection";
+import { Lookup } from "../../../model/CqlBuilderLookup";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
-const Definitions = ({ definitions }: { definitions: string[] }) => {
+const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
-  const [visibleDefinitions, setVisibleDefinitions] = useState<Definition[]>(
-    []
-  );
-
-  const allRowDefinitions = definitions?.map((definition) => {
-    return {
-      name: definition,
-      comment: "",
-    } as Definition;
-  });
+  const [visibleDefinitions, setVisibleDefinitions] = useState<Lookup[]>([]);
 
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
@@ -52,14 +43,9 @@ const Definitions = ({ definitions }: { definitions: string[] }) => {
   }, [definitions, currentPage, currentLimit]);
 
   // table data
-  const data = visibleDefinitions?.map((definition) => {
-    return {
-      name: definition.name,
-      comment: definition.comment,
-    } as unknown as Definition;
-  });
+  const data = visibleDefinitions;
 
-  const columns = useMemo<ColumnDef<Definition>[]>(
+  const columns = useMemo<ColumnDef<Lookup>[]>(
     () => [
       {
         header: "Name",
@@ -112,17 +98,17 @@ const Definitions = ({ definitions }: { definitions: string[] }) => {
   });
 
   const managePagination = useCallback(() => {
-    if (allRowDefinitions?.length > 0) {
+    if (definitions?.length > 0) {
       setTotalItems(definitions.length);
       if (definitions.length < currentLimit) {
         setOffset(0);
-        setVisibleDefinitions(allRowDefinitions && [...allRowDefinitions]);
+        setVisibleDefinitions(definitions && [...definitions]);
         setVisibleItems(definitions?.length);
         setTotalPages(1);
       } else {
         const start = (currentPage - 1) * currentLimit;
         const end = start + currentLimit;
-        const newVisibleCodes = [...allRowDefinitions].slice(start, end);
+        const newVisibleCodes = [...definitions].slice(start, end);
         setOffset(start);
         setVisibleDefinitions(newVisibleCodes);
         setVisibleItems(newVisibleCodes?.length);

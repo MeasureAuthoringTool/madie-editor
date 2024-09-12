@@ -2,40 +2,16 @@ import * as React from "react";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import DefinitionsSection from "./DefinitionsSection";
 import userEvent from "@testing-library/user-event";
-import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
+import { CqlBuilderLookup, Lookup } from "../../model/CqlBuilderLookup";
+import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
 
 describe("DefinitionsSection", () => {
-  const cqlBuilderData = {
-    parameters: ["TJC.Measurement Period", "Global.Measurement Period"],
-    definitions: [
-      "SDE Sex",
-      "Encounter with Pharmacological Contraindications for Antithrombotic Therapy at Discharge",
-      "Global.Inpatient Encounter",
-      "TJC.Ischemic Stroke Encounters with Discharge Disposition",
-      "SDE Race",
-      "TJC.Non Elective Encounter with Age",
-      "TJC.Encounter with Comfort Measures during Hospitalization",
-      "Initial Population",
-      "Global.ED Encounter",
-    ],
-    functions: [
-      "Global.Latest()",
-      "Global.HospitalizationLocations()",
-      "Global.ToDateInterval()",
-      "Global.HospitalizationLengthofStay()",
-      "Global.HospitalDepartureTime()",
-      "Global.Hospitalization()",
-      "Global.EmergencyDepartmentArrivalTime()",
-    ],
-    fluentFunctions: [],
-  } as unknown as CqlBuilderLookupData;
-
   it("Should display definition section", async () => {
     render(
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={{} as CqlBuilderLookupData}
+        cqlBuilderLookupsTypes={{} as CqlBuilderLookup}
         handleDefinitionDelete={jest.fn()}
         isCQLUnchanged
         setIsCQLUnchanged
@@ -58,10 +34,10 @@ describe("DefinitionsSection", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={{} as CqlBuilderLookupData}
         handleDefinitionDelete={jest.fn()}
         isCQLUnchanged
         setIsCQLUnchanged
+        cqlBuilderLookupsTypes={{} as unknown as CqlBuilderLookup}
       />
     );
     const definition = await screen.findByTestId("definition-tab");
@@ -85,14 +61,14 @@ describe("DefinitionsSection", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderData}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
         handleDefinitionDelete={jest.fn()}
         isCQLUnchanged
         setIsCQLUnchanged
       />
     );
     const definition = await screen.findByTestId("definition-tab");
-    const savedDefinitions = await screen.findByText("Saved Definitions (9)");
+    const savedDefinitions = await screen.findByText("Saved Definitions (6)");
     expect(definition).toBeInTheDocument();
     expect(savedDefinitions).toBeInTheDocument();
     await waitFor(() => {
@@ -125,14 +101,14 @@ describe("DefinitionsSection", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderData}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
         handleDefinitionDelete={jest.fn()}
         isCQLUnchanged
         setIsCQLUnchanged
       />
     );
     const definition = await screen.findByTestId("definition-tab");
-    const savedDefinitions = await screen.findByText("Saved Definitions (9)");
+    const savedDefinitions = await screen.findByText("Saved Definitions (6)");
     expect(definition).toBeInTheDocument();
     expect(savedDefinitions).toBeInTheDocument();
     await waitFor(() => {
@@ -153,7 +129,7 @@ describe("DefinitionsSection", () => {
     expect(limitChoice).toHaveTextContent("5");
 
     await waitFor(() => {
-      expect(screen.queryByText("Initial Population")).toBeNull();
+      expect(screen.queryByText("ED Encounter")).toBeNull();
     });
 
     act(() => {
