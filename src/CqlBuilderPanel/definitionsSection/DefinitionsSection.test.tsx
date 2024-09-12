@@ -1,9 +1,9 @@
 import * as React from "react";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, waitFor, act, within } from "@testing-library/react";
 import DefinitionsSection from "./DefinitionsSection";
 import userEvent from "@testing-library/user-event";
-import { CqlBuilderLookup, Lookup } from "../../model/CqlBuilderLookup";
-import { cqlBuilderLookupsTypes } from "../__mocks__/MockCqlBuilderLookupsTypes";
+import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
+import { cqlBuilderLookup } from "../__mocks__/MockCqlBuilderLookupsTypes";
 
 describe("DefinitionsSection", () => {
   it("Should display definition section", async () => {
@@ -61,7 +61,7 @@ describe("DefinitionsSection", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
         handleDefinitionDelete={jest.fn()}
         isCQLUnchanged
         setIsCQLUnchanged
@@ -101,7 +101,7 @@ describe("DefinitionsSection", () => {
       <DefinitionsSection
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
         handleDefinitionDelete={jest.fn()}
         isCQLUnchanged
         setIsCQLUnchanged
@@ -150,5 +150,37 @@ describe("DefinitionsSection", () => {
     await waitFor(() => {
       expect(screen.findAllByText("Initial Population")).toBeDefined();
     });
+  });
+
+  it("Should render edit definition dialog on edit button click", async () => {
+    render(
+      <DefinitionsSection
+        canEdit={true}
+        handleApplyDefinition={jest.fn()}
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
+        handleDefinitionDelete={jest.fn()}
+        isCQLUnchanged
+        setIsCQLUnchanged
+      />
+    );
+    // go to saved definitions tab
+    const savedDefinitionsTab = screen.getByRole("tab", {
+      name: /Saved Definitions/i,
+    });
+    expect(savedDefinitionsTab).toBeInTheDocument();
+    userEvent.click(savedDefinitionsTab);
+    const table = screen.getByRole("table");
+    expect(table).toBeInTheDocument();
+    await waitFor(() => {
+      const editBtn = screen.getByRole("button", {
+        name: /edit-button-0/i,
+      });
+      userEvent.click(editBtn);
+    });
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByTestId("definition-name-text-input")).toHaveValue(
+      "SDE Sex"
+    );
   });
 });

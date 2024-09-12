@@ -40,7 +40,7 @@ const DefinitionBuilderDialog = ({
         onClose: onClose,
         fullWidth: true,
         maxWidth: "md",
-        "data-testid": "view-details-dialog",
+        "data-testid": "edit-definition-dialog",
       }}
     >
       <DefinitionBuilder

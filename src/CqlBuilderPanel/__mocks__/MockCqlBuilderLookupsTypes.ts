@@ -4,12 +4,13 @@ const tjcMeasurementPeriod = {
   name: "Measurement Period",
   libraryName: "TJC",
   libraryAlias: "TJC",
-  logic: "define",
+  logic:
+    'define "MedicationOrderInjection":\n["Medication, Order": "1 ML digoxin 0.1 MG/ML Injection"]',
   comment: "",
 } as Lookup;
 const sdeSex = {
   name: "SDE Sex",
-  logic: "define",
+  logic: 'define "SDE Sex":\n SDE."SDE Sex"',
   comment: "",
 } as Lookup;
 const inpatientEncounter = {
