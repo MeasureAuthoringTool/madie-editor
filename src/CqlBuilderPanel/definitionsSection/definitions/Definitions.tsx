@@ -26,6 +26,7 @@ type DefinitionsPropTypes = {
   cql: string;
   setEditorValue: (cql) => void;
   handleDefinitionDelete?: Function;
+  resetCql: Function;
 };
 const Definitions = ({
   definitions,
@@ -33,6 +34,7 @@ const Definitions = ({
   cql,
   setEditorValue,
   handleDefinitionDelete,
+  resetCql,
 }: DefinitionsPropTypes) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
@@ -200,11 +202,13 @@ const Definitions = ({
         <MadieDiscardDialog
           open={discardDialogOpen}
           onContinue={() => {
-            setEditorValue(cql);
+            resetCql();
             setDeleteDialogOpen(true);
             setDiscardDialogOpen(false);
           }}
-          onClose={() => setDiscardDialogOpen(false)}
+          onClose={() => {
+            setDiscardDialogOpen(false);
+          }}
         />
       </table>
       <div className="pagination-container">

@@ -9,6 +9,7 @@ import DefinitionBuilder from "./definitionBuilder/DefinitionBuilder";
 
 import _ from "lodash";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
+import { ResetTvTwoTone } from "@mui/icons-material";
 
 interface DefinitionProps {
   canEdit: boolean;
@@ -19,6 +20,7 @@ interface DefinitionProps {
   isCQLUnchanged: boolean;
   cql: string;
   setEditorVal: (cql: string) => void;
+  resetCql: Function;
 }
 
 export default function DefinitionsSection({
@@ -29,6 +31,7 @@ export default function DefinitionsSection({
   isCQLUnchanged,
   cql,
   setEditorVal,
+  resetCql,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -59,6 +62,7 @@ export default function DefinitionsSection({
             cql={cql}
             setEditorValue={setEditorVal}
             handleDefinitionDelete={handleDefinitionDelete}
+            resetCql={resetCql}
           />
         )}
       </div>
