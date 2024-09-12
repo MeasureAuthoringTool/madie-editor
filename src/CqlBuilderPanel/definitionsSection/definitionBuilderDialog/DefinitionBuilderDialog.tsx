@@ -3,21 +3,35 @@ import { MadieDialog } from "@madie/madie-design-system/dist/react";
 import DefinitionBuilder, {
   Definition,
 } from "../definitionBuilder/DefinitionBuilder";
-import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
+import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 
 interface PropTypes {
   open: boolean;
-  definition: Definition;
-  cqlBuilderLookupsTypes: CqlBuilderLookupData;
+  definition: Lookup;
+  cqlBuilderLookup: CqlBuilderLookup;
   onClose: () => void;
 }
+
+const getExpression = (definition: Lookup) => {
+  if (definition?.logic) {
+    return definition.logic
+      .split(/define ["]?(.*)["]?:/)?.[2]
+      .replace("\n", "");
+  }
+  return "";
+};
 
 const DefinitionBuilderDialog = ({
   open,
   definition,
-  cqlBuilderLookupsTypes,
+  cqlBuilderLookup,
   onClose,
 }: PropTypes) => {
+  const updatedDefinition = {
+    definitionName: definition?.name,
+    expressionValue: getExpression(definition),
+  } as Definition;
+
   return (
     <MadieDialog
       title="Edit"
@@ -31,9 +45,9 @@ const DefinitionBuilderDialog = ({
     >
       <DefinitionBuilder
         canEdit={true}
-        definition={definition}
+        definition={updatedDefinition}
         handleApplyDefinition={() => {}} // do nothing for now
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     </MadieDialog>
   );

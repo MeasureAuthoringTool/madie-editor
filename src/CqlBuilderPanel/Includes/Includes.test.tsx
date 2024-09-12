@@ -2,6 +2,17 @@ import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import Includes from "./Includes";
 import userEvent from "@testing-library/user-event";
+import axios from "../../api/axios-instance";
+import { mockServiceConfig } from "../../__mocks__/mockServiceConfig";
+
+jest.mock("../../api/axios-instance");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+jest.mock("../../api/useServiceConfig", () => {
+  return {
+    useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
+  };
+});
 
 const { getByTestId, getByRole } = screen;
 const cql =

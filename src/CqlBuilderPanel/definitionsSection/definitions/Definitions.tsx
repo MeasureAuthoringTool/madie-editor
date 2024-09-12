@@ -11,34 +11,26 @@ import { Pagination } from "@madie/madie-design-system/dist/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
-import { Definition } from "../definitionBuilder/DefinitionBuilder";
+import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
-import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
 const Definitions = ({
-  cqlBuilderLookupsTypes,
+  cqlBuilderLookup,
+  definitions,
 }: {
-  cqlBuilderLookupsTypes: CqlBuilderLookupData;
+  cqlBuilderLookup: CqlBuilderLookup;
+  definitions: Lookup[];
 }) => {
-  const [selectedDefinition, setSelectedDefinition] = useState<Definition>();
+  const [selectedDefinition, setSelectedDefinition] = useState<Lookup>();
   const [openDefinitionDialog, setOpenDefinitionDialog] = useState<boolean>();
 
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
-  const [visibleDefinitions, setVisibleDefinitions] = useState<Definition[]>(
-    []
-  );
-  const definitions = cqlBuilderLookupsTypes.definitions;
-  const allRowDefinitions = definitions?.map((definition) => {
-    return {
-      definitionName: definition,
-      comment: "",
-    } as Definition;
-  });
+  const [visibleDefinitions, setVisibleDefinitions] = useState<Lookup[]>([]);
 
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
@@ -67,18 +59,13 @@ const Definitions = ({
   };
 
   // table data
-  const data = visibleDefinitions?.map((definition) => {
-    return {
-      definitionName: definition.definitionName,
-      comment: definition.comment,
-    } as Definition;
-  });
+  const data = visibleDefinitions;
 
-  const columns = useMemo<ColumnDef<Definition>[]>(
+  const columns = useMemo<ColumnDef<Lookup>[]>(
     () => [
       {
         header: "Name",
-        accessorKey: "definitionName",
+        accessorKey: "name",
       },
       {
         header: "Comment",
@@ -127,17 +114,17 @@ const Definitions = ({
   });
 
   const managePagination = useCallback(() => {
-    if (allRowDefinitions?.length > 0) {
+    if (definitions?.length > 0) {
       setTotalItems(definitions.length);
       if (definitions.length < currentLimit) {
         setOffset(0);
-        setVisibleDefinitions(allRowDefinitions && [...allRowDefinitions]);
+        setVisibleDefinitions(definitions && [...definitions]);
         setVisibleItems(definitions?.length);
         setTotalPages(1);
       } else {
         const start = (currentPage - 1) * currentLimit;
         const end = start + currentLimit;
-        const newVisibleCodes = [...allRowDefinitions].slice(start, end);
+        const newVisibleCodes = [...definitions].slice(start, end);
         setOffset(start);
         setVisibleDefinitions(newVisibleCodes);
         setVisibleItems(newVisibleCodes?.length);
@@ -196,7 +183,7 @@ const Definitions = ({
       <DefinitionBuilderDialog
         open={openDefinitionDialog}
         definition={selectedDefinition}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
         onClose={() => setOpenDefinitionDialog(false)}
       />
       <div className="pagination-container">

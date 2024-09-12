@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
-import { CqlBuilderLookupData } from "../../model/CqlBuilderLookup";
+import tw from "twin.macro";
 import Definitions from "./definitions/Definitions";
 import DefinitionBuilder from "./definitionBuilder/DefinitionBuilder";
+import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
+
 interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
   handleDefinitionDelete: Function;
-  cqlBuilderLookupsTypes: CqlBuilderLookupData;
+  cqlBuilderLookupsTypes: CqlBuilderLookup;
   setIsCQLUnchanged: boolean;
   isCQLUnchanged: boolean;
 }
@@ -20,29 +22,31 @@ export default function DefinitionsSection({
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
+  const measureDefinitions =
+    cqlBuilderLookupsTypes?.definitions?.filter(
+      (definition) => !definition.libraryName
+    ) || [];
+
   return (
     <>
       <DefinitionSectionNavTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        definitionCount={(() => {
-          if (cqlBuilderLookupsTypes?.definitions) {
-            return cqlBuilderLookupsTypes.definitions.length;
-          } else {
-            return 0;
-          }
-        })()}
+        definitionCount={measureDefinitions.length}
       />
       <div>
         {activeTab === "definition" && (
           <DefinitionBuilder
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
-            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+            cqlBuilderLookup={cqlBuilderLookupsTypes}
           />
         )}
         {activeTab === "saved-definitions" && (
-          <Definitions cqlBuilderLookupsTypes={cqlBuilderLookupsTypes} />
+          <Definitions
+            cqlBuilderLookup={cqlBuilderLookupsTypes}
+            definitions={measureDefinitions}
+          />
         )}
       </div>
     </>
