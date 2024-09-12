@@ -127,4 +127,44 @@ describe("SavedLibraryIncludes Component tests", () => {
     userEvent.click(discardChangeButton);
     expect(props.setEditorValue).toHaveBeenCalled();
   });
+
+  it("Should show discard change dialog if cql is changes before proceeding to edit included library", async () => {
+    render(<SavedLibraryIncludes {...props} isCQLUnchanged={false} />);
+
+    await waitFor(() => {
+      const editBtn = screen.getByRole("button", {
+        name: /edit-button-0/i,
+      });
+      userEvent.click(editBtn);
+    });
+    const discardChangeDialog = screen.getByRole("dialog");
+    expect(discardChangeDialog).toBeInTheDocument();
+    const discardChangeButton = screen.getByRole("button", {
+      name: /Yes, Discard All Changes/i,
+    });
+    userEvent.click(discardChangeButton);
+    expect(props.setEditorValue).toHaveBeenCalled();
+    expect(props.isCQLUnchanged).toBe(true);
+  });
+
+  it("Should show discard change dialog if cql is changes before proceeding to edit included library and click on cancel should close the discard dialog", async () => {
+    render(<SavedLibraryIncludes {...props} isCQLUnchanged={false} />);
+
+    await waitFor(() => {
+      const editBtn = screen.getByRole("button", {
+        name: /edit-button-0/i,
+      });
+      userEvent.click(editBtn);
+    });
+    const discardChangeDialog = screen.getByRole("dialog");
+    expect(discardChangeDialog).toBeInTheDocument();
+    const keepWorkingButton = screen.getByRole("button", {
+      name: /No, Keep Working/i,
+    });
+    userEvent.click(keepWorkingButton);
+
+    await waitFor(() => {
+      expect(discardChangeDialog).not.toBeInTheDocument();
+    });
+  });
 });
