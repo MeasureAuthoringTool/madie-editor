@@ -4,7 +4,7 @@ import { describe, it } from "@jest/globals";
 import "@testing-library/jest-dom";
 import { within } from "@testing-library/dom";
 import DefinitionBuilder, { formatExpressionName } from "./DefinitionBuilder";
-import { cqlBuilderLookupsTypes } from "../../__mocks__/MockCqlBuilderLookupsTypes";
+import { cqlBuilderLookup } from "../../__mocks__/MockCqlBuilderLookupsTypes";
 
 describe("CQL Definition Builder Tests", () => {
   it("Should display name and comment fields", async () => {
@@ -12,7 +12,7 @@ describe("CQL Definition Builder Tests", () => {
       <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     );
     const definitionNameTextBox = await screen.findByRole("textbox", {
@@ -36,7 +36,7 @@ describe("CQL Definition Builder Tests", () => {
       <DefinitionBuilder
         canEdit={false}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     );
 
@@ -54,7 +54,7 @@ describe("CQL Definition Builder Tests", () => {
       <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -83,7 +83,7 @@ describe("CQL Definition Builder Tests", () => {
       <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -117,7 +117,7 @@ describe("CQL Definition Builder Tests", () => {
       <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -175,7 +175,7 @@ describe("CQL Definition Builder Tests", () => {
       <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
@@ -236,7 +236,7 @@ describe("CQL Definition Builder Tests", () => {
       <DefinitionBuilder
         canEdit={true}
         handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        cqlBuilderLookup={cqlBuilderLookup}
       />
     );
     const definitionNameInput = (await screen.findByTestId(
