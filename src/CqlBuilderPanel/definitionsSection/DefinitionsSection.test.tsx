@@ -220,7 +220,7 @@ describe("DefinitionsSection", () => {
     expect(limitChoice).toHaveTextContent("5");
 
     await waitFor(() => {
-      expect(screen.queryByText("Initial Population")).toBeNull();
+      expect(screen.queryByText("ED Encounter")).toBeNull();
     });
 
     act(() => {

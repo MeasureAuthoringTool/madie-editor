@@ -103,22 +103,27 @@ export default function ExpressionEditor(props: ExpressionsProps) {
 
   useEffect(() => {
     const type = formik.values.type;
+
     if (
       type === "Parameters" ||
       type === "Definitions" ||
       type === "Functions"
     ) {
-      setNamesOptions(
-        cqlBuilderLookupsTypes[type.toLowerCase()].map((def) =>
-          getDefinitionNameWithAlias(def, type.toLowerCase())
-        )
-      );
+      if (cqlBuilderLookupsTypes[type?.toLowerCase()]) {
+        setNamesOptions(
+          cqlBuilderLookupsTypes[type?.toLowerCase()].map((def) =>
+            getDefinitionNameWithAlias(def, type?.toLowerCase())
+          )
+        );
+      }
     } else if (type === "Fluent Functions") {
-      setNamesOptions(
-        cqlBuilderLookupsTypes["fluentFunctions"].map((def) =>
-          getDefinitionNameWithAlias(def, "fluentFunctions")
-        )
-      );
+      if (cqlBuilderLookupsTypes["fluentFunctions"]) {
+        setNamesOptions(
+          cqlBuilderLookupsTypes["fluentFunctions"].map((def) =>
+            getDefinitionNameWithAlias(def, "fluentFunctions")
+          )
+        );
+      }
     } else if (type === "Timing") {
       setNamesOptions(timingNames);
     } else if (type === "Pre-Defined Functions") {
