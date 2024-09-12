@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { Profiler, useState, useEffect, useRef } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { useFormik } from "formik";
+import { useFormik, FormikProvider } from "formik";
 import {
   TextArea,
   TextField,
   Button,
 } from "@madie/madie-design-system/dist/react";
+
 import "../Definitions.scss";
 import { DefinitionSectionSchemaValidator } from "../../../validations/DefinitionSectionSchemaValidator";
 import ExpressionEditor from "../expressionSection/ExpressionEditor";
-import { CqlBuilderLookupData } from "../../../model/CqlBuilderLookup";
+import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 
 export interface Definition {
   definitionName?: string;
@@ -21,7 +22,7 @@ export interface Definition {
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
-  cqlBuilderLookupsTypes: CqlBuilderLookupData | {};
+  cqlBuilderLookupsTypes: CqlBuilderLookup;
 }
 
 export const formatExpressionName = (values) => {
@@ -62,7 +63,10 @@ export default function DefinitionBuilder({
         currentLine.slice(column);
       lines[row] = newLine;
       editorExpressionValue = lines.join("\n");
-      newCursorPosition = { row, column: column + formattedExpression.length };
+      newCursorPosition = {
+        row,
+        column: column + formattedExpression.length,
+      } as unknown;
     } else {
       // Append to a new line
       const lines = editorExpressionValue.split("\n");
@@ -153,17 +157,19 @@ export default function DefinitionBuilder({
           name="comment"
         />
         <div style={{ marginTop: "36px" }} />
-        <ExpressionEditor
-          canEdit={canEdit}
-          expressionEditorOpen={expressionEditorOpen}
-          formik={formik}
-          cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
-          textAreaRef={textAreaRef}
-          expressionEditorValue={expressionEditorValue}
-          setExpressionEditorValue={setExpressionEditorValue}
-          setCursorPosition={setCursorPosition}
-          setAutoInsert={setAutoInsert}
-        />
+        <FormikProvider value={formik}>
+          <ExpressionEditor
+            canEdit={canEdit}
+            expressionEditorOpen={expressionEditorOpen}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+            textAreaRef={textAreaRef}
+            expressionEditorValue={expressionEditorValue}
+            setExpressionEditorValue={setExpressionEditorValue}
+            setCursorPosition={setCursorPosition}
+            setAutoInsert={setAutoInsert}
+          />
+        </FormikProvider>
+
         <div className="form-actions">
           <Button
             variant="outline"
