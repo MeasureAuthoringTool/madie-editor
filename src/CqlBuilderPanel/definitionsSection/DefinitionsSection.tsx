@@ -17,12 +17,18 @@ interface DefinitionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookup;
   setIsCQLUnchanged: boolean;
   isCQLUnchanged: boolean;
+  cql: string;
+  setEditorVal: (cql: string) => void;
 }
 
 export default function DefinitionsSection({
   canEdit,
+  handleDefinitionDelete,
   handleApplyDefinition,
   cqlBuilderLookupsTypes,
+  isCQLUnchanged,
+  cql,
+  setEditorVal,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -47,7 +53,13 @@ export default function DefinitionsSection({
           />
         )}
         {activeTab === "saved-definitions" && (
-          <Definitions definitions={localDefinitionList} />
+          <Definitions
+            definitions={localDefinitionList}
+            isCQLUnchanged={isCQLUnchanged}
+            cql={cql}
+            setEditorValue={setEditorVal}
+            handleDefinitionDelete={handleDefinitionDelete}
+          />
         )}
       </div>
     </>

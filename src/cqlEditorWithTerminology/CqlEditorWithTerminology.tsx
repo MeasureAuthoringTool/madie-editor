@@ -103,7 +103,7 @@ const CqlEditorWithTerminology = ({
               handleApplyCode={handleApplyCode}
               handleApplyValueSet={handleApplyValueSet}
               handleApplyDefinition={handleApplyDefinition}
-              handleDefinitionDelete={(e: MouseEvent<HTMLDivElement>) => {}}
+              handleDefinitionDelete={handleDefinitionDelete}
               handleApplyLibrary={handleApplyLibrary}
               handleDeleteLibrary={handleDeleteLibrary}
             />

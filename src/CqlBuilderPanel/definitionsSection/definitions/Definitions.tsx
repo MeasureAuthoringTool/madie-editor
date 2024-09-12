@@ -7,7 +7,11 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  Pagination,
+  MadieDeleteDialog,
+  MadieDiscardDialog,
+} from "@madie/madie-design-system/dist/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
@@ -16,11 +20,28 @@ import { Lookup } from "../../../model/CqlBuilderLookup";
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
-const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
+type DefinitionsPropTypes = {
+  definitions: Lookup[];
+  isCQLUnchanged: boolean;
+  cql: string;
+  setEditorValue: (cql) => void;
+  handleDefinitionDelete?: Function;
+};
+const Definitions = ({
+  definitions,
+  isCQLUnchanged,
+  cql,
+  setEditorValue,
+  handleDefinitionDelete,
+}: DefinitionsPropTypes) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
   const [visibleDefinitions, setVisibleDefinitions] = useState<Lookup[]>([]);
+  const [selectedDefinition, setSelectedDefinition] = useState<string>(null);
 
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
@@ -52,10 +73,6 @@ const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
         accessorKey: "name",
       },
       {
-        header: "Comment",
-        accessorKey: "comment",
-      },
-      {
         header: "",
         accessorKey: "apply",
         cell: (row: any) => {
@@ -67,7 +84,14 @@ const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
                   "data-testid": `delete-button-${row.cell.row.id}`,
                   "aria-label": `delete-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: () => {}, // do nothing for now
+                  onClick: (e) => {
+                    setSelectedDefinition(row.row.original.name);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialogOpen(true);
+                    } else {
+                      setDeleteDialogOpen(true);
+                    }
+                  }, // do nothing for now
                 }}
               >
                 <DeleteOutlineIcon color="error" />
@@ -163,6 +187,25 @@ const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
             </tr>
           ))}
         </tbody>
+        <MadieDeleteDialog
+          open={deleteDialogOpen}
+          onContinue={() => {
+            handleDefinitionDelete(selectedDefinition);
+            setDeleteDialogOpen(false);
+          }}
+          onClose={() => setDeleteDialogOpen(false)}
+          dialogTitle="Are you sure?"
+          name={"this Library"}
+        />
+        <MadieDiscardDialog
+          open={discardDialogOpen}
+          onContinue={() => {
+            setEditorValue(cql);
+            setDeleteDialogOpen(true);
+            setDiscardDialogOpen(false);
+          }}
+          onClose={() => setDiscardDialogOpen(false)}
+        />
       </table>
       <div className="pagination-container">
         <Pagination

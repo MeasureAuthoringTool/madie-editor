@@ -187,6 +187,8 @@ export default function CqlBuilderPanel({
             cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
             setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
+            cql={measureStoreCql}
+            setEditorVal={setEditorVal}
           />
         )}
       </div>
