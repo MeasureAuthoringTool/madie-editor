@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, waitFor, act, within } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import DefinitionsSection from "./DefinitionsSection";
 import userEvent from "@testing-library/user-event";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";

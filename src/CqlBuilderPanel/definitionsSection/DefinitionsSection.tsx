@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
-import tw from "twin.macro";
 import Definitions from "./definitions/Definitions";
 import DefinitionBuilder from "./definitionBuilder/DefinitionBuilder";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
