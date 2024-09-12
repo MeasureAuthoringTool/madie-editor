@@ -192,7 +192,7 @@ export default function DefinitionBuilder({
             tw="mr-4"
             onClick={() => {
               resetForm();
-              setExpressionEditorValue(definition?.expressionValue);
+              setExpressionEditorValue(definition?.expressionValue || "");
             }}
           >
             Clear
