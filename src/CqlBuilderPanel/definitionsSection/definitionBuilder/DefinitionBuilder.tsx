@@ -142,10 +142,12 @@ export default function DefinitionBuilder({
               {...formik.getFieldProps("definitionName")}
             />
           </div>
-          <div tw="w-1/2 ml-10 my-1">
-            <p className="result-label">Return Type</p>
-            <span className="result-value">-</span>
-          </div>
+          {definition && (
+            <div tw="w-1/2 ml-10 my-2">
+              <p className="result-label">Return Type</p>
+              <span className="result-value">-</span>
+            </div>
+          )}
         </div>
         <br />
         <TextArea
