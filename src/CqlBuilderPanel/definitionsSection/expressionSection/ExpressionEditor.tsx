@@ -33,7 +33,6 @@ interface ExpressionsProps {
   setAutoInsert: Function;
 }
 
-const localJunkData = ["Five", "Six,", "Seven", "Eight"];
 export default function ExpressionEditor(props: ExpressionsProps) {
   const {
     canEdit,
