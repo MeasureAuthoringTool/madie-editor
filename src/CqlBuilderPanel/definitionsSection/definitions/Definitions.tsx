@@ -11,12 +11,22 @@ import { Pagination } from "@madie/madie-design-system/dist/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
-import { Lookup } from "../../../model/CqlBuilderLookup";
+import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
+import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
-const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
+const Definitions = ({
+  cqlBuilderLookup,
+  definitions,
+}: {
+  cqlBuilderLookup: CqlBuilderLookup;
+  definitions: Lookup[];
+}) => {
+  const [selectedDefinition, setSelectedDefinition] = useState<Lookup>();
+  const [openDefinitionDialog, setOpenDefinitionDialog] = useState<boolean>();
+
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
@@ -41,6 +51,12 @@ const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
   useEffect(() => {
     managePagination();
   }, [definitions, currentPage, currentLimit]);
+
+  const showEditDefinitionDialog = (index) => {
+    const rowModal = table.getRow(index).original;
+    setSelectedDefinition(rowModal);
+    setOpenDefinitionDialog(true);
+  };
 
   // table data
   const data = visibleDefinitions;
@@ -78,7 +94,7 @@ const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
                   "data-testid": `edit-button-${row.cell.row.id}`,
                   "aria-label": `edit-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: () => {},
+                  onClick: () => showEditDefinitionDialog(row.cell.row.id),
                 }}
               >
                 <BorderColorOutlinedIcon color="primary" />
@@ -164,6 +180,12 @@ const Definitions = ({ definitions }: { definitions: Lookup[] }) => {
           ))}
         </tbody>
       </table>
+      <DefinitionBuilderDialog
+        open={openDefinitionDialog}
+        definition={selectedDefinition}
+        cqlBuilderLookup={cqlBuilderLookup}
+        onClose={() => setOpenDefinitionDialog(false)}
+      />
       <div className="pagination-container">
         <Pagination
           totalItems={totalItems}
