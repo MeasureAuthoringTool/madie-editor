@@ -154,6 +154,7 @@ export default function CqlBuilderPanel({
             cql={measureStoreCql}
             measureModel={measureModel}
             isCQLUnchanged={isCQLUnchanged}
+            setIsCQLUnchanged={setIsCQLUnchanged}
             setEditorValue={setEditorVal}
             handleApplyLibrary={handleApplyLibrary}
             handleDeleteLibrary={handleDeleteLibrary}
