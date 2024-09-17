@@ -4,6 +4,7 @@ import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import Definitions from "./definitions/Definitions";
 import DefinitionBuilder from "./definitionBuilder/DefinitionBuilder";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
+import { ResetTvTwoTone } from "@mui/icons-material";
 
 interface DefinitionProps {
   canEdit: boolean;
@@ -12,12 +13,20 @@ interface DefinitionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookup;
   setIsCQLUnchanged: boolean;
   isCQLUnchanged: boolean;
+  cql: string;
+  setEditorVal: (cql: string) => void;
+  resetCql: Function;
 }
 
 export default function DefinitionsSection({
   canEdit,
+  handleDefinitionDelete,
   handleApplyDefinition,
   cqlBuilderLookupsTypes,
+  isCQLUnchanged,
+  cql,
+  setEditorVal,
+  resetCql,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -43,8 +52,13 @@ export default function DefinitionsSection({
         )}
         {activeTab === "saved-definitions" && (
           <Definitions
-            cqlBuilderLookup={cqlBuilderLookupsTypes}
             definitions={measureDefinitions}
+            isCQLUnchanged={isCQLUnchanged}
+            cql={cql}
+            setEditorValue={setEditorVal}
+            handleDefinitionDelete={handleDefinitionDelete}
+            resetCql={resetCql}
+            cqlBuilderLookup={cqlBuilderLookupsTypes}
           />
         )}
       </div>

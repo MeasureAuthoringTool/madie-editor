@@ -7,7 +7,11 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  Pagination,
+  MadieDeleteDialog,
+  MadieDiscardDialog,
+} from "@madie/madie-design-system/dist/react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
@@ -17,13 +21,27 @@ import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilde
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
-const Definitions = ({
-  cqlBuilderLookup,
-  definitions,
-}: {
-  cqlBuilderLookup: CqlBuilderLookup;
+type DefinitionsPropTypes = {
   definitions: Lookup[];
-}) => {
+  isCQLUnchanged: boolean;
+  cql: string;
+  setEditorValue: (cql) => void;
+  handleDefinitionDelete?: Function;
+  resetCql: Function;
+  cqlBuilderLookup: CqlBuilderLookup;
+};
+const Definitions = ({
+  definitions,
+  isCQLUnchanged,
+  cql,
+  setEditorValue,
+  handleDefinitionDelete,
+  resetCql,
+  cqlBuilderLookup,
+}: DefinitionsPropTypes) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+
   const [selectedDefinition, setSelectedDefinition] = useState<Lookup>();
   const [openDefinitionDialog, setOpenDefinitionDialog] = useState<boolean>();
 
@@ -68,10 +86,6 @@ const Definitions = ({
         accessorKey: "name",
       },
       {
-        header: "Comment",
-        accessorKey: "comment",
-      },
-      {
         header: "",
         accessorKey: "apply",
         cell: (row: any) => {
@@ -83,7 +97,14 @@ const Definitions = ({
                   "data-testid": `delete-button-${row.cell.row.id}`,
                   "aria-label": `delete-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: () => {}, // do nothing for now
+                  onClick: (e) => {
+                    setSelectedDefinition(row.row.original.name);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialogOpen(true);
+                    } else {
+                      setDeleteDialogOpen(true);
+                    }
+                  }, // do nothing for now
                 }}
               >
                 <DeleteOutlineIcon color="error" />
@@ -179,6 +200,27 @@ const Definitions = ({
             </tr>
           ))}
         </tbody>
+        <MadieDeleteDialog
+          open={deleteDialogOpen}
+          onContinue={() => {
+            handleDefinitionDelete(selectedDefinition);
+            setDeleteDialogOpen(false);
+          }}
+          onClose={() => setDeleteDialogOpen(false)}
+          dialogTitle="Are you sure?"
+          name={"this Library"}
+        />
+        <MadieDiscardDialog
+          open={discardDialogOpen}
+          onContinue={() => {
+            resetCql();
+            setDeleteDialogOpen(true);
+            setDiscardDialogOpen(false);
+          }}
+          onClose={() => {
+            setDiscardDialogOpen(false);
+          }}
+        />
       </table>
       <DefinitionBuilderDialog
         open={openDefinitionDialog}

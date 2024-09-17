@@ -29,6 +29,7 @@ const CqlEditorWithTerminology = ({
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
+  resetCql,
 }: EditorPropsType) => {
   const [expanded, setExpanded] = useState(true);
   return (
@@ -103,9 +104,10 @@ const CqlEditorWithTerminology = ({
               handleApplyCode={handleApplyCode}
               handleApplyValueSet={handleApplyValueSet}
               handleApplyDefinition={handleApplyDefinition}
-              handleDefinitionDelete={(e: MouseEvent<HTMLDivElement>) => {}}
+              handleDefinitionDelete={handleDefinitionDelete}
               handleApplyLibrary={handleApplyLibrary}
               handleDeleteLibrary={handleDeleteLibrary}
+              resetCql={resetCql}
             />
           </Allotment.Pane>
         )}

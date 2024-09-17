@@ -26,6 +26,7 @@ export default function CqlBuilderPanel({
   handleApplyValueSet,
   handleApplyDefinition,
   handleDefinitionDelete,
+  resetCql,
 }) {
   const featureFlags = useFeatureFlags();
   const {
@@ -188,6 +189,9 @@ export default function CqlBuilderPanel({
             cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
             setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
+            cql={measureStoreCql}
+            setEditorVal={setEditorVal}
+            resetCql={resetCql}
           />
         )}
       </div>
