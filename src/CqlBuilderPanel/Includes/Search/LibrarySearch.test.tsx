@@ -33,6 +33,10 @@ describe("LibrarySearch component tests", () => {
         canEdit={true}
         measureModel="QDM"
         handleApplyLibrary={handleApplyLibrary}
+        cql={""}
+        isCQLUnchanged={true}
+        setIsCQLUnchanged={jest.fn()}
+        setEditorValue={jest.fn()}
       />
     );
   };
@@ -148,6 +152,61 @@ describe("LibrarySearch component tests", () => {
     await waitFor(() => {
       // should show remaining 2 libraries
       expect(tableBody.children.length).toBe(2);
+    });
+  });
+
+  it("should show validation errors on library alias when there are spaces or alpha numeric characters", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.includes("/all-versioned")) {
+        return Promise.resolve({
+          data: [mockCqlLibraries[0], mockCqlLibraries[1], mockCqlLibraries[2]],
+          status: 200,
+        });
+      } else {
+        return Promise.resolve({
+          data: "cql string",
+          status: 200,
+        });
+      }
+    });
+    renderLibrarySearchComponent();
+    const searchInput = screen.getByRole("textbox", {
+      name: /Library Search/i,
+    });
+    userEvent.type(searchInput, "Helper");
+    const searchBtn = screen.getByTestId("search-btn");
+    userEvent.click(searchBtn);
+    await waitFor(() => {
+      const viewApplyBtn = screen.getByRole("button", {
+        name: /edit-button-0/i,
+      });
+      userEvent.click(viewApplyBtn);
+    });
+    const versionSelect = screen.getByTestId("version-select");
+    // Change the version
+    userEvent.click(await within(versionSelect).getByRole("button"));
+    const versionOptions = await screen.findAllByRole("option");
+    expect(versionOptions.length).toBe(3);
+    // select 2nd option
+    userEvent.click(versionOptions[1]);
+    await waitFor(() => {
+      expect(versionSelect).toHaveTextContent(mockCqlLibraries[1].version);
+    });
+    const applyBtn = screen.getByRole("button", { name: /Apply/i });
+    expect(applyBtn).toBeDisabled();
+    // type alias value
+    userEvent.type(
+      screen.getByRole("textbox", { name: /Library Alias/i }),
+      "Test!"
+    );
+
+    await waitFor(() => {
+      expect(applyBtn).toBeDisabled();
+      expect(
+        screen.getByText(
+          "Library Alias must not contain spaces or other special characters"
+        )
+      ).toBeInTheDocument();
     });
   });
 

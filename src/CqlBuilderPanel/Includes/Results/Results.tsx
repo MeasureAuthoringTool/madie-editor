@@ -34,7 +34,8 @@ type PropTypes = {
   canEdit: boolean;
   showAlias: boolean;
   handleApplyLibrary: (library) => void;
-  isCQLUnchanged?: boolean;
+  isCQLUnchanged: boolean;
+  setIsCQLUnchanged?: Function;
   cql?: string;
   setEditorValue?: (cql) => void;
   handleDeleteLibrary?: (library) => void;
@@ -57,6 +58,7 @@ const Results = ({
   canEdit,
   showAlias,
   isCQLUnchanged,
+  setIsCQLUnchanged,
   cql,
   setEditorValue,
   handleApplyLibrary,
@@ -69,6 +71,7 @@ const Results = ({
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+  const [rowIndex, setRowIndex] = useState<string>();
 
   // toast utilities
   const [toastState, dispatch] = useReducer(
@@ -174,6 +177,7 @@ const Results = ({
           otherVersions: versions,
         } as SelectedLibrary);
         setOpenLibraryDialog(true);
+        setRowIndex(null);
       })
       .catch((error) => {
         dispatch({
@@ -185,8 +189,13 @@ const Results = ({
 
   // get the cql for selected library and set selected library
   const showLibraryDetails = async (index) => {
-    const rowModal = table.getRow(index).original;
-    await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
+    setRowIndex(index);
+    if (isCQLUnchanged) {
+      const rowModal = table.getRow(index).original;
+      await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
+    } else {
+      setDiscardDialogOpen(true);
+    }
   };
 
   const showDeleteConfirmation = (index) => {
@@ -201,6 +210,18 @@ const Results = ({
     } else {
       setDiscardDialogOpen(true);
     }
+  };
+
+  const onDiscardContinue = async () => {
+    setEditorValue(cql);
+    setIsCQLUnchanged(true);
+    if (rowIndex) {
+      const rowModal = table.getRow(rowIndex).original;
+      await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
+    } else {
+      setDeleteDialogOpen(true);
+    }
+    setDiscardDialogOpen(false);
   };
 
   const columns = useMemo<ColumnDef<RowDef>[]>(() => {
@@ -325,8 +346,8 @@ const Results = ({
       <CqlLibraryDetailsDialog
         canEdit={canEdit}
         library={selectedLibrary}
-        onClose={() => setOpenLibraryDialog(false)}
         open={openLibraryDialog}
+        setOpenLibraryDialog={setOpenLibraryDialog}
         onVersionChange={updateLibrarySelection}
         onApply={handleApplyLibrary}
       />
@@ -348,11 +369,7 @@ const Results = ({
       />
       <MadieDiscardDialog
         open={discardDialogOpen}
-        onContinue={() => {
-          setEditorValue(cql);
-          setDeleteDialogOpen(true);
-          setDiscardDialogOpen(false);
-        }}
+        onContinue={onDiscardContinue}
         onClose={() => setDiscardDialogOpen(false)}
       />
     </>

@@ -15,7 +15,8 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
-import { Lookup } from "../../../model/CqlBuilderLookup";
+import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
+import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
@@ -27,6 +28,7 @@ type DefinitionsPropTypes = {
   setEditorValue: (cql) => void;
   handleDefinitionDelete?: Function;
   resetCql: Function;
+  cqlBuilderLookup: CqlBuilderLookup;
 };
 const Definitions = ({
   definitions,
@@ -35,15 +37,18 @@ const Definitions = ({
   setEditorValue,
   handleDefinitionDelete,
   resetCql,
+  cqlBuilderLookup,
 }: DefinitionsPropTypes) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+
+  const [selectedDefinition, setSelectedDefinition] = useState<Lookup>();
+  const [openDefinitionDialog, setOpenDefinitionDialog] = useState<boolean>();
 
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
   const [visibleDefinitions, setVisibleDefinitions] = useState<Lookup[]>([]);
-  const [selectedDefinition, setSelectedDefinition] = useState<string>(null);
 
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
@@ -64,6 +69,12 @@ const Definitions = ({
   useEffect(() => {
     managePagination();
   }, [definitions, currentPage, currentLimit]);
+
+  const showEditDefinitionDialog = (index) => {
+    const rowModal = table.getRow(index).original;
+    setSelectedDefinition(rowModal);
+    setOpenDefinitionDialog(true);
+  };
 
   // table data
   const data = visibleDefinitions;
@@ -104,7 +115,7 @@ const Definitions = ({
                   "data-testid": `edit-button-${row.cell.row.id}`,
                   "aria-label": `edit-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: () => {},
+                  onClick: () => showEditDefinitionDialog(row.cell.row.id),
                 }}
               >
                 <BorderColorOutlinedIcon color="primary" />
@@ -211,6 +222,12 @@ const Definitions = ({
           }}
         />
       </table>
+      <DefinitionBuilderDialog
+        open={openDefinitionDialog}
+        definition={selectedDefinition}
+        cqlBuilderLookup={cqlBuilderLookup}
+        onClose={() => setOpenDefinitionDialog(false)}
+      />
       <div className="pagination-container">
         <Pagination
           totalItems={totalItems}

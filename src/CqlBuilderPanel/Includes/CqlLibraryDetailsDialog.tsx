@@ -9,6 +9,7 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import AceEditor from "react-ace";
 import { useFormik } from "formik";
+import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";
 
 export interface SelectedLibrary {
   id: string;
@@ -24,7 +25,7 @@ interface PropTypes {
   library: SelectedLibrary;
   open: boolean;
   canEdit: boolean;
-  onClose: Function;
+  setOpenLibraryDialog: Function;
   onVersionChange: Function;
   onApply: Function;
 }
@@ -32,7 +33,7 @@ const CqlLibraryDetailsDialog = ({
   library,
   open,
   canEdit,
-  onClose,
+  setOpenLibraryDialog,
   onVersionChange,
   onApply,
 }: PropTypes) => {
@@ -43,6 +44,7 @@ const CqlLibraryDetailsDialog = ({
       libraryAlias: library?.alias || "",
       version: library?.version,
     },
+    validationSchema: EditLibraryDetailsSchemaValidator,
     onSubmit: ({ version, libraryAlias }) => {
       onApply({
         name: library.name,
@@ -50,7 +52,7 @@ const CqlLibraryDetailsDialog = ({
         alias: libraryAlias,
       });
       formik.resetForm();
-      onClose();
+      setOpenLibraryDialog(false);
     },
     enableReinitialize: true,
   });
@@ -59,13 +61,19 @@ const CqlLibraryDetailsDialog = ({
     onVersionChange(selectedVersion, library.librarySetId);
   };
 
+  const handleClose = () => {
+    formik.setErrors({});
+    formik.resetForm();
+    setOpenLibraryDialog(false);
+  };
+
   return (
     <MadieDialog
       form={true}
       title="Details"
       dialogProps={{
         open,
-        onClose: onClose,
+        onClose: handleClose,
         onSubmit: formik.handleSubmit,
         fullWidth: true,
         maxWidth: "md",
@@ -103,6 +111,8 @@ const CqlLibraryDetailsDialog = ({
               )
             }
             disabled={!canEdit}
+            error={Boolean(formik.errors.libraryAlias)}
+            helperText={formik.errors.libraryAlias}
           />
         </div>
         <div tw="flex-1 ml-5" data-testid="library-name">

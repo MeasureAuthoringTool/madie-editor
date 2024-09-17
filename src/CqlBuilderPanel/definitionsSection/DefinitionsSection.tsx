@@ -1,13 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState } from "react";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
-import tw from "twin.macro";
-
 import Definitions from "./definitions/Definitions";
-
 import DefinitionBuilder from "./definitionBuilder/DefinitionBuilder";
-
-import _ from "lodash";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
 import { ResetTvTwoTone } from "@mui/icons-material";
 
@@ -35,7 +30,7 @@ export default function DefinitionsSection({
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
-  const localDefinitionList =
+  const measureDefinitions =
     cqlBuilderLookupsTypes?.definitions?.filter(
       (definition) => !definition.libraryName
     ) || [];
@@ -45,24 +40,25 @@ export default function DefinitionsSection({
       <DefinitionSectionNavTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        definitionCount={localDefinitionList.length}
+        definitionCount={measureDefinitions.length}
       />
       <div>
         {activeTab === "definition" && (
           <DefinitionBuilder
             canEdit={canEdit}
             handleApplyDefinition={handleApplyDefinition}
-            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+            cqlBuilderLookup={cqlBuilderLookupsTypes}
           />
         )}
         {activeTab === "saved-definitions" && (
           <Definitions
-            definitions={localDefinitionList}
+            definitions={measureDefinitions}
             isCQLUnchanged={isCQLUnchanged}
             cql={cql}
             setEditorValue={setEditorVal}
             handleDefinitionDelete={handleDefinitionDelete}
             resetCql={resetCql}
+            cqlBuilderLookup={cqlBuilderLookupsTypes}
           />
         )}
       </div>
