@@ -5,6 +5,8 @@ import "allotment/dist/style.css";
 import "./CqlEditorWithTerminology.scss";
 import CqlBuilderPanel from "../CqlBuilderPanel/CqlBuilderPanel";
 import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
+import { IconButton } from "@mui/material";
+import Search from "@mui/icons-material/Search";
 
 const CqlEditorWithTerminology = ({
   value,
@@ -32,19 +34,31 @@ const CqlEditorWithTerminology = ({
   resetCql,
 }: EditorPropsType) => {
   const [expanded, setExpanded] = useState(true);
+  const toggleSearch = () => {
+    const event = new CustomEvent("toggleEditorSearchBox");
+    window.dispatchEvent(event);
+  };
   return (
     <div className="allotment-wrapper" id="cql-editor-with-terminology">
       <Allotment defaultSizes={[175, 125]} vertical={false}>
         <Allotment.Pane>
-          <div style={{ borderWidth: "24px", borderColor: "#ededed" }}>
+          <div id="header-editor-row">
+            <IconButton
+              data-testid="editor-search-button"
+              aria-label="search button"
+              style={{
+                color: "#0073c8",
+              }}
+              onClick={toggleSearch}
+            >
+              <Search />
+            </IconButton>
             {expanded && (
-              <button
+              <IconButton
                 data-testid="expanded-button"
                 aria-label="editor-expanded"
                 style={{
-                  float: "right",
                   color: "#0073c8",
-                  marginTop: "-15px",
                 }}
                 onClick={() => {
                   setExpanded(false);
@@ -55,23 +69,7 @@ const CqlEditorWithTerminology = ({
                     transform: "rotate(180deg)",
                   }}
                 />
-              </button>
-            )}
-            {!expanded && (
-              <button
-                data-testid="collapsed-button"
-                aria-label="editor-collapsed"
-                style={{
-                  float: "right",
-                  color: "#0073c8",
-                  marginTop: "-15px",
-                }}
-                onClick={() => {
-                  setExpanded(true);
-                }}
-              >
-                <ExpansionIcon />
-              </button>
+              </IconButton>
             )}
           </div>
           <div className="left-panel">
@@ -93,6 +91,9 @@ const CqlEditorWithTerminology = ({
         {!expanded && (
           <Allotment.Pane>
             <CqlBuilderPanel
+              makeExpanded={() => {
+                setExpanded(true);
+              }}
               canEdit={!readOnly}
               measureStoreCql={measureStoreCql}
               cqlMetaData={cqlMetaData}
