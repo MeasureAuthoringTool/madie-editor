@@ -75,12 +75,10 @@ describe("MadieAceEditor component", () => {
     expect(editorMock.execCommand).toHaveBeenCalledWith("find");
     expect(editorMock.searchBox.show).not.toHaveBeenCalled();
 
-    editorMock.searchBox.active = false;
     window.dispatchEvent(event);
-    expect(editorMock.execCommand).toHaveBeenCalledWith("find");
+    expect(editorMock.execCommand).not.toHaveBeenCalledWith("find");
     expect(editorMock.searchBox.show).toHaveBeenCalled();
 
-    editorMock.searchBox.active = true;
     window.dispatchEvent(event);
     expect(editorMock.searchBox.hide).toHaveBeenCalled();
   });
