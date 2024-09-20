@@ -55,6 +55,36 @@ describe("MadieAceEditor component", () => {
     expect(aceEditor.value).toContain(editorValue);
   });
 
+  it("should should trigger parts of toggleSearch when events emitted", async () => {
+    // Mock the editor and searchBox
+    const editorMock = {
+      execCommand: jest.fn(),
+      searchBox: {
+        active: false,
+        show: jest.fn(),
+        hide: jest.fn(),
+      },
+    };
+
+    const aceRef = screen.getByRole("textbox");
+    // @ts-ignore
+    aceRef.editor = editorMock;
+    const event = new CustomEvent("toggleEditorSearchBox");
+    window.dispatchEvent(event);
+
+    expect(editorMock.execCommand).toHaveBeenCalledWith("find");
+    expect(editorMock.searchBox.show).not.toHaveBeenCalled();
+
+    editorMock.searchBox.active = false;
+    window.dispatchEvent(event);
+    expect(editorMock.execCommand).toHaveBeenCalledWith("find");
+    expect(editorMock.searchBox.show).toHaveBeenCalled();
+
+    editorMock.searchBox.active = true;
+    window.dispatchEvent(event);
+    expect(editorMock.searchBox.hide).toHaveBeenCalled();
+  });
+
   it("should call props handleValueChanges with the expected value", async () => {
     jest.useFakeTimers("modern");
     const handleValueChanges = jest.fn();
