@@ -135,6 +135,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     predefinedFunctionsNames,
   ]);
 
+  useEffect(() => {
+    formik.setFieldValue("name", null);
+  }, [namesOptions]);
+
   // allow manual edit
   const handleContentChange = (value) => {
     setExpressionEditorValue(value);
