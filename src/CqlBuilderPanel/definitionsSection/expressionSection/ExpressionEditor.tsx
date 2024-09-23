@@ -162,6 +162,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   }}
                   options={renderMenuItems(availableTypes)}
                   disabled={!canEdit}
+                  onChange={(evt) => {
+                    formik.setFieldValue("type", evt.target.value);
+                    formik.setFieldValue("name", "");
+                  }}
                 />
               </div>
               <div tw="flex-grow pl-5">
