@@ -55,6 +55,34 @@ describe("MadieAceEditor component", () => {
     expect(aceEditor.value).toContain(editorValue);
   });
 
+  it("should should trigger parts of toggleSearch when events emitted", async () => {
+    // Mock the editor and searchBox
+    const editorMock = {
+      execCommand: jest.fn(),
+      searchBox: {
+        active: false,
+        show: jest.fn(),
+        hide: jest.fn(),
+      },
+    };
+
+    const aceRef = screen.getByRole("textbox");
+    // @ts-ignore
+    aceRef.editor = editorMock;
+    const event = new CustomEvent("toggleEditorSearchBox");
+    window.dispatchEvent(event);
+
+    expect(editorMock.execCommand).toHaveBeenCalledWith("find");
+    expect(editorMock.searchBox.show).not.toHaveBeenCalled();
+
+    window.dispatchEvent(event);
+    expect(editorMock.execCommand).not.toHaveBeenCalledWith("find");
+    expect(editorMock.searchBox.show).toHaveBeenCalled();
+
+    window.dispatchEvent(event);
+    expect(editorMock.searchBox.hide).toHaveBeenCalled();
+  });
+
   it("should call props handleValueChanges with the expected value", async () => {
     jest.useFakeTimers("modern");
     const handleValueChanges = jest.fn();
@@ -77,6 +105,28 @@ describe("MadieAceEditor component", () => {
       jest.advanceTimersByTime(600);
       expect(handleValueChanges).toBeCalledWith(typedValue);
     });
+  });
+
+  it("should apply readonly attribute when none passed", () => {
+    jest.useFakeTimers("modern");
+    const consoleWarnMock = jest.spyOn(console, "warn").mockImplementation();
+    const props = {
+      value: "", // initial value before data is loaded
+      onChange: jest.fn(),
+      parseDebounceTime: 300,
+      inboundAnnotations: [],
+      validationsEnabled: true,
+    };
+
+    render(<MadieAceEditor {...props} />);
+    expect(screen.getByRole("textbox")).not.toHaveAttribute("readonly");
+    expect(consoleWarnMock).toHaveBeenCalledWith(
+      "Editor is not set! Cannot set annotations!",
+      undefined
+    );
+
+    // Clean up the mock
+    consoleWarnMock.mockRestore();
   });
 
   it("should apply readonly attribute", () => {

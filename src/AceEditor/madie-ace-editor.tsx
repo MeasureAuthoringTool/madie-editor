@@ -49,7 +49,6 @@ export interface EditorPropsType {
   setIsCQLUnchanged?: Function;
   isCQLUnchanged?: boolean;
   resetCql?: () => void;
-
   // conditional props used to pass up annotations outside of the editor
   setOutboundAnnotations?: Function;
 }
@@ -301,7 +300,6 @@ const MadieAceEditor = ({
   inboundErrorMarkers,
   readOnly = false,
   validationsEnabled = true,
-
   setOutboundAnnotations,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<Ace.Editor>();
@@ -376,7 +374,21 @@ const MadieAceEditor = ({
       }
     }
   }, [parserAnnotations, inboundAnnotations, editor]);
-
+  const toggleSearchBox = () => {
+    // given the searchBox has not been instantiated we execCommand which also triggers show
+    //@ts-ignore
+    if (!editor?.searchBox) {
+      editor.execCommand("find");
+      // @ts-ignore
+    } else if (editor.searchBox.active) {
+      // @ts-ignore
+      editor.searchBox.hide();
+      // assume that it's been executed
+    } else {
+      //@ts-ignore
+      editor.searchBox.show();
+    }
+  };
   useEffect(() => {
     if (editor && validationsEnabled) {
       let session = editor.getSession();
@@ -391,7 +403,18 @@ const MadieAceEditor = ({
         // Set inFront to true to display underline when line is selected
         session.addMarker(range, "editor-error-underline", "text", true);
       });
+      // tacking on an event listener for editor to toggle searchBox from parent component
+      window.addEventListener(
+        "toggleEditorSearchBox",
+        toggleSearchBox as EventListener
+      );
     }
+    return () => {
+      window.removeEventListener(
+        "toggleEditorSearchBox",
+        toggleSearchBox as EventListener
+      );
+    };
   }, [editor, parseErrorMarkers, inboundErrorMarkers]);
 
   useEffect(() => {

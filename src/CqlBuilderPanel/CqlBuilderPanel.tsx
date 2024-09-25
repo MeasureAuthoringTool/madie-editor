@@ -10,6 +10,8 @@ import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationService
 import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
 import { AxiosResponse } from "axios";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
+import { IconButton } from "@mui/material";
+import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
 
 export default function CqlBuilderPanel({
   canEdit,
@@ -28,6 +30,7 @@ export default function CqlBuilderPanel({
   handleDefinitionEdit,
   handleDefinitionDelete,
   resetCql,
+  makeExpanded,
 }) {
   const featureFlags = useFeatureFlags();
   const {
@@ -131,6 +134,22 @@ export default function CqlBuilderPanel({
           isQDM={measureModel?.includes("QDM")}
           CQLBuilderIncludes={CQLBuilderIncludes}
         />
+        <div
+          style={{
+            display: "flex",
+            flexGrow: 1,
+          }}
+        />
+        <IconButton
+          data-testid="collapsed-button"
+          aria-label="editor-collapsed"
+          style={{
+            color: "#0073c8",
+          }}
+          onClick={makeExpanded}
+        >
+          <ExpansionIcon />
+        </IconButton>
       </div>
       {errors && (
         <div className="panel-alert">
