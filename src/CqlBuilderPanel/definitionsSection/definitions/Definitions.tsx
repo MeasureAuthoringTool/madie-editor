@@ -26,6 +26,7 @@ type DefinitionsPropTypes = {
   isCQLUnchanged: boolean;
   cql: string;
   setEditorValue: (cql) => void;
+  handleDefinitionEdit?: Function;
   handleDefinitionDelete?: Function;
   resetCql: Function;
   cqlBuilderLookup: CqlBuilderLookup;
@@ -35,6 +36,7 @@ const Definitions = ({
   isCQLUnchanged,
   cql,
   setEditorValue,
+  handleDefinitionEdit,
   handleDefinitionDelete,
   resetCql,
   cqlBuilderLookup,
@@ -227,6 +229,7 @@ const Definitions = ({
         definition={selectedDefinition}
         cqlBuilderLookup={cqlBuilderLookup}
         onClose={() => setOpenDefinitionDialog(false)}
+        handleDefinitionEdit={handleDefinitionEdit}
       />
       <div className="pagination-container">
         <Pagination

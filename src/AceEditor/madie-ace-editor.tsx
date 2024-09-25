@@ -31,6 +31,7 @@ export interface EditorPropsType {
   handleApplyCode?: (code: string) => void;
   handleApplyValueSet?: (vs: ValueSetForSearch) => void;
   handleApplyDefinition?: (def: Definition) => void;
+  handleDefinitionEdit?: (lib: SelectedLibrary, def: Definition) => void;
   handleApplyLibrary?: (lib: SelectedLibrary) => void;
   handleDeleteLibrary?: (lib: SelectedLibrary) => void;
   parseDebounceTime?: number;

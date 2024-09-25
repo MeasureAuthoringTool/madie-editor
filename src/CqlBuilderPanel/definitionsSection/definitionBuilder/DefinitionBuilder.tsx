@@ -21,8 +21,11 @@ export interface Definition {
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
+  handleDefinitionEdit?: Function;
   cqlBuilderLookup: CqlBuilderLookup;
   definition?: Definition;
+  operation?: string;
+  onClose?: Function;
 }
 
 export const formatExpressionName = (values) => {
@@ -38,8 +41,11 @@ export const formatExpressionName = (values) => {
 export default function DefinitionBuilder({
   canEdit,
   handleApplyDefinition,
+  handleDefinitionEdit,
+  onClose,
   cqlBuilderLookup,
   definition,
+  operation,
 }: DefinitionProps) {
   const [expressionEditorOpen, setExpressionEditorOpen] =
     useState<boolean>(false);
@@ -212,10 +218,17 @@ export default function DefinitionBuilder({
               };
               resetForm();
               setExpressionEditorValue("");
-              handleApplyDefinition(definitionToApply);
+              if (operation === "edit") {
+                formik.setFieldValue("definitionName", "");
+                formik.setFieldValue("comment", "");
+                handleDefinitionEdit(definition, definitionToApply);
+                onClose();
+              } else {
+                handleApplyDefinition(definitionToApply);
+              }
             }}
           >
-            {definition ? "Save" : "Apply"}
+            {operation === "edit" ? "Save" : "Apply"}
           </Button>
         </div>
       </form>

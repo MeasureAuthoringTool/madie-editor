@@ -8,6 +8,7 @@ import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 interface PropTypes {
   open: boolean;
   definition: Lookup;
+  handleDefinitionEdit: Function;
   cqlBuilderLookup: CqlBuilderLookup;
   onClose: () => void;
 }
@@ -25,6 +26,7 @@ const DefinitionBuilderDialog = ({
   open,
   definition,
   cqlBuilderLookup,
+  handleDefinitionEdit,
   onClose,
 }: PropTypes) => {
   const updatedDefinition = {
@@ -47,7 +49,10 @@ const DefinitionBuilderDialog = ({
         canEdit={true}
         definition={updatedDefinition}
         handleApplyDefinition={() => {}} // do nothing for now
+        handleDefinitionEdit={handleDefinitionEdit}
         cqlBuilderLookup={cqlBuilderLookup}
+        operation={"edit"}
+        onClose={onClose}
       />
     </MadieDialog>
   );
