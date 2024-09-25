@@ -204,7 +204,9 @@ export default function DefinitionBuilder({
             Clear
           </Button>
           <Button
-            data-testid="definition-apply-btn"
+            data-testid={`definition-${
+              operation === "edit" ? "save" : "apply"
+            }-btn`}
             disabled={
               !formik.values.definitionName ||
               !canEdit ||
