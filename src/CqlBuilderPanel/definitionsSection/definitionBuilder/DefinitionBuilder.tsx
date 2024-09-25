@@ -128,6 +128,13 @@ export default function DefinitionBuilder({
     }
   }, [formik.values.definitionName]);
 
+  const isEditDialogFormDirty = () => {
+    if (definition?.expressionValue !== expressionEditorValue || formik.dirty) {
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div>
       <form id="definition-form" onSubmit={formik.handleSubmit}>
@@ -210,7 +217,8 @@ export default function DefinitionBuilder({
             disabled={
               !formik.values.definitionName ||
               !canEdit ||
-              !expressionEditorValue
+              !expressionEditorValue ||
+              isEditDialogFormDirty()
             }
             onClick={() => {
               const definitionToApply: Definition = {

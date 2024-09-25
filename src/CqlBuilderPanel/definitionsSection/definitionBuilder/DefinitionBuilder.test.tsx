@@ -253,6 +253,8 @@ describe("CQL Definition Builder Tests", () => {
       "SDE Sex"
     );
     expect(screen.getByTestId("clear-definition-btn")).toBeDisabled();
+    expect(screen.getByTestId("definition-save-btn")).toBeDisabled();
+
     fireEvent.change(screen.getByTestId("definition-name-text-input"), {
       target: { value: "IP" },
     });
@@ -288,6 +290,8 @@ describe("CQL Definition Builder Tests", () => {
       "SDE Sex"
     );
     expect(screen.getByTestId("clear-definition-btn")).toBeDisabled();
+    expect(screen.getByTestId("definition-save-btn")).toBeDisabled();
+
     fireEvent.change(screen.getByTestId("definition-name-text-input"), {
       target: { value: "IP" },
     });
