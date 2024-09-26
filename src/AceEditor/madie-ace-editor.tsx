@@ -289,7 +289,6 @@ export const setCommandEnabled = (editor, name, enabled) => {
   editor.commands.addCommand(command);
 };
 
-// console.log('iace', IAceEditorProps)
 const MadieAceEditor = ({
   value,
   onChange,
