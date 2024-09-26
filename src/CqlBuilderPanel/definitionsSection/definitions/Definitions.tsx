@@ -219,7 +219,7 @@ const Definitions = ({
           }}
           onClose={() => setDeleteDialogOpen(false)}
           dialogTitle="Are you sure?"
-          name={"this Library"}
+          name={"this Definition"}
         />
         <MadieDiscardDialog
           open={discardDialog?.open}
