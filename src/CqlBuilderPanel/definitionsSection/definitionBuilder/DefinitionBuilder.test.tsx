@@ -231,6 +231,83 @@ describe("CQL Definition Builder Tests", () => {
     expect(applyBtn).toBeDisabled();
   });
 
+  it("Editing the definition and saving it", async () => {
+    const definition = {
+      definitionName: "SDE Sex",
+      expressionValue: " Initial Value",
+    };
+    const handleDefinitionEdit = jest.fn();
+    const onClose = jest.fn();
+    render(
+      <DefinitionBuilder
+        canEdit={true}
+        handleApplyDefinition={jest.fn()}
+        handleDefinitionEdit={handleDefinitionEdit}
+        operation={"edit"}
+        cqlBuilderLookup={cqlBuilderLookup}
+        definition={definition}
+        onClose={onClose}
+      />
+    );
+    expect(screen.getByTestId("definition-name-text-input")).toHaveValue(
+      "SDE Sex"
+    );
+    expect(screen.getByTestId("clear-definition-btn")).toBeDisabled();
+    expect(screen.getByTestId("definition-save-btn")).toBeDisabled();
+
+    fireEvent.change(screen.getByTestId("definition-name-text-input"), {
+      target: { value: "IP" },
+    });
+    expect(screen.getByTestId("clear-definition-btn")).toBeEnabled();
+    expect(screen.getByTestId("definition-save-btn")).toBeEnabled();
+
+    fireEvent.click(screen.getByTestId("definition-save-btn"));
+
+    await waitFor(() => {
+      expect(handleDefinitionEdit).toHaveBeenCalled();
+    });
+  });
+
+  it("Editing the definition and clearing the edited changes", async () => {
+    const definition = {
+      definitionName: "SDE Sex",
+      expressionValue: " Initial Value",
+    };
+    const handleDefinitionEdit = jest.fn();
+    const onClose = jest.fn();
+    render(
+      <DefinitionBuilder
+        canEdit={true}
+        handleApplyDefinition={jest.fn()}
+        handleDefinitionEdit={handleDefinitionEdit}
+        operation={"edit"}
+        cqlBuilderLookup={cqlBuilderLookup}
+        definition={definition}
+        onClose={onClose}
+      />
+    );
+    expect(screen.getByTestId("definition-name-text-input")).toHaveValue(
+      "SDE Sex"
+    );
+    expect(screen.getByTestId("clear-definition-btn")).toBeDisabled();
+    expect(screen.getByTestId("definition-save-btn")).toBeDisabled();
+
+    fireEvent.change(screen.getByTestId("definition-name-text-input"), {
+      target: { value: "IP" },
+    });
+
+    expect(screen.getByTestId("definition-name-text-input")).toHaveValue("IP");
+    expect(screen.getByTestId("clear-definition-btn")).toBeEnabled();
+    expect(screen.getByTestId("definition-save-btn")).toBeEnabled();
+
+    fireEvent.click(screen.getByTestId("clear-definition-btn"));
+
+    expect(screen.getByTestId("definition-name-text-input")).toHaveValue(
+      "SDE Sex"
+    );
+    expect(screen.getByTestId("clear-definition-btn")).toBeDisabled();
+  });
+
   it("expression is inserted into text area when insert button is clicked", async () => {
     render(
       <DefinitionBuilder

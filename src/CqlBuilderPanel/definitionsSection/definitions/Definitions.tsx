@@ -26,6 +26,7 @@ type DefinitionsPropTypes = {
   isCQLUnchanged: boolean;
   cql: string;
   setEditorValue: (cql) => void;
+  handleDefinitionEdit?: Function;
   handleDefinitionDelete?: Function;
   resetCql: Function;
   cqlBuilderLookup: CqlBuilderLookup;
@@ -35,12 +36,16 @@ const Definitions = ({
   isCQLUnchanged,
   cql,
   setEditorValue,
+  handleDefinitionEdit,
   handleDefinitionDelete,
   resetCql,
   cqlBuilderLookup,
 }: DefinitionsPropTypes) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+  const [discardDialog, setDiscardDialog] = useState({
+    open: false,
+    operation: null,
+  });
 
   const [selectedDefinition, setSelectedDefinition] = useState<Lookup>();
   const [openDefinitionDialog, setOpenDefinitionDialog] = useState<boolean>();
@@ -73,7 +78,6 @@ const Definitions = ({
   const showEditDefinitionDialog = (index) => {
     const rowModal = table.getRow(index).original;
     setSelectedDefinition(rowModal);
-    setOpenDefinitionDialog(true);
   };
 
   // table data
@@ -100,7 +104,7 @@ const Definitions = ({
                   onClick: (e) => {
                     setSelectedDefinition(row.row.original.name);
                     if (!isCQLUnchanged) {
-                      setDiscardDialogOpen(true);
+                      setDiscardDialog({ open: true, operation: "delete" });
                     } else {
                       setDeleteDialogOpen(true);
                     }
@@ -115,7 +119,14 @@ const Definitions = ({
                   "data-testid": `edit-button-${row.cell.row.id}`,
                   "aria-label": `edit-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: () => showEditDefinitionDialog(row.cell.row.id),
+                  onClick: () => {
+                    showEditDefinitionDialog(row.cell.row.id);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialog({ open: true, operation: "edit" });
+                    } else {
+                      setOpenDefinitionDialog(true);
+                    }
+                  },
                 }}
               >
                 <BorderColorOutlinedIcon color="primary" />
@@ -211,14 +222,28 @@ const Definitions = ({
           name={"this Definition"}
         />
         <MadieDiscardDialog
-          open={discardDialogOpen}
+          open={discardDialog?.open}
           onContinue={() => {
             resetCql();
-            setDeleteDialogOpen(true);
-            setDiscardDialogOpen(false);
+            if (discardDialog?.operation === "delete") {
+              setDiscardDialog({
+                open: false,
+                operation: "delete",
+              });
+              setDeleteDialogOpen(true);
+            } else if (discardDialog?.operation === "edit") {
+              setDiscardDialog({
+                open: false,
+                operation: "edit",
+              });
+              setOpenDefinitionDialog(true);
+            }
           }}
           onClose={() => {
-            setDiscardDialogOpen(false);
+            setDiscardDialog({
+              open: false,
+              operation: null,
+            });
           }}
         />
       </table>
@@ -227,6 +252,7 @@ const Definitions = ({
         definition={selectedDefinition}
         cqlBuilderLookup={cqlBuilderLookup}
         onClose={() => setOpenDefinitionDialog(false)}
+        handleDefinitionEdit={handleDefinitionEdit}
       />
       <div className="pagination-container">
         <Pagination

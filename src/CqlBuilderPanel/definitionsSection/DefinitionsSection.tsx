@@ -9,6 +9,7 @@ import { ResetTvTwoTone } from "@mui/icons-material";
 interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
+  handleDefinitionEdit: Function;
   handleDefinitionDelete: Function;
   cqlBuilderLookupsTypes: CqlBuilderLookup;
   setIsCQLUnchanged: boolean;
@@ -22,6 +23,7 @@ export default function DefinitionsSection({
   canEdit,
   handleDefinitionDelete,
   handleApplyDefinition,
+  handleDefinitionEdit,
   cqlBuilderLookupsTypes,
   isCQLUnchanged,
   cql,
@@ -59,6 +61,7 @@ export default function DefinitionsSection({
             handleDefinitionDelete={handleDefinitionDelete}
             resetCql={resetCql}
             cqlBuilderLookup={cqlBuilderLookupsTypes}
+            handleDefinitionEdit={handleDefinitionEdit}
           />
         )}
       </div>

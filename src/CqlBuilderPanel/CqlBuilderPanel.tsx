@@ -27,6 +27,7 @@ export default function CqlBuilderPanel({
   handleApplyCode,
   handleApplyValueSet,
   handleApplyDefinition,
+  handleDefinitionEdit,
   handleDefinitionDelete,
   resetCql,
   makeExpanded,
@@ -211,6 +212,7 @@ export default function CqlBuilderPanel({
             cql={measureStoreCql}
             setEditorVal={setEditorVal}
             resetCql={resetCql}
+            handleDefinitionEdit={handleDefinitionEdit}
           />
         )}
       </div>
