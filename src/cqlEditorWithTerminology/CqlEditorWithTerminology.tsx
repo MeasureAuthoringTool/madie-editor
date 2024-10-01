@@ -17,6 +17,7 @@ const CqlEditorWithTerminology = ({
   handleApplyValueSet,
   handleApplyDefinition,
   handleApplyLibrary,
+  handleEditLibrary,
   handleDeleteLibrary,
   handleDefinitionEdit,
   height,
@@ -109,6 +110,7 @@ const CqlEditorWithTerminology = ({
               handleDefinitionEdit={handleDefinitionEdit}
               handleDefinitionDelete={handleDefinitionDelete}
               handleApplyLibrary={handleApplyLibrary}
+              handleEditLibrary={handleEditLibrary}
               handleDeleteLibrary={handleDeleteLibrary}
               resetCql={resetCql}
             />

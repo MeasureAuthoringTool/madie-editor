@@ -28,6 +28,8 @@ interface PropTypes {
   setOpenLibraryDialog: Function;
   onVersionChange: Function;
   onApply: Function;
+  onEdit?: Function;
+  operation?: string;
 }
 const CqlLibraryDetailsDialog = ({
   library,
@@ -36,6 +38,8 @@ const CqlLibraryDetailsDialog = ({
   setOpenLibraryDialog,
   onVersionChange,
   onApply,
+  onEdit,
+  operation,
 }: PropTypes) => {
   const aceRef = useRef<AceEditor>(null);
 
@@ -46,11 +50,19 @@ const CqlLibraryDetailsDialog = ({
     },
     validationSchema: EditLibraryDetailsSchemaValidator,
     onSubmit: ({ version, libraryAlias }) => {
-      onApply({
-        name: library.name,
-        version: version,
-        alias: libraryAlias,
-      });
+      if (operation === "edit") {
+        onEdit(library, {
+          name: library.name,
+          version: version,
+          alias: libraryAlias,
+        });
+      } else {
+        onApply({
+          name: library.name,
+          version: version,
+          alias: libraryAlias,
+        });
+      }
       formik.resetForm();
       setOpenLibraryDialog(false);
     },
