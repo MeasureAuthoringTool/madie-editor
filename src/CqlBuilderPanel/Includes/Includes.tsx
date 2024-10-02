@@ -13,6 +13,7 @@ interface IncludesProps {
   setIsCQLUnchanged: Function;
   setEditorValue: (cql) => void;
   handleApplyLibrary: (library) => void;
+  handleEditLibrary: (selectedLibrary, editedLibrary) => void;
   handleDeleteLibrary: (library) => void;
 }
 
@@ -24,6 +25,7 @@ export default function Includes({
   setIsCQLUnchanged,
   setEditorValue,
   handleApplyLibrary,
+  handleEditLibrary,
   handleDeleteLibrary,
 }: IncludesProps) {
   const [activeLibraryTab, setActiveLibraryTab] = useState<string>("library");
@@ -63,6 +65,7 @@ export default function Includes({
           setIsCQLUnchanged={setIsCQLUnchanged}
           setEditorValue={setEditorValue}
           handleDeleteLibrary={handleDeleteLibrary}
+          handleEditLibrary={handleEditLibrary}
         />
       )}
     </div>

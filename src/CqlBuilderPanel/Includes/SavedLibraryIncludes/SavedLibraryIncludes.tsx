@@ -22,6 +22,7 @@ interface PropTypes {
   setIsCQLUnchanged: Function;
   setEditorValue: (cql) => void;
   handleDeleteLibrary: (library) => void;
+  handleEditLibrary: (selectedLibrary, editedLibrary) => void;
 }
 
 const SavedLibraryIncludes = ({
@@ -32,6 +33,7 @@ const SavedLibraryIncludes = ({
   setIsCQLUnchanged,
   setEditorValue,
   handleDeleteLibrary,
+  handleEditLibrary,
 }: PropTypes) => {
   const [libraries, setLibraries] = useState<CqlLibrary[]>([]);
   const libraryService = useRef(useCqlLibraryServiceApi());
@@ -120,6 +122,8 @@ const SavedLibraryIncludes = ({
         setEditorValue={setEditorValue}
         handleApplyLibrary={() => {}} // do nothing for now
         handleDeleteLibrary={handleDeleteLibrary}
+        handleEditLibrary={handleEditLibrary}
+        operation={"edit"}
       />
       <Toast
         toastKey="saved-library-toast"

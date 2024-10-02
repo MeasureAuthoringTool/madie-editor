@@ -33,6 +33,10 @@ export interface EditorPropsType {
   handleApplyDefinition?: (def: Definition) => void;
   handleDefinitionEdit?: (lib: SelectedLibrary, def: Definition) => void;
   handleApplyLibrary?: (lib: SelectedLibrary) => void;
+  handleEditLibrary?: (
+    lib: SelectedLibrary,
+    editedLib: SelectedLibrary
+  ) => void;
   handleDeleteLibrary?: (lib: SelectedLibrary) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];

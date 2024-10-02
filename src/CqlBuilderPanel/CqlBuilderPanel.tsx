@@ -24,6 +24,7 @@ export default function CqlBuilderPanel({
   isCQLUnchanged,
   handleApplyLibrary,
   handleDeleteLibrary,
+  handleEditLibrary,
   handleApplyCode,
   handleApplyValueSet,
   handleApplyDefinition,
@@ -178,6 +179,7 @@ export default function CqlBuilderPanel({
             setIsCQLUnchanged={setIsCQLUnchanged}
             setEditorValue={setEditorVal}
             handleApplyLibrary={handleApplyLibrary}
+            handleEditLibrary={handleEditLibrary}
             handleDeleteLibrary={handleDeleteLibrary}
           />
         )}

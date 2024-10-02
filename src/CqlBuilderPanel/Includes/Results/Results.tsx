@@ -34,11 +34,13 @@ type PropTypes = {
   canEdit: boolean;
   showAlias: boolean;
   handleApplyLibrary: (library) => void;
+  handleEditLibrary?: (selectedLibrary, editedLibrary) => void;
   isCQLUnchanged: boolean;
   setIsCQLUnchanged?: Function;
   cql?: string;
   setEditorValue?: (cql) => void;
   handleDeleteLibrary?: (library) => void;
+  operation?: string;
 };
 
 type RowDef = {
@@ -62,7 +64,9 @@ const Results = ({
   cql,
   setEditorValue,
   handleApplyLibrary,
+  handleEditLibrary,
   handleDeleteLibrary,
+  operation,
 }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
   const libraryService = useCqlLibraryServiceApi();
@@ -350,6 +354,8 @@ const Results = ({
         setOpenLibraryDialog={setOpenLibraryDialog}
         onVersionChange={updateLibrarySelection}
         onApply={handleApplyLibrary}
+        onEdit={handleEditLibrary}
+        operation={operation}
       />
       <Toast
         toastKey="search-library-toast"
