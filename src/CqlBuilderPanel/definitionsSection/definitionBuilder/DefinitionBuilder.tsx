@@ -157,7 +157,7 @@ export default function DefinitionBuilder({
             />
           </div>
           {definition && definition.returnType && (
-            <div tw="w-1/2 ml-10 my-2">
+            <div tw="w-1/2 ml-10 my-2" data-testid="return-type">
               <p className="result-label">Return Type</p>
               <span className="result-value">{definition.returnType}</span>
             </div>

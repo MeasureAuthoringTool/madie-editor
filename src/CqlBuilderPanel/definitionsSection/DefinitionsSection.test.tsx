@@ -140,10 +140,16 @@ describe("DefinitionsSection", () => {
   });
 
   it("Should render edit definition dialog on edit button click", async () => {
+    const getCqlDefinitionReturnTypes = () => {
+      return {
+        sdeSex: "PatientCharacteristicSex",
+      };
+    };
     render(
       <DefinitionsSection
         {...props}
         cqlBuilderLookupsTypes={cqlBuilderLookup}
+        getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
       />
     );
     // go to saved definitions tab
@@ -165,5 +171,7 @@ describe("DefinitionsSection", () => {
     expect(screen.getByTestId("definition-name-text-input")).toHaveValue(
       "SDE Sex"
     );
+    const returnType = screen.getByTestId("return-type");
+    expect(returnType).toHaveTextContent(getCqlDefinitionReturnTypes().sdeSex);
   });
 });

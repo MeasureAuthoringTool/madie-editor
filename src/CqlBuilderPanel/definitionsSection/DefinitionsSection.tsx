@@ -4,7 +4,6 @@ import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import Definitions from "./definitions/Definitions";
 import DefinitionBuilder from "./definitionBuilder/DefinitionBuilder";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
-import { ResetTvTwoTone } from "@mui/icons-material";
 
 interface DefinitionProps {
   canEdit: boolean;
