@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import _ from "lodash";
 import {
   ColumnDef,
   flexRender,
@@ -29,6 +30,7 @@ type DefinitionsPropTypes = {
   handleDefinitionEdit?: Function;
   handleDefinitionDelete?: Function;
   resetCql: Function;
+  getCqlDefinitionReturnTypes: Function;
   cqlBuilderLookup: CqlBuilderLookup;
 };
 const Definitions = ({
@@ -39,6 +41,7 @@ const Definitions = ({
   handleDefinitionEdit,
   handleDefinitionDelete,
   resetCql,
+  getCqlDefinitionReturnTypes,
   cqlBuilderLookup,
 }: DefinitionsPropTypes) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -77,7 +80,11 @@ const Definitions = ({
 
   const showEditDefinitionDialog = (index) => {
     const rowModal = table.getRow(index).original;
-    setSelectedDefinition(rowModal);
+    const returnTypes = getCqlDefinitionReturnTypes();
+    const returnType = returnTypes
+      ? returnTypes[_.camelCase(rowModal.name)]
+      : undefined;
+    setSelectedDefinition({ ...rowModal, returnType: returnType });
   };
 
   // table data

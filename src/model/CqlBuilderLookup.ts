@@ -10,4 +10,5 @@ export interface Lookup {
   libraryAlias: string;
   logic: string;
   comment: string;
+  returnType?: string;
 }

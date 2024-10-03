@@ -31,6 +31,7 @@ export default function CqlBuilderPanel({
   handleDefinitionEdit,
   handleDefinitionDelete,
   resetCql,
+  getCqlDefinitionReturnTypes,
   makeExpanded,
 }) {
   const featureFlags = useFeatureFlags();
@@ -209,11 +210,11 @@ export default function CqlBuilderPanel({
             handleApplyDefinition={handleApplyDefinition}
             handleDefinitionDelete={handleDefinitionDelete}
             cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
-            setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
             cql={measureStoreCql}
             setEditorVal={setEditorVal}
             resetCql={resetCql}
+            getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
             handleDefinitionEdit={handleDefinitionEdit}
           />
         )}

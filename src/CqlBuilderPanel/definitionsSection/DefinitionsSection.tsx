@@ -12,11 +12,11 @@ interface DefinitionProps {
   handleDefinitionEdit: Function;
   handleDefinitionDelete: Function;
   cqlBuilderLookupsTypes: CqlBuilderLookup;
-  setIsCQLUnchanged: boolean;
   isCQLUnchanged: boolean;
   cql: string;
   setEditorVal: (cql: string) => void;
   resetCql: Function;
+  getCqlDefinitionReturnTypes: Function;
 }
 
 export default function DefinitionsSection({
@@ -29,6 +29,7 @@ export default function DefinitionsSection({
   cql,
   setEditorVal,
   resetCql,
+  getCqlDefinitionReturnTypes,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -60,6 +61,7 @@ export default function DefinitionsSection({
             setEditorValue={setEditorVal}
             handleDefinitionDelete={handleDefinitionDelete}
             resetCql={resetCql}
+            getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
             cqlBuilderLookup={cqlBuilderLookupsTypes}
             handleDefinitionEdit={handleDefinitionEdit}
           />

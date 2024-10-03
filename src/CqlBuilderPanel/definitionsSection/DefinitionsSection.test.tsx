@@ -5,18 +5,22 @@ import userEvent from "@testing-library/user-event";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
 import { cqlBuilderLookup } from "../__mocks__/MockCqlBuilderLookupsTypes";
 
+const props = {
+  canEdit: true,
+  handleApplyDefinition: jest.fn(),
+  handleDefinitionEdit: jest.fn(),
+  handleDefinitionDelete: jest.fn(),
+  cqlBuilderLookupsTypes: {} as CqlBuilderLookup,
+  isCQLUnchanged: true,
+  cql: "",
+  setEditorVal: jest.fn(),
+  resetCql: jest.fn(),
+  getCqlDefinitionReturnTypes: jest.fn(),
+};
+
 describe("DefinitionsSection", () => {
   it("Should display definition section", async () => {
-    render(
-      <DefinitionsSection
-        canEdit={true}
-        handleApplyDefinition={jest.fn()}
-        cqlBuilderLookupsTypes={{} as CqlBuilderLookup}
-        handleDefinitionDelete={jest.fn()}
-        isCQLUnchanged
-        setIsCQLUnchanged
-      />
-    );
+    render(<DefinitionsSection {...props} />);
     const definition = await screen.findByTestId("definition-tab");
     const savedDefinitions = await screen.findByText("Saved Definitions (0)");
     expect(definition).toBeInTheDocument();
@@ -30,16 +34,7 @@ describe("DefinitionsSection", () => {
   });
 
   it("Should display saved definition section", async () => {
-    render(
-      <DefinitionsSection
-        canEdit={true}
-        handleApplyDefinition={jest.fn()}
-        handleDefinitionDelete={jest.fn()}
-        isCQLUnchanged
-        setIsCQLUnchanged
-        cqlBuilderLookupsTypes={{} as unknown as CqlBuilderLookup}
-      />
-    );
+    render(<DefinitionsSection {...props} />);
     const definition = await screen.findByTestId("definition-tab");
     const savedDefinitions = await screen.findByText("Saved Definitions (0)");
     expect(definition).toBeInTheDocument();
@@ -59,12 +54,8 @@ describe("DefinitionsSection", () => {
   it("Should allow pagination for savedDefinitions", async () => {
     render(
       <DefinitionsSection
-        canEdit={true}
-        handleApplyDefinition={jest.fn()}
+        {...props}
         cqlBuilderLookupsTypes={cqlBuilderLookup}
-        handleDefinitionDelete={jest.fn()}
-        isCQLUnchanged
-        setIsCQLUnchanged
       />
     );
     const definition = await screen.findByTestId("definition-tab");
@@ -99,12 +90,8 @@ describe("DefinitionsSection", () => {
   it("Should allow limit changes for savedDefinitions pagination", async () => {
     render(
       <DefinitionsSection
-        canEdit={true}
-        handleApplyDefinition={jest.fn()}
+        {...props}
         cqlBuilderLookupsTypes={cqlBuilderLookup}
-        handleDefinitionDelete={jest.fn()}
-        isCQLUnchanged
-        setIsCQLUnchanged
       />
     );
     const definition = await screen.findByTestId("definition-tab");
@@ -155,12 +142,8 @@ describe("DefinitionsSection", () => {
   it("Should render edit definition dialog on edit button click", async () => {
     render(
       <DefinitionsSection
-        canEdit={true}
-        handleApplyDefinition={jest.fn()}
+        {...props}
         cqlBuilderLookupsTypes={cqlBuilderLookup}
-        handleDefinitionDelete={jest.fn()}
-        isCQLUnchanged
-        setIsCQLUnchanged
       />
     );
     // go to saved definitions tab

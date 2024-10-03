@@ -16,6 +16,7 @@ export interface Definition {
   definitionName?: string;
   comment?: string;
   expressionValue?: string;
+  returnType?: string;
 }
 
 export interface DefinitionProps {
@@ -155,10 +156,10 @@ export default function DefinitionBuilder({
               {...formik.getFieldProps("definitionName")}
             />
           </div>
-          {definition && (
+          {definition && definition.returnType && (
             <div tw="w-1/2 ml-10 my-2">
               <p className="result-label">Return Type</p>
-              <span className="result-value">-</span>
+              <span className="result-value">{definition.returnType}</span>
             </div>
           )}
         </div>
