@@ -54,6 +54,7 @@ export default function DefinitionsSection({
         )}
         {activeTab === "saved-definitions" && (
           <Definitions
+            canEdit={canEdit}
             definitions={measureDefinitions}
             isCQLUnchanged={isCQLUnchanged}
             cql={cql}

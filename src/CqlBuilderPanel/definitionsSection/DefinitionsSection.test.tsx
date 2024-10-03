@@ -139,6 +139,25 @@ describe("DefinitionsSection", () => {
     });
   });
 
+  it("Should not show edit/delete actions for measure if user does not have permission", async () => {
+    render(
+      <DefinitionsSection
+        {...props}
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
+        canEdit={false}
+      />
+    );
+    // go to saved definitions tab
+    const savedDefinitionsTab = screen.getByRole("tab", {
+      name: /Saved Definitions/i,
+    });
+    expect(savedDefinitionsTab).toBeInTheDocument();
+    userEvent.click(savedDefinitionsTab);
+    const table = screen.getByRole("table");
+    expect(table).toBeInTheDocument();
+    expect(screen.queryByTestId("definition-actions")).not.toBeInTheDocument();
+  });
+
   it("Should render edit definition dialog on edit button click", async () => {
     const getCqlDefinitionReturnTypes = () => {
       return {

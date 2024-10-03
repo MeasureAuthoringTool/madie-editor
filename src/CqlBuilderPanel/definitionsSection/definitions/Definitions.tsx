@@ -18,11 +18,13 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
+import { Stack } from "@mui/material";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
 type DefinitionsPropTypes = {
+  canEdit: boolean;
   definitions: Lookup[];
   isCQLUnchanged: boolean;
   cql: string;
@@ -34,6 +36,7 @@ type DefinitionsPropTypes = {
   cqlBuilderLookup: CqlBuilderLookup;
 };
 const Definitions = ({
+  canEdit,
   definitions,
   isCQLUnchanged,
   cql,
@@ -100,8 +103,15 @@ const Definitions = ({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => {
+          if (!canEdit) {
+            return null;
+          }
           return (
-            <>
+            <Stack
+              direction="row"
+              alignItems="center"
+              data-testid="definition-actions"
+            >
               <ToolTippedIcon
                 tooltipMessage="Delete"
                 buttonProps={{
@@ -138,7 +148,7 @@ const Definitions = ({
               >
                 <BorderColorOutlinedIcon color="primary" />
               </ToolTippedIcon>
-            </>
+            </Stack>
           );
         },
       },
