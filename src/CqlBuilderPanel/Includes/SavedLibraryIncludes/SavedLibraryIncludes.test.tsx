@@ -2,9 +2,8 @@ import * as React from "react";
 import axios from "../../../api/axios-instance";
 import { mockServiceConfig } from "../../../__mocks__/mockServiceConfig";
 import { mockCqlLibraries } from "../../__mocks__/MockCqlLibraries";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, within, screen, act } from "@testing-library/react";
 import SavedLibraryIncludes from "./SavedLibraryIncludes";
-import { screen } from "@testing-library/dom";
 import { fetchVersionedLibrariesErrorMessage } from "../../../api/useCqlLibraryServiceApi";
 import userEvent from "@testing-library/user-event";
 
@@ -34,16 +33,24 @@ const props = {
   isCQLUnchanged: true,
   setEditorValue: jest.fn(),
   setIsCQLUnchanged: jest.fn(),
+  handleEditLibrary: jest.fn(),
 };
 
 describe("SavedLibraryIncludes Component tests", () => {
   beforeEach(() => {
-    mockedAxios.get.mockImplementation((url) =>
-      Promise.resolve({
-        data: mockCqlLibraries[0],
-        status: 200,
-      })
-    );
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.endsWith("library-service.com/cql-libraries/cql")) {
+        return Promise.resolve({
+          data: cql,
+          status: 200,
+        });
+      } else {
+        return Promise.resolve({
+          data: mockCqlLibraries[0],
+          status: 200,
+        });
+      }
+    });
   });
 
   it("Should render included libraries", async () => {
@@ -70,8 +77,6 @@ describe("SavedLibraryIncludes Component tests", () => {
   });
 
   it("Should render no includes if cql does not include one", async () => {
-    const cql =
-      "library CaseWhenThen version '0.3.000'\nusing QDM version '5.6'";
     render(<SavedLibraryIncludes {...props} />);
     const table = screen.getByRole("table");
     const tableBody = table.querySelector("tbody");
@@ -166,5 +171,21 @@ describe("SavedLibraryIncludes Component tests", () => {
     await waitFor(() => {
       expect(discardChangeDialog).not.toBeInTheDocument();
     });
+  });
+
+  it("Should show view only dialog when clicked on view included library button", async () => {
+    render(<SavedLibraryIncludes {...props} />);
+    await waitFor(() => {
+      const viewBtn = screen.getByRole("button", {
+        name: /view-button-0/i,
+      });
+      userEvent.click(viewBtn);
+    });
+    const aliasContainer = screen.getByTestId("library-alias-container");
+    const alias = within(aliasContainer).getByText("Test");
+    expect(alias).toBeInstanceOf(HTMLSpanElement);
+    const versionContainer = screen.getByTestId("library-version-container");
+    const version = within(versionContainer).getByText("2.2.000");
+    expect(version).toBeInstanceOf(HTMLSpanElement);
   });
 });

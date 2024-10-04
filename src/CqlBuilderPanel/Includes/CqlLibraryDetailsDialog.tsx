@@ -190,13 +190,17 @@ const CqlLibraryDetailsDialog = ({
       }
     >
       <div tw="flex flex-row">
-        <div tw="basis-1/4 -my-1">{getLibraryAliasView()}</div>
-        <div tw="flex-1 ml-5" data-testid="library-name">
+        <div tw="basis-1/4 -my-1" data-testid="library-alias-container">
+          {getLibraryAliasView()}
+        </div>
+        <div tw="flex-1 ml-5" data-testid="library-name-container">
           <p className="result-label">Library Name</p>
           <span className="result-value">{library?.name}</span>
         </div>
-        <div tw="flex-1 ml-5 -my-1">{getLibraryVersionView()}</div>
-        <div tw="flex-1 ml-5" data-testid="library-owner">
+        <div tw="flex-1 ml-5 -my-1" data-testid="library-version-container">
+          {getLibraryVersionView()}
+        </div>
+        <div tw="flex-1 ml-5" data-testid="library-owner-container">
           <ReadOnlyLabelValue label="Owner" value={library?.owner} />
         </div>
       </div>

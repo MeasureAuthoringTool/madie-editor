@@ -240,11 +240,11 @@ describe("LibrarySearch component tests", () => {
     const versionSelect = screen.getByTestId("version-select");
     expect(screen.getByTestId("view-apply-library-dialog")).toBeInTheDocument();
     expect(screen.getByTestId("library-alias-input")).toBeEmptyDOMElement();
-    expect(screen.getByTestId("library-name")).toHaveTextContent(
+    expect(screen.getByTestId("library-name-container")).toHaveTextContent(
       mockCqlLibraries[0].cqlLibraryName
     );
     expect(versionSelect).toHaveTextContent(mockCqlLibraries[0].version);
-    expect(screen.getByTestId("library-owner")).toHaveTextContent(
+    expect(screen.getByTestId("library-owner-container")).toHaveTextContent(
       mockCqlLibraries[0].librarySet.owner
     );
     // Change the version
