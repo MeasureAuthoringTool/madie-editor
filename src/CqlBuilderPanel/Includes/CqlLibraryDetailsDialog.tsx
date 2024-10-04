@@ -194,8 +194,7 @@ const CqlLibraryDetailsDialog = ({
           {getLibraryAliasView()}
         </div>
         <div tw="flex-1 ml-5" data-testid="library-name-container">
-          <p className="result-label">Library Name</p>
-          <span className="result-value">{library?.name}</span>
+          <ReadOnlyLabelValue label="Name" value={library?.name} />
         </div>
         <div tw="flex-1 ml-5 -my-1" data-testid="library-version-container">
           {getLibraryVersionView()}
