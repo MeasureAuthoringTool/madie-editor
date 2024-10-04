@@ -31,6 +31,22 @@ interface PropTypes {
   onEdit?: Function;
   operation?: string;
 }
+
+const ReadOnlyLabelValue = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) => {
+  return (
+    <>
+      <p className="result-label">{label}</p>
+      <span className="result-value">{value ? value : "-"}</span>
+    </>
+  );
+};
+
 const CqlLibraryDetailsDialog = ({
   library,
   open,
@@ -79,6 +95,72 @@ const CqlLibraryDetailsDialog = ({
     setOpenLibraryDialog(false);
   };
 
+  const getLibraryAliasView = () => {
+    if (canEdit) {
+      return (
+        <TextField
+          {...formik.getFieldProps("libraryAlias")}
+          label="Library Alias"
+          id="library-alias"
+          name="libraryAlias"
+          data-testid="library-alias"
+          inputProps={{
+            "data-testid": "library-alias-input",
+            "aria-required": true,
+          }}
+          required={true}
+          size="small"
+          onBlur={() =>
+            formik.setFieldValue(
+              "libraryAlias",
+              formik.values["libraryAlias"].trim()
+            )
+          }
+          disabled={!canEdit}
+          error={Boolean(formik.errors.libraryAlias)}
+          helperText={formik.errors.libraryAlias}
+        />
+      );
+    } else {
+      return <ReadOnlyLabelValue label="Alias" value={library?.alias} />;
+    }
+  };
+
+  const getLibraryVersionView = () => {
+    if (canEdit) {
+      return (
+        <Select
+          {...formik.getFieldProps("version")}
+          required
+          label="Version"
+          id="version-select"
+          data-testid="version-select"
+          inputProps={{ "data-testid": "version-select-input" }}
+          name="version"
+          disabled={!canEdit}
+          SelectDisplayProps={{
+            "aria-required": "true",
+          }}
+          size="small"
+          onChange={(evt) => handleVersionChange(evt.target.value)}
+          options={library?.otherVersions?.map((version) => {
+            return (
+              <MenuItem
+                key={version}
+                value={version}
+                data-testid={`option-${version}`}
+              >
+                {version}
+              </MenuItem>
+            );
+          })}
+        />
+      );
+    } else {
+      return <ReadOnlyLabelValue label="Version" value={library?.version} />;
+    }
+  };
+
   return (
     <MadieDialog
       form={true}
@@ -93,75 +175,29 @@ const CqlLibraryDetailsDialog = ({
       }}
       cancelButtonProps={{
         cancelText: "Cancel",
+        variant: "outline-filled",
         "data-testid": "cancel-button",
       }}
-      continueButtonProps={{
-        type: "submit",
-        continueText: "Apply",
-        disabled: !canEdit || !(formik.isValid && formik.dirty),
-        "data-testid": "apply-button",
-      }}
+      continueButtonProps={
+        canEdit
+          ? {
+              type: "submit",
+              continueText: "Apply",
+              disabled: !canEdit || !(formik.isValid && formik.dirty),
+              "data-testid": "apply-button",
+            }
+          : ""
+      }
     >
       <div tw="flex flex-row">
-        <div tw="basis-1/3 -my-1">
-          <TextField
-            {...formik.getFieldProps("libraryAlias")}
-            label="Library Alias"
-            id="library-alias"
-            name="libraryAlias"
-            data-testid="library-alias"
-            inputProps={{
-              "data-testid": "library-alias-input",
-              "aria-required": true,
-            }}
-            required={true}
-            size="small"
-            onBlur={() =>
-              formik.setFieldValue(
-                "libraryAlias",
-                formik.values["libraryAlias"].trim()
-              )
-            }
-            disabled={!canEdit}
-            error={Boolean(formik.errors.libraryAlias)}
-            helperText={formik.errors.libraryAlias}
-          />
-        </div>
+        <div tw="basis-1/4 -my-1">{getLibraryAliasView()}</div>
         <div tw="flex-1 ml-5" data-testid="library-name">
           <p className="result-label">Library Name</p>
           <span className="result-value">{library?.name}</span>
         </div>
-        <div tw="flex-1 ml-5 -my-1">
-          <Select
-            {...formik.getFieldProps("version")}
-            required
-            label="Version"
-            id="version-select"
-            data-testid="version-select"
-            inputProps={{ "data-testid": "version-select-input" }}
-            name="version"
-            disabled={!canEdit}
-            SelectDisplayProps={{
-              "aria-required": "true",
-            }}
-            size="small"
-            onChange={(evt) => handleVersionChange(evt.target.value)}
-            options={library?.otherVersions?.map((version) => {
-              return (
-                <MenuItem
-                  key={version}
-                  value={version}
-                  data-testid={`option-${version}`}
-                >
-                  {version}
-                </MenuItem>
-              );
-            })}
-          />
-        </div>
+        <div tw="flex-1 ml-5 -my-1">{getLibraryVersionView()}</div>
         <div tw="flex-1 ml-5" data-testid="library-owner">
-          <p className="result-label">Owner</p>
-          <span className="result-value">{library?.owner}</span>
+          <ReadOnlyLabelValue label="Owner" value={library?.owner} />
         </div>
       </div>
       <br />
