@@ -2,7 +2,7 @@ import * as React from "react";
 import axios from "../../../api/axios-instance";
 import { mockServiceConfig } from "../../../__mocks__/mockServiceConfig";
 import { mockCqlLibraries } from "../../__mocks__/MockCqlLibraries";
-import { render, waitFor, within, screen, act } from "@testing-library/react";
+import { render, waitFor, within, screen } from "@testing-library/react";
 import SavedLibraryIncludes from "./SavedLibraryIncludes";
 import { fetchVersionedLibrariesErrorMessage } from "../../../api/useCqlLibraryServiceApi";
 import userEvent from "@testing-library/user-event";
