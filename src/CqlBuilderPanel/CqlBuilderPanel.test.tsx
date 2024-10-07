@@ -118,6 +118,11 @@ const props = {
   handleDefinitionDelete: jest.fn(),
   handleApplyLibrary: jest.fn(),
   handleDeleteLibrary: jest.fn(),
+  handleEditLibrary: jest.fn(),
+  handleDefinitionEdit: jest.fn(),
+  resetCql: jest.fn(),
+  getCqlDefinitionReturnTypes: jest.fn(),
+  makeExpanded: jest.fn(),
 };
 const { getByTestId } = screen;
 

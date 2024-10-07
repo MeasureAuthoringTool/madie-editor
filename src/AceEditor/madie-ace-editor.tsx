@@ -53,6 +53,7 @@ export interface EditorPropsType {
   setIsCQLUnchanged?: Function;
   isCQLUnchanged?: boolean;
   resetCql?: () => void;
+  getCqlDefinitionReturnTypes?: () => void;
   // conditional props used to pass up annotations outside of the editor
   setOutboundAnnotations?: Function;
 }

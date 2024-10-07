@@ -34,6 +34,7 @@ const CqlEditorWithTerminology = ({
   setIsCQLUnchanged,
   isCQLUnchanged,
   resetCql,
+  getCqlDefinitionReturnTypes,
 }: EditorPropsType) => {
   const [expanded, setExpanded] = useState(true);
   const toggleSearch = () => {
@@ -113,6 +114,7 @@ const CqlEditorWithTerminology = ({
               handleEditLibrary={handleEditLibrary}
               handleDeleteLibrary={handleDeleteLibrary}
               resetCql={resetCql}
+              getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
             />
           </Allotment.Pane>
         )}

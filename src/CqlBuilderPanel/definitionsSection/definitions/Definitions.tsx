@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import _ from "lodash";
 import {
   ColumnDef,
   flexRender,
@@ -17,11 +18,13 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
+import { Stack } from "@mui/material";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
 type DefinitionsPropTypes = {
+  canEdit: boolean;
   definitions: Lookup[];
   isCQLUnchanged: boolean;
   cql: string;
@@ -29,9 +32,11 @@ type DefinitionsPropTypes = {
   handleDefinitionEdit?: Function;
   handleDefinitionDelete?: Function;
   resetCql: Function;
+  getCqlDefinitionReturnTypes: Function;
   cqlBuilderLookup: CqlBuilderLookup;
 };
 const Definitions = ({
+  canEdit,
   definitions,
   isCQLUnchanged,
   cql,
@@ -39,6 +44,7 @@ const Definitions = ({
   handleDefinitionEdit,
   handleDefinitionDelete,
   resetCql,
+  getCqlDefinitionReturnTypes,
   cqlBuilderLookup,
 }: DefinitionsPropTypes) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -77,7 +83,11 @@ const Definitions = ({
 
   const showEditDefinitionDialog = (index) => {
     const rowModal = table.getRow(index).original;
-    setSelectedDefinition(rowModal);
+    const returnTypes = getCqlDefinitionReturnTypes();
+    const returnType = returnTypes
+      ? returnTypes[_.camelCase(rowModal.name)]
+      : undefined;
+    setSelectedDefinition({ ...rowModal, returnType: returnType });
   };
 
   // table data
@@ -93,8 +103,15 @@ const Definitions = ({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => {
+          if (!canEdit) {
+            return null;
+          }
           return (
-            <>
+            <Stack
+              direction="row"
+              alignItems="center"
+              data-testid="definition-actions"
+            >
               <ToolTippedIcon
                 tooltipMessage="Delete"
                 buttonProps={{
@@ -131,7 +148,7 @@ const Definitions = ({
               >
                 <BorderColorOutlinedIcon color="primary" />
               </ToolTippedIcon>
-            </>
+            </Stack>
           );
         },
       },

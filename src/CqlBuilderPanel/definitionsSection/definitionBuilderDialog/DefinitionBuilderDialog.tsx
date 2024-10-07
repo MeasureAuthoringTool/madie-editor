@@ -32,6 +32,7 @@ const DefinitionBuilderDialog = ({
   const updatedDefinition = {
     definitionName: definition?.name,
     expressionValue: getExpression(definition),
+    returnType: definition?.returnType,
   } as Definition;
 
   return (
