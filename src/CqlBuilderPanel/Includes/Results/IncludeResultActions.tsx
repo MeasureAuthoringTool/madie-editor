@@ -9,7 +9,7 @@ interface PropTypes {
   id: number;
   canEdit: boolean;
   showDeleteAction: boolean;
-  onEdit: (id: number) => void;
+  onEdit: (id: number, readOnly: boolean) => void;
   onDelete: (id: number) => void;
   onView: (id: number) => void;
 }
@@ -45,7 +45,7 @@ const IncludeResultActions = ({
               "data-testid": `edit-button-${id}`,
               "aria-label": `edit-button-${id}`,
               size: "small",
-              onClick: () => onEdit(id),
+              onClick: () => onEdit(id, true),
             }}
           >
             <BorderColorOutlinedIcon color="primary" />

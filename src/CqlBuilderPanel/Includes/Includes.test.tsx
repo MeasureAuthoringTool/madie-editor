@@ -2,11 +2,9 @@ import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import Includes from "./Includes";
 import userEvent from "@testing-library/user-event";
-import axios from "../../api/axios-instance";
 import { mockServiceConfig } from "../../__mocks__/mockServiceConfig";
 
 jest.mock("../../api/axios-instance");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.mock("../../api/useServiceConfig", () => {
   return {
@@ -20,19 +18,21 @@ const cql =
   "using QDM version '5.6'\n" +
   "include CancerLinQ version '1.5.000' called CancerLinQQ";
 
+const props = {
+  cql: cql,
+  canEdit: true,
+  measureModel: "QDM",
+  isCQLUnchanged: false,
+  setIsCQLUnchanged: () => jest.fn(),
+  setEditorValue: () => jest.fn(),
+  handleApplyLibrary: () => jest.fn(),
+  handleEditLibrary: () => jest.fn(),
+  handleDeleteLibrary: () => jest.fn(),
+};
+
 describe("Includes", () => {
   it("Should renders Includes component", async () => {
-    render(
-      <Includes
-        canEdit
-        measureModel={"QDM"}
-        handleApplyLibrary={jest.fn}
-        cql={cql}
-        handleDeleteLibrary={jest.fn}
-        isCQLUnchanged={false}
-        setEditorValue={jest.fn}
-      />
-    );
+    render(<Includes {...props} />);
     expect(getByTestId("includes-panel")).toBeInTheDocument();
     expect(getByTestId("searchTerm-text-input")).toBeEnabled();
     // by default Library tab active

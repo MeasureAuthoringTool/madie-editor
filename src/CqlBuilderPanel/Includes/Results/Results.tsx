@@ -76,6 +76,7 @@ const Results = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const [rowIndex, setRowIndex] = useState<string>();
+  const [isEditAction, setEditAction] = useState<boolean>(false);
 
   // toast utilities
   const [toastState, dispatch] = useReducer(
@@ -192,8 +193,9 @@ const Results = ({
   };
 
   // get the cql for selected library and set selected library
-  const showLibraryDetails = async (index) => {
+  const showLibraryDetails = async (index, isEditAction = false) => {
     setRowIndex(index);
+    setEditAction(isEditAction && canEdit);
     if (isCQLUnchanged) {
       const rowModal = table.getRow(index).original;
       await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
@@ -348,7 +350,7 @@ const Results = ({
         )}
       </div>
       <CqlLibraryDetailsDialog
-        canEdit={canEdit}
+        canEdit={isEditAction && canEdit}
         library={selectedLibrary}
         open={openLibraryDialog}
         setOpenLibraryDialog={setOpenLibraryDialog}
