@@ -81,24 +81,27 @@ export default function CqlBuilderPanel({
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setErrors(null);
                 setCqlBuilderLookupsTypes(axiosResponse?.data);
-                setLoading(false);
               })
               .catch((error) => {
                 setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-                setLoading(false);
+
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
                 console.error(error);
+              })
+              .finally(() => {
+                setLoading(false);
               });
           })
           .catch((error) => {
             setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-            setLoading(false);
+
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
             console.error(error);
+            setLoading(false);
           });
       } else {
         fhirElmTranslationServiceApi
@@ -107,24 +110,27 @@ export default function CqlBuilderPanel({
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setCqlBuilderLookupsTypes(axiosResponse?.data);
-                setLoading(false);
               })
               .catch((error) => {
                 setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-                setLoading(false);
+
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
                 console.error(error);
+              })
+              .finally(() => {
+                setLoading(false);
               });
           })
           .catch((error) => {
             setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-            setLoading(false);
+
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
             console.error(error);
+            setLoading(false);
           });
       }
     }
