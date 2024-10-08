@@ -66,6 +66,7 @@ export default function CqlBuilderPanel({
   const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
     useState<CqlBuilderLookup>();
   const [errors, setErrors] = useState<string>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
   const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
@@ -83,18 +84,24 @@ export default function CqlBuilderPanel({
               })
               .catch((error) => {
                 setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
                 console.error(error);
+              })
+              .finally(() => {
+                setLoading(false);
               });
           })
           .catch((error) => {
             setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
             console.error(error);
+            setLoading(false);
           });
       } else {
         fhirElmTranslationServiceApi
@@ -106,18 +113,24 @@ export default function CqlBuilderPanel({
               })
               .catch((error) => {
                 setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
                 console.error(error);
+              })
+              .finally(() => {
+                setLoading(false);
               });
           })
           .catch((error) => {
             setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
             console.error(error);
+            setLoading(false);
           });
       }
     }
@@ -216,6 +229,7 @@ export default function CqlBuilderPanel({
             resetCql={resetCql}
             getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
             handleDefinitionEdit={handleDefinitionEdit}
+            loading={loading}
           />
         )}
       </div>
