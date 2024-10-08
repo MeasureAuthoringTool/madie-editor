@@ -16,6 +16,7 @@ interface DefinitionProps {
   setEditorVal: (cql: string) => void;
   resetCql: Function;
   getCqlDefinitionReturnTypes: Function;
+  loading: boolean;
 }
 
 export default function DefinitionsSection({
@@ -29,6 +30,7 @@ export default function DefinitionsSection({
   setEditorVal,
   resetCql,
   getCqlDefinitionReturnTypes,
+  loading,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
 
@@ -43,6 +45,7 @@ export default function DefinitionsSection({
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         definitionCount={measureDefinitions.length}
+        loading={loading}
       />
       <div>
         {activeTab === "definition" && (
@@ -64,6 +67,7 @@ export default function DefinitionsSection({
             getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
             cqlBuilderLookup={cqlBuilderLookupsTypes}
             handleDefinitionEdit={handleDefinitionEdit}
+            loading={loading}
           />
         )}
       </div>

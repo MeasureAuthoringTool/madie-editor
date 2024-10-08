@@ -13,6 +13,7 @@ import {
   MadieDeleteDialog,
   MadieDiscardDialog,
 } from "@madie/madie-design-system/dist/react";
+import Skeleton from "@mui/material/Skeleton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
@@ -34,6 +35,7 @@ type DefinitionsPropTypes = {
   resetCql: Function;
   getCqlDefinitionReturnTypes: Function;
   cqlBuilderLookup: CqlBuilderLookup;
+  loading: boolean;
 };
 const Definitions = ({
   canEdit,
@@ -46,6 +48,7 @@ const Definitions = ({
   resetCql,
   getCqlDefinitionReturnTypes,
   cqlBuilderLookup,
+  loading,
 }: DefinitionsPropTypes) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialog, setDiscardDialog] = useState({
@@ -218,15 +221,23 @@ const Definitions = ({
           ))}
         </thead>
         <tbody data-testid="definitions-table-body">
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} data-testid={`definitions-row-${row.id}`}>
-              {row.getVisibleCells().map((cell) => (
-                <TD key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TD>
-              ))}
-            </tr>
-          ))}
+          {!loading &&
+            table.getRowModel().rows.map((row) => (
+              <tr key={row.id} data-testid={`definitions-row-${row.id}`}>
+                {row.getVisibleCells().map((cell) => (
+                  <TD key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TD>
+                ))}
+              </tr>
+            ))}
+          {loading && (
+            <div>
+              <Skeleton animation="wave" width="100%" height={45} />
+              <Skeleton animation="wave" width="100%" height={45} />
+              <Skeleton animation="wave" width="100%" height={45} />
+            </div>
+          )}
         </tbody>
         <MadieDeleteDialog
           open={deleteDialogOpen}

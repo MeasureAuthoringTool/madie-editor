@@ -66,6 +66,7 @@ export default function CqlBuilderPanel({
   const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
     useState<CqlBuilderLookup>();
   const [errors, setErrors] = useState<string>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
   const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
@@ -80,9 +81,11 @@ export default function CqlBuilderPanel({
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setErrors(null);
                 setCqlBuilderLookupsTypes(axiosResponse?.data);
+                setLoading(false);
               })
               .catch((error) => {
                 setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+                setLoading(false);
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -91,6 +94,7 @@ export default function CqlBuilderPanel({
           })
           .catch((error) => {
             setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+            setLoading(false);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -103,9 +107,11 @@ export default function CqlBuilderPanel({
               .getCqlBuilderLookups(measureStoreCql)
               .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                 setCqlBuilderLookupsTypes(axiosResponse?.data);
+                setLoading(false);
               })
               .catch((error) => {
                 setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+                setLoading(false);
                 setErrors(
                   "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                 );
@@ -114,6 +120,7 @@ export default function CqlBuilderPanel({
           })
           .catch((error) => {
             setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+            setLoading(false);
             setErrors(
               "Unable to retrieve Service Config, Please try again or contact Helpdesk"
             );
@@ -216,6 +223,7 @@ export default function CqlBuilderPanel({
             resetCql={resetCql}
             getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
             handleDefinitionEdit={handleDefinitionEdit}
+            loading={loading}
           />
         )}
       </div>

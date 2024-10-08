@@ -5,10 +5,11 @@ export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
   definitionCount: number;
+  loading: boolean;
 }
 
 export default function DefinitionSectionNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab, definitionCount } = props;
+  const { activeTab, setActiveTab, definitionCount, loading } = props;
 
   return (
     <div style={{ borderBottom: "1px solid #b0b0b0" }} tw="flex flex-row">
@@ -35,7 +36,9 @@ export default function DefinitionSectionNavTabs(props: NavTabProps) {
           tabIndex={0}
           aria-label="Saved Definitions"
           type="B"
-          label={`Saved Definitions (${definitionCount})`}
+          label={`Saved Definitions ${
+            !loading ? "(" + definitionCount + ")" : ""
+          }`}
           data-testid="saved-definitions-tab"
           value="saved-definitions"
         />
