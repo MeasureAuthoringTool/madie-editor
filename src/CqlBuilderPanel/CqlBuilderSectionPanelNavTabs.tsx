@@ -5,6 +5,7 @@ export interface NavTabProps {
   setActiveTab: (value: string) => void;
   canEdit: boolean;
   CQLBuilderIncludes: boolean;
+  CQLBuilderParameters: boolean;
   QDMValueSetSearch: boolean;
   CQLBuilderDefinitions: boolean;
   qdmCodeSearch: boolean;
@@ -17,8 +18,9 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
     setActiveTab,
     canEdit,
     QDMValueSetSearch,
-    CQLBuilderIncludes,
     CQLBuilderDefinitions,
+    CQLBuilderIncludes,
+    CQLBuilderParameters,
     qdmCodeSearch,
     isQDM,
   } = props;
@@ -60,6 +62,17 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
           label="Codes"
           data-testid="codes-tab"
           value="codes"
+        />
+      )}
+      {CQLBuilderParameters && (
+        <Tab
+          disabled={!canEdit}
+          tabIndex={0}
+          aria-label="Parameters"
+          type="D"
+          label="Parameters"
+          data-testid="parameters-tab"
+          value="parameters"
         />
       )}
       {CQLBuilderDefinitions && (

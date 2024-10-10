@@ -1,0 +1,39 @@
+#cql-editor-parameters {
+  > .form-actions {
+    display: flex;
+    flex-direction: row;
+  }
+
+  > .row {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: row;
+    margin-left: 0; // need this from bleeding css from grid somewhere
+
+    > .spacer {
+      display: flex;
+      flex-grow: 1;
+      height: 1px;
+      width: 100%;
+    }
+  }
+
+  > .terminology-section-tab-heading {
+    margin-top: 32px;
+
+    #ace-editor-wrapper {
+      max-height: 170px;
+      overflow: scroll;
+    }
+  }
+
+  > .form-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+
+    > button {
+      margin-left: 24px;
+    }
+  }
+}

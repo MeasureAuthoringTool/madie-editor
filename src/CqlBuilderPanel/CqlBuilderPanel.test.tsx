@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import CqlBuilderPanel from "./CqlBuilderPanel";
 // @ts-ignore
 import { useFeatureFlags } from "@madie/madie-util";
@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { within } from "@testing-library/dom";
 import axios from "../api/axios-instance";
+import { act } from "react-dom/test-utils";
 import { ServiceConfig } from "../api/useServiceConfig";
 
 jest.mock("../api/axios-instance");
@@ -625,5 +626,103 @@ describe("CqlBuilderPanel", () => {
     expect(options.length).toBe(2);
     expect(options[0]).toHaveTextContent("HospitalizationLengthofStay()");
     expect(options[1]).toHaveTextContent("Latest()");
+  });
+
+  it("Parameters tab does not exist", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+      CQLBuilderParameters: false,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    render(<CqlBuilderPanel {...props} />);
+    const parameterTab = await screen.queryByText("Parameters");
+    expect(parameterTab).not.toBeInTheDocument();
+  });
+
+  it("Parameters tab exists but it's disabled", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+      CQLBuilderParameters: true,
+    }));
+    const newProps = { ...props, canEdit: false };
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    render(<CqlBuilderPanel {...newProps} />);
+    const parameterTab = await screen.queryByText("Parameters");
+    expect(parameterTab).toBeInTheDocument();
+    expect(parameterTab).not.toBeEnabled();
+  });
+
+  it("Parameters works", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+      CQLBuilderParameters: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    let result = render(<CqlBuilderPanel {...props} />);
+    const parameterTab = await screen.queryByText("Parameters");
+    expect(parameterTab).toBeInTheDocument();
+    userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
+    expect(screen.getByTestId("cql-editor-parameters")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId("saved-parameters-tab"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("saved-parameters-tab")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    expect(screen.getByTestId("saved-parameters")).toBeInTheDocument();
+    // switch back
+    await userEvent.click(screen.getByTestId("parameter-tab"));
+    await waitFor(() => {
+      expect(screen.getByTestId("parameter-tab")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    // write some stuff in parameter name
+    const parameterInput = screen.getByTestId(
+      "parameter-name-input"
+    ) as HTMLInputElement;
+    userEvent.type(parameterInput, "SomeText");
+    expect(parameterInput.value).toBe("SomeText");
+    // we now see expression edtior
+    const editor = screen.getByTestId(
+      "terminology-section-sub-header-content-Expression Editor"
+    );
+    expect(editor).toBeVisible();
+
+    //paste into editor, check it's there
+    const editorValue = "Some more Text";
+    let aceEditor: any = await result.container.querySelector(
+      "#ace-editor-wrapper textarea"
+    );
+    userEvent.paste(aceEditor, editorValue);
+    aceEditor = await result.container.querySelector(
+      "#ace-editor-wrapper textarea"
+    );
+    expect(aceEditor.value).toContain(editorValue);
+    // check that clear does anything
+    userEvent.click(getByTestId("clear-parameter-btn"));
+    await waitFor(() => {
+      expect(parameterInput.value).toBe("");
+      expect(aceEditor.value).toContain("");
+    });
   });
 });

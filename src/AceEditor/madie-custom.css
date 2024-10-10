@@ -17,3 +17,8 @@
 .ace-monokai .ace_storage {
   color: #fb4b8c !important;
 }
+
+.ace_scrollbar {
+  scrollbar-color: #9c9c9c #9c9c9c;
+  opacity: 1;
+}

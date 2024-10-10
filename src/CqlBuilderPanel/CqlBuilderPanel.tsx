@@ -5,6 +5,7 @@ import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 import { useFeatureFlags } from "@madie/madie-util";
 import IncludesTabSection from "./Includes/Includes";
+import Parameters from "./Parameters/Parameters";
 import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
 import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
 import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
@@ -40,6 +41,7 @@ export default function CqlBuilderPanel({
     CQLBuilderDefinitions,
     CQLBuilderIncludes,
     qdmCodeSearch,
+    CQLBuilderParameters,
   } = featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
@@ -147,6 +149,7 @@ export default function CqlBuilderPanel({
           CQLBuilderDefinitions={CQLBuilderDefinitions}
           qdmCodeSearch={qdmCodeSearch}
           isQDM={measureModel?.includes("QDM")}
+          CQLBuilderParameters={CQLBuilderParameters}
           CQLBuilderIncludes={CQLBuilderIncludes}
         />
         <div
@@ -216,6 +219,7 @@ export default function CqlBuilderPanel({
             handleApplyCode={handleApplyCode}
           />
         )}
+        {activeTab === "parameters" && <Parameters />}
 
         {activeTab === "definitions" && (
           <DefinitionsSection
