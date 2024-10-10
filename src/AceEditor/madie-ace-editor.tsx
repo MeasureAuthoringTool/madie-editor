@@ -468,6 +468,9 @@ const MadieAceEditor = ({
         readOnly={readOnly}
         name="ace-editor-wrapper"
         enableBasicAutocompletion={true}
+        setOptions={{
+          vScrollBarAlwaysVisible: true,
+        }}
       />
     </div>
   );

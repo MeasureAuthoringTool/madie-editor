@@ -3,6 +3,17 @@ import { useFormik } from "formik";
 import ExpandingSection from "../../common/ExpandingSection";
 import { TextField, Button } from "@madie/madie-design-system/dist/react";
 import AceEditor from "react-ace";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object({
+  parameterName: Yup.string()
+    .matches(
+      /^[a-zA-Z0-9]*$/,
+      "Only alphanumeric characters are allowed, no spaces."
+    )
+    .required("Parameter Name is required"),
+  expressionEditorValue: Yup.string(),
+});
 
 export default function ParameterPane() {
   const textAreaRef = useRef(null);
@@ -13,6 +24,7 @@ export default function ParameterPane() {
       parameterName: "",
       expressionEditorValue: "",
     },
+    validationSchema,
     enableReinitialize: true,
     onSubmit: (values) => {},
   });
@@ -39,6 +51,8 @@ export default function ParameterPane() {
             }
             formik.setFieldValue("parameterName", e.target.value);
           }}
+          helperText={formik.errors["parameterName"]}
+          error={Boolean(formik.errors.parameterName)}
         />
         <div className="spacer" />
       </div>
@@ -65,6 +79,7 @@ export default function ParameterPane() {
           readOnly={false}
           name="ace-editor-wrapper"
           enableBasicAutocompletion={true}
+          //@ts-ignore
         />
       </ExpandingSection>
       <div className="form-actions">
@@ -72,14 +87,14 @@ export default function ParameterPane() {
           variant="outline"
           data-testid="clear-parameter-btn"
           tw="mr-4"
-          disabled={!formik.values.parameterName}
+          disabled={!formik.dirty || !formik.isValid}
           onClick={resetForm}
         >
           Clear
         </Button>
         <Button
           data-testId="apply-parameter"
-          disabled={!formik.values.parameterName}
+          disabled={!formik.dirty || !formik.isValid}
         >
           Apply
         </Button>
