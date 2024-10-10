@@ -5,6 +5,7 @@ declare module "@madie/madie-util" {
     CQLBuilderIncludes: boolean;
     QDMValueSetSearch: boolean;
     CQLBuilderDefinitions: boolean;
+    CQLBuilderParameters: boolean;
     qdmCodeSearch: boolean;
   }
 
