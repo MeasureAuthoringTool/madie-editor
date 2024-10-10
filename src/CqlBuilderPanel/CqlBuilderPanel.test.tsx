@@ -679,7 +679,6 @@ describe("CqlBuilderPanel", () => {
     userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
     expect(screen.getByTestId("cql-editor-parameters")).toBeInTheDocument();
 
-    // userEvent.click(screen.getByRole("tab", { name: "Saved Parameters" }));
     await userEvent.click(screen.getByTestId("saved-parameters-tab"));
 
     await waitFor(() => {
