@@ -24,6 +24,11 @@ export type ValueSet = {
   errorMsg: string;
 };
 
+export type Parameter = {
+  parameterName?: string;
+  expression?: string;
+};
+
 export interface CodeSystem {
   id: string;
   lastUpdated: string;

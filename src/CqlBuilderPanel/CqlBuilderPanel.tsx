@@ -27,6 +27,7 @@ export default function CqlBuilderPanel({
   handleDeleteLibrary,
   handleEditLibrary,
   handleApplyCode,
+  handleApplyParameter,
   handleApplyValueSet,
   handleApplyDefinition,
   handleDefinitionEdit,
@@ -219,7 +220,9 @@ export default function CqlBuilderPanel({
             handleApplyCode={handleApplyCode}
           />
         )}
-        {activeTab === "parameters" && <Parameters />}
+        {activeTab === "parameters" && (
+          <Parameters handleApplyParameter={handleApplyParameter} />
+        )}
 
         {activeTab === "definitions" && (
           <DefinitionsSection

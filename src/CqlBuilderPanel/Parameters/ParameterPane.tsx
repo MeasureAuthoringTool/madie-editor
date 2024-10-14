@@ -12,21 +12,26 @@ const validationSchema = Yup.object({
       "Only alphanumeric characters are allowed, no spaces."
     )
     .required("Parameter Name is required"),
-  expressionEditorValue: Yup.string(),
+  parameterExpression: Yup.string(),
 });
 
-export default function ParameterPane() {
+export default function ParameterPane({ handleApplyParameter }) {
   const textAreaRef = useRef(null);
   const [editorHeight, setEditorHeight] = useState("100px");
   const [showEditor, setShowEditor] = useState(false);
   const formik = useFormik({
     initialValues: {
       parameterName: "",
-      expressionEditorValue: "",
+      expression: "",
     },
     validationSchema,
     enableReinitialize: true,
-    onSubmit: (values) => {},
+    onSubmit: async (values) => {
+      const result = handleApplyParameter(values);
+      if (result === "success") {
+        formik.resetForm();
+      }
+    },
   });
   const { resetForm } = formik;
   // adjusting the height of the editor based on the inserted text
@@ -36,7 +41,7 @@ export default function ParameterPane() {
       const newHeight = Math.max(lineCount * 20, 100) + "px";
       setEditorHeight(newHeight);
     }
-  }, [formik.values.expressionEditorValue]);
+  }, [formik.values.expression]);
   return (
     <>
       <div className="row">
@@ -65,9 +70,9 @@ export default function ParameterPane() {
           mode="sql"
           ref={textAreaRef}
           theme="monokai"
-          value={formik.values.expressionEditorValue}
+          value={formik.values.expression}
           onChange={(value) => {
-            formik.setFieldValue("expressionEditorValue", value);
+            formik.setFieldValue("expression", value);
           }}
           onLoad={(aceEditor) => {
             // On load we want to tell the ace editor that it's inside of a scrollabel page
@@ -95,6 +100,7 @@ export default function ParameterPane() {
         <Button
           data-testId="apply-parameter"
           disabled={!formik.dirty || !formik.isValid}
+          onClick={formik.handleSubmit}
         >
           Apply
         </Button>

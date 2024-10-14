@@ -20,6 +20,7 @@ import "./madie-custom.css";
 import { ParsedCql, Statement } from "../model/ParsedCql";
 import {
   CqlMetaData,
+  Parameter,
   ValueSetForSearch,
 } from "../api/useTerminologyServiceApi";
 import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuilder/DefinitionBuilder";
@@ -29,6 +30,7 @@ export interface EditorPropsType {
   value: string;
   onChange?: (value: string) => void;
   handleApplyCode?: (code: string) => void;
+  handleApplyParameter?: (parameter: Parameter) => void;
   handleApplyValueSet?: (vs: ValueSetForSearch) => void;
   handleApplyDefinition?: (def: Definition) => void;
   handleDefinitionEdit?: (lib: SelectedLibrary, def: Definition) => void;
