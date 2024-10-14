@@ -662,7 +662,7 @@ describe("CqlBuilderPanel", () => {
     expect(parameterTab).not.toBeEnabled();
   });
 
-  it("Parameters works", async () => {
+  it("Parameters clear works", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
@@ -721,6 +721,77 @@ describe("CqlBuilderPanel", () => {
     // check that clear does anything
     userEvent.click(getByTestId("clear-parameter-btn"));
     await waitFor(() => {
+      expect(parameterInput.value).toBe("");
+      expect(aceEditor.value).toContain("");
+    });
+  });
+  it("Parameters apply works", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+      CQLBuilderParameters: true,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+
+    const applyParameter = jest.fn();
+    applyParameter.mockReturnValue("success");
+    const copiedProps = { ...props, handleApplyParameter: applyParameter };
+    let result = render(<CqlBuilderPanel {...copiedProps} />);
+    const parameterTab = await screen.queryByText("Parameters");
+    expect(parameterTab).toBeInTheDocument();
+    userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
+    expect(screen.getByTestId("cql-editor-parameters")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId("saved-parameters-tab"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("saved-parameters-tab")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    expect(screen.getByTestId("saved-parameters")).toBeInTheDocument();
+    // switch back
+    await userEvent.click(screen.getByTestId("parameter-tab"));
+    await waitFor(() => {
+      expect(screen.getByTestId("parameter-tab")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    // write some stuff in parameter name
+    const parameterInput = screen.getByTestId(
+      "parameter-name-input"
+    ) as HTMLInputElement;
+    userEvent.type(parameterInput, "SomeText");
+    expect(parameterInput.value).toBe("SomeText");
+    // we now see expression edtior
+    const editor = screen.getByTestId(
+      "terminology-section-sub-header-content-Expression Editor"
+    );
+    expect(editor).toBeVisible();
+
+    //paste into editor, check it's there
+    const editorValue = "Some more Text";
+    let aceEditor: any = await result.container.querySelector(
+      "#ace-editor-wrapper textarea"
+    );
+    userEvent.paste(aceEditor, editorValue);
+    aceEditor = await result.container.querySelector(
+      "#ace-editor-wrapper textarea"
+    );
+    expect(aceEditor.value).toContain(editorValue);
+    // check that clear does anything
+    userEvent.click(getByTestId("apply-parameter-btn"));
+    await waitFor(() => {
+      expect(applyParameter).toHaveBeenCalledWith({
+        expression: "Some more Text",
+        parameterName: "SomeText",
+      });
       expect(parameterInput.value).toBe("");
       expect(aceEditor.value).toContain("");
     });

@@ -98,7 +98,7 @@ export default function ParameterPane({ handleApplyParameter }) {
           Clear
         </Button>
         <Button
-          data-testId="apply-parameter"
+          data-testId="apply-parameter-btn"
           disabled={!formik.dirty || !formik.isValid}
           onClick={formik.handleSubmit}
         >
