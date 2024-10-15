@@ -231,7 +231,7 @@ describe("Results pagination", () => {
         filteredValueSets={mockValueSetResults}
       />
     );
-    const limitChangeButton = await findByRole("button", { expanded: false });
+    const limitChangeButton = await findByRole("combobox", { expanded: false });
     expect(limitChangeButton).toBeInTheDocument();
     userEvent.click(limitChangeButton);
     const options = await findAllByRole("option");
@@ -266,7 +266,7 @@ describe("Results pagination", () => {
       />
     );
     // select limit as 25 items;
-    const limitChangeButton = await findByRole("button", { expanded: false });
+    const limitChangeButton = await findByRole("combobox", { expanded: false });
     expect(limitChangeButton).toBeInTheDocument();
     userEvent.click(limitChangeButton);
     const options = await findAllByRole("option");

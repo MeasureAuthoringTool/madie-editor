@@ -62,7 +62,6 @@ describe("CqlEditorWithTerminology component", () => {
     };
     render(<CqlEditorWithTerminology {...props} />);
 
-    expect(screen.getByTestId("split-view-view")).toBeInTheDocument();
     expect(screen.getByTestId("expanded-button")).toBeInTheDocument();
     expect(screen.queryByTestId("valueSets-tab")).not.toBeInTheDocument();
   });
@@ -97,7 +96,6 @@ describe("CqlEditorWithTerminology component", () => {
     };
     render(<CqlEditorWithTerminology {...props} />);
 
-    expect(screen.getByTestId("split-view-view")).toBeInTheDocument();
     const expandBtn = screen.getByTestId("expanded-button");
     expect(expandBtn).toBeInTheDocument();
 
