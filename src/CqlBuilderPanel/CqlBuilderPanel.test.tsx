@@ -216,7 +216,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 
@@ -293,7 +293,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 
@@ -370,7 +370,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 
@@ -417,7 +417,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 
@@ -463,7 +463,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 
@@ -512,7 +512,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 
@@ -560,7 +560,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 
@@ -607,7 +607,7 @@ describe("CqlBuilderPanel", () => {
 
     const typeSelect = screen.getByTestId("type-selector");
     const typeSelectDropdown = within(typeSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(typeSelectDropdown);
 

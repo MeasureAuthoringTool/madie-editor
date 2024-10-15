@@ -130,7 +130,7 @@ describe("LibrarySearch component tests", () => {
     const searchBtn = screen.getByTestId("search-btn");
     userEvent.click(searchBtn);
 
-    const limitChangeButton = await screen.findByRole("button", {
+    const limitChangeButton = await screen.findByRole("combobox", {
       expanded: false,
     });
     expect(limitChangeButton).toBeInTheDocument();
@@ -184,7 +184,7 @@ describe("LibrarySearch component tests", () => {
     });
     const versionSelect = screen.getByTestId("version-select");
     // Change the version
-    userEvent.click(await within(versionSelect).getByRole("button"));
+    userEvent.click(await within(versionSelect).getByRole("combobox"));
     const versionOptions = await screen.findAllByRole("option");
     expect(versionOptions.length).toBe(3);
     // select 2nd option
@@ -248,7 +248,7 @@ describe("LibrarySearch component tests", () => {
       mockCqlLibraries[0].librarySet.owner
     );
     // Change the version
-    userEvent.click(await within(versionSelect).getByRole("button"));
+    userEvent.click(await within(versionSelect).getByRole("combobox"));
     const versionOptions = await screen.findAllByRole("option");
     expect(versionOptions.length).toBe(3);
     // select 2nd option

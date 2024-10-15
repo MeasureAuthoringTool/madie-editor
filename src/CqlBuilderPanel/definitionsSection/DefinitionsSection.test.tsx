@@ -109,9 +109,7 @@ describe("DefinitionsSection", () => {
       expect(savedDefinitions).toHaveAttribute("aria-selected", "true");
     });
 
-    const limitChoice = await screen.findByRole("button", {
-      name: /5/i,
-    });
+    const limitChoice = await screen.findByRole("combobox");
 
     expect(limitChoice).toHaveTextContent("5");
 
