@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
   useState,
 } from "react";
 import {
@@ -16,7 +15,6 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
-  LibrarySetDto,
 } from "../../../api/useCqlLibraryServiceApi";
 import {
   MadieDeleteDialog,
@@ -176,7 +174,7 @@ const Results = ({
         );
         setSelectedLibrary({
           id: library.id,
-          name: librarySet.libraries[0].cqlLibraryName,
+          name: library.cqlLibraryName,
           alias: alias,
           owner: librarySet.librarySet.owner,
           librarySetId: setId,
