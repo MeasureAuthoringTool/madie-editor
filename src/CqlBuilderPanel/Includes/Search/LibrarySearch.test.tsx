@@ -130,11 +130,16 @@ describe("LibrarySearch component tests", () => {
     const searchBtn = screen.getByTestId("search-btn");
     userEvent.click(searchBtn);
 
-    const limitChangeButton = await screen.findByRole("combobox", {
-      expanded: false,
+    // screen.debug();
+
+    await waitFor(async () => {
+      const limitChangeButton = await screen.findByRole("combobox", {
+        expanded: false,
+      });
+      expect(limitChangeButton).toBeInTheDocument();
+      userEvent.click(limitChangeButton);
     });
-    expect(limitChangeButton).toBeInTheDocument();
-    userEvent.click(limitChangeButton);
+
     const options = await screen.findAllByRole("option");
     expect(options).toHaveLength(4);
     userEvent.click(options[1]); // select 10 items per page option

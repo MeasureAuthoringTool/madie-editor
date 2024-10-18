@@ -86,7 +86,7 @@ const CqlLibraryDetailsDialog = ({
   });
 
   const handleVersionChange = (selectedVersion) => {
-    onVersionChange(selectedVersion, library.librarySetId);
+    onVersionChange(selectedVersion, library.librarySetId, library.alias);
   };
 
   const handleClose = () => {
