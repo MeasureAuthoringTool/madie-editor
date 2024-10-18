@@ -161,9 +161,17 @@ describe("LibrarySearch component tests", () => {
           data: [mockCqlLibraries[0], mockCqlLibraries[1], mockCqlLibraries[2]],
           status: 200,
         });
-      } else {
+      } else if (url.includes("/library-set")) {
+        const librarySet = {
+          librarySet: mockCqlLibraries[0].librarySet,
+          libraries: [
+            mockCqlLibraries[0],
+            mockCqlLibraries[1],
+            mockCqlLibraries[2],
+          ],
+        };
         return Promise.resolve({
-          data: "cql string",
+          data: librarySet,
           status: 200,
         });
       }
