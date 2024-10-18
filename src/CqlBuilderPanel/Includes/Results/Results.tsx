@@ -29,6 +29,7 @@ import CqlLibraryDetailsDialog, {
 } from "../CqlLibraryDetailsDialog";
 import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
+import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
@@ -154,65 +155,43 @@ const Results = ({
     };
   });
 
-  const fetchLibrarySet = async (id: string) => {
-    try {
-      const service = await libraryService;
-      return await service.fetchLibrarySet(id);
-    } catch (error) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "danger", message: error.message },
-      });
-    }
-  };
-
-  const useMemoizedLibrarySet = (
-    fetchLibrarySetCb: (id: string) => Promise<LibrarySetDto>
-  ) => {
-    const cache = useRef(new Map());
-    return useCallback(
-      async (arg) => {
-        if (cache.current.has(arg)) {
-          return cache.current.get(arg);
-        }
-        const result = fetchLibrarySetCb(arg);
-        cache.current.set(arg, result);
-        return result;
-      },
-      [fetchLibrarySetCb]
-    );
-  };
-
   // Use the custom hook to memoize the fetchLibrarySet async function
-  const memoizedLibrarySetFetch = useMemoizedLibrarySet(fetchLibrarySet);
+  const memoizedLibrarySetFetch = useMemoizedLibrarySet();
 
   const updateLibrarySelection = async (
     version: string,
     setId: string,
     alias: string
   ) => {
-    const librarySet = await memoizedLibrarySetFetch(setId);
-    if (librarySet) {
-      // filter out library for selected version from family of library
-      const library = librarySet.libraries.find(
-        (library: CqlLibrary) => library.version === version
-      );
-      // list if all the versions for selected library
-      const versions = librarySet.libraries.map(
-        (library: CqlLibrary) => library.version
-      );
-      setSelectedLibrary({
-        id: library.id,
-        name: librarySet.libraries[0].cqlLibraryName,
-        alias: alias,
-        owner: librarySet.librarySet.owner,
-        librarySetId: setId,
-        version: version,
-        cql: library.cql,
-        otherVersions: versions,
-      } as SelectedLibrary);
-      setOpenLibraryDialog(true);
-      setRowIndex(null);
+    try {
+      const librarySet = await memoizedLibrarySetFetch(setId);
+      if (librarySet) {
+        // filter out library for selected version from family of library
+        const library = librarySet.libraries.find(
+          (library: CqlLibrary) => library.version === version
+        );
+        // list if all the versions for selected library
+        const versions = librarySet.libraries.map(
+          (library: CqlLibrary) => library.version
+        );
+        setSelectedLibrary({
+          id: library.id,
+          name: librarySet.libraries[0].cqlLibraryName,
+          alias: alias,
+          owner: librarySet.librarySet.owner,
+          librarySetId: setId,
+          version: version,
+          cql: library.cql,
+          otherVersions: versions,
+        } as SelectedLibrary);
+        setOpenLibraryDialog(true);
+        setRowIndex(null);
+      }
+    } catch (error) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "danger", message: error.message },
+      });
     }
   };
 
