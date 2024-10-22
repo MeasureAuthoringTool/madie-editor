@@ -13,9 +13,7 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import useCqlLibraryServiceApi, {
-  CqlLibrary,
-} from "../../../api/useCqlLibraryServiceApi";
+import { CqlLibrary } from "../../../api/useCqlLibraryServiceApi";
 import {
   MadieDeleteDialog,
   MadieDiscardDialog,
@@ -68,7 +66,6 @@ const Results = ({
   operation,
 }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
-  const libraryService = useCqlLibraryServiceApi();
   const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
   const [selectedLibrary, setSelectedLibrary] = useState<SelectedLibrary>();
 
