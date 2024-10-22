@@ -221,7 +221,16 @@ export default function CqlBuilderPanel({
           />
         )}
         {activeTab === "parameters" && (
-          <Parameters handleApplyParameter={handleApplyParameter} />
+          <Parameters
+            canEdit={canEdit}
+            handleApplyParameter={handleApplyParameter}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+            isCQLUnchanged={isCQLUnchanged}
+            cql={measureStoreCql}
+            setEditorValue={setEditorVal}
+            resetCql={resetCql}
+            loading={loading}
+          />
         )}
 
         {activeTab === "definitions" && (
