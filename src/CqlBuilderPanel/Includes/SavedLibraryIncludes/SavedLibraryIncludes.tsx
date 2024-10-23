@@ -116,7 +116,6 @@ const SavedLibraryIncludes = ({
         cqlLibraries={libraries}
         canEdit={canEdit}
         showAlias={true}
-        measureModel={measureModel}
         isCQLUnchanged={isCQLUnchanged}
         setIsCQLUnchanged={setIsCQLUnchanged}
         setEditorValue={setEditorValue}
