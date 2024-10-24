@@ -35,7 +35,6 @@ export default function Parameters({
   const [parameters, setParameters] = useState(
     cqlBuilderLookupsTypes?.parameters ? cqlBuilderLookupsTypes?.parameters : []
   );
-
   return (
     <form id="cql-editor-parameters" data-testId="cql-editor-parameters">
       <ParametersNavTabs
@@ -45,7 +44,10 @@ export default function Parameters({
       />
 
       {activeTab === "parameters" && (
-        <ParameterPane handleApplyParameter={handleApplyParameter} />
+        <ParameterPane
+          handleApplyParameter={handleApplyParameter}
+          canEdit={canEdit}
+        />
       )}
       {activeTab === "savedParameters" && (
         <div data-testId="saved-parameters">

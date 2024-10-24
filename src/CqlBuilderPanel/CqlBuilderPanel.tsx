@@ -143,7 +143,6 @@ export default function CqlBuilderPanel({
     <div className="right-panel">
       <div className="tab-container">
         <CqlBuilderSectionPanelNavTabs
-          canEdit={canEdit}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           QDMValueSetSearch={QDMValueSetSearch}
