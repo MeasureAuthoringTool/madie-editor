@@ -70,7 +70,6 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
       <ExpandingSection title="Library Results" showHeaderContent={true}>
         <Results
           cqlLibraries={cqlLibraries}
-          measureModel={measureModel}
           handleApplyLibrary={handleApplyLibrary}
           canEdit={canEdit}
           showAlias={false}

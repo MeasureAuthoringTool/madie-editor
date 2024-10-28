@@ -6,6 +6,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "John", librarySetId: "10-12" },
     draft: false,
     alias: "Test",
+    cql: "Test cql 12",
   },
   {
     id: "11",
@@ -13,6 +14,7 @@ export const mockCqlLibraries = [
     version: "2.1.000",
     librarySet: { owner: "Jane", librarySetId: "10-12" },
     draft: false,
+    cql: "Test cql 11",
   },
   {
     id: "10",
@@ -20,6 +22,7 @@ export const mockCqlLibraries = [
     version: "2.0.000",
     librarySet: { owner: "Jane", librarySetId: "10-12" },
     draft: false,
+    cql: "Test cql 10",
   },
   {
     id: "9",

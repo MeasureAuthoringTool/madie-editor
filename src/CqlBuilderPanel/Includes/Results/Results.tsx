@@ -13,9 +13,7 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import useCqlLibraryServiceApi, {
-  CqlLibrary,
-} from "../../../api/useCqlLibraryServiceApi";
+import { CqlLibrary } from "../../../api/useCqlLibraryServiceApi";
 import {
   MadieDeleteDialog,
   MadieDiscardDialog,
@@ -25,12 +23,12 @@ import {
 import CqlLibraryDetailsDialog, {
   SelectedLibrary,
 } from "../CqlLibraryDetailsDialog";
-import toastReducer, { Action } from "../../../common/ToastReducer";
+import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
+import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
-  measureModel: string;
   canEdit: boolean;
   showAlias: boolean;
   handleApplyLibrary: (library) => void;
@@ -56,7 +54,6 @@ const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
 const Results = ({
   cqlLibraries,
-  measureModel,
   canEdit,
   showAlias,
   isCQLUnchanged,
@@ -69,7 +66,6 @@ const Results = ({
   operation,
 }: PropTypes) => {
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
-  const libraryService = useCqlLibraryServiceApi();
   const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
   const [selectedLibrary, setSelectedLibrary] = useState<SelectedLibrary>();
 
@@ -154,42 +150,44 @@ const Results = ({
     };
   });
 
-  // get all available versions for the selected library
-  // TODO: we should get it from database
-  //  because we might miss some versions if the library name is completely different from search term
-  const getLibraryVersionsForSetId = (setId: string): Array<string> => {
-    return cqlLibraries
-      .filter((cqlLibrary) => cqlLibrary.librarySet.librarySetId === setId)
-      .map((cqlLibrary) => cqlLibrary.version);
-  };
+  // Use the custom hook to memoize the fetchLibrarySet async function
+  const memoizedLibrarySetFetch = useMemoizedLibrarySet();
 
-  const updateLibrarySelection = async (version: string, setId: string) => {
-    const library = cqlLibraries.find(
-      (l) => l.version === version && l.librarySet.librarySetId == setId
-    );
-    const versions = getLibraryVersionsForSetId(setId);
-    (await libraryService)
-      .fetchLibraryCql(library.cqlLibraryName, version, measureModel)
-      .then((cql) => {
+  const updateLibrarySelection = async (
+    version: string,
+    setId: string,
+    alias: string
+  ) => {
+    try {
+      const librarySet = await memoizedLibrarySetFetch(setId);
+      if (librarySet) {
+        // filter out library for selected version from family of library
+        const library = librarySet.libraries.find(
+          (library: CqlLibrary) => library.version === version
+        );
+        // list if all the versions for selected library
+        const versions = librarySet.libraries.map(
+          (library: CqlLibrary) => library.version
+        );
         setSelectedLibrary({
           id: library.id,
           name: library.cqlLibraryName,
-          alias: library.alias,
-          owner: library.librarySet.owner,
+          alias: alias,
+          owner: librarySet.librarySet.owner,
           librarySetId: setId,
           version: version,
-          cql: cql,
+          cql: library.cql,
           otherVersions: versions,
         } as SelectedLibrary);
         setOpenLibraryDialog(true);
         setRowIndex(null);
-      })
-      .catch((error) => {
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: { type: "danger", message: error.message },
-        });
+      }
+    } catch (error) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "danger", message: error.message },
       });
+    }
   };
 
   // get the cql for selected library and set selected library
@@ -198,7 +196,11 @@ const Results = ({
     setEditAction(isEditAction && canEdit);
     if (isCQLUnchanged) {
       const rowModal = table.getRow(index).original;
-      await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
+      await updateLibrarySelection(
+        rowModal.version,
+        rowModal.librarySetId,
+        rowModal.alias
+      );
     } else {
       setDiscardDialogOpen(true);
     }
@@ -223,7 +225,11 @@ const Results = ({
     setIsCQLUnchanged(true);
     if (rowIndex) {
       const rowModal = table.getRow(rowIndex).original;
-      await updateLibrarySelection(rowModal.version, rowModal.librarySetId);
+      await updateLibrarySelection(
+        rowModal.version,
+        rowModal.librarySetId,
+        rowModal.alias
+      );
     } else {
       setDeleteDialogOpen(true);
     }

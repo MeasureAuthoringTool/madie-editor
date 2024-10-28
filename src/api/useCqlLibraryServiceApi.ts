@@ -16,6 +16,11 @@ export interface CqlLibrary {
   alias?: string;
 }
 
+export interface LibrarySetDto {
+  librarySet: LibrarySet;
+  libraries: Array<CqlLibrary>;
+}
+
 const tryAgainMessage =
   "Please try again. If problem persists, contact MADiE Helpdesk";
 export const fetchVersionedLibrariesErrorMessage =
@@ -68,22 +73,13 @@ export class CqlLibraryServiceApi {
     });
   }
 
-  async fetchLibraryCql(
-    name: string,
-    version: string,
-    model: string
-  ): Promise<string> {
+  async fetchLibrarySet(setId: string): Promise<LibrarySetDto> {
     try {
-      const response = await axios.get<string>(
-        `${this.baseUrl}/cql-libraries/cql`,
+      const response = await axios.get<LibrarySetDto>(
+        `${this.baseUrl}/cql-libraries/library-set/${setId}`,
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
-          },
-          params: {
-            name,
-            version,
-            model,
           },
         }
       );

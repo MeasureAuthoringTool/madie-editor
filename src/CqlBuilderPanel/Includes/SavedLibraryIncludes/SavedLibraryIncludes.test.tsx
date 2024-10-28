@@ -39,9 +39,14 @@ const props = {
 describe("SavedLibraryIncludes Component tests", () => {
   beforeEach(() => {
     mockedAxios.get.mockImplementation((url) => {
-      if (url.endsWith("library-service.com/cql-libraries/cql")) {
+      if (url.startsWith("library-service.com/cql-libraries/library-set")) {
+        const librarySet = {
+          librarySet: mockCqlLibraries[0].librarySet,
+          libraries: [mockCqlLibraries[0]],
+        };
+
         return Promise.resolve({
-          data: cql,
+          data: librarySet,
           status: 200,
         });
       } else {
