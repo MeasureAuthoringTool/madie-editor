@@ -42,3 +42,17 @@
     border-bottom: 1px solid #8c8c8c;
   }
 }
+
+.form-actions {
+  display: flex;
+  flex-direction: row;
+  min-width: 100%;
+  justify-content: end;
+  > .cancel-button {
+    margin-top: 1rem;
+    margin-right: 32px;
+  }
+  > button[type="submit"] {
+    margin-top: 0;
+  }
+}

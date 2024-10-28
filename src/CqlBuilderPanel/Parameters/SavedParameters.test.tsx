@@ -95,6 +95,104 @@ describe("SavedParameters Component tests", () => {
     userEvent.click(editBtn);
   });
 
+  it("Should open Discard Dialog when CQL is changed", async () => {
+    render(
+      <SavedParameters
+        canEdit={true}
+        parameters={saveParameters}
+        isCQLUnchanged={false}
+        cql="test CQL"
+        setEditorValue={setEditorValue}
+        handleApplyParameter={handleApplyParameter}
+        handleParameterEdit={handleParameterEdit}
+        handleParameterDelete={handleParameterDelete}
+        resetCql={resetCql}
+        loading={false}
+      />
+    );
+
+    const editBtn = screen.getByTestId("edit-button-0");
+    expect(editBtn).toBeInTheDocument();
+
+    userEvent.click(editBtn);
+
+    const discardDialog = screen.getByTestId("discard-dialog");
+    expect(discardDialog).toBeInTheDocument();
+    const cancelDiscard = screen.getByTestId("discard-dialog-cancel-button");
+    expect(cancelDiscard).toBeInTheDocument();
+    const continueDiscard = screen.getByTestId(
+      "discard-dialog-continue-button"
+    );
+    expect(continueDiscard).toBeInTheDocument();
+
+    userEvent.click(cancelDiscard);
+    //expect(await screen.queryByTestId("discard-dialog")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByTestId("discard-dialog")).not.toBeInTheDocument();
+    });
+  });
+
+  it("Should open EditParameterDialog when CQL is changed and user clicked discard change", async () => {
+    render(
+      <SavedParameters
+        canEdit={true}
+        parameters={saveParameters}
+        isCQLUnchanged={false}
+        cql="test CQL"
+        setEditorValue={setEditorValue}
+        handleApplyParameter={handleApplyParameter}
+        handleParameterEdit={handleParameterEdit}
+        handleParameterDelete={handleParameterDelete}
+        resetCql={resetCql}
+        loading={false}
+      />
+    );
+
+    const editBtn = screen.getByTestId("edit-button-0");
+    expect(editBtn).toBeInTheDocument();
+
+    userEvent.click(editBtn);
+
+    const discardDialog = screen.getByTestId("discard-dialog");
+    expect(discardDialog).toBeInTheDocument();
+    const cancelDiscard = screen.getByTestId("discard-dialog-cancel-button");
+    expect(cancelDiscard).toBeInTheDocument();
+    const continueDiscard = screen.getByTestId(
+      "discard-dialog-continue-button"
+    );
+    expect(continueDiscard).toBeInTheDocument();
+
+    userEvent.click(continueDiscard);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("discard-dialog")).not.toBeInTheDocument();
+    });
+    expect(screen.getByTestId("edit-parameter-dialog")).toBeInTheDocument();
+  });
+
+  it("Should open EditParameterDialog when CQL is unchanged", async () => {
+    render(
+      <SavedParameters
+        canEdit={true}
+        parameters={saveParameters}
+        isCQLUnchanged={true}
+        cql="test CQL"
+        setEditorValue={setEditorValue}
+        handleApplyParameter={handleApplyParameter}
+        handleParameterEdit={handleParameterEdit}
+        handleParameterDelete={handleParameterDelete}
+        resetCql={resetCql}
+        loading={false}
+      />
+    );
+
+    const editBtn = screen.getByTestId("edit-button-0");
+    expect(editBtn).toBeInTheDocument();
+
+    userEvent.click(editBtn);
+    expect(screen.getByTestId("edit-parameter-dialog")).toBeInTheDocument();
+  });
+
   it("Should NOT render SavedParameters actions when canEdit is false", async () => {
     render(
       <SavedParameters

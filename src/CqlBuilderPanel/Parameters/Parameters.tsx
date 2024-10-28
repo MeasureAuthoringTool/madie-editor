@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ParametersNavTabs from "./ParamatersNavTabs";
 import ParameterPane from "./ParameterPane";
 import "./Parameters.scss";
@@ -17,6 +17,9 @@ export interface ParametersProps {
   setEditorValue: (cql: string) => void;
   resetCql: Function;
   loading: boolean;
+  setSelectedParameter?: Function;
+  setDiscardDialog?: Function;
+  setOpenParameterDialog?: Function;
 }
 
 export default function Parameters({
@@ -32,16 +35,19 @@ export default function Parameters({
   handleApplyParameter,
 }: ParametersProps) {
   const [activeTab, setActiveTab] = useState("parameters");
-  const [parameters, setParameters] = useState(
-    cqlBuilderLookupsTypes?.parameters ? cqlBuilderLookupsTypes?.parameters : []
-  );
+  const measureParameters = cqlBuilderLookupsTypes?.parameters
+    ? cqlBuilderLookupsTypes?.parameters.filter(
+        (parameter) => !parameter.libraryName
+      )
+    : [];
 
   return (
     <form id="cql-editor-parameters" data-testId="cql-editor-parameters">
       <ParametersNavTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        parameterCount={cqlBuilderLookupsTypes?.parameters?.length}
+        parameterCount={measureParameters?.length}
+        loading={loading}
       />
 
       {activeTab === "parameters" && (
@@ -51,7 +57,7 @@ export default function Parameters({
         <div data-testId="saved-parameters">
           <SavedParameters
             canEdit={canEdit}
-            parameters={parameters}
+            parameters={measureParameters}
             handleApplyParameter={handleApplyParameter}
             isCQLUnchanged={isCQLUnchanged}
             cql={cql}

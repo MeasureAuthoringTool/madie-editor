@@ -8,7 +8,10 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  Pagination,
+  MadieDiscardDialog,
+} from "@madie/madie-design-system/dist/react";
 import Skeleton from "@mui/material/Skeleton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
@@ -16,6 +19,7 @@ import ToolTippedIcon from "../../toolTippedIcon/ToolTippedIcon";
 import { Lookup } from "../../model/CqlBuilderLookup";
 import { Stack } from "@mui/material";
 import { ParametersProps } from "./Parameters";
+import EditParameterDialog from "./EditParameterDialog";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
@@ -37,6 +41,12 @@ const SavedParameters = ({
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
   const [visibleParameters, setVisibleParameters] = useState<Lookup[]>([]);
+  const [discardDialog, setDiscardDialog] = useState({
+    open: false,
+    operation: null,
+  });
+
+  const [openParameterDialog, setOpenParameterDialog] = useState<boolean>();
 
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
@@ -99,7 +109,16 @@ const SavedParameters = ({
                   "data-testid": `edit-button-${row.cell.row.id}`,
                   "aria-label": `edit-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: (e) => {},
+                  onClick: (e) => {
+                    setSelectedParameter(
+                      table.getRow(row.cell.row.id).original
+                    );
+                    if (!isCQLUnchanged) {
+                      setDiscardDialog({ open: true, operation: "edit" });
+                    } else {
+                      setOpenParameterDialog(true);
+                    }
+                  },
                 }}
               >
                 <BorderColorOutlinedIcon color="primary" />
@@ -109,7 +128,7 @@ const SavedParameters = ({
         },
       },
     ],
-    [parameters]
+    [parameters, isCQLUnchanged]
   );
 
   const table = useReactTable({
@@ -193,6 +212,32 @@ const SavedParameters = ({
           )}
         </tbody>
       </table>
+      <MadieDiscardDialog
+        open={discardDialog?.open}
+        onContinue={() => {
+          resetCql();
+          if (discardDialog?.operation === "edit") {
+            setDiscardDialog({
+              open: false,
+              operation: "edit",
+            });
+            setOpenParameterDialog(true);
+          }
+        }}
+        onClose={() => {
+          setDiscardDialog({
+            open: false,
+            operation: null,
+          });
+        }}
+      />
+      <EditParameterDialog
+        open={openParameterDialog}
+        setOpenParameterDialog={setOpenParameterDialog}
+        parameter={selectedParameter}
+        onClose={() => setOpenParameterDialog(false)}
+        handleParameterEdit={handleParameterEdit}
+      />
       <div className="pagination-container">
         <Pagination
           totalItems={totalItems}
