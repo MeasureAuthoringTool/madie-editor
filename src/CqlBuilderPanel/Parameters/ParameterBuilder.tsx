@@ -14,21 +14,17 @@ export interface Parameter {
 
 export interface ParameterProps {
   canEdit: boolean;
-  handleApplyParameter: Function;
   handleParameterEdit?: Function;
   parameter?: Parameter;
-  operation?: string;
   onClose?: Function;
   setOpenParameterDialog?: Function;
 }
 
-export default function ExpressionBuilder({
+export default function ParameterBuilder({
   canEdit,
-  handleApplyParameter,
   handleParameterEdit,
   onClose,
   parameter,
-  operation,
   setOpenParameterDialog,
 }: ParameterProps) {
   const [editorHeight, setEditorHeight] = useState("50px");
@@ -122,15 +118,12 @@ export default function ExpressionBuilder({
               Cancel
             </Button>
             <Button
-              data-testid={`parameter-${
-                operation === "edit" ? "save" : "apply"
-              }-btn`}
+              data-testid={`parameter-save-btn`}
               disabled={
-                !formik.values.parameterName ||
-                !canEdit ||
-                !expressionEditorValue ||
-                isEditDialogFormDirty() ||
-                !formik.isValid
+                (!formik.dirty &&
+                  expressionEditorValue ===
+                    (parameter?.expressionValue || "")) ||
+                !canEdit
               }
               onClick={() => {
                 const parameterToApply: Parameter = {
@@ -139,16 +132,12 @@ export default function ExpressionBuilder({
                 };
                 resetForm();
                 setExpressionEditorValue("");
-                if (operation === "edit") {
-                  formik.setFieldValue("parameterName", "");
-                  // call handleParameterEdit
-                  onClose();
-                } else {
-                  handleApplyParameter(parameterToApply);
-                }
+                formik.setFieldValue("parameterName", "");
+                // call handleParameterEdit
+                onClose();
               }}
             >
-              {operation === "edit" ? "Save" : "Apply"}
+              Save
             </Button>
           </div>
         </div>

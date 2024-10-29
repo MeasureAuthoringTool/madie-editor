@@ -37,9 +37,7 @@ const EditParameterDialog = ({
       <ParameterBuilder
         canEdit={true}
         parameter={updatedParameter}
-        handleApplyParameter={() => {}} // do nothing for now
         handleParameterEdit={handleParameterEdit}
-        operation={"edit"} // edit or add/apply
         onClose={onClose}
         setOpenParameterDialog={setOpenParameterDialog}
       />

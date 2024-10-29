@@ -113,30 +113,4 @@ describe("ParameterBuilder Component tests", () => {
     expect(saveBtn).toBeEnabled();
     fireEvent.click(saveBtn);
   });
-
-  it("Should allow apply parameter change", async () => {
-    render(
-      <ParameterBuilder
-        canEdit={true}
-        handleApplyParameter={handleApplyParameter}
-        handleParameterEdit={handleParameterEdit}
-        parameter={parameter}
-        onClose={onClose}
-        setOpenParameterDialog={setOpenParameterDialog}
-      />
-    );
-
-    const parameterName = screen.getByTestId("parameter-name-text-input");
-    expect(parameterName).toBeInTheDocument();
-    expect(parameterName.value).toBe("Measurement Period");
-
-    fireEvent.change(parameterName, {
-      target: { value: "New Measurement Period" },
-    });
-    expect(parameterName.value).toBe("New Measurement Period");
-
-    const applyBtn = screen.getByTestId("parameter-apply-btn");
-    expect(applyBtn).toBeEnabled();
-    fireEvent.click(applyBtn);
-  });
 });
