@@ -3,7 +3,6 @@ import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  canEdit: boolean;
   CQLBuilderIncludes: boolean;
   CQLBuilderParameters: boolean;
   QDMValueSetSearch: boolean;
@@ -16,7 +15,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
   const {
     activeTab,
     setActiveTab,
-    canEdit,
     QDMValueSetSearch,
     CQLBuilderDefinitions,
     CQLBuilderIncludes,
@@ -66,7 +64,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
       )}
       {CQLBuilderParameters && (
         <Tab
-          disabled={!canEdit}
           tabIndex={0}
           aria-label="Parameters"
           type="D"

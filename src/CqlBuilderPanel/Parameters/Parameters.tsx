@@ -35,6 +35,7 @@ export default function Parameters({
   handleApplyParameter,
 }: ParametersProps) {
   const [activeTab, setActiveTab] = useState("parameters");
+
   const measureParameters = cqlBuilderLookupsTypes?.parameters
     ? cqlBuilderLookupsTypes?.parameters.filter(
         (parameter) => !parameter.libraryName
@@ -51,7 +52,10 @@ export default function Parameters({
       />
 
       {activeTab === "parameters" && (
-        <ParameterPane handleApplyParameter={handleApplyParameter} />
+        <ParameterPane
+          handleApplyParameter={handleApplyParameter}
+          canEdit={canEdit}
+        />
       )}
       {activeTab === "savedParameters" && (
         <div data-testId="saved-parameters">

@@ -644,7 +644,7 @@ describe("CqlBuilderPanel", () => {
     expect(parameterTab).not.toBeInTheDocument();
   });
 
-  it("Parameters tab exists but it's disabled", async () => {
+  it("Parameters tab exists and it's enabled", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
@@ -659,7 +659,7 @@ describe("CqlBuilderPanel", () => {
     render(<CqlBuilderPanel {...newProps} />);
     const parameterTab = await screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
-    expect(parameterTab).not.toBeEnabled();
+    expect(parameterTab).toBeEnabled();
   });
 
   it("Parameters clear works", async () => {

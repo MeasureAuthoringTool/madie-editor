@@ -15,7 +15,14 @@ const validationSchema = Yup.object({
   parameterExpression: Yup.string(),
 });
 
-export default function ParameterPane({ handleApplyParameter }) {
+interface ParameterPaneProps {
+  handleApplyParameter: Function;
+  canEdit: boolean;
+}
+export default function ParameterPane({
+  handleApplyParameter,
+  canEdit,
+}: ParameterPaneProps) {
   const textAreaRef = useRef(null);
   const [editorHeight, setEditorHeight] = useState("100px");
   const [showEditor, setShowEditor] = useState(false);
@@ -49,6 +56,7 @@ export default function ParameterPane({ handleApplyParameter }) {
           label="Parameter Name"
           id="parameter-name"
           required
+          disabled={!canEdit}
           {...formik.getFieldProps("parameterName")}
           onChange={(e) => {
             if (!formik.values.parameterName) {
@@ -81,10 +89,9 @@ export default function ParameterPane({ handleApplyParameter }) {
           width="100%"
           height={editorHeight}
           wrapEnabled={true}
-          readOnly={false}
+          readOnly={!canEdit}
           name="ace-editor-wrapper"
           enableBasicAutocompletion={true}
-          //@ts-ignore
         />
       </ExpandingSection>
       <div className="form-actions">
