@@ -3,7 +3,6 @@ declare module "@madie/madie-util" {
 
   interface FeatureFlags {
     CQLBuilderIncludes: boolean;
-    QDMValueSetSearch: boolean;
     CQLBuilderDefinitions: boolean;
     CQLBuilderParameters: boolean;
   }

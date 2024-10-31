@@ -14,7 +14,6 @@ jest.mock("../api/axios-instance");
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn(() => {
     return {
-      QDMValueSetSearch: true,
       CQLBuilderDefinitions: true,
       CQLBuilderIncludes: true,
     };
