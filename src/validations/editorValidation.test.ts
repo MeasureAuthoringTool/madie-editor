@@ -268,7 +268,7 @@ describe("Editor Validation Test", () => {
     });
     const errorsResult = await useGetAllErrors(editorContent);
     expect(errorsResult.errors.length).toBe(5);
-    expect(errorsResult.errors[1].message).toBe(
+    expect(errorsResult.errors[1].message).toEqual(
       "Could not find resource Library with name: MATGlobalCommonFunctionsQDM"
     );
   });
