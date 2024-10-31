@@ -17,7 +17,6 @@ jest.mock("@madie/madie-util", () => ({
       QDMValueSetSearch: true,
       CQLBuilderDefinitions: true,
       CQLBuilderIncludes: true,
-      qdmCodeSearch: true,
     };
   }),
   useOktaTokens: () => ({

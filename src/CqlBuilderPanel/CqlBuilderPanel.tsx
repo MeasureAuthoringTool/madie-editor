@@ -41,7 +41,6 @@ export default function CqlBuilderPanel({
     QDMValueSetSearch,
     CQLBuilderDefinitions,
     CQLBuilderIncludes,
-    qdmCodeSearch,
     CQLBuilderParameters,
   } = featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
@@ -147,7 +146,6 @@ export default function CqlBuilderPanel({
           setActiveTab={setActiveTab}
           QDMValueSetSearch={QDMValueSetSearch}
           CQLBuilderDefinitions={CQLBuilderDefinitions}
-          qdmCodeSearch={qdmCodeSearch}
           isQDM={measureModel?.includes("QDM")}
           CQLBuilderParameters={CQLBuilderParameters}
           CQLBuilderIncludes={CQLBuilderIncludes}
