@@ -14,6 +14,8 @@ import {
   ElmTranslationExternalError,
 } from "../api/TranslatedElmModels";
 
+const TRANSLATION_ERROR_REGEX = /\\"message\\":\\"(.*?)\\"/;
+
 export interface ValidationResult {
   translation: ElmTranslation;
   errors: ElmTranslationError[];
@@ -45,7 +47,7 @@ export const useGetAllErrors = async (
       mapCodeSystemErrorsToTranslationErrors(validatedCodes);
 
     let allErrorsArray: ElmTranslationError[] =
-      updateErrorTypeForTranslationErrors(translationResults);
+      updateTranslationErrors(translationResults);
 
     // Filter out external errors for include error type
     // find will return the first found object
@@ -75,7 +77,7 @@ export const useGetAllErrors = async (
   }
   return null;
 };
-const updateErrorTypeForTranslationErrors = (
+const updateTranslationErrors = (
   translationResults: ElmTranslation
 ): ElmTranslationError[] => {
   let allErrorsArray: ElmTranslationError[] = [];
@@ -84,6 +86,10 @@ const updateErrorTypeForTranslationErrors = (
     allErrorsArray = translationResults.errorExceptions;
   }
   allErrorsArray.forEach((error) => {
+    const match = error.message.match(TRANSLATION_ERROR_REGEX);
+    if (match && match[1]) {
+      error.message = match[1];
+    }
     error.errorType = "ELM";
   });
   return allErrorsArray;

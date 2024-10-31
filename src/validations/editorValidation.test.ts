@@ -17,7 +17,7 @@ import {
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-const mockServiceConfig: ServiceConfig = {
+const mockServiceConfig = {
   qdmElmTranslationService: {
     baseUrl: "qdm-elm-translator.com",
   },
@@ -27,7 +27,7 @@ const mockServiceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "terminology-service.com",
   },
-};
+} as ServiceConfig;
 jest.mock("../api/useServiceConfig", () => {
   return {
     useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
@@ -97,6 +97,19 @@ const elmTransaltionErrors: ElmTranslationError[] = [
     targetIncludeLibraryId: "TestLibrary_QICore",
     targetIncludeLibraryVersionId: "5.0.000",
     type: "",
+  },
+  {
+    endChar: 68,
+    endLine: 5,
+    errorSeverity: "Error",
+    errorType: null,
+    message:
+      '404 : \\"{\\"timestamp\\":\\"2024-10-31T15:06:30.385+00:00\\",\\"message\\":\\"Could not find resource Library with name: MATGlobalCommonFunctionsQDM\\",\\"status\\":404,\\"error\\":\\"Not Found\\"}\\"',
+    startChar: 1,
+    startLine: 5,
+    targetIncludeLibraryId: "CMS1307Utility",
+    targetIncludeLibraryVersionId: "0.0.000",
+    type: null,
   },
 ];
 const elmTranslationLibraryWithValueSets: ElmTranslationLibrary = {
@@ -226,7 +239,6 @@ describe("Editor Validation Test", () => {
         args.startsWith(mockServiceConfig.terminologyService.baseUrl)
       ) {
         return Promise.reject({
-          data: fhirValuesetWithError,
           status: 404,
           error: { message: "Not found!" },
         });
@@ -255,7 +267,10 @@ describe("Editor Validation Test", () => {
       }
     });
     const errorsResult = await useGetAllErrors(editorContent);
-    expect(errorsResult.errors.length).toBe(4);
+    expect(errorsResult.errors.length).toBe(5);
+    expect(errorsResult.errors[1].message).toBe(
+      "Could not find resource Library with name: MATGlobalCommonFunctionsQDM"
+    );
   });
 
   it("Translation result has null error exception", async () => {
@@ -279,7 +294,6 @@ describe("Editor Validation Test", () => {
         args.startsWith(mockServiceConfig.terminologyService.baseUrl)
       ) {
         return Promise.reject({
-          data: fhirValuesetWithError,
           status: 404,
           error: { message: "Not found!" },
         });
