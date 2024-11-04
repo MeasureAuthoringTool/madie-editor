@@ -103,6 +103,10 @@ const Definitions = ({
         accessorKey: "name",
       },
       {
+        header: "Comment",
+        accessorKey: "comment",
+      },
+      {
         header: "",
         accessorKey: "apply",
         cell: (row: any) => {
