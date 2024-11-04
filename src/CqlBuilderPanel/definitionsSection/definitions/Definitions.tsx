@@ -19,7 +19,7 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
-import { Stack } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
@@ -230,7 +230,22 @@ const Definitions = ({
               <tr key={row.id} data-testid={`definitions-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
                   <TD key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {cell.column.id === "comment" ? (
+                      <Tooltip
+                        arrow
+                        title={
+                          <div style={{ whiteSpace: "pre-line" }}>
+                            {cell.getValue()}
+                          </div>
+                        }
+                      >
+                        <div tw="w-2/3">
+                          <Typography noWrap>{cell.getValue()}</Typography>
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      flexRender(cell.column.columnDef.cell, cell.getContext())
+                    )}
                   </TD>
                 ))}
               </tr>
