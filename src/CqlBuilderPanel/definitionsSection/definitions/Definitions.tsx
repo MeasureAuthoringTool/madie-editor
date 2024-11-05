@@ -231,18 +231,18 @@ const Definitions = ({
                 {row.getVisibleCells().map((cell) => (
                   <TD key={cell.id}>
                     {cell.column.id === "comment" ? (
-                      <Tooltip
-                        arrow
-                        title={
-                          <div style={{ whiteSpace: "pre-line" }}>
-                            {cell.getValue()}
-                          </div>
-                        }
-                      >
-                        <div tw="w-2/3">
+                      <div tw="w-3/5">
+                        <Tooltip
+                          arrow
+                          title={
+                            <div style={{ whiteSpace: "pre-line" }}>
+                              {cell.getValue()}
+                            </div>
+                          }
+                        >
                           <Typography noWrap>{cell.getValue()}</Typography>
-                        </div>
-                      </Tooltip>
+                        </Tooltip>
+                      </div>
                     ) : (
                       flexRender(cell.column.columnDef.cell, cell.getContext())
                     )}
