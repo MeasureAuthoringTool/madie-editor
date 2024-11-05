@@ -4,6 +4,7 @@ import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import Definitions from "./definitions/Definitions";
 import DefinitionBuilder from "./definitionBuilder/DefinitionBuilder";
 import { CqlBuilderLookup } from "../../model/CqlBuilderLookup";
+import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
 interface DefinitionProps {
   canEdit: boolean;
@@ -33,11 +34,21 @@ export default function DefinitionsSection({
   loading,
 }: DefinitionProps) {
   const [activeTab, setActiveTab] = useState<string>("definition");
+  const expressionDefinitions = cql
+    ? new CqlAntlr(cql).parse().expressionDefinitions
+    : [];
 
   const measureDefinitions =
-    cqlBuilderLookupsTypes?.definitions?.filter(
-      (definition) => !definition.libraryName
-    ) || [];
+    cqlBuilderLookupsTypes?.definitions
+      ?.filter((definition) => !definition.libraryName)
+      .map((definition) => {
+        // get the comments for CQL definition from antlr parser expressions
+        const expression = expressionDefinitions.find(
+          (expression) =>
+            definition.name == expression.name?.replace(/["']/g, "")
+        );
+        return { ...definition, comment: expression?.comment };
+      }) || [];
 
   return (
     <>

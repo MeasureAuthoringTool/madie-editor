@@ -31,6 +31,7 @@ const DefinitionBuilderDialog = ({
 }: PropTypes) => {
   const updatedDefinition = {
     definitionName: definition?.name,
+    comment: definition?.comment,
     expressionValue: getExpression(definition),
     returnType: definition?.returnType,
   } as Definition;

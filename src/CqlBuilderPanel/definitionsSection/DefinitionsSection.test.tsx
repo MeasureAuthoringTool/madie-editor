@@ -7,6 +7,7 @@ import { cqlBuilderLookup } from "../__mocks__/MockCqlBuilderLookupsTypes";
 
 const props = {
   canEdit: true,
+  loading: false,
   handleApplyDefinition: jest.fn(),
   handleDefinitionEdit: jest.fn(),
   handleDefinitionDelete: jest.fn(),
@@ -165,6 +166,9 @@ describe("DefinitionsSection", () => {
     render(
       <DefinitionsSection
         {...props}
+        cql={
+          '/*\n this is SDE Sex definition\n*/ \ndefine "SDE Sex":\n  SDE."SDE Sex"'
+        }
         cqlBuilderLookupsTypes={cqlBuilderLookup}
         getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
       />
@@ -187,6 +191,9 @@ describe("DefinitionsSection", () => {
     expect(dialog).toBeInTheDocument();
     expect(screen.getByTestId("definition-name-text-input")).toHaveValue(
       "SDE Sex"
+    );
+    expect(screen.getByTestId("definition-comment-text")).toHaveValue(
+      "this is SDE Sex definition"
     );
     const returnType = screen.getByTestId("return-type");
     expect(returnType).toHaveTextContent(getCqlDefinitionReturnTypes().sdeSex);
