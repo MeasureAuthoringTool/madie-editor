@@ -13,6 +13,11 @@
       background: #ededed;
     }
 
+    .left-panel {
+      > .panel-content {
+        height: calc(100% - 48px);
+      }
+    }
     .right-panel {
       margin-left: 12px;
       > .panel-alert {
