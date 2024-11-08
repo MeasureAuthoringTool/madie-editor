@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import tw from "twin.macro";
+import "styled-components/macro";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import Definitions from "./definitions/Definitions";
@@ -51,37 +53,35 @@ export default function DefinitionsSection({
       }) || [];
 
   return (
-    <>
+    <div id="includes-panel" style={{ overflow: "auto" }}>
       <DefinitionSectionNavTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         definitionCount={measureDefinitions.length}
         loading={loading}
       />
-      <div>
-        {activeTab === "definition" && (
-          <DefinitionBuilder
-            canEdit={canEdit}
-            handleApplyDefinition={handleApplyDefinition}
-            cqlBuilderLookup={cqlBuilderLookupsTypes}
-          />
-        )}
-        {activeTab === "saved-definitions" && (
-          <Definitions
-            canEdit={canEdit}
-            definitions={measureDefinitions}
-            isCQLUnchanged={isCQLUnchanged}
-            cql={cql}
-            setEditorValue={setEditorVal}
-            handleDefinitionDelete={handleDefinitionDelete}
-            resetCql={resetCql}
-            getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
-            cqlBuilderLookup={cqlBuilderLookupsTypes}
-            handleDefinitionEdit={handleDefinitionEdit}
-            loading={loading}
-          />
-        )}
-      </div>
-    </>
+      {activeTab === "definition" && (
+        <DefinitionBuilder
+          canEdit={canEdit}
+          handleApplyDefinition={handleApplyDefinition}
+          cqlBuilderLookup={cqlBuilderLookupsTypes}
+        />
+      )}
+      {activeTab === "saved-definitions" && (
+        <Definitions
+          canEdit={canEdit}
+          definitions={measureDefinitions}
+          isCQLUnchanged={isCQLUnchanged}
+          cql={cql}
+          setEditorValue={setEditorVal}
+          handleDefinitionDelete={handleDefinitionDelete}
+          resetCql={resetCql}
+          getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
+          cqlBuilderLookup={cqlBuilderLookupsTypes}
+          handleDefinitionEdit={handleDefinitionEdit}
+          loading={loading}
+        />
+      )}
+    </div>
   );
 }
