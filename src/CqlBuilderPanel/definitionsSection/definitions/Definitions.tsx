@@ -236,11 +236,13 @@ const Definitions = ({
               </tr>
             ))}
           {loading && (
-            <div>
-              <Skeleton animation="wave" width="100%" height={45} />
-              <Skeleton animation="wave" width="100%" height={45} />
-              <Skeleton animation="wave" width="100%" height={45} />
-            </div>
+            <tr>
+              <td colSpan={2}>
+                <Skeleton animation="wave" height={45} />
+                <Skeleton animation="wave" height={45} />
+                <Skeleton animation="wave" height={45} />
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
