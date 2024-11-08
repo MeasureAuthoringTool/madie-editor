@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import tw from "twin.macro";
-import "styled-components/macro";
 import "./Definitions.scss";
 import DefinitionSectionNavTabs from "./DefinitionSectionNavTabs";
 import Definitions from "./definitions/Definitions";
@@ -53,7 +51,7 @@ export default function DefinitionsSection({
       }) || [];
 
   return (
-    <div id="includes-panel" style={{ overflow: "auto" }}>
+    <div id="includes-panel">
       <DefinitionSectionNavTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
