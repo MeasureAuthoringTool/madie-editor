@@ -51,7 +51,7 @@ export default function DefinitionsSection({
       }) || [];
 
   return (
-    <div id="includes-panel">
+    <>
       <DefinitionSectionNavTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -80,6 +80,6 @@ export default function DefinitionsSection({
           loading={loading}
         />
       )}
-    </div>
+    </>
   );
 }
