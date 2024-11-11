@@ -31,6 +31,7 @@ export interface EditorPropsType {
   onChange?: (value: string) => void;
   handleApplyCode?: (code: string) => void;
   handleApplyParameter?: (parameter: Parameter) => void;
+  handleParameterDelete?: (parameter: Parameter) => void;
   handleApplyValueSet?: (vs: ValueSetForSearch) => void;
   handleApplyDefinition?: (def: Definition) => void;
   handleDefinitionEdit?: (lib: SelectedLibrary, def: Definition) => void;

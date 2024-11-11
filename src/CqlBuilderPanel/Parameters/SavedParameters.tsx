@@ -11,6 +11,7 @@ import "styled-components/macro";
 import {
   Pagination,
   MadieDiscardDialog,
+  MadieDeleteDialog,
 } from "@madie/madie-design-system/dist/react";
 import Skeleton from "@mui/material/Skeleton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -24,6 +25,11 @@ import EditParameterDialog from "./EditParameterDialog";
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
+interface Parameter {
+  parameterName?: string;
+  expression?: string;
+}
+
 const SavedParameters = ({
   canEdit,
   parameters,
@@ -36,7 +42,7 @@ const SavedParameters = ({
   loading,
 }: ParametersProps) => {
   const [selectedParameter, setSelectedParameter] = useState<Lookup>();
-
+  const [parameterToDelete, setParameterToDelete] = useState<Parameter>();
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
@@ -47,6 +53,7 @@ const SavedParameters = ({
   });
 
   const [openParameterDialog, setOpenParameterDialog] = useState<boolean>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
@@ -97,7 +104,24 @@ const SavedParameters = ({
                   "aria-label": `delete-button-${row.cell.row.id}`,
                   size: "small",
                   onClick: (e) => {
-                    setSelectedParameter(row.row.original.name);
+                    const seletedParameter = table.getRow(
+                      row.cell.row.id
+                    ).original;
+                    const parameterToDelete = {
+                      parameterName: seletedParameter.name,
+                      expression:
+                        seletedParameter.logic?.slice(0, 1).toUpperCase() +
+                        seletedParameter.logic?.slice(
+                          1,
+                          seletedParameter.logic?.length
+                        ),
+                    } as Parameter;
+                    setParameterToDelete(parameterToDelete);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialog({ open: true, operation: "delete" });
+                    } else {
+                      setDeleteDialogOpen(true);
+                    }
                   },
                 }}
               >
@@ -212,6 +236,16 @@ const SavedParameters = ({
           )}
         </tbody>
       </table>
+      <MadieDeleteDialog
+        open={deleteDialogOpen}
+        onContinue={() => {
+          handleParameterDelete(parameterToDelete);
+          setDeleteDialogOpen(false);
+        }}
+        onClose={() => setDeleteDialogOpen(false)}
+        dialogTitle="Are you sure?"
+        name={"this Parameter"}
+      />
       <MadieDiscardDialog
         open={discardDialog?.open}
         onContinue={() => {
