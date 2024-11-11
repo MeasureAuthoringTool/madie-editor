@@ -9,7 +9,7 @@ import AceEditor from "react-ace";
 
 export interface Parameter {
   parameterName?: string;
-  expressionValue?: string;
+  expression?: string;
 }
 
 export interface ParameterProps {
@@ -27,29 +27,19 @@ export default function ParameterBuilder({
   parameter,
   setOpenParameterDialog,
 }: ParameterProps) {
-  const [editorHeight, setEditorHeight] = useState("50px");
+  const [editorHeight, setEditorHeight] = useState("180px");
   const textAreaRef = useRef(null);
-  const [expressionEditorValue, setExpressionEditorValue] = useState(
-    parameter?.expressionValue || ""
-  );
 
   const formik = useFormik({
     initialValues: {
       parameterName: parameter?.parameterName || "",
-      expression: parameter?.expressionValue || "",
+      expression: parameter?.expression || "",
     },
     validationSchema: ParameterSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {},
   });
   const { resetForm } = formik;
-
-  const isEditDialogFormDirty = () => {
-    if (parameter?.expressionValue !== expressionEditorValue || formik.dirty) {
-      return false;
-    }
-    return true;
-  };
 
   return (
     <div>
@@ -103,12 +93,7 @@ export default function ParameterBuilder({
             <Button
               variant="outline"
               data-testid="parameter-cancel-btn"
-              disabled={
-                (!formik.dirty &&
-                  expressionEditorValue ===
-                    (parameter?.expressionValue || "")) ||
-                !canEdit
-              }
+              disabled={!formik.dirty || !canEdit}
               tw="mr-4"
               onClick={() => {
                 resetForm();
@@ -119,21 +104,15 @@ export default function ParameterBuilder({
             </Button>
             <Button
               data-testid={`parameter-save-btn`}
-              disabled={
-                (!formik.dirty &&
-                  expressionEditorValue ===
-                    (parameter?.expressionValue || "")) ||
-                !canEdit
-              }
+              disabled={!formik.dirty || !canEdit}
               onClick={() => {
                 const parameterToApply: Parameter = {
                   parameterName: formik.values.parameterName,
-                  expressionValue: expressionEditorValue,
+                  expression: formik.values.expression,
                 };
                 resetForm();
-                setExpressionEditorValue("");
-                formik.setFieldValue("parameterName", "");
                 // call handleParameterEdit
+                handleParameterEdit(parameter, parameterToApply);
                 onClose();
               }}
             >

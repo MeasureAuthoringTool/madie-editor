@@ -20,7 +20,9 @@ const EditParameterDialog = ({
 }: PropTypes) => {
   const updatedParameter = {
     parameterName: parameter?.name,
-    expressionValue: parameter?.logic,
+    expression:
+      parameter?.logic?.slice(0, 1).toUpperCase() +
+      parameter?.logic?.slice(1, parameter?.logic?.length),
   } as Parameter;
 
   return (

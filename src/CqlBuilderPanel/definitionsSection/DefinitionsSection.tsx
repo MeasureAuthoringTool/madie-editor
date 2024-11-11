@@ -58,30 +58,28 @@ export default function DefinitionsSection({
         definitionCount={measureDefinitions.length}
         loading={loading}
       />
-      <div>
-        {activeTab === "definition" && (
-          <DefinitionBuilder
-            canEdit={canEdit}
-            handleApplyDefinition={handleApplyDefinition}
-            cqlBuilderLookup={cqlBuilderLookupsTypes}
-          />
-        )}
-        {activeTab === "saved-definitions" && (
-          <Definitions
-            canEdit={canEdit}
-            definitions={measureDefinitions}
-            isCQLUnchanged={isCQLUnchanged}
-            cql={cql}
-            setEditorValue={setEditorVal}
-            handleDefinitionDelete={handleDefinitionDelete}
-            resetCql={resetCql}
-            getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
-            cqlBuilderLookup={cqlBuilderLookupsTypes}
-            handleDefinitionEdit={handleDefinitionEdit}
-            loading={loading}
-          />
-        )}
-      </div>
+      {activeTab === "definition" && (
+        <DefinitionBuilder
+          canEdit={canEdit}
+          handleApplyDefinition={handleApplyDefinition}
+          cqlBuilderLookup={cqlBuilderLookupsTypes}
+        />
+      )}
+      {activeTab === "saved-definitions" && (
+        <Definitions
+          canEdit={canEdit}
+          definitions={measureDefinitions}
+          isCQLUnchanged={isCQLUnchanged}
+          cql={cql}
+          setEditorValue={setEditorVal}
+          handleDefinitionDelete={handleDefinitionDelete}
+          resetCql={resetCql}
+          getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
+          cqlBuilderLookup={cqlBuilderLookupsTypes}
+          handleDefinitionEdit={handleDefinitionEdit}
+          loading={loading}
+        />
+      )}
     </>
   );
 }
