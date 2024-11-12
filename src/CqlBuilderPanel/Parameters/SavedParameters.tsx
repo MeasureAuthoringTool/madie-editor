@@ -21,14 +21,10 @@ import { Lookup } from "../../model/CqlBuilderLookup";
 import { Stack } from "@mui/material";
 import { ParametersProps } from "./Parameters";
 import EditParameterDialog from "./EditParameterDialog";
+import { Parameter } from "./ParameterBuilder";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
-
-interface Parameter {
-  parameterName?: string;
-  expression?: string;
-}
 
 const SavedParameters = ({
   canEdit,
