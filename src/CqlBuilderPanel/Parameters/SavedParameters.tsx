@@ -256,6 +256,12 @@ const SavedParameters = ({
               operation: "edit",
             });
             setOpenParameterDialog(true);
+          } else if (discardDialog?.operation === "delete") {
+            setDiscardDialog({
+              open: false,
+              operation: "delete",
+            });
+            setDeleteDialogOpen(true);
           }
         }}
         onClose={() => {

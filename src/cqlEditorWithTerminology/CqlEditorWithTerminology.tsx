@@ -15,6 +15,7 @@ const CqlEditorWithTerminology = ({
   handleDefinitionDelete,
   handleApplyCode,
   handleApplyParameter,
+  handleParameterEdit,
   handleParameterDelete,
   handleApplyValueSet,
   handleApplyDefinition,
@@ -109,6 +110,7 @@ const CqlEditorWithTerminology = ({
               isCQLUnchanged={isCQLUnchanged}
               handleApplyCode={handleApplyCode}
               handleApplyParameter={handleApplyParameter}
+              handleParameterEdit={handleParameterEdit}
               handleParameterDelete={handleParameterDelete}
               handleApplyValueSet={handleApplyValueSet}
               handleApplyDefinition={handleApplyDefinition}

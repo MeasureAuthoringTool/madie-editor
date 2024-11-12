@@ -19,10 +19,10 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
-import { Stack, Tooltip, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-const TD = tw.td`p-3 text-left text-sm break-all`;
+const TD = tw.td`p-3 text-left text-sm w-1/2`;
 
 type DefinitionsPropTypes = {
   canEdit: boolean;
@@ -230,70 +230,57 @@ const Definitions = ({
               <tr key={row.id} data-testid={`definitions-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
                   <TD key={cell.id}>
-                    {cell.column.id === "comment" ? (
-                      <div tw="w-3/5">
-                        <Tooltip
-                          arrow
-                          title={
-                            <div style={{ whiteSpace: "pre-line" }}>
-                              {cell.getValue()}
-                            </div>
-                          }
-                        >
-                          <Typography noWrap>{cell.getValue()}</Typography>
-                        </Tooltip>
-                      </div>
-                    ) : (
-                      flexRender(cell.column.columnDef.cell, cell.getContext())
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TD>
                 ))}
               </tr>
             ))}
           {loading && (
-            <div>
-              <Skeleton animation="wave" width="100%" height={45} />
-              <Skeleton animation="wave" width="100%" height={45} />
-              <Skeleton animation="wave" width="100%" height={45} />
-            </div>
+            <tr>
+              <td colSpan={2}>
+                <Skeleton animation="wave" height={45} />
+                <Skeleton animation="wave" height={45} />
+                <Skeleton animation="wave" height={45} />
+              </td>
+            </tr>
           )}
         </tbody>
-        <MadieDeleteDialog
-          open={deleteDialogOpen}
-          onContinue={() => {
-            handleDefinitionDelete(selectedDefinition);
-            setDeleteDialogOpen(false);
-          }}
-          onClose={() => setDeleteDialogOpen(false)}
-          dialogTitle="Are you sure?"
-          name={"this Definition"}
-        />
-        <MadieDiscardDialog
-          open={discardDialog?.open}
-          onContinue={() => {
-            resetCql();
-            if (discardDialog?.operation === "delete") {
-              setDiscardDialog({
-                open: false,
-                operation: "delete",
-              });
-              setDeleteDialogOpen(true);
-            } else if (discardDialog?.operation === "edit") {
-              setDiscardDialog({
-                open: false,
-                operation: "edit",
-              });
-              setOpenDefinitionDialog(true);
-            }
-          }}
-          onClose={() => {
+      </table>
+      <MadieDeleteDialog
+        open={deleteDialogOpen}
+        onContinue={() => {
+          handleDefinitionDelete(selectedDefinition);
+          setDeleteDialogOpen(false);
+        }}
+        onClose={() => setDeleteDialogOpen(false)}
+        dialogTitle="Are you sure?"
+        name={"this Definition"}
+      />
+      <MadieDiscardDialog
+        open={discardDialog?.open}
+        onContinue={() => {
+          resetCql();
+          if (discardDialog?.operation === "delete") {
             setDiscardDialog({
               open: false,
-              operation: null,
+              operation: "delete",
             });
-          }}
-        />
-      </table>
+            setDeleteDialogOpen(true);
+          } else if (discardDialog?.operation === "edit") {
+            setDiscardDialog({
+              open: false,
+              operation: "edit",
+            });
+            setOpenDefinitionDialog(true);
+          }
+        }}
+        onClose={() => {
+          setDiscardDialog({
+            open: false,
+            operation: null,
+          });
+        }}
+      />
       <DefinitionBuilderDialog
         open={openDefinitionDialog}
         definition={selectedDefinition}

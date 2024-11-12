@@ -285,4 +285,111 @@ describe("SavedParameters Component tests", () => {
       expect(screen.getByText("Test Period 6")).toBeInTheDocument();
     });
   });
+
+  it("test cancel delete parameter when CQL is unchanged", async () => {
+    render(
+      <SavedParameters
+        canEdit={true}
+        parameters={saveParameters}
+        isCQLUnchanged={true}
+        cql="test CQL"
+        setEditorValue={setEditorValue}
+        handleApplyParameter={handleApplyParameter}
+        handleParameterEdit={handleParameterEdit}
+        handleParameterDelete={handleParameterDelete}
+        resetCql={resetCql}
+        loading={false}
+      />
+    );
+
+    const deleteBtn = screen.getByTestId("delete-button-0");
+    expect(deleteBtn).toBeInTheDocument();
+
+    userEvent.click(deleteBtn);
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(screen.getByText("Are you sure?")).toBeInTheDocument();
+
+    const cancelBtn = screen.getByTestId("delete-dialog-cancel-button");
+    const continueDeleteBtn = screen.getByTestId(
+      "delete-dialog-continue-button"
+    );
+    expect(cancelBtn).toBeInTheDocument();
+    expect(continueDeleteBtn).toBeInTheDocument();
+
+    userEvent.click(cancelBtn);
+
+    expect(screen.getByTestId("parameters-row-0")).toBeInTheDocument();
+    expect(handleParameterDelete).not.toBeCalled();
+  });
+
+  it("test continue delete parameter when CQL is unchanged", async () => {
+    render(
+      <SavedParameters
+        canEdit={true}
+        parameters={saveParameters}
+        isCQLUnchanged={true}
+        cql="test CQL"
+        setEditorValue={setEditorValue}
+        handleApplyParameter={handleApplyParameter}
+        handleParameterEdit={handleParameterEdit}
+        handleParameterDelete={handleParameterDelete}
+        resetCql={resetCql}
+        loading={false}
+      />
+    );
+
+    const deleteBtn = screen.getByTestId("delete-button-0");
+    expect(deleteBtn).toBeInTheDocument();
+
+    userEvent.click(deleteBtn);
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(screen.getByText("Are you sure?")).toBeInTheDocument();
+
+    const cancelBtn = screen.getByTestId("delete-dialog-cancel-button");
+    const continueDeleteBtn = screen.getByTestId(
+      "delete-dialog-continue-button"
+    );
+    expect(cancelBtn).toBeInTheDocument();
+    expect(continueDeleteBtn).toBeInTheDocument();
+
+    userEvent.click(continueDeleteBtn);
+
+    expect(screen.getByTestId("parameters-row-0")).toBeInTheDocument();
+    expect(handleParameterDelete).toBeCalled();
+  });
+
+  it("test delete parameter discard changes when cql has changes", async () => {
+    render(
+      <SavedParameters
+        canEdit={true}
+        parameters={saveParameters}
+        isCQLUnchanged={false}
+        cql="test CQL"
+        setEditorValue={setEditorValue}
+        handleApplyParameter={handleApplyParameter}
+        handleParameterEdit={handleParameterEdit}
+        handleParameterDelete={handleParameterDelete}
+        resetCql={resetCql}
+        loading={false}
+      />
+    );
+
+    const deleteBtn = screen.getByTestId("delete-button-0");
+    expect(deleteBtn).toBeInTheDocument();
+
+    userEvent.click(deleteBtn);
+    expect(screen.getByTestId("discard-dialog")).toBeInTheDocument();
+    expect(screen.getByText("Discard Changes?")).toBeInTheDocument();
+    expect(screen.getByText("You have unsaved changes.")).toBeInTheDocument();
+
+    const cancelBtn = screen.getByTestId("discard-dialog-cancel-button");
+    const discardBtn = screen.getByTestId("discard-dialog-continue-button");
+    expect(cancelBtn).toBeInTheDocument();
+    expect(discardBtn).toBeInTheDocument();
+
+    userEvent.click(discardBtn);
+
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(screen.getByText("Are you sure?")).toBeInTheDocument();
+  });
 });
