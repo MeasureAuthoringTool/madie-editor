@@ -25,6 +25,7 @@ import {
 } from "../api/useTerminologyServiceApi";
 import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuilder/DefinitionBuilder";
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
+import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
 
 export interface EditorPropsType {
   value: string;
@@ -44,6 +45,7 @@ export interface EditorPropsType {
     editedLib: SelectedLibrary
   ) => void;
   handleDeleteLibrary?: (lib: SelectedLibrary) => void;
+  handleApplyFunction?: (funct: Funct) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];

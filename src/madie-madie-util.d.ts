@@ -5,6 +5,7 @@ declare module "@madie/madie-util" {
     CQLBuilderIncludes: boolean;
     CQLBuilderDefinitions: boolean;
     CQLBuilderParameters: boolean;
+    CQLBuilderFunctions: boolean;
   }
 
   export const useOktaTokens: (storageKey?: string) => {

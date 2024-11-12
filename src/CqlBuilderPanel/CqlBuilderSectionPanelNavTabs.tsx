@@ -6,6 +6,7 @@ export interface NavTabProps {
   CQLBuilderIncludes: boolean;
   CQLBuilderParameters: boolean;
   CQLBuilderDefinitions: boolean;
+  CQLBuilderFunctions: boolean;
   isQDM: boolean;
 }
 
@@ -16,6 +17,7 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
     CQLBuilderDefinitions,
     CQLBuilderIncludes,
     CQLBuilderParameters,
+    CQLBuilderFunctions,
     isQDM,
   } = props;
 
@@ -76,6 +78,16 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
           value="definitions"
           label="Definitions"
           data-testid="definitions-tab"
+        />
+      )}
+      {CQLBuilderFunctions && (
+        <Tab
+          tabIndex={0}
+          aria-label="Functions"
+          type="D"
+          value="functions"
+          label="Functions"
+          data-testid="functions-tab"
         />
       )}
     </Tabs>
