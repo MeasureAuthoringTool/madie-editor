@@ -95,6 +95,27 @@ describe("SavedParameters Component tests", () => {
     userEvent.click(editBtn);
   });
 
+  it("Should render No Results were found message when there are no SavedParameters", async () => {
+    render(
+      <SavedParameters
+        canEdit={true}
+        parameters={[]}
+        isCQLUnchanged={false}
+        cql="test CQL"
+        setEditorValue={setEditorValue}
+        handleApplyParameter={handleApplyParameter}
+        handleParameterEdit={handleParameterEdit}
+        handleParameterDelete={handleParameterDelete}
+        resetCql={resetCql}
+        loading={false}
+      />
+    );
+
+    const table = screen.getByRole("table");
+    const tableBody = table.querySelector("tbody");
+    expect(tableBody).toHaveTextContent("No Results were found");
+  });
+
   it("Should open Discard Dialog when CQL is changed", async () => {
     render(
       <SavedParameters

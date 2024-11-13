@@ -213,6 +213,20 @@ const SavedParameters = ({
           ))}
         </thead>
         <tbody data-testid="parameters-table-body">
+          {loading && (
+            <div>
+              <Skeleton animation="wave" width="100%" height={45} />
+              <Skeleton animation="wave" width="100%" height={45} />
+              <Skeleton animation="wave" width="100%" height={45} />
+            </div>
+          )}
+          {!loading && _.isEmpty(parameters) && (
+            <tr>
+              <td colSpan={columns.length} tw="text-center p-2">
+                No Results were found
+              </td>
+            </tr>
+          )}
           {!loading &&
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`parameters-row-${row.id}`}>
@@ -223,13 +237,6 @@ const SavedParameters = ({
                 ))}
               </tr>
             ))}
-          {loading && (
-            <div>
-              <Skeleton animation="wave" width="100%" height={45} />
-              <Skeleton animation="wave" width="100%" height={45} />
-              <Skeleton animation="wave" width="100%" height={45} />
-            </div>
-          )}
         </tbody>
       </table>
       <MadieDeleteDialog

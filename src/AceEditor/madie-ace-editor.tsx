@@ -455,7 +455,7 @@ const MadieAceEditor = ({
   });
 
   return (
-    <div>
+    <div style={{ height: "inhert" }}>
       <AceEditor
         mode="sql" // Temporary value of mode to prevent a dynamic search request.
         ref={aceRef}
