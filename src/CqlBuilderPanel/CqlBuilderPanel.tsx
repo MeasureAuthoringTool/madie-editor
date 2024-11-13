@@ -158,69 +158,26 @@ export default function CqlBuilderPanel({
           <ExpansionIcon />
         </IconButton>
       </div>
-      {errors && (
-        <div className="panel-alert">
-          <MadieAlert
-            type="error"
-            content={
-              <div
-                aria-live="polite"
-                role="alert"
-                data-testid={"cql-builder-errors"}
-              >
-                {errors}
-              </div>
-            }
-            canClose={false}
-          />
-        </div>
-      )}
-      <div className="panel-content">
-        {activeTab === "includes" && (
-          <IncludesTabSection
-            canEdit={canEdit}
-            cql={measureStoreCql}
-            measureModel={measureModel}
-            isCQLUnchanged={isCQLUnchanged}
-            setIsCQLUnchanged={setIsCQLUnchanged}
-            setEditorValue={setEditorVal}
-            handleApplyLibrary={handleApplyLibrary}
-            handleEditLibrary={handleEditLibrary}
-            handleDeleteLibrary={handleDeleteLibrary}
-          />
+
+      <div style={{ height: "calc(100% - 48px)", overflowY: "auto" }}>
+        {errors && (
+          <div className="panel-alert">
+            <MadieAlert
+              type="error"
+              content={
+                <div
+                  aria-live="polite"
+                  role="alert"
+                  data-testid={"cql-builder-errors"}
+                >
+                  {errors}
+                </div>
+              }
+              canClose={false}
+            />
+          </div>
         )}
-        {activeTab === "valueSets" && (
-          <ValueSetsSection
-            canEdit={canEdit}
-            handleApplyValueSet={handleApplyValueSet}
-          />
-        )}
-        {activeTab === "codes" && (
-          <CodesSection
-            canEdit={canEdit}
-            measureStoreCql={measureStoreCql}
-            cqlMetaData={cqlMetaData}
-            measureModel={measureModel}
-            handleCodeDelete={handleCodeDelete}
-            setEditorVal={setEditorVal}
-            setIsCQLUnchanged={setIsCQLUnchanged}
-            isCQLUnchanged={isCQLUnchanged}
-            handleApplyCode={handleApplyCode}
-          />
-        )}
-        {activeTab === "parameters" && (
-          <Parameters
-            canEdit={canEdit}
-            handleApplyParameter={handleApplyParameter}
-            handleParameterEdit={handleParameterEdit}
-            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
-            isCQLUnchanged={isCQLUnchanged}
-            cql={measureStoreCql}
-            setEditorValue={setEditorVal}
-            resetCql={resetCql}
-            loading={loading}
-          />
-        )}
+
         <div className="panel-content">
           {activeTab === "includes" && (
             <IncludesTabSection
