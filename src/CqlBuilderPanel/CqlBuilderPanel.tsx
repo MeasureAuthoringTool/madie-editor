@@ -158,24 +158,23 @@ export default function CqlBuilderPanel({
           <ExpansionIcon />
         </IconButton>
       </div>
-      <div style={{ height: "calc(100% - 48px)", overflow: "auto" }}>
-        {errors && (
-          <div className="panel-alert">
-            <MadieAlert
-              type="error"
-              content={
-                <div
-                  aria-live="polite"
-                  role="alert"
-                  data-testid={"cql-builder-errors"}
-                >
-                  {errors}
-                </div>
-              }
-              canClose={false}
-            />
-          </div>
-        )}
+      {errors && (
+        <div className="panel-alert">
+          <MadieAlert
+            type="error"
+            content={
+              <div
+                aria-live="polite"
+                role="alert"
+                data-testid={"cql-builder-errors"}
+              >
+                {errors}
+              </div>
+            }
+            canClose={false}
+          />
+        </div>
+      )}
       <div className="panel-content">
         {activeTab === "includes" && (
           <IncludesTabSection
