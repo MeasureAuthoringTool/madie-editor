@@ -79,6 +79,7 @@ const CqlEditorWithTerminology = ({
           </div>
           <div className="left-panel">
             <div className="panel-content">
+              {/* needs to be difference between parent and sibling */}
               <MadieAceEditor
                 value={value}
                 onChange={onChange}
