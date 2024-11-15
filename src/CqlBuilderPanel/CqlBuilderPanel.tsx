@@ -127,6 +127,8 @@ export default function CqlBuilderPanel({
             setLoading(false);
           });
       }
+    } else {
+      setLoading(false);
     }
   }, [measureModel, measureStoreCql]);
 
