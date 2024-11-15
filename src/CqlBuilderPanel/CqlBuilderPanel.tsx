@@ -29,6 +29,7 @@ export default function CqlBuilderPanel({
   handleApplyCode,
   handleApplyParameter,
   handleParameterEdit,
+  handleParameterDelete,
   handleApplyValueSet,
   handleApplyDefinition,
   handleDefinitionEdit,
@@ -217,6 +218,8 @@ export default function CqlBuilderPanel({
             <Parameters
               canEdit={canEdit}
               handleApplyParameter={handleApplyParameter}
+              handleParameterEdit={handleParameterEdit}
+              handleParameterDelete={handleParameterDelete}
               cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
               isCQLUnchanged={isCQLUnchanged}
               cql={measureStoreCql}
