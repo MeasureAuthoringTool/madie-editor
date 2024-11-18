@@ -36,6 +36,7 @@ export interface EditorPropsType {
     parameter: Parameter,
     parameterToApply: Parameter
   ) => void;
+  handleParameterDelete?: (parameter: Parameter) => void;
   handleApplyValueSet?: (vs: ValueSetForSearch) => void;
   handleApplyDefinition?: (def: Definition) => void;
   handleDefinitionEdit?: (lib: SelectedLibrary, def: Definition) => void;
@@ -456,7 +457,7 @@ const MadieAceEditor = ({
   });
 
   return (
-    <div>
+    <div style={{ height: "inhert" }}>
       <AceEditor
         mode="sql" // Temporary value of mode to prevent a dynamic search request.
         ref={aceRef}

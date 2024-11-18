@@ -15,10 +15,13 @@
 
     .left-panel {
       > .panel-content {
-        height: calc(100% - 48px);
+        height: inherit;
+        > div {
+          height: inherit;
+        }
       }
     }
-    .right-panel {
+    .right-panel > div {
       margin-left: 12px;
       > .panel-alert {
         padding-top: 10px;
@@ -49,6 +52,7 @@
     .left-panel,
     .right-panel {
       height: 100%;
+
       background: #fff;
       > .tab-container {
         background-color: #ededed;

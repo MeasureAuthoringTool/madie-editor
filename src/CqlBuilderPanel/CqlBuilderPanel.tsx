@@ -30,6 +30,7 @@ export default function CqlBuilderPanel({
   handleApplyCode,
   handleApplyParameter,
   handleParameterEdit,
+  handleParameterDelete,
   handleApplyValueSet,
   handleApplyDefinition,
   handleDefinitionEdit,
@@ -133,6 +134,8 @@ export default function CqlBuilderPanel({
             setLoading(false);
           });
       }
+    } else {
+      setLoading(false);
     }
   }, [measureModel, measureStoreCql]);
 
@@ -165,93 +168,98 @@ export default function CqlBuilderPanel({
           <ExpansionIcon />
         </IconButton>
       </div>
-      {errors && (
-        <div className="panel-alert">
-          <MadieAlert
-            type="error"
-            content={
-              <div
-                aria-live="polite"
-                role="alert"
-                data-testid={"cql-builder-errors"}
-              >
-                {errors}
-              </div>
-            }
-            canClose={false}
-          />
+
+      <div style={{ height: "calc(100% - 48px)", overflowY: "auto" }}>
+        {errors && (
+          <div className="panel-alert">
+            <MadieAlert
+              type="error"
+              content={
+                <div
+                  aria-live="polite"
+                  role="alert"
+                  data-testid={"cql-builder-errors"}
+                >
+                  {errors}
+                </div>
+              }
+              canClose={false}
+            />
+          </div>
+        )}
+
+        <div className="panel-content">
+          {activeTab === "includes" && (
+            <IncludesTabSection
+              canEdit={canEdit}
+              cql={measureStoreCql}
+              measureModel={measureModel}
+              isCQLUnchanged={isCQLUnchanged}
+              setIsCQLUnchanged={setIsCQLUnchanged}
+              setEditorValue={setEditorVal}
+              handleApplyLibrary={handleApplyLibrary}
+              handleEditLibrary={handleEditLibrary}
+              handleDeleteLibrary={handleDeleteLibrary}
+            />
+          )}
+          {activeTab === "valueSets" && (
+            <ValueSetsSection
+              canEdit={canEdit}
+              handleApplyValueSet={handleApplyValueSet}
+            />
+          )}
+          {activeTab === "codes" && (
+            <CodesSection
+              canEdit={canEdit}
+              measureStoreCql={measureStoreCql}
+              cqlMetaData={cqlMetaData}
+              measureModel={measureModel}
+              handleCodeDelete={handleCodeDelete}
+              setEditorVal={setEditorVal}
+              setIsCQLUnchanged={setIsCQLUnchanged}
+              isCQLUnchanged={isCQLUnchanged}
+              handleApplyCode={handleApplyCode}
+            />
+          )}
+          {activeTab === "parameters" && (
+            <Parameters
+              canEdit={canEdit}
+              handleApplyParameter={handleApplyParameter}
+              handleParameterEdit={handleParameterEdit}
+              handleParameterDelete={handleParameterDelete}
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+              isCQLUnchanged={isCQLUnchanged}
+              cql={measureStoreCql}
+              setEditorValue={setEditorVal}
+              resetCql={resetCql}
+              loading={loading}
+            />
+          )}
+
+          {activeTab === "definitions" && (
+            <DefinitionsSection
+              canEdit={canEdit}
+              handleApplyDefinition={handleApplyDefinition}
+              handleDefinitionDelete={handleDefinitionDelete}
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+              isCQLUnchanged={isCQLUnchanged}
+              cql={measureStoreCql}
+              setEditorVal={setEditorVal}
+              resetCql={resetCql}
+              getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
+              handleDefinitionEdit={handleDefinitionEdit}
+              loading={loading}
+            />
+          )}
+
+          {activeTab === "functions" && (
+            <FunctionsSection
+              canEdit={canEdit}
+              handleApplyFunction={handleApplyFunction}
+              loading={loading}
+            />
+          )}
         </div>
-      )}
-      <div className="panel-content">
-        {activeTab === "includes" && (
-          <IncludesTabSection
-            canEdit={canEdit}
-            cql={measureStoreCql}
-            measureModel={measureModel}
-            isCQLUnchanged={isCQLUnchanged}
-            setIsCQLUnchanged={setIsCQLUnchanged}
-            setEditorValue={setEditorVal}
-            handleApplyLibrary={handleApplyLibrary}
-            handleEditLibrary={handleEditLibrary}
-            handleDeleteLibrary={handleDeleteLibrary}
-          />
-        )}
-        {activeTab === "valueSets" && (
-          <ValueSetsSection
-            canEdit={canEdit}
-            handleApplyValueSet={handleApplyValueSet}
-          />
-        )}
-        {activeTab === "codes" && (
-          <CodesSection
-            canEdit={canEdit}
-            measureStoreCql={measureStoreCql}
-            cqlMetaData={cqlMetaData}
-            measureModel={measureModel}
-            handleCodeDelete={handleCodeDelete}
-            setEditorVal={setEditorVal}
-            setIsCQLUnchanged={setIsCQLUnchanged}
-            isCQLUnchanged={isCQLUnchanged}
-            handleApplyCode={handleApplyCode}
-          />
-        )}
-        {activeTab === "parameters" && (
-          <Parameters
-            canEdit={canEdit}
-            handleApplyParameter={handleApplyParameter}
-            handleParameterEdit={handleParameterEdit}
-            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
-            isCQLUnchanged={isCQLUnchanged}
-            cql={measureStoreCql}
-            setEditorValue={setEditorVal}
-            resetCql={resetCql}
-            loading={loading}
-          />
-        )}
-
-        {activeTab === "definitions" && (
-          <DefinitionsSection
-            canEdit={canEdit}
-            handleApplyDefinition={handleApplyDefinition}
-            handleDefinitionDelete={handleDefinitionDelete}
-            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
-            isCQLUnchanged={isCQLUnchanged}
-            cql={measureStoreCql}
-            setEditorVal={setEditorVal}
-            resetCql={resetCql}
-            getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
-            handleDefinitionEdit={handleDefinitionEdit}
-            loading={loading}
-          />
-        )}
-
-        {activeTab === "functions" && (
-          <FunctionsSection
-            canEdit={canEdit}
-            handleApplyFunction={handleApplyFunction}
-            loading={loading}
-          />
-        )}
       </div>
     </div>
   );

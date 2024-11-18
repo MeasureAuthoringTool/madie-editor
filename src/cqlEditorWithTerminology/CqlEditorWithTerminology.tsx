@@ -16,6 +16,7 @@ const CqlEditorWithTerminology = ({
   handleApplyCode,
   handleApplyParameter,
   handleParameterEdit,
+  handleParameterDelete,
   handleApplyValueSet,
   handleApplyDefinition,
   handleApplyLibrary,
@@ -80,6 +81,7 @@ const CqlEditorWithTerminology = ({
           </div>
           <div className="left-panel">
             <div className="panel-content">
+              {/* needs to be difference between parent and sibling */}
               <MadieAceEditor
                 value={value}
                 onChange={onChange}
@@ -111,6 +113,7 @@ const CqlEditorWithTerminology = ({
               handleApplyCode={handleApplyCode}
               handleApplyParameter={handleApplyParameter}
               handleParameterEdit={handleParameterEdit}
+              handleParameterDelete={handleParameterDelete}
               handleApplyValueSet={handleApplyValueSet}
               handleApplyDefinition={handleApplyDefinition}
               handleDefinitionEdit={handleDefinitionEdit}
