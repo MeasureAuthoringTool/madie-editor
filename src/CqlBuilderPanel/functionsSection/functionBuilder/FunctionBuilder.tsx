@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@madie/madie-design-system/dist/react";
 import "../Functions.scss";
+import { FunctionSectionSchemaValidator } from "../../../validations/FunctionSectionSchemaValidator";
 import ExpandingSection from "../../../common/ExpandingSection";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { Box } from "@mui/system";
@@ -45,8 +46,9 @@ export default function FunctionBuilder({
     initialValues: {
       functionName: funct?.functionName || "",
       comment: funct?.comment || "",
-      fluentFunction: funct?.fluentFunction || false,
+      fluentFunction: funct?.fluentFunction || true,
     },
+    validationSchema: FunctionSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {},
   });
@@ -69,6 +71,8 @@ export default function FunctionBuilder({
               inputProps={{
                 "data-testid": "function-name-text-input",
               }}
+              error={Boolean(formik.errors.functionName)}
+              helperText={formik.errors.functionName}
               {...formik.getFieldProps("functionName")}
             />
           </div>
@@ -120,6 +124,7 @@ export default function FunctionBuilder({
         />
         <div className="form-actions">
           <Button
+            id="clear-function-btn"
             variant="outline"
             data-testid="clear-function-btn"
             disabled={!formik.dirty || !canEdit}
@@ -133,6 +138,7 @@ export default function FunctionBuilder({
           <Button
             data-testid={`function-apply-btn`}
             disabled={!formik.values.functionName || !canEdit || !formik.dirty}
+            // tw="ml-4"
             onClick={() => {}}
           >
             Apply
