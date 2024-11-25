@@ -22,6 +22,8 @@ import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import useTerminologyServiceApi, {
   Code,
 } from "../../../../api/useTerminologyServiceApi";
@@ -220,20 +222,47 @@ export default function SavedCodesSubSection({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => (
-          <div className="inline-flex gap-x-2">
+          <div className="inline-flex gap-x-2" style={{ width: "max-content" }}>
             {canEdit ? (
-              <button
-                className="action-button"
-                onClick={(e) => handleOpen(row.cell.row.id, e)}
-                tw="text-blue-600 hover:text-blue-900"
-                data-testid={`select-action-${row.cell.id}`}
-                aria-label={`select-action-${row.cell.id}`}
-              >
-                <div className="action">Select</div>
-                <div className="chevron-container">
-                  <ExpandMoreIcon />
-                </div>
-              </button>
+              <>
+                <ToolTippedIcon
+                  tooltipMessage="Remove"
+                  buttonProps={{
+                    "data-testid": `remove-code-${row.cell.row.id}`,
+                    "aria-label": `remove-code-${row.cell.row.id}`,
+                    size: "small",
+                    onClick: (e) => {
+                      setSelectedCodeDetails(
+                        table.getRow(row.cell.row.id).original
+                      );
+                      if (!isCQLUnchanged) {
+                        setDiscardDialogOpen(true);
+                      } else {
+                        setDeleteDialogModalOpen(true);
+                      }
+                    },
+                  }}
+                >
+                  <DeleteOutlineIcon color="error" />
+                </ToolTippedIcon>
+                <ToolTippedIcon
+                  tooltipMessage="Edit"
+                  buttonProps={{
+                    "data-testid": `edit-code-${row.cell.row.id}`,
+                    "aria-label": `edit-code-${row.cell.row.id}`,
+                    size: "small",
+                    onClick: (e) => {
+                      const selectedCode = table.getRow(
+                        row.cell.row.id
+                      ).original;
+                      setSelectedCodeDetails(selectedCode);
+                      handleEditCode(selectedCode);
+                    },
+                  }}
+                >
+                  <BorderColorOutlinedIcon color="primary" />
+                </ToolTippedIcon>
+              </>
             ) : (
               ""
             )}
@@ -312,14 +341,13 @@ export default function SavedCodesSubSection({
     setOpenEditCodeDialog(!open);
   };
 
-  const handleEditCode = () => {
-    setOptionsOpen(false);
+  const handleEditCode = (selectedCode) => {
     setOpenEditCodeDialog(true);
     const parsedCode = parsedCodesList.find(
-      (parsedCode) => parsedCode.code === selectedCodeDetails.name
+      (parsedCode) => parsedCode.code === selectedCode.name
     );
     setSelectedCodeDetails({
-      ...selectedCodeDetails,
+      ...selectedCode,
       suffix: parsedCode?.suffix,
       versionIncluded: parsedCode.versionIncluded,
     });
@@ -400,32 +428,6 @@ export default function SavedCodesSubSection({
             </div>
           )}
         </tbody>
-
-        <Popover
-          optionsOpen={optionsOpen}
-          anchorEl={anchorEl}
-          handleClose={handleClose}
-          canEdit={true}
-          editViewSelectOptionProps={{
-            label: "Remove",
-            toImplementFunction: () => {
-              setOptionsOpen(false);
-              if (!isCQLUnchanged) {
-                setDiscardDialogOpen(true);
-              } else {
-                setDeleteDialogModalOpen(true);
-              }
-            },
-            dataTestId: `remove-code-${selectedReferenceId}`,
-          }}
-          otherSelectOptionProps={[
-            {
-              label: "Edit",
-              toImplementFunction: () => handleEditCode(),
-              dataTestId: `edit-code-${selectedReferenceId}`,
-            },
-          ]}
-        />
       </table>
 
       <EditCodeDetailsDialog
