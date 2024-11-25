@@ -68,6 +68,9 @@
       margin-top: 1rem;
       margin-right: 32px;
     }
+    > #clear-definition-btn:focus {
+      margin-right: 16px;
+    }
     > button[type="submit"] {
       margin-top: 0;
     }
