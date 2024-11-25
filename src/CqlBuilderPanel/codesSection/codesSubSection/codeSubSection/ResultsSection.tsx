@@ -5,6 +5,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import ExpandingSection from "../../../../common/ExpandingSection";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 
 import {
   useReactTable,
@@ -91,19 +93,38 @@ export default function ResultsSection({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => (
-          <div className="inline-flex gap-x-2">
-            <button
-              className="action-button"
-              onClick={(e) => handleOpen(row.cell.row.id, e)}
-              tw="text-blue-600 hover:text-blue-900"
-              data-testid={`select-action-${row.cell.id}`}
-              aria-label={`select-action-${row.cell.id}`}
+          <div className="inline-flex gap-x-2" style={{ width: "max-content" }}>
+            <ToolTippedIcon
+              tooltipMessage="Edit"
+              buttonProps={{
+                "data-testid": `edit-code-${row.cell.row.id}`,
+                "aria-label": `edit-code-${row.cell.row.id}`,
+                size: "small",
+                onClick: (e) => {
+                  setSelectedCodeDetails(
+                    table.getRow(row.cell.row.id).original
+                  );
+                  handleEditCode();
+                },
+              }}
             >
-              <div className="action">Select</div>
-              <div className="chevron-container">
-                <ExpandMoreIcon />
-              </div>
-            </button>
+              <BorderColorOutlinedIcon color="primary" />
+            </ToolTippedIcon>
+            <ToolTippedIcon
+              tooltipMessage="Apply"
+              buttonProps={{
+                "data-testid": `apply-code-${row.cell.row.id}`,
+                "aria-label": `apply-code-${row.cell.row.id}`,
+                size: "small",
+                onClick: (e) => {
+                  const selectedCode = table.getRow(row.cell.row.id).original;
+                  setSelectedCodeDetails(selectedCode);
+                  handleApplyCodeInner(selectedCode);
+                },
+              }}
+            >
+              <ControlPointIcon color="primary" />
+            </ToolTippedIcon>
           </div>
         ),
       },
@@ -116,8 +137,8 @@ export default function ResultsSection({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-  const handleApplyCodeInner = () => {
-    handleApplyCode(selectedCodeDetails);
+  const handleApplyCodeInner = (selectedCode) => {
+    handleApplyCode(selectedCode);
     setOptionsOpen(false);
   };
 
@@ -207,24 +228,7 @@ export default function ResultsSection({
                   ))
                 )}
               </tbody>
-              <Popover
-                optionsOpen={optionsOpen}
-                anchorEl={anchorEl}
-                handleClose={handleClose}
-                canEdit={true}
-                editViewSelectOptionProps={{
-                  label: "Apply",
-                  toImplementFunction: () => handleApplyCodeInner(),
-                  dataTestId: `apply-code-${selectedReferenceId}`,
-                }}
-                otherSelectOptionProps={[
-                  {
-                    label: "Edit",
-                    toImplementFunction: () => handleEditCode(),
-                    dataTestId: `edit-code-${selectedReferenceId}`,
-                  },
-                ]}
-              />
+              <ControlPointIcon color="primary" />
             </table>
             <EditCodeDetailsDialog
               selectedCodeDetails={selectedCodeDetails}
