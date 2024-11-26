@@ -111,8 +111,7 @@ export default function SavedCodesSubSection({
     setToastOpen(false);
   };
   const [loading, setLoading] = useState<boolean>(false);
-  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<SelectedCodeDetails>(null);
@@ -148,9 +147,7 @@ export default function SavedCodesSubSection({
     selectedId,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
-    setOptionsOpen(true);
     setSelectedReferenceId(selectedId);
-    setAnchorEl(event.currentTarget);
     setSelectedCodeDetails(table.getRow(selectedId).original);
   };
 
@@ -329,12 +326,6 @@ export default function SavedCodesSubSection({
         <DoNotDisturbOnIcon />
       </ToolTippedIcon>
     );
-  };
-
-  const handleClose = () => {
-    setOptionsOpen(false);
-    setSelectedReferenceId(null);
-    setAnchorEl(null);
   };
 
   const toggleEditCodeDialogState = () => {
