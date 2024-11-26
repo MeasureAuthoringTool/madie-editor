@@ -3,6 +3,7 @@ import CqlBuilderSectionPanelNavTabs from "./CqlBuilderSectionPanelNavTabs";
 import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
+import FunctionsSection from "./functionsSection/FunctionsSection";
 import { useFeatureFlags } from "@madie/madie-util";
 import IncludesTabSection from "./Includes/Includes";
 import Parameters from "./Parameters/Parameters";
@@ -34,13 +35,18 @@ export default function CqlBuilderPanel({
   handleApplyDefinition,
   handleDefinitionEdit,
   handleDefinitionDelete,
+  handleApplyFunction,
   resetCql,
   getCqlDefinitionReturnTypes,
   makeExpanded,
 }) {
   const featureFlags = useFeatureFlags();
-  const { CQLBuilderDefinitions, CQLBuilderIncludes, CQLBuilderParameters } =
-    featureFlags;
+  const {
+    CQLBuilderDefinitions,
+    CQLBuilderIncludes,
+    CQLBuilderParameters,
+    CQLBuilderFunctions,
+  } = featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
     // if cqlBuilderIncludes -> includes
@@ -128,6 +134,8 @@ export default function CqlBuilderPanel({
             setLoading(false);
           });
       }
+    } else {
+      setLoading(false);
     }
   }, [measureModel, measureStoreCql]);
 
@@ -141,6 +149,7 @@ export default function CqlBuilderPanel({
           isQDM={measureModel?.includes("QDM")}
           CQLBuilderParameters={CQLBuilderParameters}
           CQLBuilderIncludes={CQLBuilderIncludes}
+          CQLBuilderFunctions={CQLBuilderFunctions}
         />
         <div
           style={{
@@ -239,6 +248,14 @@ export default function CqlBuilderPanel({
               resetCql={resetCql}
               getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
               handleDefinitionEdit={handleDefinitionEdit}
+              loading={loading}
+            />
+          )}
+
+          {activeTab === "functions" && (
+            <FunctionsSection
+              canEdit={canEdit}
+              handleApplyFunction={handleApplyFunction}
               loading={loading}
             />
           )}
