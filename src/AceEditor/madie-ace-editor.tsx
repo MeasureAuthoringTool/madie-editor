@@ -81,15 +81,18 @@ export const updateUsingStatements = (
 ) => {
   const usingStatements: CqlVersion[] = parsedEditorCql.parsedCql.usings;
   const measureModel = usedModel.replace("-", "");
-
+  const parsedEditorCqlCopy = { ...parsedEditorCql };
+  let isCqlUpdated = false;
   if (usingStatements?.length === 1) {
     const { name, version, start } = usingStatements[0];
     if (usedModel !== name || modelVersion !== version) {
-      parsedEditorCql.cqlArrayToBeFiltered[
+      parsedEditorCqlCopy.cqlArrayToBeFiltered[
         start.line - 1
       ] = `using ${measureModel} version '${modelVersion}'`;
+      isCqlUpdated = true;
     }
   } else if (usingStatements?.length > 1) {
+    // to track if the usings statement was verified or not
     const models = new Set();
     let deletedLineCount = 0;
 
@@ -102,52 +105,66 @@ export const updateUsingStatements = (
         if (measureModel !== name || modelVersion !== cleanVersion) {
           if (measureModel === "QICore") {
             if (name === "FHIR" && cleanVersion !== "4.0.1") {
-              parsedEditorCql.cqlArrayToBeFiltered[
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
               ] = `using FHIR version '4.0.1'`;
               models.add(name);
+              isCqlUpdated = true;
             } else if (name === "QICore" && cleanVersion !== modelVersion) {
-              parsedEditorCql.cqlArrayToBeFiltered[
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
               ] = `using ${measureModel} version '${modelVersion}'`;
               models.add(name);
+              isCqlUpdated = true;
             } else if (name === "QDM" && !models.has(measureModel)) {
-              parsedEditorCql.cqlArrayToBeFiltered[
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
               ] = `using ${measureModel} version '${modelVersion}'`;
               models.add(measureModel);
+              isCqlUpdated = true;
             } else if (name === "QDM") {
-              parsedEditorCql.cqlArrayToBeFiltered.splice(lineIndex, 1);
+              parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
               deletedLineCount++;
+              isCqlUpdated = true;
+            } else {
+              models.add(name);
             }
           } else if (measureModel === "QDM") {
             if (name === "QDM" && cleanVersion !== modelVersion) {
-              parsedEditorCql.cqlArrayToBeFiltered[
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
               ] = `using ${measureModel} version '${modelVersion}'`;
               models.add(name);
+              isCqlUpdated = true;
             } else if (
               !models.has("QDM") &&
               (name === "QICore" || name === "FHIR")
             ) {
-              parsedEditorCql.cqlArrayToBeFiltered[
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
               ] = `using ${measureModel} version '${modelVersion}'`;
               models.add(measureModel);
+              isCqlUpdated = true;
             } else {
-              parsedEditorCql.cqlArrayToBeFiltered.splice(lineIndex, 1);
+              parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
               deletedLineCount++;
+              isCqlUpdated = true;
             }
           }
         } else {
           models.add(name);
         }
       } else {
-        parsedEditorCql.cqlArrayToBeFiltered.splice(lineIndex, 1);
+        parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
         deletedLineCount++;
+        isCqlUpdated = true;
       }
     });
   }
+  return {
+    isCqlUpdated,
+    updatedCqlArray: parsedEditorCqlCopy.cqlArrayToBeFiltered,
+  };
 };
 
 export const parseEditorContent = (content): CqlError[] => {
@@ -237,7 +254,13 @@ const updateCql = (
       cqlUpdates.isLibraryStatementChanged = true;
     }
     // update using statements if they are incorrect
-    updateUsingStatements(parsedEditorCql, usedModel, modelVersion);
+    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
+      parsedEditorCql,
+      usedModel,
+      modelVersion
+    );
+    cqlUpdates.isUsingStatementChanged = isCqlUpdated;
+    parsedEditorCql.cqlArrayToBeFiltered = updatedCqlArray;
 
     // value set with version are not allowed at this moment, remove version
     if (parsedEditorCql.parsedCql?.valueSets) {
@@ -298,11 +321,8 @@ export const updateEditorContent = async (
 };
 
 export const isUsingStatementEmpty = (editorVal): boolean => {
-  const parsedCql = parseCql(editorVal);
-  if (parsedCql?.usingContent === undefined) {
-    return true;
-  }
-  return false;
+  const parsedContents = parseCql(editorVal);
+  return parsedContents?.parsedCql?.usings?.length === 0;
 };
 
 export const mapParserErrorsToAceAnnotations = (
