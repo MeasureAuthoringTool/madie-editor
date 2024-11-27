@@ -17,7 +17,6 @@ import {
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Popover } from "@madie/madie-design-system/dist/react";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 
@@ -43,9 +42,6 @@ export default function ResultsSection({
   code,
   handleApplyCode,
 }: ResultSectionProps) {
-  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<ResultsColumnRow>(null);
   const [openEditCodeDialog, setOpenEditCodeDialog] = useState<boolean>(false);
@@ -54,16 +50,7 @@ export default function ResultsSection({
     selectedId,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
-    setOptionsOpen(true);
-    setSelectedReferenceId(selectedId);
-    setAnchorEl(event.currentTarget);
     setSelectedCodeDetails(table.getRow(selectedId).original);
-  };
-
-  const handleClose = () => {
-    setOptionsOpen(false);
-    setSelectedReferenceId(null);
-    setAnchorEl(null);
   };
 
   const data = [code];
@@ -139,7 +126,6 @@ export default function ResultsSection({
   });
   const handleApplyCodeInner = (selectedCode) => {
     handleApplyCode(selectedCode);
-    setOptionsOpen(false);
   };
 
   const toggleEditCodeDialogState = () => {
@@ -147,7 +133,6 @@ export default function ResultsSection({
   };
 
   const handleEditCode = () => {
-    setOptionsOpen(false);
     setOpenEditCodeDialog(true);
   };
 
