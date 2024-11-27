@@ -461,7 +461,7 @@ I want to decalre a concept lalala`,
 });
 
 describe("isUsingStatementEmpty", () => {
-  test("Replace concept declaration with comment", async () => {
+  it("Replace concept declaration with comment", async () => {
     const expectValue = `library Testing version '0.0.000'
 /*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
     const updatedContents = await updateEditorContent(
