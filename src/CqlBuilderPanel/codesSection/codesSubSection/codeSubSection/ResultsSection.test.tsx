@@ -83,7 +83,7 @@ describe("Results Section component", () => {
     expect(resultsContent).toBeInTheDocument();
     let applyBtn;
     await act(async () => {
-      applyBtn = await findByTestId(resultsContent, "select-action-0_apply");
+      applyBtn = await findByTestId(resultsContent, "apply-code-0");
       expect(applyBtn).toBeDefined();
       userEvent.click(applyBtn);
     });
@@ -95,7 +95,7 @@ describe("Results Section component", () => {
     expect(resultsContent).toBeInTheDocument();
     let applyBtn;
     await act(async () => {
-      applyBtn = await findByTestId(resultsContent, "select-action-0_apply");
+      applyBtn = await findByTestId(resultsContent, "apply-code-0");
       expect(applyBtn).toBeDefined();
       userEvent.click(applyBtn);
     });
@@ -125,12 +125,6 @@ describe("Results Section component", () => {
       "DoNotDisturbOnIcon"
     );
 
-    await waitFor(() => {
-      const selectButton = screen.getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
-
     const editButton = screen.getByTestId(`edit-code-0`);
     expect(editButton).toBeInTheDocument();
 
@@ -158,11 +152,7 @@ describe("Results Section component", () => {
       { ...mockCode, status: CodeStatus.NA },
       "DoNotDisturbOnIcon"
     );
-    await waitFor(() => {
-      const selectButton = screen.getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
+
     const editButton = screen.getByTestId(`edit-code-0`);
     userEvent.click(editButton);
     await waitFor(() => {
