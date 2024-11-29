@@ -74,6 +74,7 @@ export interface UpdatedCqlObject {
   isValueSetChanged?: boolean;
 }
 
+// https://jira.cms.gov/browse/MAT-7652
 export const updateUsingStatements = (
   parsedEditorCql: ParsedCql,
   usedModel: string,
@@ -85,7 +86,10 @@ export const updateUsingStatements = (
   let isCqlUpdated = false;
   if (usingStatements?.length === 1) {
     const { name, version, start } = usingStatements[0];
-    if (usedModel !== name || modelVersion !== version) {
+    if (
+      measureModel !== name ||
+      modelVersion !== version.replace(/["']/g, "")
+    ) {
       parsedEditorCqlCopy.cqlArrayToBeFiltered[
         start.line - 1
       ] = `using ${measureModel} version '${modelVersion}'`;
@@ -103,6 +107,7 @@ export const updateUsingStatements = (
 
       if (!models.has(name)) {
         if (measureModel !== name || modelVersion !== cleanVersion) {
+          // if measure model is QICore
           if (measureModel === "QICore") {
             if (name === "FHIR" && cleanVersion !== "4.0.1") {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
@@ -129,6 +134,7 @@ export const updateUsingStatements = (
             } else {
               models.add(name);
             }
+            // if measure model is QDM
           } else if (measureModel === "QDM") {
             if (name === "QDM" && cleanVersion !== modelVersion) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
