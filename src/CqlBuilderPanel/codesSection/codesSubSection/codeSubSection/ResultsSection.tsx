@@ -213,7 +213,6 @@ export default function ResultsSection({
                   ))
                 )}
               </tbody>
-              <ControlPointIcon color="primary" />
             </table>
             <EditCodeDetailsDialog
               selectedCodeDetails={selectedCodeDetails}

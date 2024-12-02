@@ -223,10 +223,10 @@ export default function SavedCodesSubSection({
             {canEdit ? (
               <>
                 <ToolTippedIcon
-                  tooltipMessage="Remove"
+                  tooltipMessage="Delete"
                   buttonProps={{
-                    "data-testid": `remove-code-${row.cell.row.id}`,
-                    "aria-label": `remove-code-${row.cell.row.id}`,
+                    "data-testid": `delete-code-${row.cell.row.id}`,
+                    "aria-label": `delete-code-${row.cell.row.id}`,
                     size: "small",
                     onClick: (e) => {
                       setSelectedCodeDetails(
