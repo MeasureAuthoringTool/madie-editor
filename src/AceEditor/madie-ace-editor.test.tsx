@@ -57,6 +57,7 @@ describe("MadieAceEditor component", () => {
     expect(aceEditor.value).toContain(editorValue);
   });
 
+  // TODO: fix this- MAT-7985
   it.skip("should should trigger parts of toggleSearch when events emitted", async () => {
     // Mock the editor and searchBox
     const editorMock = {
