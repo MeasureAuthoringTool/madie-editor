@@ -110,6 +110,7 @@ const CqlEditorWithTerminology = ({
               setEditorVal={setEditorVal}
               setIsCQLUnchanged={setIsCQLUnchanged}
               isCQLUnchanged={isCQLUnchanged}
+              editorVal={value}
               handleApplyCode={handleApplyCode}
               handleApplyParameter={handleApplyParameter}
               handleParameterEdit={handleParameterEdit}
