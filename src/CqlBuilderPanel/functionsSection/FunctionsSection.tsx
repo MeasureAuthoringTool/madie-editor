@@ -24,18 +24,6 @@ const getArgumentNames = (logic: string) => {
   const args = logic.substring(logic.indexOf("(") + 1, logic.indexOf(")"));
   return args.split(",");
 };
-const getFunctionLookups = (
-  lookups: Lookup[],
-  isFluent: string
-): FunctionLookup[] => {
-  return lookups.map((lookup) => {
-    return {
-      ...lookup,
-      isFluent: isFluent,
-      argumentNames: getArgumentNames(lookup.logic),
-    };
-  });
-};
 
 export default function FunctionsSection({
   canEdit,
@@ -51,7 +39,7 @@ export default function FunctionsSection({
     ? new CqlAntlr(cql).parse().expressionDefinitions
     : [];
 
-  const functions: Lookup[] =
+  let functionLookups: FunctionLookup[] =
     cqlBuilderLookupsTypes?.functions
       ?.filter((func) => !func.libraryName)
       .map((func) => {
@@ -59,28 +47,31 @@ export default function FunctionsSection({
         const expression = expressionDefinitions.find(
           (expression) => func.logic == expression.text?.replace(/["']/g, "")
         );
-        return { ...func, comment: expression?.comment };
+        const args = getArgumentNames(func.logic);
+        return {
+          ...func,
+          comment: expression?.comment,
+          isFluent: "-",
+          argumentNames: args,
+        } as FunctionLookup;
       }) || [];
-  let functionLookups: FunctionLookup[] = getFunctionLookups(functions, "-");
 
-  const fluentFunctions: Lookup[] =
+  functionLookups = functionLookups.concat(
     cqlBuilderLookupsTypes?.fluentFunctions
       ?.filter((func) => !func.libraryName)
       .map((func) => {
         const expression = expressionDefinitions.find(
           (expression) => func.logic == expression.text
         );
-        return { ...func, comment: expression?.comment };
-      }) || [];
-  if (fluentFunctions && fluentFunctions.length > 0) {
-    fluentFunctions.every((func) => {
-      functionLookups.push({
-        ...func,
-        isFluent: "Yes",
-        argumentNames: getArgumentNames(func.logic),
-      });
-    });
-  }
+        const args = getArgumentNames(func.logic);
+        return {
+          ...func,
+          comment: expression?.comment,
+          isFluent: "Yes",
+          argumentNames: args,
+        };
+      }) || []
+  );
   functionLookups = _.sortBy(functionLookups, (o) => o.name?.toLowerCase());
 
   return (
@@ -102,7 +93,7 @@ export default function FunctionsSection({
           <Functions
             canEdit={canEdit}
             loading={loading}
-            functions={_.sortBy(functionLookups)}
+            functions={functionLookups}
             isCQLUnchanged={isCQLUnchanged}
             cql={cql}
           />
