@@ -98,6 +98,7 @@ jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn().mockReturnValue({
     CQLBuilderIncludes: true,
     CQLBuilderDefinitions: true,
+    CQLBuilderFunctions: true,
     QDMValueSetSearch: true,
     qdmCodeSearch: true,
   }),
@@ -121,6 +122,9 @@ const props = {
   handleDeleteLibrary: jest.fn(),
   handleEditLibrary: jest.fn(),
   handleDefinitionEdit: jest.fn(),
+  handleApplyFunction: jest.fn(),
+  handleParameterEdit: jest.fn(),
+  handleApplyParameter: jest.fn(),
   resetCql: jest.fn(),
   getCqlDefinitionReturnTypes: jest.fn(),
   makeExpanded: jest.fn(),
@@ -866,5 +870,41 @@ describe("CqlBuilderPanel", () => {
       expect(parameterInput.value).toContain("SomeText");
       expect(aceEditor.value).toContain("Some more Text");
     });
+  });
+
+  it("Functions tab exists and it's enabled", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+      CQLBuilderParameters: true,
+      CQLBuilderFunctions: true,
+    }));
+    const newProps = { ...props, canEdit: false };
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    render(<CqlBuilderPanel {...newProps} />);
+    const parameterTab = await screen.queryByText("Functions");
+    expect(parameterTab).toBeInTheDocument();
+    expect(parameterTab).toBeEnabled();
+  });
+
+  it("Functions tab does not exist", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      CQLBuilderIncludes: true,
+      QDMValueSetSearch: true,
+      CQLBuilderDefinitions: true,
+      qdmCodeSearch: true,
+      CQLBuilderParameters: true,
+      CQLBuilderFunctions: false,
+    }));
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
+    render(<CqlBuilderPanel {...props} />);
+    const parameterTab = await screen.queryByText("Functions");
+    expect(parameterTab).not.toBeInTheDocument();
   });
 });

@@ -225,6 +225,22 @@ const Definitions = ({
           ))}
         </thead>
         <tbody data-testid="definitions-table-body">
+          {loading && (
+            <tr>
+              <td colSpan={2}>
+                <Skeleton animation="wave" height={45} />
+                <Skeleton animation="wave" height={45} />
+                <Skeleton animation="wave" height={45} />
+              </td>
+            </tr>
+          )}
+          {!loading && _.isEmpty(definitions) && (
+            <tr>
+              <td colSpan={columns.length} tw="text-center p-2">
+                No Results were found
+              </td>
+            </tr>
+          )}
           {!loading &&
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`definitions-row-${row.id}`}>
@@ -235,15 +251,6 @@ const Definitions = ({
                 ))}
               </tr>
             ))}
-          {loading && (
-            <tr>
-              <td colSpan={2}>
-                <Skeleton animation="wave" height={45} />
-                <Skeleton animation="wave" height={45} />
-                <Skeleton animation="wave" height={45} />
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
       <MadieDeleteDialog

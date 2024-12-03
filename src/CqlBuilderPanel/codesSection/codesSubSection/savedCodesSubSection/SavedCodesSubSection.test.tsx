@@ -141,16 +141,10 @@ describe("Saved Codes section component", () => {
 
     expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
 
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
-
     const editButton = getByTestId(`edit-code-0`);
     expect(editButton).toBeInTheDocument();
 
-    const removeButton = getByTestId(`remove-code-0`);
+    const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();
 
     userEvent.click(editButton);
@@ -184,11 +178,7 @@ describe("Saved Codes section component", () => {
         parsedCodesList={parsedCodesList}
       />
     );
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
+    await checkRows(2);
     const editButton = getByTestId(`edit-code-0`);
     userEvent.click(editButton);
     await waitFor(() => {
@@ -225,16 +215,10 @@ describe("Saved Codes section component", () => {
 
     expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
 
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
-
     const editButton = getByTestId(`edit-code-0`);
     expect(editButton).toBeInTheDocument();
 
-    const removeButton = getByTestId(`remove-code-0`);
+    const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();
 
     userEvent.click(removeButton);
@@ -267,13 +251,7 @@ describe("Saved Codes section component", () => {
     );
     await checkRows(2);
 
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
-
-    const removeButton = getByTestId(`remove-code-0`);
+    const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();
 
     userEvent.click(removeButton);
@@ -301,13 +279,7 @@ describe("Saved Codes section component", () => {
     );
     await checkRows(2);
 
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
-
-    const removeButton = getByTestId(`remove-code-0`);
+    const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();
 
     userEvent.click(removeButton);
@@ -341,13 +313,7 @@ describe("Saved Codes section component", () => {
     );
     await checkRows(2);
 
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
-      expect(selectButton).toBeInTheDocument();
-      userEvent.click(selectButton);
-    });
-
-    const removeButton = getByTestId(`remove-code-0`);
+    const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();
 
     userEvent.click(removeButton);
