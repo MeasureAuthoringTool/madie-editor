@@ -257,6 +257,8 @@ export default function CqlBuilderPanel({
               canEdit={canEdit}
               handleApplyFunction={handleApplyFunction}
               loading={loading}
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+              isCQLUnchanged={isCQLUnchanged}
             />
           )}
         </div>

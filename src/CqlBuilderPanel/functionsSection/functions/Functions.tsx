@@ -1,13 +1,255 @@
-import React from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import _ from "lodash";
 import tw from "twin.macro";
 import "styled-components/macro";
+import { FunctionLookup } from "../../../model/CqlBuilderLookup";
+import { FunctionProps } from "../FunctionsSection";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Stack } from "@mui/material";
+import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Skeleton from "@mui/material/Skeleton";
+import { Pagination } from "@madie/madie-design-system/dist/react";
+import Tooltip from "@mui/material/Tooltip";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
 
-const Functions = () => {
-  return <>{/* MAT-7794 */}</>;
+const getArgNameToolTipHtml = (args: string[], number) => {
+  const result = args?.map((arg, index) => {
+    if (index < number) {
+      if (number === 2 && index === 1) {
+        return <div>{arg}...</div>;
+      } else {
+        return <div>{arg}&nbsp;&nbsp;&nbsp;</div>;
+      }
+    }
+  });
+  return result;
+};
+
+const Functions = ({
+  canEdit,
+  loading,
+  functions,
+  isCQLUnchanged,
+}: FunctionProps) => {
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [visibleItems, setVisibleItems] = useState<number>(0);
+  const [visibleFunctions, setVisibleFunctions] = useState<FunctionLookup[]>(
+    []
+  );
+
+  const [offset, setOffset] = useState<number>(0);
+  const [currentLimit, setCurrentLimit] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const canGoPrev = currentPage > 1;
+  const canGoNext = (() => {
+    return currentPage < totalPages;
+  })();
+  const handlePageChange = (e, v) => {
+    setCurrentPage(v);
+  };
+  const handleLimitChange = (e) => {
+    setCurrentLimit(e.target.value);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    managePagination();
+  }, [functions, currentPage, currentLimit]);
+
+  // table data
+  const data = visibleFunctions;
+
+  const columns = useMemo<ColumnDef<FunctionLookup>[]>(
+    () => [
+      {
+        header: "Function Name",
+        accessorKey: "name",
+      },
+      {
+        header: "Fluent",
+        accessorKey: "isFluent",
+      },
+      {
+        header: "Argument Name",
+        accessorKey: "argumentNames",
+        cell: (row: any) => {
+          const args = row.cell.row.original.argumentNames;
+          return (
+            <div>
+              <Tooltip
+                title={getArgNameToolTipHtml(args, args?.length)}
+                aria-label={args}
+              >
+                <button>{getArgNameToolTipHtml(args, 2)}</button>
+              </Tooltip>
+            </div>
+          );
+        },
+      },
+      {
+        header: "Comment",
+        accessorKey: "comment",
+      },
+      {
+        header: "",
+        accessorKey: "apply",
+        cell: (row: any) => {
+          if (!canEdit) {
+            return null;
+          }
+          return (
+            <Stack
+              direction="row"
+              alignItems="center"
+              data-testid="functions-actions"
+            >
+              <ToolTippedIcon
+                tooltipMessage="Delete"
+                buttonProps={{
+                  "data-testid": `delete-button-${row.cell.row.id}`,
+                  "aria-label": `delete-button-${row.cell.row.id}`,
+                  size: "small",
+                  onClick: (e) => {},
+                }}
+              >
+                <DeleteOutlineIcon color="error" />
+              </ToolTippedIcon>
+              <ToolTippedIcon
+                tooltipMessage="Edit"
+                buttonProps={{
+                  "data-testid": `edit-button-${row.cell.row.id}`,
+                  "aria-label": `edit-button-${row.cell.row.id}`,
+                  size: "small",
+                  onClick: (e) => {},
+                }}
+              >
+                <BorderColorOutlinedIcon color="primary" />
+              </ToolTippedIcon>
+            </Stack>
+          );
+        },
+      },
+    ],
+    [functions, isCQLUnchanged]
+  );
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const managePagination = useCallback(() => {
+    if (functions?.length > 0) {
+      setTotalItems(functions.length);
+      if (functions.length < currentLimit) {
+        setOffset(0);
+        setVisibleFunctions(functions && [...functions]);
+        setVisibleItems(functions?.length);
+        setTotalPages(1);
+      } else {
+        const start = (currentPage - 1) * currentLimit;
+        const end = start + currentLimit;
+        const newVisibleCodes = [...functions].slice(start, end);
+        setOffset(start);
+        setVisibleFunctions(newVisibleCodes);
+        setVisibleItems(newVisibleCodes?.length);
+        setTotalPages(Math.ceil(functions?.length / currentLimit));
+      }
+    }
+  }, [
+    currentLimit,
+    currentPage,
+    functions,
+    setOffset,
+    setVisibleFunctions,
+    setVisibleItems,
+    setTotalItems,
+    setTotalPages,
+  ]);
+
+  return (
+    <>
+      <table
+        tw="min-w-full"
+        data-testid="functions-tbl"
+        id="functions-tbl"
+        style={{
+          borderBottom: "solid 1px #8c8c8c",
+        }}
+      >
+        <thead tw="bg-slate">
+          {table.getHeaderGroups()?.map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers?.map((header) => (
+                <TH key={header.id} scope="col">
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TH>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody data-testid="functions-table-body">
+          {loading && (
+            <div title="loading">
+              <Skeleton animation="wave" width="100%" height={45} />
+              <Skeleton animation="wave" width="100%" height={45} />
+              <Skeleton animation="wave" width="100%" height={45} />
+            </div>
+          )}
+          {!loading && _.isEmpty(functions) && (
+            <tr>
+              <td colSpan={columns.length} tw="text-center p-2">
+                No Results were found
+              </td>
+            </tr>
+          )}
+          {!loading &&
+            table.getRowModel().rows.map((row) => (
+              <tr key={row.id} data-testid={`functions-row-${row.id}`}>
+                {row.getVisibleCells().map((cell) => (
+                  <TD key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TD>
+                ))}
+              </tr>
+            ))}
+        </tbody>
+      </table>
+      <div className="pagination-container">
+        <Pagination
+          totalItems={totalItems}
+          visibleItems={visibleItems}
+          limitOptions={[5, 10, 25, 50]}
+          offset={offset}
+          handlePageChange={handlePageChange}
+          handleLimitChange={handleLimitChange}
+          page={currentPage}
+          limit={currentLimit}
+          count={totalPages}
+          shape="rounded"
+          hideNextButton={!canGoNext}
+          hidePrevButton={!canGoPrev}
+        />
+      </div>
+    </>
+  );
 };
 
 export default Functions;
