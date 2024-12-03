@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
 import * as _ from "lodash";
-import tw from "twin.macro";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
 import "ace-builds/src-noconflict/mode-sql";
@@ -26,6 +25,7 @@ import {
 import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuilder/DefinitionBuilder";
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
+import CqlVersion from "@madie/cql-antlr-parser/dist/src/dto/CqlVersion";
 
 export interface EditorPropsType {
   value: string;
@@ -74,6 +74,104 @@ export interface UpdatedCqlObject {
   isValueSetChanged?: boolean;
 }
 
+export const updateUsingStatements = (
+  parsedEditorCql: ParsedCql,
+  usedModel: string,
+  modelVersion: string
+) => {
+  const usingStatements: CqlVersion[] = parsedEditorCql.parsedCql.usings;
+  const measureModel = usedModel.replace("-", "");
+  const parsedEditorCqlCopy = { ...parsedEditorCql };
+  let isCqlUpdated = false;
+  if (usingStatements?.length === 1) {
+    const { name, version, start } = usingStatements[0];
+    if (
+      measureModel !== name ||
+      modelVersion !== version.replace(/["']/g, "")
+    ) {
+      parsedEditorCqlCopy.cqlArrayToBeFiltered[
+        start.line - 1
+      ] = `using ${measureModel} version '${modelVersion}'`;
+      isCqlUpdated = true;
+    }
+  } else if (usingStatements?.length > 1) {
+    // to track if the usings statement was verified or not
+    const models = new Set();
+    let deletedLineCount = 0;
+
+    usingStatements.forEach((using) => {
+      const { name, version, start } = using;
+      const lineIndex = start.line - (deletedLineCount + 1);
+      const cleanVersion = version.replace(/["']/g, "");
+
+      if (!models.has(name)) {
+        if (measureModel !== name || modelVersion !== cleanVersion) {
+          // if measure model is QICore
+          if (measureModel === "QICore") {
+            if (name === "FHIR" && cleanVersion !== "4.0.1") {
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
+                lineIndex
+              ] = `using FHIR version '4.0.1'`;
+              models.add(name);
+              isCqlUpdated = true;
+            } else if (name === "QICore" && cleanVersion !== modelVersion) {
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
+                lineIndex
+              ] = `using ${measureModel} version '${modelVersion}'`;
+              models.add(name);
+              isCqlUpdated = true;
+            } else if (name === "QDM" && !models.has(measureModel)) {
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
+                lineIndex
+              ] = `using ${measureModel} version '${modelVersion}'`;
+              models.add(measureModel);
+              isCqlUpdated = true;
+            } else if (name === "QDM") {
+              parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
+              deletedLineCount++;
+              isCqlUpdated = true;
+            } else {
+              models.add(name);
+            }
+            // if measure model is QDM
+          } else if (measureModel === "QDM") {
+            if (name === "QDM" && cleanVersion !== modelVersion) {
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
+                lineIndex
+              ] = `using ${measureModel} version '${modelVersion}'`;
+              models.add(name);
+              isCqlUpdated = true;
+            } else if (
+              !models.has("QDM") &&
+              (name === "QICore" || name === "FHIR")
+            ) {
+              parsedEditorCqlCopy.cqlArrayToBeFiltered[
+                lineIndex
+              ] = `using ${measureModel} version '${modelVersion}'`;
+              models.add(measureModel);
+              isCqlUpdated = true;
+            } else {
+              parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
+              deletedLineCount++;
+              isCqlUpdated = true;
+            }
+          }
+        } else {
+          models.add(name);
+        }
+      } else {
+        parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
+        deletedLineCount++;
+        isCqlUpdated = true;
+      }
+    });
+  }
+  return {
+    isCqlUpdated,
+    updatedCqlArray: parsedEditorCqlCopy.cqlArrayToBeFiltered,
+  };
+};
+
 export const parseEditorContent = (content): CqlError[] => {
   let errors: CqlError[] = [];
   if (content) {
@@ -101,11 +199,9 @@ const parseCql = (editorVal): ParsedCql => {
     const parsedCql = new CqlAntlr(editorVal)?.parse();
     const cqlArrayToBeFiltered = editorVal?.split("\n");
     const libraryContent = parsingLibrary(parsedCql, cqlArrayToBeFiltered);
-    const usingContent = parsingUsing(parsedCql, cqlArrayToBeFiltered);
     return {
       cqlArrayToBeFiltered,
       libraryContent,
-      usingContent,
       parsedCql,
     };
   }
@@ -119,18 +215,6 @@ const parsingLibrary = (parsedCql, cqlArrayToBeFiltered): Statement => {
     return {
       statement: libraryContentStatement,
       index: libraryContentIndex,
-    };
-  }
-};
-
-const parsingUsing = (parsedCql, cqlArrayToBeFiltered): Statement => {
-  if (parsedCql?.using) {
-    const usingContentIndex =
-      parsedCql?.using && parsedCql?.using.start.line - 1;
-    const usingContentStatement = cqlArrayToBeFiltered[usingContentIndex];
-    return {
-      statement: usingContentStatement,
-      index: usingContentIndex,
     };
   }
 };
@@ -174,26 +258,14 @@ const updateCql = (
       ] = `library ${libraryName} version '${libraryVersion}'`;
       cqlUpdates.isLibraryStatementChanged = true;
     }
-
-    // using statement can't be modified, except it can be updated from QICore to FHIR
-    if (parsedEditorCql.usingContent) {
-      if (usedModel === "QI-Core") {
-        if (parsedEditorCql.usingContent?.statement.includes("FHIR")) {
-          usedModel = "FHIR";
-          modelVersion = "4.0.1";
-        }
-      }
-      const model = usedModel.replace("-", "");
-      if (
-        model !== parsedEditorCql.parsedCql.using?.name ||
-        `'${modelVersion}'` !== parsedEditorCql.parsedCql.using?.version
-      ) {
-        parsedEditorCql.cqlArrayToBeFiltered[
-          parsedEditorCql.usingContent?.index
-        ] = `using ${model} version '${modelVersion}'`;
-        cqlUpdates.isUsingStatementChanged = true;
-      }
-    }
+    // update using statements if they are incorrect
+    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
+      parsedEditorCql,
+      usedModel,
+      modelVersion
+    );
+    cqlUpdates.isUsingStatementChanged = isCqlUpdated;
+    parsedEditorCql.cqlArrayToBeFiltered = updatedCqlArray;
 
     // value set with version are not allowed at this moment, remove version
     if (parsedEditorCql.parsedCql?.valueSets) {
@@ -254,11 +326,8 @@ export const updateEditorContent = async (
 };
 
 export const isUsingStatementEmpty = (editorVal): boolean => {
-  const parsedCql = parseCql(editorVal);
-  if (parsedCql?.usingContent === undefined) {
-    return true;
-  }
-  return false;
+  const parsedContents = parseCql(editorVal);
+  return parsedContents?.parsedCql?.usings?.length === 0;
 };
 
 export const mapParserErrorsToAceAnnotations = (
