@@ -11,6 +11,7 @@ import "@testing-library/jest-dom";
 import FunctionBuilder from "./FunctionBuilder";
 import userEvent from "@testing-library/user-event";
 import { cqlBuilderLookup } from "../../__mocks__/MockCqlBuilderLookupsTypes";
+import { getNewExpressionsAndLines } from "../../common/utils";
 
 describe("CQL Function Builder Tests", () => {
   it("Should display name and comment fields", async () => {
@@ -426,5 +427,40 @@ describe("CQL Function Builder Tests", () => {
       "function-name-text-input"
     )) as HTMLInputElement;
     expect(definitionName.value).toBe("IP");
+  });
+});
+
+describe("getNewExpressionsAndLines", () => {
+  it("should insert the formatted expression at the cursor position when cursorPosition is provided and autoInsert is false", () => {
+    const values = { name: "test", type: "Functions" };
+    const cursorPosition = { row: 1, column: 5 };
+    const expressionEditorValue = "Line 1\ntesttesttest2 content\nLine 3";
+    const autoInsert = false;
+    const result = getNewExpressionsAndLines(
+      values,
+      cursorPosition,
+      expressionEditorValue,
+      autoInsert
+    );
+
+    expect(result[0]).toBe("Line 1\ntestttestesttest2 content\nLine 3");
+    expect(result[1]).toEqual({ row: 1, column: 9 });
+  });
+
+  it("should append the formatted expression to a new line when cursorPosition is not provided or autoInsert is true", () => {
+    const values = { name: "test", type: "Functions" };
+    const cursorPosition = null;
+    const expressionEditorValue = "Line 1\nLine 2 content\nLine 3";
+    const autoInsert = true;
+
+    const result = getNewExpressionsAndLines(
+      values,
+      cursorPosition,
+      expressionEditorValue,
+      autoInsert
+    );
+
+    expect(result[0]).toBe("Line 1\nLine 2 content\nLine 3\ntest");
+    expect(result[1]).toEqual({ row: 3, column: 4 });
   });
 });
