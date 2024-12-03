@@ -47,12 +47,11 @@ export default function FunctionsSection({
         const expression = expressionDefinitions.find(
           (expression) => func.logic == expression.text?.replace(/["']/g, "")
         );
-        const args = getArgumentNames(func.logic);
         return {
           ...func,
           comment: expression?.comment,
           isFluent: "-",
-          argumentNames: args,
+          argumentNames: getArgumentNames(func.logic),
         } as FunctionLookup;
       }) || [];
 
@@ -63,12 +62,11 @@ export default function FunctionsSection({
         const expression = expressionDefinitions.find(
           (expression) => func.logic == expression.text
         );
-        const args = getArgumentNames(func.logic);
         return {
           ...func,
           comment: expression?.comment,
           isFluent: "Yes",
-          argumentNames: args,
+          argumentNames: getArgumentNames(func.logic),
         };
       }) || []
   );
