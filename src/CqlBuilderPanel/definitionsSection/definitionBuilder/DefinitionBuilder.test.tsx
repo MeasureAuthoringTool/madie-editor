@@ -3,7 +3,8 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it } from "@jest/globals";
 import "@testing-library/jest-dom";
 import { within } from "@testing-library/dom";
-import DefinitionBuilder, { formatExpressionName } from "./DefinitionBuilder";
+import DefinitionBuilder from "./DefinitionBuilder";
+import { formatExpressionName } from "../../common/utils";
 import { cqlBuilderLookup } from "../../__mocks__/MockCqlBuilderLookupsTypes";
 
 describe("CQL Definition Builder Tests", () => {

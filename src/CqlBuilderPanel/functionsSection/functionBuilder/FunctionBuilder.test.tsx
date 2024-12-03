@@ -356,4 +356,75 @@ describe("CQL Function Builder Tests", () => {
     expect(applyBtn).toBeInTheDocument();
     expect(applyBtn).toBeEnabled();
   });
+
+  it("expression is inserted into text area when insert button is clicked", async () => {
+    render(
+      <FunctionBuilder
+        canEdit={true}
+        handleApplyFunction={jest.fn()}
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
+      />
+    );
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    expect(functionNameInput).toBeInTheDocument();
+    expect(functionNameInput.value).toBe("");
+    fireEvent.change(functionNameInput, {
+      target: { value: "IP" },
+    });
+    expect(functionNameInput.value).toBe("IP");
+
+    const definitionCommentTextBox = await screen.findByRole("textbox", {
+      name: "Comment",
+    });
+    expect(definitionCommentTextBox).toBeInTheDocument();
+    const definitionCommentInput = (await screen.findByTestId(
+      "function-comment-text"
+    )) as HTMLInputElement;
+    expect(definitionCommentInput.value).toBe("");
+    fireEvent.change(definitionCommentInput, {
+      target: { value: "comment" },
+    });
+    expect(definitionCommentInput.value).toBe("comment");
+
+    expect(
+      screen.getByTestId("terminology-section-Expression Editor-sub-heading")
+    ).toBeInTheDocument();
+    const typeInput = screen.getByTestId(
+      "type-selector-input"
+    ) as HTMLInputElement;
+    expect(typeInput).toBeInTheDocument();
+    expect(typeInput.value).toBe("");
+
+    fireEvent.change(typeInput, {
+      target: { value: "Timing" },
+    });
+    expect(typeInput.value).toBe("Timing");
+
+    const nameAutoComplete = screen.getByTestId("name-selector");
+    expect(nameAutoComplete).toBeInTheDocument();
+    const nameComboBox = within(nameAutoComplete).getByRole("combobox");
+    //name dropdown is populated with values based on type
+    await waitFor(() => expect(nameComboBox).toBeEnabled());
+
+    const nameDropDown = await screen.findByTestId("name-selector");
+    fireEvent.keyDown(nameDropDown, { key: "ArrowDown" });
+
+    const nameOptions = await screen.findAllByRole("option");
+    expect(nameOptions).toHaveLength(70);
+    const insertBtn = screen.getByTestId("expression-insert-btn");
+
+    expect(insertBtn).toBeInTheDocument();
+    expect(insertBtn).toBeDisabled();
+
+    fireEvent.click(nameOptions[0]);
+    expect(insertBtn).toBeEnabled();
+
+    fireEvent.click(insertBtn);
+    const definitionName = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    expect(definitionName.value).toBe("IP");
+  });
 });

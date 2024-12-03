@@ -15,7 +15,7 @@ import { Box } from "@mui/system";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import ArgumentSection from "../argumentSection/ArgumentSection";
 import ExpressionEditor from "../../definitionsSection/expressionSection/ExpressionEditor";
-import { formatExpressionName } from "../../definitionsSection/definitionBuilder/DefinitionBuilder";
+import { getNewExpressionsAndLines } from "../../common/utils";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 
 export interface Funct {
@@ -64,55 +64,33 @@ export default function FunctionBuilder({
     validationSchema: FunctionSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {
-      handleExpressionEditorInsert(values);
+      const newValues = getNewExpressionsAndLines(
+        values,
+        cursorPosition,
+        expressionEditorValue,
+        autoInsert
+      );
+      updateExpressionAndLines(newValues[0], newValues[1]);
     },
   });
   const { resetForm } = formik;
-  const handleExpressionEditorInsert = (values) => {
-    const formattedExpression = formatExpressionName(values);
-    let editorExpressionValue = expressionEditorValue;
-    let newCursorPosition = cursorPosition;
 
-    if (cursorPosition && !autoInsert) {
-      // Insert at cursor position
-      const { row, column } = cursorPosition;
-      const lines = expressionEditorValue.split("\n");
-      const currentLine = lines[row];
-      lines[row] =
-        currentLine.slice(0, column) +
-        formattedExpression +
-        currentLine.slice(column);
-      editorExpressionValue = lines.join("\n");
-      newCursorPosition = {
-        row,
-        column: column + formattedExpression.length,
-      } as unknown;
-    } else {
-      // Append to a new line
-      const lines = editorExpressionValue.split("\n");
-      const newLineIndex = lines.length;
-      editorExpressionValue +=
-        (editorExpressionValue ? "\n" : "") + formattedExpression;
-      newCursorPosition = {
-        row: newLineIndex,
-        column: formattedExpression.length,
-      };
-    }
-
-    setExpressionEditorValue(editorExpressionValue);
+  // update formik, and expressionEditor, cursor, lines
+  const updateExpressionAndLines = (
+    newEditorExpressionValue,
+    newCursorPosition
+  ) => {
+    setExpressionEditorValue(newEditorExpressionValue);
     formik.setFieldValue("type", "");
     formik.setFieldValue("name", "");
 
-    textAreaRef.current.editor.setValue(editorExpressionValue, 1);
-    // set the cursor to the end of the inserted text
+    textAreaRef.current.editor.setValue(newEditorExpressionValue, 1);
     textAreaRef.current.editor.moveCursorTo(
       newCursorPosition.row,
       newCursorPosition.column
     );
     textAreaRef.current.editor.clearSelection();
-    // set autoInsert to true for next insertion
     setAutoInsert(true);
-    // clear cursor position to allow the next item to auto-insert at the end
     setCursorPosition(null);
   };
 
@@ -236,7 +214,6 @@ export default function FunctionBuilder({
           <Button
             data-testid={`function-apply-btn`}
             disabled={!formik.values.functionName || !canEdit || !formik.dirty}
-            // tw="ml-4"
             onClick={() => {}}
           >
             Apply
