@@ -5,7 +5,6 @@ import Functions from "./functions/Functions";
 import FunctionBuilder from "./functionBuilder/FunctionBuilder";
 import {
   CqlBuilderLookup,
-  Lookup,
   FunctionLookup,
 } from "../..//model/CqlBuilderLookup";
 import * as _ from "lodash";
