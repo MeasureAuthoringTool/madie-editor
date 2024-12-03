@@ -73,6 +73,28 @@ const edEncounter = {
   logic: "define",
   comment: "",
 } as Lookup;
+const functions = [
+  {
+    name: "MyFunctions",
+    libraryName: null,
+    libraryAlias: null,
+    logic:
+      "define function MyFunctions(encounter1 Encounter, encounter2 Encounter, encounter3 Encounter, encounter4 Encounter):\n  3",
+    startLine: 0,
+    comment: null,
+  },
+];
+const fluentFunctions = [
+  {
+    name: "isFinishedEncounter",
+    libraryName: null,
+    libraryAlias: null,
+    logic:
+      "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
+    startLine: 0,
+    comment: null,
+  },
+];
 export const cqlBuilderLookup = {
   parameters: [tjcMeasurementPeriod],
   definitions: [
@@ -88,6 +110,6 @@ export const cqlBuilderLookup = {
     numerator,
     edEncounter,
   ],
-  functions: [],
-  fluentFunctions: [],
+  functions: functions,
+  fluentFunctions: fluentFunctions,
 } as CqlBuilderLookup;

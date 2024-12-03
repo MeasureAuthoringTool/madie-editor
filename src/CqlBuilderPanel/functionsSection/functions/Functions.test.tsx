@@ -30,6 +30,7 @@ const testFunctions = [
     logic:
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
+    comment: "test comment",
     argumentNames: ["Enc Encounter"],
   },
   {
@@ -39,6 +40,7 @@ const testFunctions = [
     logic:
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
+    comment: "test comment test comment test comment test comment",
     argumentNames: ["Enc Encounter"],
   },
   {
@@ -96,13 +98,10 @@ describe("Saved Functions Component tests", () => {
       rows.forEach((row, index) => {
         const columns = row.querySelectorAll("td");
         const rowText = Array.from(columns).map((c) => c.textContent?.trim());
-        expect(rowText).toEqual([
-          "isFinishedEncounter",
-          "Yes",
-          "Enc Encounter",
-          "",
-          "",
-        ]);
+        expect(rowText[0]).toEqual("isFinishedEncounter");
+        expect(rowText[1]).toEqual("Yes");
+        expect(rowText[2]).toContain("Enc1 Encounter");
+        expect(rowText[2]).toContain("Enc2 Encounter...");
       });
     });
 
@@ -129,7 +128,7 @@ describe("Saved Functions Component tests", () => {
     expect(screen.getByTitle("loading")).toBeInTheDocument();
   });
 
-  it("Should render No Results were found message when there are no SavedParameters", async () => {
+  it("Should render No Results were found message when there are no saved Functions", async () => {
     render(
       <Functions
         canEdit={true}

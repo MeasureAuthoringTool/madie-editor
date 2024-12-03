@@ -100,6 +100,20 @@ const Functions = ({
       {
         header: "Comment",
         accessorKey: "comment",
+        cell: (row: any) => {
+          const comment = row.cell.row.original.comment;
+          return (
+            <div>
+              <Tooltip title={comment} aria-label={comment}>
+                <button>
+                  {comment?.length > 25
+                    ? comment.substring(0, 25) + "..."
+                    : comment}
+                </button>
+              </Tooltip>
+            </div>
+          );
+        },
       },
       {
         header: "",
