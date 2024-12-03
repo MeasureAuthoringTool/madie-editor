@@ -32,13 +32,13 @@ export const useGetAllErrors = async (
         ValidateCustomCqlCodes(
           customCqlCodes,
           isLoggedInUMLS.valueOf(),
-          cqlResult?.using?.name
+          cqlResult?.usings[0]?.name
         ),
-        TranslateCql(cql, cqlResult?.using?.name),
+        TranslateCql(cql, cqlResult?.usings[0]?.name),
         GetValueSetErrors(
           cqlResult.valueSets,
           isLoggedInUMLS.valueOf(),
-          cqlResult?.using?.name
+          cqlResult?.usings[0]?.name
         ),
       ]);
     const codeSystemCqlErrors =
