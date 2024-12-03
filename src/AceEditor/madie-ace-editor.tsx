@@ -74,7 +74,6 @@ export interface UpdatedCqlObject {
   isValueSetChanged?: boolean;
 }
 
-// https://jira.cms.gov/browse/MAT-7652
 export const updateUsingStatements = (
   parsedEditorCql: ParsedCql,
   usedModel: string,
