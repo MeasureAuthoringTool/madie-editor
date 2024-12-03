@@ -13,6 +13,7 @@ interface CodeSectionProps {
   allCodeSystems: CodeSystem[];
   handleApplyCode: string;
   measureModel: string;
+  editorVal: string;
 }
 
 export default function CodeSubSection({
@@ -20,6 +21,7 @@ export default function CodeSubSection({
   allCodeSystems,
   handleApplyCode,
   measureModel,
+  editorVal,
 }: CodeSectionProps) {
   const [code, setCode] = useState<Code>();
   const [showResultsTable, setShowResultsTable] = useState(false);
@@ -73,6 +75,7 @@ export default function CodeSubSection({
         showResultsTable={showResultsTable}
         setShowResultsTable={setShowResultsTable}
         code={code}
+        editorVal={editorVal}
         handleApplyCode={handleApplyCode}
       />
       <Toast
