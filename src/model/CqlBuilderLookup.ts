@@ -12,3 +12,8 @@ export interface Lookup {
   comment: string;
   returnType?: string;
 }
+
+export interface FunctionLookup extends Lookup {
+  isFluent?: string;
+  argumentNames?: string[];
+}
