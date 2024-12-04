@@ -139,4 +139,23 @@ define "Denominator Exclusions":
     or AIFrailLTCF."Is Age 66 to 80 with Advanced Illness and Frailty or Is Age 81 or Older with Frailty"
     or AIFrailLTCF."Is Age 66 or Older Living Long Term in a Nursing Home"
     or PalliativeCare."Has Palliative Care in the Measurement Period"
+
+/*
+fluent
+function
+comments
+*/
+define fluent function "isFinishedEncounter"(Enc Encounter):
+  (Enc E where E.status = 'finished') is not null
+
+/* 
+this is
+multiline
+comment
+for function
+...
+*/
+// comment 2
+define function MyFunctions(encounter1 Encounter, encounter2 Encounter, encounter3 Encounter, encounter4 Encounter):
+  3
 `;
