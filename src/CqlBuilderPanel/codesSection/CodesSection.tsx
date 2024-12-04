@@ -19,6 +19,7 @@ interface CodesSectionProps {
   cqlMetaData: CqlMetaData;
   measureModel: string;
   handleCodeDelete;
+  editorVal: string;
   setEditorVal: Function;
   setIsCQLUnchanged: Function;
   isCQLUnchanged: boolean;
@@ -31,6 +32,7 @@ export default function CodesSection({
   cqlMetaData,
   measureModel,
   handleCodeDelete,
+  editorVal,
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
@@ -87,6 +89,7 @@ export default function CodesSection({
             canEdit={canEdit}
             handleApplyCode={handleApplyCode}
             measureModel={measureModel}
+            editorVal={editorVal}
           />
         )}
         {activeTab === "savedCodes" && (

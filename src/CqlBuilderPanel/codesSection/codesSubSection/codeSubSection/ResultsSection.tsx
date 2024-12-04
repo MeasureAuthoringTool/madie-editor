@@ -25,6 +25,7 @@ type ResultSectionProps = {
   setShowResultsTable: any;
   code: Code;
   handleApplyCode;
+  editorVal: string;
 };
 
 type ResultsColumnRow = {
@@ -41,6 +42,7 @@ export default function ResultsSection({
   setShowResultsTable,
   code,
   handleApplyCode,
+  editorVal,
 }: ResultSectionProps) {
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<ResultsColumnRow>(null);
@@ -116,7 +118,7 @@ export default function ResultsSection({
         ),
       },
     ],
-    []
+    [editorVal]
   );
 
   const table = useReactTable({
