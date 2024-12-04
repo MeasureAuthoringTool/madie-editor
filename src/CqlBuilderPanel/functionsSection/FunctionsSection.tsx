@@ -44,7 +44,7 @@ export default function FunctionsSection({
       .map((func) => {
         // get the comments for CQL definition from antlr parser expressions
         const expression = expressionDefinitions.find(
-          (expression) => func.logic == expression.text?.replace(/["']/g, "")
+          (expression) => func.logic == expression.text
         );
         return {
           ...func,
