@@ -144,8 +144,7 @@ const CqlLibraryDetailsDialog = ({
           size="small"
           onChange={(evt) => handleVersionChange(evt.target.value)}
           options={library?.otherVersions
-            ?.filter((version) => /^\d+(\.\d+)*$/.test(version)) // filtering valid version strings
-            .sort((a, b) => b.localeCompare(a, undefined, { numeric: true })) // sort in descending numeric order
+            .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
             .map((version) => (
               <MenuItem
                 key={version}
