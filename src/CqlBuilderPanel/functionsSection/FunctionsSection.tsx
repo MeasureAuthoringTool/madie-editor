@@ -3,26 +3,80 @@ import "./Functions.scss";
 import FunctionSectionNavTabs from "./FunctionSectionNavTabs";
 import Functions from "./functions/Functions";
 import FunctionBuilder from "./functionBuilder/FunctionBuilder";
+import {
+  CqlBuilderLookup,
+  FunctionLookup,
+} from "../..//model/CqlBuilderLookup";
+import * as _ from "lodash";
+import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
-interface FunctionProps {
+export interface FunctionProps {
   canEdit: boolean;
-  handleApplyFunction: Function;
+  handleApplyFunction?: Function;
   loading: boolean;
+  cqlBuilderLookupsTypes?: CqlBuilderLookup;
+  cql: string;
+  isCQLUnchanged: boolean;
+  functions?: FunctionLookup[];
 }
+const getArgumentNames = (logic: string) => {
+  const args = logic.substring(logic.indexOf("(") + 1, logic.indexOf(")"));
+  return args.split(",");
+};
 
 export default function FunctionsSection({
   canEdit,
   handleApplyFunction,
   loading,
+  cql,
+  isCQLUnchanged,
+  cqlBuilderLookupsTypes,
 }: FunctionProps) {
   const [activeTab, setActiveTab] = useState<string>("function");
+
+  const expressionDefinitions = cql
+    ? new CqlAntlr(cql).parse().expressionDefinitions
+    : [];
+
+  let functionLookups: FunctionLookup[] =
+    cqlBuilderLookupsTypes?.functions
+      ?.filter((func) => !func.libraryName)
+      .map((func) => {
+        // get the comments for CQL definition from antlr parser expressions
+        const expression = expressionDefinitions.find(
+          (expression) => func.logic == expression.text
+        );
+        return {
+          ...func,
+          comment: expression?.comment,
+          isFluent: "-",
+          argumentNames: getArgumentNames(func.logic),
+        } as FunctionLookup;
+      }) || [];
+
+  functionLookups = functionLookups.concat(
+    cqlBuilderLookupsTypes?.fluentFunctions
+      ?.filter((func) => !func.libraryName)
+      .map((func) => {
+        const expression = expressionDefinitions.find(
+          (expression) => func.logic == expression.text
+        );
+        return {
+          ...func,
+          comment: expression?.comment,
+          isFluent: "Yes",
+          argumentNames: getArgumentNames(func.logic),
+        };
+      }) || []
+  );
+  functionLookups = _.sortBy(functionLookups, (o) => o.name?.toLowerCase());
 
   return (
     <>
       <FunctionSectionNavTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        functionCount={0}
+        functionCount={functionLookups ? functionLookups.length : 0}
         loading={loading}
       />
       <div>
@@ -32,7 +86,15 @@ export default function FunctionsSection({
             handleApplyFunction={handleApplyFunction}
           />
         )}
-        {activeTab === "saved-functions" && <Functions />}
+        {activeTab === "saved-functions" && (
+          <Functions
+            canEdit={canEdit}
+            loading={loading}
+            functions={functionLookups}
+            isCQLUnchanged={isCQLUnchanged}
+            cql={cql}
+          />
+        )}
       </div>
     </>
   );

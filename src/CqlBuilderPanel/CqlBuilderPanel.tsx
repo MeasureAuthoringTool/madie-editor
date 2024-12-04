@@ -21,6 +21,7 @@ export default function CqlBuilderPanel({
   cqlMetaData,
   measureModel,
   handleCodeDelete,
+  editorVal,
   setEditorVal,
   setIsCQLUnchanged,
   isCQLUnchanged,
@@ -215,6 +216,7 @@ export default function CqlBuilderPanel({
               cqlMetaData={cqlMetaData}
               measureModel={measureModel}
               handleCodeDelete={handleCodeDelete}
+              editorVal={editorVal}
               setEditorVal={setEditorVal}
               setIsCQLUnchanged={setIsCQLUnchanged}
               isCQLUnchanged={isCQLUnchanged}
@@ -257,6 +259,9 @@ export default function CqlBuilderPanel({
               canEdit={canEdit}
               handleApplyFunction={handleApplyFunction}
               loading={loading}
+              cql={measureStoreCql}
+              isCQLUnchanged={isCQLUnchanged}
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
             />
           )}
         </div>
