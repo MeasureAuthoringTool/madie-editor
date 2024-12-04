@@ -143,8 +143,9 @@ const CqlLibraryDetailsDialog = ({
           }}
           size="small"
           onChange={(evt) => handleVersionChange(evt.target.value)}
-          options={library?.otherVersions?.map((version) => {
-            return (
+          options={library?.otherVersions
+            .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+            .map((version) => (
               <MenuItem
                 key={version}
                 value={version}
@@ -152,8 +153,7 @@ const CqlLibraryDetailsDialog = ({
               >
                 {version}
               </MenuItem>
-            );
-          })}
+            ))}
         />
       );
     } else {
