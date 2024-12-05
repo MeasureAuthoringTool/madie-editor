@@ -72,6 +72,7 @@ export interface UpdatedCqlObject {
   isLibraryStatementChanged?: boolean;
   isUsingStatementChanged?: boolean;
   isValueSetChanged?: boolean;
+  isFhirHelpersAliasChanged?: boolean;
 }
 
 export const updateUsingStatements = (
@@ -258,6 +259,20 @@ const updateCql = (
       ] = `library ${libraryName} version '${libraryVersion}'`;
       cqlUpdates.isLibraryStatementChanged = true;
     }
+
+    //FHIRHelpers can  not be aliased
+
+    //in includes find FHIRHelpers.. if it exists, check for Alias.  If Alias isn't FHIRHelpers exactly,
+    parsedEditorCql.parsedCql.includes.forEach((include) => {
+      if (include.name === "FHIRHelpers" && include.called != "FHIRHelpers") {
+        //then modify and return .. also set cqlUpdates.isFhirHelpersAliasModified = true
+        const fhirHelpersIncludeLine =
+          parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1];
+        parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1] =
+          fhirHelpersIncludeLine.replace(include.called, "FHIRHelpers");
+        cqlUpdates.isFhirHelpersAliasChanged = true;
+      }
+    });
     // update using statements if they are incorrect
     const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
       parsedEditorCql,
