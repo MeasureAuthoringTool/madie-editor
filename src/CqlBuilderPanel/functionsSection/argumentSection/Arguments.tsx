@@ -4,13 +4,20 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import tw from "twin.macro";
 import "styled-components/macro";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { Pagination } from "@madie/madie-design-system/dist/react";
+import { Stack } from "@mui/material";
+import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
+  handleDeleteArgument?: (argument) => void;
   canEdit: boolean;
 };
 
@@ -23,10 +30,72 @@ type RowDef = {
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
-const Arguments = ({ functionArguments, canEdit }: PropTypes) => {
+const Arguments = ({
+  functionArguments,
+  handleDeleteArgument,
+  canEdit,
+}: PropTypes) => {
+  const [visibleArguments, setVisibleArguments] = useState<FunctionArgument[]>(
+    []
+  );
+
+  // pagination utilities
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [visibleItems, setVisibleItems] = useState<number>(0);
+  const [offset, setOffset] = useState<number>(0);
+  const [currentLimit, setCurrentLimit] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const managePagination = useCallback(() => {
+    if (functionArguments.length < currentLimit) {
+      setOffset(0);
+      setVisibleArguments([...functionArguments]);
+      setVisibleItems(functionArguments.length);
+      setTotalItems(functionArguments.length);
+      setTotalPages(1);
+    } else {
+      const start = (currentPage - 1) * currentLimit;
+      const end = start + currentLimit;
+      const newVisibleArguments = [...functionArguments].slice(start, end);
+      setVisibleArguments(newVisibleArguments);
+      setOffset(start);
+      setVisibleItems(newVisibleArguments.length);
+      setTotalItems(functionArguments.length);
+      setTotalPages(Math.ceil(functionArguments.length / currentLimit));
+    }
+  }, [
+    currentLimit,
+    currentPage,
+    functionArguments,
+    setOffset,
+    setVisibleArguments,
+    setVisibleItems,
+    setTotalItems,
+    setTotalPages,
+  ]);
+
+  const canGoNext = (() => {
+    return currentPage < totalPages;
+  })();
+  const canGoPrev = currentPage > 1;
+
+  const handlePageChange = (e, v) => {
+    setCurrentPage(v);
+  };
+  const handleLimitChange = (e) => {
+    setCurrentLimit(e.target.value);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    managePagination();
+  }, [functionArguments, currentPage, currentLimit]);
+
   // table data
-  const data = functionArguments.map((argument) => {
+  const data = visibleArguments.map((argument) => {
     return {
+      //   id: i,
       arrows: null,
       name: argument.argumentName,
       datatype: argument.dataType,
@@ -50,6 +119,23 @@ const Arguments = ({ functionArguments, canEdit }: PropTypes) => {
       {
         header: "",
         accessorKey: "action",
+        cell: (row: any) => {
+          return (
+            <Stack direction="row" alignItems="center">
+              <ToolTippedIcon
+                tooltipMessage="Delete"
+                buttonProps={{
+                  "data-testid": `delete-button-${row.id}`,
+                  "aria-label": `delete-button-${row.id}`,
+                  size: "small",
+                  onClick: () => {},
+                }}
+              >
+                <DeleteOutlineIcon color="error" />
+              </ToolTippedIcon>
+            </Stack>
+          );
+        },
       },
     ];
   }, [functionArguments]);
@@ -110,25 +196,25 @@ const Arguments = ({ functionArguments, canEdit }: PropTypes) => {
             )}
           </tbody>
         </table>
-        {/* {functionArguments?.length > 0 && (
-        <div className="pagination-container">
-          <Pagination
-            data-testid="function-argument-pagination"
-            totalItems={totalItems}
-            limitOptions={[5, 10, 25, 50]}
-            visibleItems={visibleItems}
-            offset={offset}
-            handlePageChange={handlePageChange}
-            handleLimitChange={handleLimitChange}
-            page={currentPage}
-            limit={currentLimit}
-            count={totalPages}
-            hideNextButton={!canGoNext}
-            hidePrevButton={!canGoPrev}
-            shape="rounded"
-          />
-        </div>
-      )} */}
+        {functionArguments?.length > 0 && (
+          <div className="pagination-container">
+            <Pagination
+              data-testid="function-argument-pagination"
+              totalItems={totalItems}
+              limitOptions={[5, 10, 25, 50]}
+              visibleItems={visibleItems}
+              offset={offset}
+              handlePageChange={handlePageChange}
+              handleLimitChange={handleLimitChange}
+              page={currentPage}
+              limit={currentLimit}
+              count={totalPages}
+              hideNextButton={!canGoNext}
+              hidePrevButton={!canGoPrev}
+              shape="rounded"
+            />
+          </div>
+        )}
       </div>
     </>
   );

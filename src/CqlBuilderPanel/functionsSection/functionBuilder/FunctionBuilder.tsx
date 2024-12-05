@@ -124,7 +124,6 @@ export default function FunctionBuilder({
           showHeaderContent={argumentsEditorOpen}
         >
           <ArgumentSection
-            setConfirmationDialog={setConfirmationDialog}
             canEdit={canEdit}
             addArgumentToFunctionsArguments={addArgumentToFunctionsArguments}
             functionArguments={formik.values.functionsArguments}

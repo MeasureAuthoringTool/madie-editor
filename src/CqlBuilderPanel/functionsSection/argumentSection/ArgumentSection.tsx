@@ -14,10 +14,10 @@ import * as _ from "lodash";
 import { useFormik } from "formik";
 import Arguments from "./Arguments";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
+import ConfirmationDialog from "../../common/ConfirmationDialog";
 
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
-  setConfirmationDialog: Function;
   canEdit: boolean;
   addArgumentToFunctionsArguments: Function;
 }
@@ -35,12 +35,9 @@ const availableDataTypes = [
 ];
 
 export default function ArgumentSection(props: ArgumentsProps) {
-  const {
-    addArgumentToFunctionsArguments,
-    functionArguments,
-    setConfirmationDialog,
-    canEdit,
-  } = props;
+  const { addArgumentToFunctionsArguments, functionArguments, canEdit } = props;
+  const [functionDataType, setFunctionDataType] = useState("");
+  const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
 
   const formik = useFormik({
     initialValues: {
@@ -109,12 +106,13 @@ export default function ArgumentSection(props: ArgumentsProps) {
             error={Boolean(formik.errors.dataType)}
             helperText={formik.errors.dataType}
             onChange={(evt) => {
+              setFunctionDataType(evt.target.value);
               formik.setFieldValue("dataType", evt.target.value);
             }}
           />
         </div>
       </div>
-      {dataType && dataType === "Other" && (
+      {functionDataType && functionDataType === "Other" && (
         <div tw="flex flex-wrap">
           <div tw="pt-6 w-1/2">
             <TextField
@@ -143,7 +141,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
           disabled={!canEdit}
           tw="mr-4"
           onClick={() => {
-            // resetForm();
             setConfirmationDialog(true);
           }}
         >
@@ -160,6 +157,15 @@ export default function ArgumentSection(props: ArgumentsProps) {
       <div style={{ paddingTop: "24px" }}>
         <Arguments functionArguments={functionArguments} canEdit={canEdit} />
       </div>
+      <ConfirmationDialog
+        open={confirmationDialog}
+        onClose={() => setConfirmationDialog(false)}
+        onSubmit={() => {
+          resetForm();
+          setFunctionDataType("");
+          setConfirmationDialog(false);
+        }}
+      />
     </>
   );
 }
