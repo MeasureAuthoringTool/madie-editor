@@ -90,7 +90,7 @@ export const updateUsingStatements = (
       measureModel !== name ||
       modelVersion !== version.replace(/["']/g, "")
     ) {
-      // we want to keep FHIR if that's the only one using model present for QICore.
+      // we want to keep FHIR if that's the only using model present for QICore.
       if (measureModel === "QICore" && name === "FHIR") {
         parsedEditorCqlCopy.cqlArrayToBeFiltered[
           start.line - 1
