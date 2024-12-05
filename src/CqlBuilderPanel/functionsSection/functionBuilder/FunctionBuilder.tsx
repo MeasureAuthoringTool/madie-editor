@@ -32,6 +32,8 @@ export interface FunctionProps {
   handleFunctionEdit?: Function;
   funct?: Funct;
   onClose?: Function;
+  operation?: string;
+  cqlFunction?: any;
 }
 
 export default function FunctionBuilder({
@@ -41,6 +43,8 @@ export default function FunctionBuilder({
   onClose,
   funct,
   cqlBuilderLookupsTypes,
+  operation,
+  cqlFunction,
 }: FunctionProps) {
   const [argumentsEditorOpen, setArgumentsEditorOpen] =
     useState<boolean>(false);
@@ -213,10 +217,40 @@ export default function FunctionBuilder({
           </Button>
           <Button
             data-testid={`function-apply-btn`}
-            disabled={!formik.values.functionName || !canEdit || !formik.dirty}
-            onClick={() => {}}
+            // disabled={!formik.values.functionName || !canEdit || !formik.dirty}
+            onClick={() => {
+              // const functionToApply = {
+              //   functionName: formik.values.functionName,
+              //   comment: formik.values.comment,
+              //   fluentFunction: formik.values.fluentFunction,
+              //   expressionValue: expressionEditorValue,
+              // };
+              const functionToApply = {
+                fluentFunction: false,
+                functionName: "Function name here",
+                comment: "I'm a comment about nothing at all",
+                functionsArguments: [
+                  { name: "arg1", dataType: "Integer" },
+                  { name: "arg2", dataType: "Integer" },
+                ],
+                expression: "true",
+              };
+              console.log("functionToApply", functionToApply);
+              resetForm();
+              setExpressionEditorValue("");
+              if (operation === "edit") {
+                formik.setFieldValue("functionName", "");
+                formik.setFieldValue("comment", "");
+                formik.setFieldValue("fluentFunction", true);
+                handleFunctionEdit(cqlFunction, functionToApply);
+                onClose();
+              } else {
+                handleApplyFunction(functionToApply);
+              }
+            }}
           >
             Apply
+            {operation === "edit" ? "Save" : "Apply"}
           </Button>
         </div>
         <ConfirmationDialog
