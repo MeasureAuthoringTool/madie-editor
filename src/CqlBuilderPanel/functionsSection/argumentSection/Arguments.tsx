@@ -4,17 +4,28 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import tw from "twin.macro";
 import "styled-components/macro";
 import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
 import ArrowDropUpOutlinedIcon from "@mui/icons-material/ArrowDropUpOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  MadieDeleteDialog,
+  Pagination,
+  Toast,
+} from "@madie/madie-design-system/dist/react";
 import { Stack } from "@mui/material";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import "./Arguments.scss";
+import toastReducer from "../../../common/ToastReducer";
 
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
@@ -23,6 +34,7 @@ type PropTypes = {
 };
 
 type RowDef = {
+  id: number;
   arrows: string;
   name: string;
   datatype: string;
@@ -38,6 +50,19 @@ const Arguments = ({
 }: PropTypes) => {
   const [visibleArguments, setVisibleArguments] = useState<FunctionArgument[]>(
     []
+  );
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+
+  // toast utilities
+  const [toastState, dispatch] = useReducer(
+    toastReducer,
+    {
+      open: false,
+      type: "danger",
+      message: "",
+    },
+    undefined
   );
 
   // pagination utilities
@@ -94,15 +119,24 @@ const Arguments = ({
   }, [functionArguments, currentPage, currentLimit]);
 
   // table data
-  const data = visibleArguments.map((argument) => {
+  const data = visibleArguments.map((argument, i) => {
     return {
-      //   id: i,
+      id: i,
       arrows: null,
       name: argument.argumentName,
       datatype: argument.dataType,
       action: null,
     };
   });
+
+  const moveItem = (fromIndex, toIndex) => {
+    setVisibleArguments((prevItems) => {
+      const newItems = [...prevItems];
+      const [item] = newItems.splice(fromIndex, 1);
+      newItems.splice(toIndex, 0, item);
+      return newItems;
+    });
+  };
   const columns = useMemo<ColumnDef<RowDef>[]>(() => {
     return [
       {
@@ -111,10 +145,14 @@ const Arguments = ({
         cell: (row: any) => {
           return (
             <div className="arrow-container">
-              <button>
+              <button
+                onClick={() => moveItem(row.row.index, row.row.index - 1)}
+              >
                 <ArrowDropUpOutlinedIcon />
               </button>
-              <button>
+              <button
+                onClick={() => moveItem(row.row.index, row.row.index + 1)}
+              >
                 <ArrowDropDownOutlinedIcon />
               </button>
             </div>
@@ -229,6 +267,22 @@ const Arguments = ({
           </div>
         )}
       </div>
+      <Toast
+        toastKey="function-argument-toast"
+        testId="function-argument-toast"
+        toastType={toastState.type}
+        open={toastState.open}
+        message={toastState.message}
+        onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        autoHideDuration={8000}
+      />
+      <MadieDeleteDialog
+        open={deleteDialogOpen}
+        onContinue={() => handleDeleteArgument(null)}
+        onClose={() => setDeleteDialogOpen(false)}
+        dialogTitle="Are you sure?"
+        name={"this Argument"}
+      />
     </>
   );
 };

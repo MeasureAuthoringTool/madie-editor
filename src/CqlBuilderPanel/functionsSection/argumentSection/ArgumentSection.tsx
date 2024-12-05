@@ -52,9 +52,13 @@ export default function ArgumentSection(props: ArgumentsProps) {
   const { dataType } = formik.values;
 
   const handleSubmit = () => {
+    let value = formik.values.dataType;
+    if (functionDataType === "Other") {
+      value = formik.values.other;
+    }
     const fnToAdd = {
       argumentName: formik.values.argumentName,
-      dataType: formik.values.dataType,
+      dataType: value,
     };
     addArgumentToFunctionsArguments(fnToAdd);
     formik.resetForm();
