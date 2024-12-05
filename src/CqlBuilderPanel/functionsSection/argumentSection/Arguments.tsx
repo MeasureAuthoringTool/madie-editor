@@ -8,12 +8,13 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import tw from "twin.macro";
 import "styled-components/macro";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
+import ArrowDropUpOutlinedIcon from "@mui/icons-material/ArrowDropUpOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Pagination } from "@madie/madie-design-system/dist/react";
 import { Stack } from "@mui/material";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
+import "./Arguments.scss";
 
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
@@ -107,6 +108,18 @@ const Arguments = ({
       {
         header: "",
         accessorKey: "arrows",
+        cell: (row: any) => {
+          return (
+            <div className="arrow-container">
+              <button>
+                <ArrowDropUpOutlinedIcon />
+              </button>
+              <button>
+                <ArrowDropDownOutlinedIcon />
+              </button>
+            </div>
+          );
+        },
       },
       {
         header: "Name",
