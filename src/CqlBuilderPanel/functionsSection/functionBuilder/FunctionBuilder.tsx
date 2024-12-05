@@ -217,25 +217,14 @@ export default function FunctionBuilder({
           </Button>
           <Button
             data-testid={`function-apply-btn`}
-            // disabled={!formik.values.functionName || !canEdit || !formik.dirty}
+            disabled={!formik.values.functionName || !canEdit || !formik.dirty}
             onClick={() => {
-              // const functionToApply = {
-              //   functionName: formik.values.functionName,
-              //   comment: formik.values.comment,
-              //   fluentFunction: formik.values.fluentFunction,
-              //   expressionValue: expressionEditorValue,
-              // };
               const functionToApply = {
-                fluentFunction: false,
-                functionName: "Function name here",
-                comment: "I'm a comment about nothing at all",
-                functionsArguments: [
-                  { name: "arg1", dataType: "Integer" },
-                  { name: "arg2", dataType: "Integer" },
-                ],
-                expression: "true",
+                functionName: formik.values.functionName,
+                comment: formik.values.comment,
+                fluentFunction: formik.values.fluentFunction,
+                expressionValue: expressionEditorValue,
               };
-              console.log("functionToApply", functionToApply);
               resetForm();
               setExpressionEditorValue("");
               if (operation === "edit") {
