@@ -11,14 +11,15 @@ import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import * as _ from "lodash";
 
-import { useFormik, useFormikContext } from "formik";
+import { useFormik } from "formik";
 import Arguments from "./Arguments";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 
 interface ArgumentsProps {
-  functionArgument?: FunctionArgument;
+  functionArguments?: FunctionArgument[];
   setConfirmationDialog: Function;
   canEdit: boolean;
+  addArgumentToFunctionsArguments: Function;
 }
 
 const availableDataTypes = [
@@ -34,10 +35,12 @@ const availableDataTypes = [
 ];
 
 export default function ArgumentSection(props: ArgumentsProps) {
-  const { functionArgument, setConfirmationDialog, canEdit } = props;
-  const [functionDataType, setFunctionDataType] = useState(
-    functionArgument?.dataType || ""
-  );
+  const {
+    addArgumentToFunctionsArguments,
+    functionArguments,
+    setConfirmationDialog,
+    canEdit,
+  } = props;
 
   const formik = useFormik({
     initialValues: {
@@ -46,10 +49,19 @@ export default function ArgumentSection(props: ArgumentsProps) {
       other: "",
     },
     // validationSchema: FunctionSectionSchemaValidator,
-    enableReinitialize: true,
+    enableReinitialize: false,
     onSubmit: (values) => {},
   });
+  const { dataType } = formik.values;
 
+  const handleSubmit = () => {
+    const fnToAdd = {
+      argumentName: formik.values.argumentName,
+      dataType: formik.values.dataType,
+    };
+    addArgumentToFunctionsArguments(fnToAdd);
+    formik.resetForm();
+  };
   const { resetForm } = formik;
 
   return (
@@ -83,7 +95,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
             SelectDisplayProps={{
               "aria-required": "true",
             }}
-            options={availableDataTypes.map((value) => (
+            options={availableDataTypes?.map((value) => (
               <MenuItem
                 key={`${value}-option`}
                 value={value}
@@ -97,13 +109,12 @@ export default function ArgumentSection(props: ArgumentsProps) {
             error={Boolean(formik.errors.dataType)}
             helperText={formik.errors.dataType}
             onChange={(evt) => {
-              setFunctionDataType(evt.target.value);
               formik.setFieldValue("dataType", evt.target.value);
             }}
           />
         </div>
       </div>
-      {functionDataType && functionDataType === "Other" && (
+      {dataType && dataType === "Other" && (
         <div tw="flex flex-wrap">
           <div tw="pt-6 w-1/2">
             <TextField
@@ -132,8 +143,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
           disabled={!canEdit}
           tw="mr-4"
           onClick={() => {
-            resetForm();
-            setFunctionDataType("");
+            // resetForm();
             setConfirmationDialog(true);
           }}
         >
@@ -141,14 +151,14 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </Button>
         <Button
           data-testid={`function-argument-add-btn`}
-          disabled={!canEdit}
-          onClick={() => {}}
+          disabled={!canEdit || !formik.isValid}
+          onClick={handleSubmit}
         >
           Add
         </Button>
       </div>
       <div style={{ paddingTop: "24px" }}>
-        <Arguments functionArguments={[]} canEdit={canEdit} />
+        <Arguments functionArguments={functionArguments} canEdit={canEdit} />
       </div>
     </>
   );
