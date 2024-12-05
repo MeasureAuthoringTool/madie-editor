@@ -13,6 +13,7 @@ import ExpandingSection from "../../../common/ExpandingSection";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { Box } from "@mui/system";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
+import ArgumentSection from "../argumentSection/ArgumentSection";
 
 export interface Funct {
   functionName?: string;
@@ -114,8 +115,12 @@ export default function FunctionBuilder({
         <ExpandingSection
           title="Arguments"
           showHeaderContent={argumentsEditorOpen}
-          children={<></>}
-        />
+        >
+          <ArgumentSection
+            setConfirmationDialog={setConfirmationDialog}
+            canEdit={canEdit}
+          />
+        </ExpandingSection>
         <div style={{ marginTop: "36px" }} />
         <ExpandingSection
           title="Expression Editor"
