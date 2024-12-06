@@ -95,11 +95,11 @@ export default function ArgumentSection(props: ArgumentsProps) {
         <div tw="flex-grow pl-5">
           <Select
             label="Available DataTypes"
-            id="type-selector"
+            id="arg-type-selector"
             inputProps={{
-              "data-testid": "type-selector-input",
+              "data-testid": "arg-type-selector-input",
             }}
-            data-testid="type-selector"
+            data-testid="arg-type-selector"
             SelectDisplayProps={{
               "aria-required": "true",
             }}

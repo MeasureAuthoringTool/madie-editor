@@ -222,24 +222,16 @@ export default function FunctionBuilder({
               const functionToApply = {
                 functionName: formik.values.functionName,
                 comment: formik.values.comment,
+                functionsArguments: formik.values.functionsArguments,
                 fluentFunction: formik.values.fluentFunction,
                 expressionValue: expressionEditorValue,
               };
               resetForm();
               setExpressionEditorValue("");
-              if (operation === "edit") {
-                formik.setFieldValue("functionName", "");
-                formik.setFieldValue("comment", "");
-                formik.setFieldValue("fluentFunction", true);
-                handleFunctionEdit(cqlFunction, functionToApply);
-                onClose();
-              } else {
-                handleApplyFunction(functionToApply);
-              }
+              handleApplyFunction(functionToApply);
             }}
           >
             Apply
-            {operation === "edit" ? "Save" : "Apply"}
           </Button>
         </div>
         <ConfirmationDialog
