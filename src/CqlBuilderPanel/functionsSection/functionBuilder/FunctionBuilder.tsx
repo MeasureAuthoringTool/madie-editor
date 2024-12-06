@@ -62,6 +62,15 @@ export default function FunctionBuilder({
     formik.setFieldValue("functionsArguments", newArgs);
   };
 
+  const deleteArgumentFromFunctionArguments = (fn) => {
+    const newArgs = formik.values.functionsArguments.filter(
+      (argument) =>
+        argument?.argumentName !== fn.argumentName &&
+        argument?.dataType !== fn.dataType
+    );
+    formik.setFieldValue("functionsArguments", newArgs);
+  };
+
   return (
     <div>
       <form id="function-form" onSubmit={formik.handleSubmit}>
@@ -126,6 +135,9 @@ export default function FunctionBuilder({
           <ArgumentSection
             canEdit={canEdit}
             addArgumentToFunctionsArguments={addArgumentToFunctionsArguments}
+            deleteArgumentFromFunctionArguments={
+              deleteArgumentFromFunctionArguments
+            }
             functionArguments={formik.values.functionsArguments}
           />
         </ExpandingSection>

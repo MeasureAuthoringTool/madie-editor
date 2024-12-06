@@ -20,6 +20,7 @@ interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
   canEdit: boolean;
   addArgumentToFunctionsArguments: Function;
+  deleteArgumentFromFunctionArguments: Function;
 }
 
 const availableDataTypes = [
@@ -35,7 +36,12 @@ const availableDataTypes = [
 ];
 
 export default function ArgumentSection(props: ArgumentsProps) {
-  const { addArgumentToFunctionsArguments, functionArguments, canEdit } = props;
+  const {
+    addArgumentToFunctionsArguments,
+    deleteArgumentFromFunctionArguments,
+    functionArguments,
+    canEdit,
+  } = props;
   const [functionDataType, setFunctionDataType] = useState("");
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
 
@@ -159,7 +165,11 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </Button>
       </div>
       <div style={{ paddingTop: "24px" }}>
-        <Arguments functionArguments={functionArguments} canEdit={canEdit} />
+        <Arguments
+          functionArguments={functionArguments}
+          canEdit={canEdit}
+          handleDeleteArgument={deleteArgumentFromFunctionArguments}
+        />
       </div>
       <ConfirmationDialog
         open={confirmationDialog}

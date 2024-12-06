@@ -29,7 +29,7 @@ import toastReducer from "../../../common/ToastReducer";
 
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
-  handleDeleteArgument?: (argument) => void;
+  handleDeleteArgument?: Function;
   canEdit: boolean;
 };
 
@@ -51,7 +51,7 @@ const Arguments = ({
   const [visibleArguments, setVisibleArguments] = useState<FunctionArgument[]>(
     []
   );
-
+  const [selectedArgument, setSelectedArgument] = useState<FunctionArgument>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
   // toast utilities
@@ -118,6 +118,21 @@ const Arguments = ({
     managePagination();
   }, [functionArguments, currentPage, currentLimit]);
 
+  const deleteFunctionArgument = () => {
+    handleDeleteArgument(selectedArgument);
+    setDeleteDialogOpen(false);
+    dispatch({
+      type: "SHOW_TOAST",
+      payload: {
+        type: "success",
+        message:
+          "Argument " +
+          selectedArgument.argumentName +
+          " has been successfully removed from the function",
+      },
+    });
+  };
+
   // table data
   const data = visibleArguments.map((argument, i) => {
     return {
@@ -179,7 +194,14 @@ const Arguments = ({
                   "data-testid": `delete-button-${row.id}`,
                   "aria-label": `delete-button-${row.id}`,
                   size: "small",
-                  onClick: () => {},
+                  onClick: () => {
+                    // const rowModal = table.getRow(row.id).original;
+                    setSelectedArgument({
+                      argumentName: row.row.original.name,
+                      dataType: row.row.original.datatype,
+                    } as FunctionArgument);
+                    setDeleteDialogOpen(true);
+                  },
                 }}
               >
                 <DeleteOutlineIcon color="error" />
@@ -278,7 +300,7 @@ const Arguments = ({
       />
       <MadieDeleteDialog
         open={deleteDialogOpen}
-        onContinue={() => handleDeleteArgument(null)}
+        onContinue={() => deleteFunctionArgument()}
         onClose={() => setDeleteDialogOpen(false)}
         dialogTitle="Are you sure?"
         name={"this Argument"}
