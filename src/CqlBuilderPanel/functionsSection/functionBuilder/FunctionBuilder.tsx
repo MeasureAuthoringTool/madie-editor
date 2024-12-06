@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { useFormik } from "formik";
+import { useFormik, FormikProvider } from "formik";
 import {
   Button,
   TextArea,
@@ -13,10 +13,12 @@ import ExpandingSection from "../../../common/ExpandingSection";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { Box } from "@mui/system";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
+import ArgumentSection from "../argumentSection/ArgumentSection";
 
 export interface Funct {
   functionName?: string;
   fluentFunction?: boolean;
+  functionsArguments: any;
   comment?: string;
 }
 
@@ -47,12 +49,27 @@ export default function FunctionBuilder({
       functionName: funct?.functionName || "",
       comment: funct?.comment || "",
       fluentFunction: funct?.fluentFunction || true,
+      functionsArguments: funct?.functionsArguments || [],
     },
     validationSchema: FunctionSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {},
   });
   const { resetForm } = formik;
+
+  const addArgumentToFunctionsArguments = (fn) => {
+    const newArgs = [...formik.values.functionsArguments, fn];
+    formik.setFieldValue("functionsArguments", newArgs);
+  };
+
+  const deleteArgumentFromFunctionArguments = (fn) => {
+    const newArgs = formik.values.functionsArguments.filter(
+      (argument) =>
+        argument?.argumentName !== fn.argumentName &&
+        argument?.dataType !== fn.dataType
+    );
+    formik.setFieldValue("functionsArguments", newArgs);
+  };
 
   return (
     <div>
@@ -114,8 +131,17 @@ export default function FunctionBuilder({
         <ExpandingSection
           title="Arguments"
           showHeaderContent={argumentsEditorOpen}
-          children={<></>}
-        />
+        >
+          <ArgumentSection
+            canEdit={canEdit}
+            addArgumentToFunctionsArguments={addArgumentToFunctionsArguments}
+            deleteArgumentFromFunctionArguments={
+              deleteArgumentFromFunctionArguments
+            }
+            functionArguments={formik.values.functionsArguments}
+          />
+        </ExpandingSection>
+
         <div style={{ marginTop: "36px" }} />
         <ExpandingSection
           title="Expression Editor"

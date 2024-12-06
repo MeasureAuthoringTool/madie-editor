@@ -1,0 +1,17 @@
+#function-argument-tbl {
+  .arrow-container {
+    display: flex;
+    flex-direction: column;
+    > button {
+      display: flex;
+      align-self: center;
+      &:hover > svg {
+        color: #197b9e;
+      }
+    }
+    > button > svg {
+      color: #000; // Default color
+      display: flex;
+    }
+  }
+}
