@@ -15,6 +15,7 @@ import { useFormik } from "formik";
 import Arguments from "./Arguments";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
+import { FunctionArgumentSchemaValidator } from "../../../validations/FunctionArgumentSchemaValidator";
 
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
@@ -51,7 +52,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
       dataType: "",
       other: "",
     },
-    // validationSchema: FunctionSectionSchemaValidator,
+    validationSchema: FunctionArgumentSchemaValidator,
     enableReinitialize: false,
     onSubmit: () => {},
   });
@@ -86,9 +87,9 @@ export default function ArgumentSection(props: ArgumentsProps) {
             inputProps={{
               "data-testid": "argument-name-input",
             }}
-            {...formik.getFieldProps("argumentName")}
             error={Boolean(formik.errors.argumentName)}
             helperText={formik.errors.argumentName}
+            {...formik.getFieldProps("argumentName")}
           />
         </div>
         <div tw="flex-grow pl-5">
