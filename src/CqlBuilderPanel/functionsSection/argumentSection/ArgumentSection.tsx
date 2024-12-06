@@ -53,7 +53,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
     },
     // validationSchema: FunctionSectionSchemaValidator,
     enableReinitialize: false,
-    onSubmit: (values) => {},
+    onSubmit: () => {},
   });
   const { dataType } = formik.values;
 
@@ -148,7 +148,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
           id="clear-function-argument-btn"
           variant="outline"
           data-testid="clear-function-argument-btn"
-          disabled={!canEdit}
+          disabled={!canEdit || !formik.dirty}
           tw="mr-4"
           onClick={() => {
             setConfirmationDialog(true);
@@ -158,7 +158,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </Button>
         <Button
           data-testid={`function-argument-add-btn`}
-          disabled={!canEdit || !formik.isValid}
+          disabled={!canEdit || !formik.isValid || !formik.dirty}
           onClick={handleSubmit}
         >
           Add
