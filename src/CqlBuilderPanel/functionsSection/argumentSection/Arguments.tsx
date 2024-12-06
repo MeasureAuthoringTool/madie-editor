@@ -158,20 +158,24 @@ const Arguments = ({
         header: "",
         accessorKey: "arrows",
         cell: (row: any) => {
-          return (
-            <div className="arrow-container">
-              <button
-                onClick={() => moveItem(row.row.index, row.row.index - 1)}
-              >
-                <ArrowDropUpOutlinedIcon />
-              </button>
-              <button
-                onClick={() => moveItem(row.row.index, row.row.index + 1)}
-              >
-                <ArrowDropDownOutlinedIcon />
-              </button>
-            </div>
-          );
+          if (functionArguments?.length > 1) {
+            return (
+              <div className="arrow-container">
+                <button
+                  onClick={() => moveItem(row.row.index, row.row.index - 1)}
+                >
+                  <ArrowDropUpOutlinedIcon />
+                </button>
+                <button
+                  onClick={() => moveItem(row.row.index, row.row.index + 1)}
+                >
+                  <ArrowDropDownOutlinedIcon />
+                </button>
+              </div>
+            );
+          } else {
+            return <></>;
+          }
         },
       },
       {
@@ -191,11 +195,10 @@ const Arguments = ({
               <ToolTippedIcon
                 tooltipMessage="Delete"
                 buttonProps={{
-                  "data-testid": `delete-button-${row.id}`,
-                  "aria-label": `delete-button-${row.id}`,
+                  "data-testid": `delete-button-${row.row.id}`,
+                  "aria-label": `delete-button-${row.row.id}`,
                   size: "small",
                   onClick: () => {
-                    // const rowModal = table.getRow(row.id).original;
                     setSelectedArgument({
                       argumentName: row.row.original.name,
                       dataType: row.row.original.datatype,

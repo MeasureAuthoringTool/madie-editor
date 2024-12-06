@@ -65,7 +65,7 @@ export default function FunctionBuilder({
   const deleteArgumentFromFunctionArguments = (fn) => {
     const newArgs = formik.values.functionsArguments.filter(
       (argument) =>
-        argument?.argumentName !== fn.argumentName &&
+        argument?.argumentName !== fn.argumentName ||
         argument?.dataType !== fn.dataType
     );
     formik.setFieldValue("functionsArguments", newArgs);
