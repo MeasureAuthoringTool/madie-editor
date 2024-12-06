@@ -340,8 +340,8 @@ describe("synching the cql", () => {
     expect(updatedContent.isUsingStatementChanged).toEqual(true);
   });
 
-  test("replacing the error containing using content line to actual using content with FHIR", async () => {
-    const expectValue = "using QICore version '4.1.1'";
+  test("Not to replace the using FHIR statement for QICore measure if it is the only using statement", async () => {
+    const expectValue = "using FHIR version '4.0.1'";
     const updatedContent = await updateEditorContent(
       "using FHIR version '4.0.1'",
       "",
