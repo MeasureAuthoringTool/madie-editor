@@ -72,6 +72,7 @@ export interface UpdatedCqlObject {
   isLibraryStatementChanged?: boolean;
   isUsingStatementChanged?: boolean;
   isValueSetChanged?: boolean;
+  isFhirHelpersAliasChanged?: boolean;
 }
 
 export const updateUsingStatements = (
@@ -89,9 +90,16 @@ export const updateUsingStatements = (
       measureModel !== name ||
       modelVersion !== version.replace(/["']/g, "")
     ) {
-      parsedEditorCqlCopy.cqlArrayToBeFiltered[
-        start.line - 1
-      ] = `using ${measureModel} version '${modelVersion}'`;
+      // we want to keep FHIR if that's the only using model present for QICore.
+      if (measureModel === "QICore" && name === "FHIR") {
+        parsedEditorCqlCopy.cqlArrayToBeFiltered[
+          start.line - 1
+        ] = `using FHIR version '4.0.1'`;
+      } else {
+        parsedEditorCqlCopy.cqlArrayToBeFiltered[
+          start.line - 1
+        ] = `using ${measureModel} version '${modelVersion}'`;
+      }
       isCqlUpdated = true;
     }
   } else if (usingStatements?.length > 1) {
@@ -258,6 +266,20 @@ const updateCql = (
       ] = `library ${libraryName} version '${libraryVersion}'`;
       cqlUpdates.isLibraryStatementChanged = true;
     }
+
+    //FHIRHelpers can  not be aliased
+
+    //in includes find FHIRHelpers.. if it exists, check for Alias.  If Alias isn't FHIRHelpers exactly,
+    parsedEditorCql.parsedCql.includes.forEach((include) => {
+      if (include.name === "FHIRHelpers" && include.called != "FHIRHelpers") {
+        //then modify and return .. also set cqlUpdates.isFhirHelpersAliasModified = true
+        const fhirHelpersIncludeLine =
+          parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1];
+        parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1] =
+          fhirHelpersIncludeLine.replace(include.called, "FHIRHelpers");
+        cqlUpdates.isFhirHelpersAliasChanged = true;
+      }
+    });
     // update using statements if they are incorrect
     const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
       parsedEditorCql,

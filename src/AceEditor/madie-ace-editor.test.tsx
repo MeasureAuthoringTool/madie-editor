@@ -307,6 +307,23 @@ describe("synching the cql", () => {
     expect(updatedContent.isValueSetChanged).toEqual(false);
   });
 
+  it("should replace incorrect alias for FHIRHelpers", async () => {
+    const expectValue =
+      "library MAT7909TestDefaultAlias version '0.0.000' using QICore version '4.1.1' include FHIRHelpers version '4.3.000' called FHIRHelpers  valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139' context Patient define \"Initial Population\":   exists ( [Observation] O  where O.value < 5 'mg') ";
+    const updatedContent = await updateEditorContent(
+      "library MAT7909TestDefaultAlias version '0.0.000' using QICore version '4.1.1' include FHIRHelpers version '4.3.000' called Dummy  valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139' context Patient define \"Initial Population\":   exists ( [Observation] O  where O.value < 5 'mg') ",
+      "library MAT7909TestDefaultAlias version '0.0.000'",
+      "MAT7909TestDefaultAlias",
+      "",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+    expect(updatedContent.cql).toEqual(expectValue);
+    expect(updatedContent.isFhirHelpersAliasChanged).toEqual(true);
+  });
+
   test("replacing the error containing using content line to actual using content", async () => {
     const expectValue = "using QICore version '4.1.1'";
     const updatedContent = await updateEditorContent(
@@ -323,8 +340,8 @@ describe("synching the cql", () => {
     expect(updatedContent.isUsingStatementChanged).toEqual(true);
   });
 
-  test("replacing the error containing using content line to actual using content with FHIR", async () => {
-    const expectValue = "using QICore version '4.1.1'";
+  test("Not to replace the using FHIR statement for QICore measure if it is the only using statement", async () => {
+    const expectValue = "using FHIR version '4.0.1'";
     const updatedContent = await updateEditorContent(
       "using FHIR version '4.0.1'",
       "",

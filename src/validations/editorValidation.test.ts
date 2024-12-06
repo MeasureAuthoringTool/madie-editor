@@ -160,7 +160,7 @@ describe("Editor Validation Test", () => {
   });
 
   it("validate cql null input", async () => {
-    const errorsResult: ValidationResult = await useGetAllErrors("");
+    const errorsResult: ValidationResult = await useGetAllErrors("", false);
     expect(errorsResult).toBeNull();
   });
 
@@ -201,7 +201,10 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const errorsResult: ValidationResult = await useGetAllErrors(editorContent);
+    const errorsResult: ValidationResult = await useGetAllErrors(
+      editorContent,
+      true
+    );
     expect(errorsResult?.errors.length).toBe(0);
   });
 
@@ -254,7 +257,7 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const errorsResult = await useGetAllErrors(editorContent);
+    const errorsResult = await useGetAllErrors(editorContent, true);
     expect(errorsResult.errors.length).toBe(4);
   });
 
@@ -308,7 +311,7 @@ describe("Editor Validation Test", () => {
       }
     });
 
-    const errorsResult = await useGetAllErrors(editorContent);
+    const errorsResult = await useGetAllErrors(editorContent, true);
     expect(errorsResult.errors.length).toBe(3);
   });
 
@@ -331,7 +334,10 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const errorsResult = await useGetAllErrors("Library FHIR version 1.0.000");
+    const errorsResult = await useGetAllErrors(
+      "Library FHIR version 1.0.000",
+      false
+    );
     expect(errorsResult.externalErrors.length).toBe(1);
   });
 });

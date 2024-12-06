@@ -38,7 +38,31 @@ describe("Test FhirElmTranslationServiceApi", () => {
 
     try {
       const translate = await fhirElmTranslationServiceApi.translateCqlToElm(
-        "test"
+        "test",
+        true
+      );
+      expect(translate).toBe(elmTranslationWithNoErrors);
+    } catch (error) {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  it("Should error when service config url is valid", async () => {
+    const successResponse = {
+      data: { json: JSON.stringify(elmTranslationWithNoErrors) },
+      status: 200,
+    };
+    mockedAxios.put.mockResolvedValue(successResponse);
+    const fhirElmTranslationServiceApi: FhirElmTranslationServiceApi =
+      new FhirElmTranslationServiceApi(
+        mockServiceConfig.qdmElmTranslationService.baseUrl,
+        mockGetAccessToken
+      );
+
+    try {
+      const translate = await fhirElmTranslationServiceApi.translateCqlToElm(
+        "test",
+        true
       );
       expect(translate).toBe(elmTranslationWithNoErrors);
     } catch (error) {
@@ -51,7 +75,7 @@ describe("Test FhirElmTranslationServiceApi", () => {
       new FhirElmTranslationServiceApi(null, mockGetAccessToken);
 
     try {
-      await fhirElmTranslationServiceApi.translateCqlToElm("test");
+      await fhirElmTranslationServiceApi.translateCqlToElm("test", true);
     } catch (error) {
       expect(error).not.toBeNull();
       expect(error.message).toBe(
@@ -80,7 +104,7 @@ describe("Test FhirElmTranslationServiceApi", () => {
       new FhirElmTranslationServiceApi("test", mockGetAccessToken);
 
     try {
-      await fhirElmTranslationServiceApi.translateCqlToElm("test");
+      await fhirElmTranslationServiceApi.translateCqlToElm("test", false);
     } catch (error) {
       expect(error).not.toBeNull();
       expect(error.message).toBe("Request failed with status code 404");
