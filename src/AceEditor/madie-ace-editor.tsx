@@ -90,9 +90,16 @@ export const updateUsingStatements = (
       measureModel !== name ||
       modelVersion !== version.replace(/["']/g, "")
     ) {
-      parsedEditorCqlCopy.cqlArrayToBeFiltered[
-        start.line - 1
-      ] = `using ${measureModel} version '${modelVersion}'`;
+      // we want to keep FHIR if that's the only using model present for QICore.
+      if (measureModel === "QICore" && name === "FHIR") {
+        parsedEditorCqlCopy.cqlArrayToBeFiltered[
+          start.line - 1
+        ] = `using FHIR version '4.0.1'`;
+      } else {
+        parsedEditorCqlCopy.cqlArrayToBeFiltered[
+          start.line - 1
+        ] = `using ${measureModel} version '${modelVersion}'`;
+      }
       isCqlUpdated = true;
     }
   } else if (usingStatements?.length > 1) {
