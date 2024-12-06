@@ -155,4 +155,22 @@ describe("ELM Translation validation", () => {
       expect(elmErrors).toBeNull();
     } catch (error) {}
   });
+
+  it("translate CQL to ELM no error QDM", async () => {
+    mockedAxios.put.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.qdmElmTranslationService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: { json: JSON.stringify(elmTranslationWithNoErrors) },
+          status: 200,
+        });
+      }
+    });
+
+    const elmErrors: ElmTranslation = await TranslateCql("test", "QDM");
+    expect(elmErrors.errorExceptions.length).toBe(0);
+    expect(elmErrors.externalErrors.length).toBe(0);
+  });
 });

@@ -21,7 +21,8 @@ export interface ValidationResult {
 }
 
 export const useGetAllErrors = async (
-  cql: string
+  cql: string,
+  checkContext: boolean
 ): Promise<ValidationResult> => {
   if (cql && cql.trim().length > 0) {
     const cqlResult: CqlResult = new CqlAntlr(cql).parse();
@@ -34,7 +35,8 @@ export const useGetAllErrors = async (
           isLoggedInUMLS.valueOf(),
           cqlResult?.usings[0]?.name
         ),
-        TranslateCql(cql, cqlResult?.usings[0]?.name),
+
+        TranslateCql(cql, cqlResult?.usings[0]?.name, checkContext),
         GetValueSetErrors(
           cqlResult.valueSets,
           isLoggedInUMLS.valueOf(),

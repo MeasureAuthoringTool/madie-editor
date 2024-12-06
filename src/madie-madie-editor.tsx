@@ -33,8 +33,10 @@ export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 
 export type { ElmTranslationError };
-export const validateContent: (content: string) => Promise<ValidationResult> =
-  useGetAllErrors;
+export const validateContent: (
+  content: string,
+  checkContext: boolean
+) => Promise<ValidationResult> = useGetAllErrors;
 
 export const synchingEditorCqlContent: (
   editorVal: string,
