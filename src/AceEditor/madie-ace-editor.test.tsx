@@ -307,11 +307,45 @@ describe("synching the cql", () => {
     expect(updatedContent.isValueSetChanged).toEqual(false);
   });
 
-  it("should replace incorrect alias for FHIRHelpers", async () => {
+  it("should replace incorrect alias for FHIRHelpers ; alias has spaces", async () => {
+    const expectValue =
+      "library MAT7909TestDefaultAlias version '0.0.000' using QICore version '4.1.1' include FHIRHelpers version '4.3.000' called FHIRHelpers Helpers valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139' context Patient define \"Initial Population\":   exists ( [Observation] O  where O.value < 5 'mg') ";
+    const updatedContent = await updateEditorContent(
+      "library MAT7909TestDefaultAlias version '0.0.000' using QICore version '4.1.1' include FHIRHelpers version '4.3.000' called F Helpers valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139' context Patient define \"Initial Population\":   exists ( [Observation] O  where O.value < 5 'mg') ",
+      "library MAT7909TestDefaultAlias version '0.0.000'",
+      "MAT7909TestDefaultAlias",
+      "",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+    expect(updatedContent.cql).toEqual(expectValue);
+    expect(updatedContent.isFhirHelpersAliasChanged).toEqual(true);
+  });
+
+  it("should replace incorrect alias for FHIRHelpers single line CQL", async () => {
     const expectValue =
       "library MAT7909TestDefaultAlias version '0.0.000' using QICore version '4.1.1' include FHIRHelpers version '4.3.000' called FHIRHelpers  valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139' context Patient define \"Initial Population\":   exists ( [Observation] O  where O.value < 5 'mg') ";
     const updatedContent = await updateEditorContent(
       "library MAT7909TestDefaultAlias version '0.0.000' using QICore version '4.1.1' include FHIRHelpers version '4.3.000' called Dummy  valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139' context Patient define \"Initial Population\":   exists ( [Observation] O  where O.value < 5 'mg') ",
+      "library MAT7909TestDefaultAlias version '0.0.000'",
+      "MAT7909TestDefaultAlias",
+      "",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+    expect(updatedContent.cql).toEqual(expectValue);
+    expect(updatedContent.isFhirHelpersAliasChanged).toEqual(true);
+  });
+
+  it("should replace incorrect alias for FHIRHelpers; multiple line cql ", async () => {
+    const expectValue =
+      "library MAT7909TestDefaultAlias version '0.0.000'\n using QICore version '4.1.1'\n include FHIRHelpers version '4.3.000' called FHIRHelpers\n valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139'\n context Patient\n define \"Initial Population\":\n   exists ( [Observation] O  where O.value < 5 'mg')\n ";
+    const updatedContent = await updateEditorContent(
+      "library MAT7909TestDefaultAlias version '0.0.000'\n using QICore version '4.1.1'\n include FHIRHelpers version '4.3.000' called Dummy\n valueset \"Bicarbonate lab test\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.139'\n context Patient\n define \"Initial Population\":\n   exists ( [Observation] O  where O.value < 5 'mg')\n ",
       "library MAT7909TestDefaultAlias version '0.0.000'",
       "MAT7909TestDefaultAlias",
       "",

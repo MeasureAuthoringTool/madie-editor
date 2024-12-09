@@ -268,16 +268,21 @@ const updateCql = (
       cqlUpdates.isLibraryStatementChanged = true;
     }
 
-    //FHIRHelpers can  not be aliased
-
     //in includes find FHIRHelpers.. if it exists, check for Alias.  If Alias isn't FHIRHelpers exactly,
     parsedEditorCql.parsedCql.includes.forEach((include) => {
       if (include.name === "FHIRHelpers" && include.called != "FHIRHelpers") {
         //then modify and return .. also set cqlUpdates.isFhirHelpersAliasModified = true
-        const fhirHelpersIncludeLine =
-          parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1];
+        const correctFhirHelpersIncludeLine: string = ` FHIRHelpers version ${include.version} called FHIRHelpers`;
+        const incorrectFhirHelpersIncludeLine: string =
+          parsedEditorCql.cqlArrayToBeFiltered[
+            include.start.line - 1
+          ].substring(include.start.position + 1, include.stop.position + 1);
+
         parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1] =
-          fhirHelpersIncludeLine.replace(include.called, "FHIRHelpers");
+          parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1].replace(
+            incorrectFhirHelpersIncludeLine,
+            correctFhirHelpersIncludeLine
+          );
         cqlUpdates.isFhirHelpersAliasChanged = true;
       }
     });
