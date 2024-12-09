@@ -273,10 +273,18 @@ const updateCql = (
     parsedEditorCql.parsedCql.includes.forEach((include) => {
       if (include.name === "FHIRHelpers" && include.called != "FHIRHelpers") {
         //then modify and return .. also set cqlUpdates.isFhirHelpersAliasModified = true
-        const fhirHelpersIncludeLine =
-          parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1];
+        const fhirHelpersIncludeLine: string[] =
+          parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1].split(
+            " "
+          );
+        if (fhirHelpersIncludeLine[4].toLowerCase() === "called") {
+          fhirHelpersIncludeLine[5] = "FHIRHelpers";
+        } else {
+          console.error("FHIRHelpers include statement was malformed");
+          throw new Error("FHIRHelpers include statement was malformed");
+        }
         parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1] =
-          fhirHelpersIncludeLine.replace(include.called, "FHIRHelpers");
+          fhirHelpersIncludeLine.join(" ");
         cqlUpdates.isFhirHelpersAliasChanged = true;
       }
     });
