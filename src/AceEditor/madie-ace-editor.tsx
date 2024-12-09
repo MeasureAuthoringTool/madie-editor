@@ -86,21 +86,22 @@ export const updateUsingStatements = (
   let isCqlUpdated = false;
   if (usingStatements?.length === 1) {
     const { name, version, start } = usingStatements[0];
-    if (
-      measureModel !== name ||
-      modelVersion !== version.replace(/["']/g, "")
-    ) {
-      // we want to keep FHIR if that's the only using model present for QICore.
+    const cleanedVersion = version.replace(/["']/g, "");
+    if (measureModel !== name || modelVersion !== cleanedVersion) {
+      // keep FHIR if that's the only using model present for QICore but update version if it was incorrect.
       if (measureModel === "QICore" && name === "FHIR") {
-        parsedEditorCqlCopy.cqlArrayToBeFiltered[
-          start.line - 1
-        ] = `using FHIR version '4.0.1'`;
+        if (cleanedVersion !== "4.0.1") {
+          parsedEditorCqlCopy.cqlArrayToBeFiltered[
+            start.line - 1
+          ] = `using FHIR version '4.0.1'`;
+          isCqlUpdated = true;
+        }
       } else {
         parsedEditorCqlCopy.cqlArrayToBeFiltered[
           start.line - 1
         ] = `using ${measureModel} version '${modelVersion}'`;
+        isCqlUpdated = true;
       }
-      isCqlUpdated = true;
     }
   } else if (usingStatements?.length > 1) {
     // to track if the usings statement was verified or not
