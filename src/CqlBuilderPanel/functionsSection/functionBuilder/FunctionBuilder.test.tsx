@@ -1,8 +1,15 @@
 import * as React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { describe, it } from "@jest/globals";
 import "@testing-library/jest-dom";
 import FunctionBuilder from "./FunctionBuilder";
+import userEvent from "@testing-library/user-event";
 
 describe("CQL Function Builder Tests", () => {
   it("Should display name and comment fields", async () => {
@@ -16,6 +23,10 @@ describe("CQL Function Builder Tests", () => {
       name: "Comment",
     });
     expect(functionCommentTextBox).toBeInTheDocument();
+
+    expect(
+      screen.getByTestId("terminology-section-Arguments-sub-heading")
+    ).toBeInTheDocument();
 
     expect(
       screen.getByTestId("terminology-section-Expression Editor-sub-heading")
@@ -89,5 +100,199 @@ describe("CQL Function Builder Tests", () => {
     expect(clearButton).toBeEnabled();
     fireEvent.click(clearButton);
     expect(functionNameInput.value).toBe("");
+  });
+
+  it("Should expand argument section", async () => {
+    render(<FunctionBuilder canEdit={true} handleApplyFunction={jest.fn()} />);
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    const argumentsSection = screen.getByTestId(
+      "terminology-section-Arguments-sub-heading"
+    );
+    const argumentSectionButton = await within(argumentsSection).findByRole(
+      "button"
+    );
+    fireEvent.click(argumentSectionButton);
+
+    const argumentNameTextBox = await screen.findByRole("textbox", {
+      name: "Name",
+    });
+    expect(argumentNameTextBox).toBeInTheDocument();
+
+    const argumentDataTypeTextBox = await screen.findByRole("combobox", {
+      name: "Available DataTypes",
+    });
+    expect(argumentDataTypeTextBox).toBeInTheDocument();
+
+    const clearButton = screen.getByTestId("clear-function-argument-btn");
+    expect(clearButton).toBeInTheDocument();
+    expect(clearButton).not.toBeEnabled();
+
+    const addButton = screen.getByTestId("function-argument-add-btn");
+    expect(addButton).toBeInTheDocument();
+    expect(addButton).not.toBeEnabled();
+
+    const functionArgumentTable = screen.getByTestId("function-argument-tbl");
+    expect(functionArgumentTable).toBeInTheDocument();
+  });
+
+  it("Should add field in argument section when Other selected", async () => {
+    render(<FunctionBuilder canEdit={true} handleApplyFunction={jest.fn()} />);
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    const argumentsSection = screen.getByTestId(
+      "terminology-section-Arguments-sub-heading"
+    );
+    const argumentSectionButton = await within(argumentsSection).findByRole(
+      "button"
+    );
+    fireEvent.click(argumentSectionButton);
+
+    const argumentNameTextBox = await screen.findByRole("textbox", {
+      name: "Name",
+    });
+    expect(argumentNameTextBox).toBeInTheDocument();
+
+    const argumentDataTypeTextBox = await screen.findByRole("combobox", {
+      name: "Available DataTypes",
+    });
+    expect(argumentDataTypeTextBox).toBeInTheDocument();
+    userEvent.click(argumentDataTypeTextBox);
+    const optionList = screen.getAllByRole("option");
+    expect(optionList.length).toEqual(9);
+    const otherOption = await screen.findByRole("option", { name: "Other" });
+    userEvent.click(otherOption);
+
+    const otherTextbox = await screen.findByRole("textbox", {
+      name: "Other",
+    });
+    expect(otherTextbox).toBeInTheDocument();
+  });
+
+  it("Should clear argument section", async () => {
+    render(<FunctionBuilder canEdit={true} handleApplyFunction={jest.fn()} />);
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    const argumentsSection = screen.getByTestId(
+      "terminology-section-Arguments-sub-heading"
+    );
+    const argumentSectionButton = await within(argumentsSection).findByRole(
+      "button"
+    );
+    fireEvent.click(argumentSectionButton);
+
+    const argumentNameInput = (await screen.findByTestId(
+      "argument-name-input"
+    )) as HTMLInputElement;
+    expect(argumentNameInput).toBeInTheDocument();
+    expect(argumentNameInput.value).toBe("");
+    fireEvent.change(argumentNameInput, {
+      target: { value: "Test" },
+    });
+    expect(argumentNameInput.value).toBe("Test");
+
+    const clearButton = screen.getByTestId("clear-function-argument-btn");
+    expect(clearButton).toBeInTheDocument();
+    expect(clearButton).toBeEnabled();
+
+    const addButton = screen.getByTestId("function-argument-add-btn");
+    expect(addButton).toBeInTheDocument();
+    expect(addButton).toBeEnabled();
+
+    fireEvent.click(clearButton);
+
+    const confirmationDialog = screen.getByText("Are you sure?");
+    const confirmClearButton = screen.getByTestId("confirmation-clear-button");
+    expect(confirmClearButton).toBeEnabled();
+    fireEvent.click(confirmClearButton);
+    expect(argumentNameInput.value).toBe("");
+  });
+
+  it("Should add argument to the table", async () => {
+    render(<FunctionBuilder canEdit={true} handleApplyFunction={jest.fn()} />);
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    const argumentsSection = screen.getByTestId(
+      "terminology-section-Arguments-sub-heading"
+    );
+    const argumentSectionButton = await within(argumentsSection).findByRole(
+      "button"
+    );
+    fireEvent.click(argumentSectionButton);
+
+    const argumentNameInput = (await screen.findByTestId(
+      "argument-name-input"
+    )) as HTMLInputElement;
+    expect(argumentNameInput).toBeInTheDocument();
+    expect(argumentNameInput.value).toBe("");
+    fireEvent.change(argumentNameInput, {
+      target: { value: "Test" },
+    });
+    expect(argumentNameInput.value).toBe("Test");
+
+    const addButton = screen.getByTestId("function-argument-add-btn");
+    expect(addButton).toBeInTheDocument();
+    expect(addButton).toBeEnabled();
+
+    fireEvent.click(addButton);
+
+    const functionArgumentTable = screen.getByTestId("function-argument-tbl");
+    expect(functionArgumentTable).toBeInTheDocument();
+    const tableRow = functionArgumentTable.querySelector("tbody").children[0];
+    expect(tableRow.children[1].textContent).toEqual("Test");
+  });
+
+  it("Should delete argument from the table", async () => {
+    render(<FunctionBuilder canEdit={true} handleApplyFunction={jest.fn()} />);
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    const argumentsSection = screen.getByTestId(
+      "terminology-section-Arguments-sub-heading"
+    );
+    const argumentSectionButton = await within(argumentsSection).findByRole(
+      "button"
+    );
+    fireEvent.click(argumentSectionButton);
+
+    const argumentNameInput = (await screen.findByTestId(
+      "argument-name-input"
+    )) as HTMLInputElement;
+    expect(argumentNameInput).toBeInTheDocument();
+    expect(argumentNameInput.value).toBe("");
+    fireEvent.change(argumentNameInput, {
+      target: { value: "Test" },
+    });
+    expect(argumentNameInput.value).toBe("Test");
+
+    const addButton = screen.getByTestId("function-argument-add-btn");
+    expect(addButton).toBeInTheDocument();
+    expect(addButton).toBeEnabled();
+
+    fireEvent.click(addButton);
+
+    const functionArgumentTable = screen.getByTestId("function-argument-tbl");
+    expect(functionArgumentTable).toBeInTheDocument();
+    const tableRow = functionArgumentTable.querySelector("tbody").children[0];
+    expect(tableRow.children[1].textContent).toEqual("Test");
+    const deleteArgumentButton = await within(tableRow).findByTestId(
+      "delete-button-0"
+    );
+    fireEvent.click(deleteArgumentButton);
+
+    const confirmDeleteButton = screen.getByTestId(
+      "delete-dialog-continue-button"
+    );
+    expect(confirmDeleteButton).toBeEnabled();
+    fireEvent.click(confirmDeleteButton);
+    const newTableRow =
+      functionArgumentTable.querySelector("tbody").children[0];
+    expect(newTableRow.children[0].textContent).toEqual(
+      "No Results were found"
+    );
   });
 });
