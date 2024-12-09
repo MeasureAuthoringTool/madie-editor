@@ -374,10 +374,25 @@ describe("synching the cql", () => {
     expect(updatedContent.isUsingStatementChanged).toEqual(true);
   });
 
-  test("Not to replace the using FHIR statement for QICore measure if it is the only using statement", async () => {
+  test("Not to replace the using FHIR statement for QICore measure if it is the only using statement with correct version", async () => {
     const expectValue = "using FHIR version '4.0.1'";
     const updatedContent = await updateEditorContent(
       "using FHIR version '4.0.1'",
+      "",
+      "Test",
+      "",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+    expect(updatedContent.cql).toEqual(expectValue);
+  });
+
+  test("Correct the using FHIR model version for QICore measure if it is the only using statement but incorrect version", async () => {
+    const expectValue = "using FHIR version '4.0.1'";
+    const updatedContent = await updateEditorContent(
+      "using FHIR version '4.1.1'", //incorrect FHIR version
       "",
       "Test",
       "",
