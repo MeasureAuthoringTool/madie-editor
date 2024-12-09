@@ -75,7 +75,7 @@ describe("Test FhirElmTranslationServiceApi", () => {
       new FhirElmTranslationServiceApi(null, mockGetAccessToken);
 
     try {
-      await fhirElmTranslationServiceApi.translateCqlToElm("test", true);
+      await fhirElmTranslationServiceApi.translateCqlToElm("mock cql", true);
     } catch (error) {
       expect(error).not.toBeNull();
       expect(error.message).toBe(
@@ -104,7 +104,7 @@ describe("Test FhirElmTranslationServiceApi", () => {
       new FhirElmTranslationServiceApi("test", mockGetAccessToken);
 
     try {
-      await fhirElmTranslationServiceApi.translateCqlToElm("test", false);
+      await fhirElmTranslationServiceApi.translateCqlToElm("mock cql", false);
     } catch (error) {
       expect(error).not.toBeNull();
       expect(error.message).toBe("Request failed with status code 404");
