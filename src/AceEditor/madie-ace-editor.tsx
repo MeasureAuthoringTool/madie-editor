@@ -273,10 +273,8 @@ const updateCql = (
       if (include.name === "FHIRHelpers" && include.called != "FHIRHelpers") {
         //then modify and return .. also set cqlUpdates.isFhirHelpersAliasModified = true
         const correctFhirHelpersIncludeLine: string = `include FHIRHelpers version ${include.version} called FHIRHelpers`;
-        const incorrectFhirHelpersIncludeLine: string =
-          include.text;
-        console.log(incorrectFhirHelpersIncludeLine);
-        console.log(correctFhirHelpersIncludeLine);
+        const incorrectFhirHelpersIncludeLine: string = include.text;
+
         parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1] =
           parsedEditorCql.cqlArrayToBeFiltered[include.start.line - 1].replace(
             incorrectFhirHelpersIncludeLine,
