@@ -1,5 +1,3 @@
-// import { formatExpressionName } from "../definitionsSection/definitionBuilder/DefinitionBuilder";
-
 export const formatExpressionName = (values) => {
   return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
     ? values?.type === "Functions" || values?.type === "Fluent Functions"
@@ -9,7 +7,7 @@ export const formatExpressionName = (values) => {
       : `"${values?.name}"`
     : values?.name;
 };
-// given
+
 export const getNewExpressionsAndLines = (
   values: any,
   cursorPosition: any,

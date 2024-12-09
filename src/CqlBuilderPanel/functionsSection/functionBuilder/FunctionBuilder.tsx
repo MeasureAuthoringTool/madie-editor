@@ -33,7 +33,6 @@ export interface FunctionProps {
   funct?: Funct;
   onClose?: Function;
   operation?: string;
-  cqlFunction?: any;
 }
 
 export default function FunctionBuilder({
@@ -44,7 +43,6 @@ export default function FunctionBuilder({
   funct,
   cqlBuilderLookupsTypes,
   operation,
-  cqlFunction,
 }: FunctionProps) {
   const [argumentsEditorOpen, setArgumentsEditorOpen] =
     useState<boolean>(false);
