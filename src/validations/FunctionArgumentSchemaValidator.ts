@@ -6,5 +6,10 @@ export const FunctionArgumentSchemaValidator = Yup.object().shape({
     "No spaces or special characters besides underscore are allowed"
   ),
   dataType: Yup.string(),
-  other: Yup.string(),
+  other: Yup.string().when("dataType", {
+    is: (value: any) => value === "Other",
+    then: (schema) =>
+      schema.required("This field is required when dataType is 'Other'."),
+    otherwise: (schema) => schema,
+  }),
 });

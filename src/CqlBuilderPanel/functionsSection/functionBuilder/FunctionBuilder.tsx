@@ -135,6 +135,9 @@ export default function FunctionBuilder({
                 if (e.target.value && !expressionEditorOpen) {
                   setExpressionEditorOpen(true);
                 }
+                if (e.target.value && !argumentsEditorOpen) {
+                  setArgumentsEditorOpen(true);
+                }
               }}
             />
           </div>

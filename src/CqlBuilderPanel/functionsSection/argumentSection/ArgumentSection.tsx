@@ -137,6 +137,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
               inputProps={{
                 "data-testid": "other-type-input",
               }}
+              // required
               {...formik.getFieldProps("other")}
               error={Boolean(formik.errors.other)}
               helperText={formik.errors.other}
