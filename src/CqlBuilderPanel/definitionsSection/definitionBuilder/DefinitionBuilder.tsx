@@ -11,6 +11,7 @@ import "../Definitions.scss";
 import { DefinitionSectionSchemaValidator } from "../../../validations/DefinitionSectionSchemaValidator";
 import ExpressionEditor from "../expressionSection/ExpressionEditor";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
+import { getNewExpressionsAndLines } from "../../common/utils";
 
 export interface Definition {
   definitionName?: string;
@@ -29,16 +30,6 @@ export interface DefinitionProps {
   onClose?: Function;
 }
 
-export const formatExpressionName = (values) => {
-  return values?.type !== "Timing" && values?.type !== "Pre-Defined Functions"
-    ? values?.type === "Functions" || values?.type === "Fluent Functions"
-      ? values?.name?.replace(/([\w\s]+)\(\)/g, '"$1"()')
-      : values?.name.includes(".")
-      ? values?.name.replace(/(.*\.)(.*)/, '$1"$2"')
-      : `"${values?.name}"`
-    : values?.name;
-};
-
 export default function DefinitionBuilder({
   canEdit,
   handleApplyDefinition,
@@ -56,58 +47,6 @@ export default function DefinitionBuilder({
   );
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
-
-  const handleExpressionEditorInsert = (values) => {
-    const formattedExpression = formatExpressionName(values);
-    let editorExpressionValue = expressionEditorValue;
-    let newCursorPosition = cursorPosition;
-
-    if (cursorPosition && !autoInsert) {
-      // Insert at cursor position
-      const { row, column } = cursorPosition;
-      const lines = expressionEditorValue.split("\n");
-      const currentLine = lines[row];
-      lines[row] =
-        currentLine.slice(0, column) +
-        formattedExpression +
-        currentLine.slice(column);
-      editorExpressionValue = lines.join("\n");
-      newCursorPosition = {
-        row,
-        column: column + formattedExpression.length,
-      } as unknown;
-    } else {
-      // Append to a new line
-      const lines = editorExpressionValue.split("\n");
-      const newLineIndex = lines.length;
-      editorExpressionValue +=
-        (editorExpressionValue ? "\n" : "") + formattedExpression;
-      newCursorPosition = {
-        row: newLineIndex,
-        column: formattedExpression.length,
-      };
-    }
-
-    setExpressionEditorValue(editorExpressionValue);
-    formik.setFieldValue("type", "");
-    formik.setFieldValue("name", "");
-
-    textAreaRef.current.editor.setValue(editorExpressionValue, 1);
-
-    // set the cursor to the end of the inserted text
-    textAreaRef.current.editor.moveCursorTo(
-      newCursorPosition.row,
-      newCursorPosition.column
-    );
-    textAreaRef.current.editor.clearSelection();
-
-    // set autoInsert to true for next insertion
-    setAutoInsert(true);
-
-    // clear cursor position to allow the next item to auto-insert at the end
-    setCursorPosition(null);
-  };
-
   const formik = useFormik({
     initialValues: {
       definitionName: definition?.definitionName || "",
@@ -118,9 +57,33 @@ export default function DefinitionBuilder({
     validationSchema: DefinitionSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {
-      handleExpressionEditorInsert(values);
+      const newValues = getNewExpressionsAndLines(
+        values,
+        cursorPosition,
+        expressionEditorValue,
+        autoInsert
+      );
+      updateExpressionAndLines(newValues[0], newValues[1]);
     },
   });
+
+  // update formik, and expressionEditor, cursor, lines
+  const updateExpressionAndLines = (
+    newEditorExpressionValue,
+    newCursorPosition
+  ) => {
+    setExpressionEditorValue(newEditorExpressionValue);
+    formik.setFieldValue("type", "");
+    formik.setFieldValue("name", "");
+    textAreaRef.current.editor.setValue(newEditorExpressionValue, 1);
+    textAreaRef.current.editor.moveCursorTo(
+      newCursorPosition.row,
+      newCursorPosition.column
+    );
+    textAreaRef.current.editor.clearSelection();
+    setAutoInsert(true);
+    setCursorPosition(null);
+  };
   const { resetForm } = formik;
 
   useEffect(() => {

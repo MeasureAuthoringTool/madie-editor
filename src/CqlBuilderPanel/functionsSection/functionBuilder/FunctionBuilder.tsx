@@ -14,6 +14,9 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 import { Box } from "@mui/system";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import ArgumentSection from "../argumentSection/ArgumentSection";
+import ExpressionEditor from "../../definitionsSection/expressionSection/ExpressionEditor";
+import { getNewExpressionsAndLines } from "../../common/utils";
+import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 
 export interface Funct {
   functionName?: string;
@@ -23,11 +26,13 @@ export interface Funct {
 }
 
 export interface FunctionProps {
+  cqlBuilderLookupsTypes: CqlBuilderLookup;
   canEdit: boolean;
   handleApplyFunction: Function;
   handleFunctionEdit?: Function;
   funct?: Funct;
   onClose?: Function;
+  operation?: string;
 }
 
 export default function FunctionBuilder({
@@ -36,6 +41,8 @@ export default function FunctionBuilder({
   handleFunctionEdit,
   onClose,
   funct,
+  cqlBuilderLookupsTypes,
+  operation,
 }: FunctionProps) {
   const [argumentsEditorOpen, setArgumentsEditorOpen] =
     useState<boolean>(false);
@@ -44,18 +51,50 @@ export default function FunctionBuilder({
   const textAreaRef = useRef(null);
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
 
+  const [expressionEditorValue, setExpressionEditorValue] = useState("");
+  const [cursorPosition, setCursorPosition] = useState(null);
+  const [autoInsert, setAutoInsert] = useState(false);
   const formik = useFormik({
     initialValues: {
       functionName: funct?.functionName || "",
       comment: funct?.comment || "",
       fluentFunction: funct?.fluentFunction || true,
       functionsArguments: funct?.functionsArguments || [],
+      type: "",
+      name: "",
     },
     validationSchema: FunctionSectionSchemaValidator,
     enableReinitialize: true,
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      const newValues = getNewExpressionsAndLines(
+        values,
+        cursorPosition,
+        expressionEditorValue,
+        autoInsert
+      );
+      updateExpressionAndLines(newValues[0], newValues[1]);
+    },
   });
   const { resetForm } = formik;
+
+  // update formik, and expressionEditor, cursor, lines
+  const updateExpressionAndLines = (
+    newEditorExpressionValue,
+    newCursorPosition
+  ) => {
+    setExpressionEditorValue(newEditorExpressionValue);
+    formik.setFieldValue("type", "");
+    formik.setFieldValue("name", "");
+
+    textAreaRef.current.editor.setValue(newEditorExpressionValue, 1);
+    textAreaRef.current.editor.moveCursorTo(
+      newCursorPosition.row,
+      newCursorPosition.column
+    );
+    textAreaRef.current.editor.clearSelection();
+    setAutoInsert(true);
+    setCursorPosition(null);
+  };
 
   const addArgumentToFunctionsArguments = (fn) => {
     const newArgs = [...formik.values.functionsArguments, fn];
@@ -91,6 +130,12 @@ export default function FunctionBuilder({
               error={Boolean(formik.errors.functionName)}
               helperText={formik.errors.functionName}
               {...formik.getFieldProps("functionName")}
+              onChange={(e) => {
+                formik.handleChange(e);
+                if (e.target.value && !expressionEditorOpen) {
+                  setExpressionEditorOpen(true);
+                }
+              }}
             />
           </div>
           <Box sx={{ marginTop: "22px" }}>
@@ -143,11 +188,18 @@ export default function FunctionBuilder({
         </ExpandingSection>
 
         <div style={{ marginTop: "36px" }} />
-        <ExpandingSection
-          title="Expression Editor"
-          showHeaderContent={expressionEditorOpen}
-          children={<></>}
-        />
+        <FormikProvider value={formik}>
+          <ExpressionEditor
+            canEdit={canEdit}
+            expressionEditorOpen={expressionEditorOpen}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+            textAreaRef={textAreaRef}
+            expressionEditorValue={expressionEditorValue}
+            setExpressionEditorValue={setExpressionEditorValue}
+            setCursorPosition={setCursorPosition}
+            setAutoInsert={setAutoInsert}
+          />
+        </FormikProvider>
         <div className="form-actions">
           <Button
             id="clear-function-btn"
@@ -164,8 +216,18 @@ export default function FunctionBuilder({
           <Button
             data-testid={`function-apply-btn`}
             disabled={!formik.values.functionName || !canEdit || !formik.dirty}
-            // tw="ml-4"
-            onClick={() => {}}
+            onClick={() => {
+              const functionToApply = {
+                functionName: formik.values.functionName,
+                comment: formik.values.comment,
+                functionsArguments: formik.values.functionsArguments,
+                fluentFunction: formik.values.fluentFunction,
+                expressionValue: expressionEditorValue,
+              };
+              resetForm();
+              setExpressionEditorValue("");
+              handleApplyFunction(functionToApply);
+            }}
           >
             Apply
           </Button>

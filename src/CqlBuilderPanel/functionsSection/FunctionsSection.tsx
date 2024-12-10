@@ -84,6 +84,7 @@ export default function FunctionsSection({
           <FunctionBuilder
             canEdit={canEdit}
             handleApplyFunction={handleApplyFunction}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
           />
         )}
         {activeTab === "saved-functions" && (

@@ -256,12 +256,12 @@ export default function CqlBuilderPanel({
 
           {activeTab === "functions" && (
             <FunctionsSection
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
               canEdit={canEdit}
               handleApplyFunction={handleApplyFunction}
               loading={loading}
               cql={measureStoreCql}
               isCQLUnchanged={isCQLUnchanged}
-              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
             />
           )}
         </div>
