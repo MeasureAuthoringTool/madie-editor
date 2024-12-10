@@ -50,7 +50,6 @@ export default function FunctionBuilder({
     useState<boolean>(false);
   const textAreaRef = useRef(null);
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
-
   const [expressionEditorValue, setExpressionEditorValue] = useState("");
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
@@ -180,6 +179,7 @@ export default function FunctionBuilder({
           title="Arguments"
           showHeaderContent={argumentsEditorOpen}
         >
+          {/* functional input fields */}
           <ArgumentSection
             canEdit={canEdit}
             addArgumentToFunctionsArguments={addArgumentToFunctionsArguments}

@@ -74,6 +74,7 @@ const Arguments = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const managePagination = useCallback(() => {
+    //  page zero for no pages available
     if (functionArguments.length < currentLimit) {
       setOffset(0);
       setVisibleArguments([...functionArguments]);
@@ -109,6 +110,15 @@ const Arguments = ({
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
+  // maybe an additional useEffect if functionArguments. letting this happen outside of useCallback to prevent us having to compare against old values using refs.
+  // slightly less performant, but much less complicated then a bunch of refs and checking prev state to delegate pagination correctly
+  useEffect(() => {
+    if (functionArguments?.length > currentLimit) {
+      const newTotalPages = Math.ceil(functionArguments.length / currentLimit);
+      handlePageChange(null, newTotalPages);
+    }
+  }, [functionArguments, currentLimit]);
+
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
@@ -163,11 +173,13 @@ const Arguments = ({
               <div className="arrow-container">
                 <button
                   onClick={() => moveItem(row.row.index, row.row.index - 1)}
+                  disabled={row.row.index == 0}
                 >
                   <ArrowDropUpOutlinedIcon />
                 </button>
                 <button
                   onClick={() => moveItem(row.row.index, row.row.index + 1)}
+                  disabled={row.row.index === functionArguments.length - 1}
                 >
                   <ArrowDropDownOutlinedIcon />
                 </button>

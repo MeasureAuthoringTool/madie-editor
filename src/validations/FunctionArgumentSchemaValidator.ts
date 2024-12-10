@@ -9,7 +9,7 @@ export const FunctionArgumentSchemaValidator = Yup.object().shape({
   other: Yup.string().when("dataType", {
     is: (value: any) => value === "Other",
     then: (schema) =>
-      schema.required("This field is required when dataType is 'Other'."),
+      schema.required("Other is required when dataType is Other."),
     otherwise: (schema) => schema,
   }),
 });
