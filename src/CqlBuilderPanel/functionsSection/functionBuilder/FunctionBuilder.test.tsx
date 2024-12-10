@@ -691,6 +691,108 @@ describe("CQL Function Builder Tests", () => {
       );
     });
   });
+
+  it("Should trigger the final page", async () => {
+    const handleApplyFn = jest.fn();
+    render(
+      <FunctionBuilder
+        canEdit={true}
+        handleApplyFunction={handleApplyFn}
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
+        funct={{
+          functionName: "",
+          comment: "",
+          functionsArguments: [
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+          ],
+        }}
+      />
+    );
+    // name, insert, except args
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    const argumentsSection = screen.getByTestId(
+      "terminology-section-Arguments-sub-heading"
+    );
+    expect(functionNameInput).toBeInTheDocument();
+    expect(functionNameInput.value).toBe("");
+    fireEvent.change(functionNameInput, {
+      target: { value: "IP" },
+    });
+    expect(functionNameInput.value).toBe("IP");
+    expect(
+      screen.getByTestId("terminology-section-Expression Editor-sub-heading")
+    ).toBeInTheDocument();
+    const typeInput = screen.getByTestId(
+      "type-selector-input"
+    ) as HTMLInputElement;
+    expect(typeInput).toBeInTheDocument();
+    expect(typeInput.value).toBe("");
+
+    fireEvent.change(typeInput, {
+      target: { value: "Timing" },
+    });
+    expect(typeInput.value).toBe("Timing");
+
+    const nameAutoComplete = screen.getByTestId("name-selector");
+    expect(nameAutoComplete).toBeInTheDocument();
+    const nameComboBox = within(nameAutoComplete).getByRole("combobox");
+    //name dropdown is populated with values based on type
+    await waitFor(() => expect(nameComboBox).toBeEnabled());
+
+    const nameDropDown = await screen.findByTestId("name-selector");
+    fireEvent.keyDown(nameDropDown, { key: "ArrowDown" });
+
+    const nameOptions = await screen.findAllByRole("option");
+    expect(nameOptions).toHaveLength(70);
+    const insertBtn = screen.getByTestId("expression-insert-btn");
+
+    expect(insertBtn).toBeInTheDocument();
+    expect(insertBtn).toBeDisabled();
+
+    fireEvent.click(nameOptions[0]);
+    expect(insertBtn).toBeEnabled();
+
+    fireEvent.click(insertBtn);
+    const definitionName = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    expect(definitionName.value).toBe("IP");
+    // args
+
+    const argumentNameInput = (await screen.findByTestId(
+      "argument-name-input"
+    )) as HTMLInputElement;
+    expect(argumentNameInput).toBeInTheDocument();
+    expect(argumentNameInput.value).toBe("");
+    fireEvent.change(argumentNameInput, {
+      target: { value: "newName" },
+    });
+    expect(argumentNameInput.value).toBe("newName");
+
+    const dataTypeDropdown = await screen.findByTestId(
+      "arg-type-selector-input"
+    );
+    fireEvent.change(dataTypeDropdown, {
+      target: { value: "Boolean" },
+    });
+
+    const addButton = screen.getByTestId("function-argument-add-btn");
+    expect(addButton).toBeInTheDocument();
+    expect(addButton).toBeEnabled();
+
+    fireEvent.click(addButton);
+
+    const functionArgumentTable = screen.getByTestId("function-argument-tbl");
+    expect(functionArgumentTable).toBeInTheDocument();
+    const tableRow = functionArgumentTable.querySelector("tbody").children[0];
+    expect(tableRow.children[1].textContent).toEqual("newName");
+  });
 });
 
 describe("getNewExpressionsAndLines", () => {
