@@ -171,6 +171,13 @@ describe("CQL Function Builder Tests", () => {
       name: "Other",
     });
     expect(otherTextbox).toBeInTheDocument();
+    userEvent.click(otherTextbox);
+    userEvent.click(argumentDataTypeTextBox);
+    await waitFor(() => {
+      screen
+        .getByTestId("other-field-helper-text")
+        .classList.contains("Mui-error");
+    });
   });
 
   it("Should clear argument section", async () => {
@@ -692,7 +699,7 @@ describe("CQL Function Builder Tests", () => {
     });
   });
 
-  it("Should trigger the final page", async () => {
+  it("Should handle many table changes", async () => {
     const handleApplyFn = jest.fn();
     render(
       <FunctionBuilder
@@ -792,6 +799,50 @@ describe("CQL Function Builder Tests", () => {
     expect(functionArgumentTable).toBeInTheDocument();
     const tableRow = functionArgumentTable.querySelector("tbody").children[0];
     expect(tableRow.children[1].textContent).toEqual("newName");
+    // we got to the last page lets go back and trigger a change to page 0
+    const pageButton = await screen.findByRole("button", {
+      name: /Go to page 1/i,
+    });
+    expect(pageButton).toHaveTextContent("1");
+
+    userEvent.click(pageButton);
+    const page1Row0 = functionArgumentTable.querySelector("tbody").children[0];
+    expect(page1Row0.children[1].textContent).toEqual("Test");
+    // trigger the limit to prove we can see our new entry
+
+    const comboBoxes = await screen.findAllByRole("combobox");
+    const limitChoice = comboBoxes[1];
+
+    expect(limitChoice).toHaveTextContent("5");
+
+    userEvent.click(limitChoice);
+
+    const optionTen = await screen.findByRole("option", {
+      name: /10/i,
+    });
+    await waitFor(() => {
+      expect(optionTen).toBeDefined();
+    });
+
+    userEvent.click(optionTen);
+    await waitFor(() => {
+      expect(screen.findAllByText("newName")).toBeDefined();
+    });
+    // now we're back on first page with ten items. Lets move index 5 -> 4, 4 -> 5
+    const sixthUp = await screen.findByTestId("arg-order-up-index-5");
+    userEvent.click(sixthUp);
+    await waitFor(() => {
+      const page1Row = functionArgumentTable.querySelector("tbody").children[5];
+      expect(page1Row.children[1].textContent).toEqual("Test");
+    });
+    const fifthDown = await screen.findByTestId("arg-order-down-index-4");
+    userEvent.click(fifthDown);
+
+    await waitFor(() => {
+      const page1Row5 =
+        functionArgumentTable.querySelector("tbody").children[5];
+      expect(page1Row5.children[1].textContent).toEqual("newName");
+    });
   });
 });
 

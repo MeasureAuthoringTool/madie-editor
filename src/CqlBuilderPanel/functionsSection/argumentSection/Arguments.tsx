@@ -174,12 +174,14 @@ const Arguments = ({
                 <button
                   onClick={() => moveItem(row.row.index, row.row.index - 1)}
                   disabled={row.row.index == 0}
+                  data-testId={`arg-order-up-index-${row.row.index}`}
                 >
                   <ArrowDropUpOutlinedIcon />
                 </button>
                 <button
                   onClick={() => moveItem(row.row.index, row.row.index + 1)}
                   disabled={row.row.index === functionArguments.length - 1}
+                  data-testId={`arg-order-down-index-${row.row.index}`}
                 >
                   <ArrowDropDownOutlinedIcon />
                 </button>
