@@ -504,10 +504,6 @@ describe("CQL Function Builder Tests", () => {
     )) as HTMLInputElement;
     expect(definitionName.value).toBe("IP");
     // args
-    const argumentSectionButton = await within(argumentsSection).findByRole(
-      "button"
-    );
-    fireEvent.click(argumentSectionButton);
 
     const argumentNameInput = (await screen.findByTestId(
       "argument-name-input"
@@ -644,10 +640,6 @@ describe("CQL Function Builder Tests", () => {
     )) as HTMLInputElement;
     expect(definitionName.value).toBe("IP");
     // args
-    const argumentSectionButton = await within(argumentsSection).findByRole(
-      "button"
-    );
-    fireEvent.click(argumentSectionButton);
 
     const argumentNameInput = (await screen.findByTestId(
       "argument-name-input"
