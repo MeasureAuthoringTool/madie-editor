@@ -125,7 +125,9 @@ export default function ArgumentSection(props: ArgumentsProps) {
             helperText={formik.errors.dataType}
             onChange={(evt) => {
               formik.setFieldValue("dataType", evt.target.value);
-              formik.setFieldValue("other", "");
+              if (formik.values.other) {
+                formik.setFieldValue("other", "");
+              }
             }}
           />
         </div>
