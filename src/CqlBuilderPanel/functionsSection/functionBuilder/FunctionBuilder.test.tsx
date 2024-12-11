@@ -449,9 +449,6 @@ describe("CQL Function Builder Tests", () => {
     const functionNameInput = (await screen.findByTestId(
       "function-name-text-input"
     )) as HTMLInputElement;
-    const argumentsSection = screen.getByTestId(
-      "terminology-section-Arguments-sub-heading"
-    );
     expect(functionNameInput).toBeInTheDocument();
     expect(functionNameInput.value).toBe("");
     fireEvent.change(functionNameInput, {
@@ -540,11 +537,12 @@ describe("CQL Function Builder Tests", () => {
     });
     expect(otherNameInput.value).toBe("Other");
 
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
-
-    fireEvent.click(addButton);
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeInTheDocument();
+      expect(addButton).toBeEnabled();
+      fireEvent.click(addButton);
+    });
 
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
