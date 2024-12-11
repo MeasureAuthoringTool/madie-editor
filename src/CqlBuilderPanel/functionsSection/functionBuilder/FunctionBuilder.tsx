@@ -50,7 +50,6 @@ export default function FunctionBuilder({
     useState<boolean>(false);
   const textAreaRef = useRef(null);
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
-  const [expressionEditorValue, setExpressionEditorValue] = useState("");
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
   const formik = useFormik({
@@ -59,6 +58,7 @@ export default function FunctionBuilder({
       comment: funct?.comment || "",
       fluentFunction: funct?.fluentFunction || true,
       functionsArguments: funct?.functionsArguments || [],
+      expressionEditorValue: "",
       type: "",
       name: "",
     },
@@ -68,20 +68,21 @@ export default function FunctionBuilder({
       const newValues = getNewExpressionsAndLines(
         values,
         cursorPosition,
-        expressionEditorValue,
+        formik.values.expressionEditorValue,
         autoInsert
       );
       updateExpressionAndLines(newValues[0], newValues[1]);
     },
   });
-  const { resetForm } = formik;
+  // going to pass dirty down to know when we need to reset sub form
+  const { resetForm, dirty } = formik;
 
   // update formik, and expressionEditor, cursor, lines
   const updateExpressionAndLines = (
     newEditorExpressionValue,
     newCursorPosition
   ) => {
-    setExpressionEditorValue(newEditorExpressionValue);
+    formik.setFieldValue("expressionEditorValue", newEditorExpressionValue);
     formik.setFieldValue("type", "");
     formik.setFieldValue("name", "");
 
@@ -186,6 +187,7 @@ export default function FunctionBuilder({
             deleteArgumentFromFunctionArguments={
               deleteArgumentFromFunctionArguments
             }
+            dirty={dirty}
             functionArguments={formik.values.functionsArguments}
           />
         </ExpandingSection>
@@ -197,8 +199,10 @@ export default function FunctionBuilder({
             expressionEditorOpen={expressionEditorOpen}
             cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
             textAreaRef={textAreaRef}
-            expressionEditorValue={expressionEditorValue}
-            setExpressionEditorValue={setExpressionEditorValue}
+            expressionEditorValue={formik.values.expressionEditorValue}
+            setExpressionEditorValue={(v) => {
+              formik.setFieldValue("expressionEditorValue", v);
+            }}
             setCursorPosition={setCursorPosition}
             setAutoInsert={setAutoInsert}
           />
@@ -225,10 +229,9 @@ export default function FunctionBuilder({
                 comment: formik.values.comment,
                 functionsArguments: formik.values.functionsArguments,
                 fluentFunction: formik.values.fluentFunction,
-                expressionValue: expressionEditorValue,
+                expressionValue: formik.values.expressionEditorValue,
               };
               resetForm();
-              setExpressionEditorValue("");
               handleApplyFunction(functionToApply);
             }}
           >
