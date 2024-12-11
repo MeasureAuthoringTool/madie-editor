@@ -171,6 +171,13 @@ describe("CQL Function Builder Tests", () => {
       name: "Other",
     });
     expect(otherTextbox).toBeInTheDocument();
+    userEvent.click(otherTextbox);
+    userEvent.click(argumentDataTypeTextBox);
+    await waitFor(() => {
+      screen
+        .getByTestId("other-field-helper-text")
+        .classList.contains("Mui-error");
+    });
   });
 
   it("Should clear argument section", async () => {
@@ -504,10 +511,6 @@ describe("CQL Function Builder Tests", () => {
     )) as HTMLInputElement;
     expect(definitionName.value).toBe("IP");
     // args
-    const argumentSectionButton = await within(argumentsSection).findByRole(
-      "button"
-    );
-    fireEvent.click(argumentSectionButton);
 
     const argumentNameInput = (await screen.findByTestId(
       "argument-name-input"
@@ -644,10 +647,6 @@ describe("CQL Function Builder Tests", () => {
     )) as HTMLInputElement;
     expect(definitionName.value).toBe("IP");
     // args
-    const argumentSectionButton = await within(argumentsSection).findByRole(
-      "button"
-    );
-    fireEvent.click(argumentSectionButton);
 
     const argumentNameInput = (await screen.findByTestId(
       "argument-name-input"
@@ -697,6 +696,152 @@ describe("CQL Function Builder Tests", () => {
           ],
         })
       );
+    });
+  });
+
+  it("Should handle many table changes", async () => {
+    const handleApplyFn = jest.fn();
+    render(
+      <FunctionBuilder
+        canEdit={true}
+        handleApplyFunction={handleApplyFn}
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
+        funct={{
+          functionName: "",
+          comment: "",
+          functionsArguments: [
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "Test" },
+          ],
+        }}
+      />
+    );
+    // name, insert, except args
+    const functionNameInput = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    const argumentsSection = screen.getByTestId(
+      "terminology-section-Arguments-sub-heading"
+    );
+    expect(functionNameInput).toBeInTheDocument();
+    expect(functionNameInput.value).toBe("");
+    fireEvent.change(functionNameInput, {
+      target: { value: "IP" },
+    });
+    expect(functionNameInput.value).toBe("IP");
+    expect(
+      screen.getByTestId("terminology-section-Expression Editor-sub-heading")
+    ).toBeInTheDocument();
+    const typeInput = screen.getByTestId(
+      "type-selector-input"
+    ) as HTMLInputElement;
+    expect(typeInput).toBeInTheDocument();
+    expect(typeInput.value).toBe("");
+
+    fireEvent.change(typeInput, {
+      target: { value: "Timing" },
+    });
+    expect(typeInput.value).toBe("Timing");
+
+    const nameAutoComplete = screen.getByTestId("name-selector");
+    expect(nameAutoComplete).toBeInTheDocument();
+    const nameComboBox = within(nameAutoComplete).getByRole("combobox");
+    //name dropdown is populated with values based on type
+    await waitFor(() => expect(nameComboBox).toBeEnabled());
+
+    const nameDropDown = await screen.findByTestId("name-selector");
+    fireEvent.keyDown(nameDropDown, { key: "ArrowDown" });
+
+    const nameOptions = await screen.findAllByRole("option");
+    expect(nameOptions).toHaveLength(70);
+    const insertBtn = screen.getByTestId("expression-insert-btn");
+
+    expect(insertBtn).toBeInTheDocument();
+    expect(insertBtn).toBeDisabled();
+
+    fireEvent.click(nameOptions[0]);
+    expect(insertBtn).toBeEnabled();
+
+    fireEvent.click(insertBtn);
+    const definitionName = (await screen.findByTestId(
+      "function-name-text-input"
+    )) as HTMLInputElement;
+    expect(definitionName.value).toBe("IP");
+    // args
+
+    const argumentNameInput = (await screen.findByTestId(
+      "argument-name-input"
+    )) as HTMLInputElement;
+    expect(argumentNameInput).toBeInTheDocument();
+    expect(argumentNameInput.value).toBe("");
+    fireEvent.change(argumentNameInput, {
+      target: { value: "newName" },
+    });
+    expect(argumentNameInput.value).toBe("newName");
+
+    const dataTypeDropdown = await screen.findByTestId(
+      "arg-type-selector-input"
+    );
+    fireEvent.change(dataTypeDropdown, {
+      target: { value: "Boolean" },
+    });
+
+    const addButton = screen.getByTestId("function-argument-add-btn");
+    expect(addButton).toBeInTheDocument();
+    expect(addButton).toBeEnabled();
+
+    fireEvent.click(addButton);
+
+    const functionArgumentTable = screen.getByTestId("function-argument-tbl");
+    expect(functionArgumentTable).toBeInTheDocument();
+    const tableRow = functionArgumentTable.querySelector("tbody").children[0];
+    expect(tableRow.children[1].textContent).toEqual("newName");
+    // we got to the last page lets go back and trigger a change to page 0
+    const pageButton = await screen.findByRole("button", {
+      name: /Go to page 1/i,
+    });
+    expect(pageButton).toHaveTextContent("1");
+
+    userEvent.click(pageButton);
+    const page1Row0 = functionArgumentTable.querySelector("tbody").children[0];
+    expect(page1Row0.children[1].textContent).toEqual("Test");
+    // trigger the limit to prove we can see our new entry
+
+    const comboBoxes = await screen.findAllByRole("combobox");
+    const limitChoice = comboBoxes[1];
+
+    expect(limitChoice).toHaveTextContent("5");
+
+    userEvent.click(limitChoice);
+
+    const optionTen = await screen.findByRole("option", {
+      name: /10/i,
+    });
+    await waitFor(() => {
+      expect(optionTen).toBeDefined();
+    });
+
+    userEvent.click(optionTen);
+    await waitFor(() => {
+      expect(screen.findAllByText("newName")).toBeDefined();
+    });
+    // now we're back on first page with ten items. Lets move index 5 -> 4, 4 -> 5
+    const sixthUp = await screen.findByTestId("arg-order-up-index-5");
+    userEvent.click(sixthUp);
+    await waitFor(() => {
+      const page1Row = functionArgumentTable.querySelector("tbody").children[5];
+      expect(page1Row.children[1].textContent).toEqual("Test");
+    });
+    const fifthDown = await screen.findByTestId("arg-order-down-index-4");
+    userEvent.click(fifthDown);
+
+    await waitFor(() => {
+      const page1Row5 =
+        functionArgumentTable.querySelector("tbody").children[5];
+      expect(page1Row5.children[1].textContent).toEqual("newName");
     });
   });
 });

@@ -16,6 +16,7 @@ import Arguments from "./Arguments";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { FunctionArgumentSchemaValidator } from "../../../validations/FunctionArgumentSchemaValidator";
+import "./ArguementsSection.scss";
 
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
@@ -119,6 +120,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
             onChange={(evt) => {
               setFunctionDataType(evt.target.value);
               formik.setFieldValue("dataType", evt.target.value);
+              formik.setFieldValue("other", "");
             }}
           />
         </div>
@@ -137,8 +139,9 @@ export default function ArgumentSection(props: ArgumentsProps) {
               inputProps={{
                 "data-testid": "other-type-input",
               }}
+              required
               {...formik.getFieldProps("other")}
-              error={Boolean(formik.errors.other)}
+              error={formik.touched.other && Boolean(formik.errors.other)}
               helperText={formik.errors.other}
             />
           </div>
@@ -166,6 +169,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </Button>
       </div>
       <div style={{ paddingTop: "24px" }}>
+        {/* tableData with pagination. */}
         <Arguments
           functionArguments={functionArguments}
           canEdit={canEdit}
