@@ -449,9 +449,6 @@ describe("CQL Function Builder Tests", () => {
     const functionNameInput = (await screen.findByTestId(
       "function-name-text-input"
     )) as HTMLInputElement;
-    const argumentsSection = screen.getByTestId(
-      "terminology-section-Arguments-sub-heading"
-    );
     expect(functionNameInput).toBeInTheDocument();
     expect(functionNameInput.value).toBe("");
     fireEvent.change(functionNameInput, {
@@ -522,6 +519,7 @@ describe("CQL Function Builder Tests", () => {
     });
     expect(argumentNameInput.value).toBe("Test");
 
+    // dataType
     const dataTypeDropdown = await screen.findByTestId(
       "arg-type-selector-input"
     );
@@ -529,22 +527,40 @@ describe("CQL Function Builder Tests", () => {
       target: { value: "Other" },
     });
 
-    // we now need to populate other textfield
     const otherNameInput = (await screen.findByTestId(
       "other-type-input"
     )) as HTMLInputElement;
     expect(otherNameInput).toBeInTheDocument();
-    expect(otherNameInput.value).toBe("");
-    fireEvent.change(otherNameInput, {
+
+    // switch to blank other
+    fireEvent.change(dataTypeDropdown, {
+      target: { value: "Integer" },
+    });
+    await waitFor(() => {
+      expect(screen.queryByTestId("other-type-input")).not.toBeInTheDocument();
+    });
+
+    // select other again
+    fireEvent.change(dataTypeDropdown, {
       target: { value: "Other" },
     });
-    expect(otherNameInput.value).toBe("Other");
+    // other input appears
+    await waitFor(() => {
+      expect(screen.queryByTestId("other-type-input")).toBeInTheDocument();
+    });
 
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
-
-    fireEvent.click(addButton);
+    // finda nd fill out other
+    const other = (await screen.findByTestId(
+      "other-type-input"
+    )) as HTMLInputElement;
+    fireEvent.change(other, {
+      target: { value: "test" },
+    });
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeEnabled();
+      fireEvent.click(addButton);
+    });
 
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
@@ -565,7 +581,7 @@ describe("CQL Function Builder Tests", () => {
           functionsArguments: [
             expect.objectContaining({
               argumentName: "Test",
-              dataType: "Other",
+              dataType: "test",
             }),
           ],
         })

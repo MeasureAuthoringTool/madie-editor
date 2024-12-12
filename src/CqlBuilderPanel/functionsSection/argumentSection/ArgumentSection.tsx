@@ -23,6 +23,7 @@ interface ArgumentsProps {
   canEdit: boolean;
   addArgumentToFunctionsArguments: Function;
   deleteArgumentFromFunctionArguments: Function;
+  dirty: boolean;
 }
 
 const availableDataTypes = [
@@ -43,8 +44,8 @@ export default function ArgumentSection(props: ArgumentsProps) {
     deleteArgumentFromFunctionArguments,
     functionArguments,
     canEdit,
+    dirty,
   } = props;
-  const [functionDataType, setFunctionDataType] = useState("");
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
 
   const formik = useFormik({
@@ -60,8 +61,8 @@ export default function ArgumentSection(props: ArgumentsProps) {
   const { dataType } = formik.values;
 
   const handleSubmit = () => {
-    let value = formik.values.dataType;
-    if (functionDataType === "Other") {
+    let value = dataType;
+    if (value === "Other") {
       value = formik.values.other;
     }
     const fnToAdd = {
@@ -72,7 +73,12 @@ export default function ArgumentSection(props: ArgumentsProps) {
     formik.resetForm();
   };
   const { resetForm } = formik;
-
+  // reset inner if outer is clean (listen for reset event)
+  useEffect(() => {
+    if (!dirty) {
+      resetForm();
+    }
+  }, [dirty]);
   return (
     <>
       <div tw="flex flex-wrap">
@@ -118,14 +124,15 @@ export default function ArgumentSection(props: ArgumentsProps) {
             error={Boolean(formik.errors.dataType)}
             helperText={formik.errors.dataType}
             onChange={(evt) => {
-              setFunctionDataType(evt.target.value);
               formik.setFieldValue("dataType", evt.target.value);
-              formik.setFieldValue("other", "");
+              if (formik.values.other) {
+                formik.setFieldValue("other", "");
+              }
             }}
           />
         </div>
       </div>
-      {functionDataType && functionDataType === "Other" && (
+      {dataType === "Other" && (
         <div tw="flex flex-wrap">
           <div tw="pt-6 w-1/2">
             <TextField
@@ -181,7 +188,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
         onClose={() => setConfirmationDialog(false)}
         onSubmit={() => {
           resetForm();
-          setFunctionDataType("");
           setConfirmationDialog(false);
         }}
       />
