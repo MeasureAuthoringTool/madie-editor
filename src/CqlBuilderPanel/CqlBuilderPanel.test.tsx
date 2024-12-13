@@ -96,8 +96,6 @@ const mockCqlBuilderLookUpData = {
 
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn().mockReturnValue({
-    CQLBuilderIncludes: true,
-    CQLBuilderDefinitions: true,
     CQLBuilderFunctions: true,
     QDMValueSetSearch: true,
     qdmCodeSearch: true,
@@ -142,6 +140,7 @@ describe("CqlBuilderPanel", () => {
   });
   it("Should load to includes tab", async () => {
     render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Includes" }));
     await waitFor(() => {
       expect(getByTestId("includes-tab")).toHaveAttribute(
         "aria-selected",
@@ -159,9 +158,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should load to valueSets tab", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: false,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: false,
     }));
     render(<CqlBuilderPanel {...props} />);
     await waitFor(() => {
@@ -174,9 +171,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should load to definitions tab", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     render(<CqlBuilderPanel {...props} />);
@@ -197,9 +192,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available parameters for building Expressions for QDM", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -244,9 +237,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display error message when cql builder look up api failed for QDM", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockRejectedValueOnce({
@@ -273,9 +264,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available parameters for building Expressions for QiCore", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -321,9 +310,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display error message when cql builder look up api failed for QiCore", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockRejectedValueOnce({
@@ -351,9 +338,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available definitions for building Expressions for QDM", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -397,9 +382,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available parameters for building Expressions for QiCore", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -444,9 +427,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available functions for building Expressions for QDM", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -492,9 +473,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available functions for building Expressions for QiCore", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -541,9 +520,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available fluent functions for building Expressions for QDM", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -587,9 +564,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display available fluent functions for building Expressions for QiCore", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
     }));
     mockedAxios.put.mockResolvedValue({
@@ -634,9 +609,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Parameters tab does not exist", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
       CQLBuilderParameters: false,
     }));
@@ -650,9 +623,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Parameters tab exists and it's enabled", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
       CQLBuilderParameters: true,
     }));
@@ -668,9 +639,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Parameters clear works", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
       CQLBuilderParameters: true,
     }));
@@ -731,9 +700,7 @@ describe("CqlBuilderPanel", () => {
   });
   it("Parameters apply works and clears input fields", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
       CQLBuilderParameters: true,
     }));
@@ -802,9 +769,7 @@ describe("CqlBuilderPanel", () => {
   });
   it("Parameters apply did not work, fields did not get updated", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
       CQLBuilderParameters: true,
     }));
@@ -874,9 +839,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Functions tab exists and it's enabled", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
       CQLBuilderParameters: true,
       CQLBuilderFunctions: true,
@@ -893,9 +856,7 @@ describe("CqlBuilderPanel", () => {
 
   it("Functions tab does not exist", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
-      CQLBuilderIncludes: true,
       QDMValueSetSearch: true,
-      CQLBuilderDefinitions: true,
       qdmCodeSearch: true,
       CQLBuilderParameters: true,
       CQLBuilderFunctions: false,
