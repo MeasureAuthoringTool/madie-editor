@@ -154,7 +154,10 @@ describe("DefinitionsSection", () => {
     userEvent.click(savedDefinitionsTab);
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
-    expect(screen.queryByTestId("definition-actions")).not.toBeInTheDocument();
+    expect(
+      screen.queryAllByTestId("definition-actions")[0]
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId("view-button-0")).toBeInTheDocument();
   });
 
   it("Should render edit definition dialog on edit button click", async () => {

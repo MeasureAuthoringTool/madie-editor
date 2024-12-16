@@ -140,8 +140,12 @@ const Definitions = ({
               <ToolTippedIcon
                 tooltipMessage={canEdit ? "Edit" : "View"}
                 buttonProps={{
-                  "data-testid": `edit-button-${row.cell.row.id}`,
-                  "aria-label": `edit-button-${row.cell.row.id}`,
+                  "data-testid": canEdit
+                    ? `edit-button-${row.cell.row.id}`
+                    : `view-button-${row.cell.row.id}`,
+                  "aria-label": canEdit
+                    ? `edit-button-${row.cell.row.id}`
+                    : `view-button-${row.cell.row.id}`,
                   size: "small",
                   onClick: () => {
                     showEditDefinitionDialog(row.cell.row.id);
