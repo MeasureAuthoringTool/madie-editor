@@ -13,10 +13,7 @@ import { ServiceConfig } from "../api/useServiceConfig";
 jest.mock("../api/axios-instance");
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn(() => {
-    return {
-      CQLBuilderDefinitions: true,
-      CQLBuilderIncludes: true,
-    };
+    return {};
   }),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
@@ -110,7 +107,7 @@ describe("CqlEditorWithTerminology component", () => {
     const codes = await screen.findByText("Codes");
     const definitions = await screen.findByText("Definitions");
     const includes = await screen.findByText("Includes");
-
+    userEvent.click(screen.getByRole("tab", { name: "Includes" }));
     expect(includes).toHaveAttribute("aria-selected", "true");
 
     act(() => {
