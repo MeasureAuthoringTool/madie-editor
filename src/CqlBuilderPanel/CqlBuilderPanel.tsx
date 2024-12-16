@@ -240,7 +240,7 @@ export default function CqlBuilderPanel({
 
           {activeTab === "definitions" && (
             <DefinitionsSection
-              canEdit={canEdit}
+              canEdit={false}
               handleApplyDefinition={handleApplyDefinition}
               handleDefinitionDelete={handleDefinitionDelete}
               cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
