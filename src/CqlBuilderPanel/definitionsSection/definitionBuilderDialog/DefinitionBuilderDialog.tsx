@@ -40,6 +40,7 @@ const DefinitionBuilderDialog = ({
 
   return (
     <MadieDialog
+      form
       title={canEdit ? "Edit" : "View"}
       dialogProps={{
         open,
