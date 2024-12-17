@@ -15,7 +15,11 @@ import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Skeleton from "@mui/material/Skeleton";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  Pagination,
+  MadieDiscardDialog,
+} from "@madie/madie-design-system/dist/react";
+import EditFunctionDialog from "../EditFunctionDialog";
 import Tooltip from "@mui/material/Tooltip";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
@@ -39,18 +43,20 @@ const Functions = ({
   loading,
   functions,
   isCQLUnchanged,
+  resetCql,
+  cqlBuilderLookupsTypes,
+  handleApplyFunction,
 }: FunctionProps) => {
+  // pagination utilities
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
   const [visibleFunctions, setVisibleFunctions] = useState<FunctionLookup[]>(
     []
   );
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const canGoPrev = currentPage > 1;
   const canGoNext = (() => {
     return currentPage < totalPages;
@@ -62,11 +68,20 @@ const Functions = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [functions, currentPage, currentLimit]);
 
+  // edit dialog utilities
+  const [discardDialog, setDiscardDialog] = useState({
+    open: false,
+    operation: null,
+  });
+  const [editFunctionDialogOpen, setEditFunctionDialogOpen] =
+    useState<boolean>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [selectedFunction, setSelectedFunction] = useState<FunctionLookup>();
+  const handleFunctionEdit = () => {};
   // table data
   const data = visibleFunctions;
 
@@ -145,7 +160,14 @@ const Functions = ({
                   "data-testid": `edit-button-${row.cell.row.id}`,
                   "aria-label": `edit-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: (e) => {},
+                  onClick: (e) => {
+                    setSelectedFunction(table.getRow(row.cell.row.id).original);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialog({ open: true, operation: "edit" });
+                    } else {
+                      setEditFunctionDialogOpen(true);
+                    }
+                  },
                 }}
               >
                 <BorderColorOutlinedIcon color="primary" />
@@ -262,6 +284,35 @@ const Functions = ({
           hidePrevButton={!canGoPrev}
         />
       </div>
+      <MadieDiscardDialog
+        open={discardDialog?.open}
+        onContinue={() => {
+          resetCql();
+          if (discardDialog?.operation === "edit") {
+            setDiscardDialog({
+              open: false,
+              operation: "edit",
+            });
+            setEditFunctionDialogOpen(true);
+          }
+        }}
+        onClose={() => {
+          setDiscardDialog({
+            open: false,
+            operation: null,
+          });
+        }}
+      />
+
+      <EditFunctionDialog
+        open={editFunctionDialogOpen}
+        setEditFunctionDialogOpen={setEditFunctionDialogOpen}
+        funct={selectedFunction}
+        onClose={() => setEditFunctionDialogOpen(false)}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        handleApplyFunction={handleApplyFunction}
+        handleFunctionEdit={handleFunctionEdit}
+      />
     </>
   );
 };
