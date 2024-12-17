@@ -96,4 +96,85 @@ describe("FunctionsSection", () => {
       expect(screen.getByText("Edit")).toBeInTheDocument();
     });
   });
+
+  it("Should open edit dialog on click", async () => {
+    render(<FunctionsSection {...props} isCQLUnchanged={true} />);
+    const funct = await screen.findByTestId("function-tab");
+    const savedfunctions = await screen.findByText("Saved Functions (2)");
+    expect(funct).toBeInTheDocument();
+    expect(savedfunctions).toBeInTheDocument();
+    await waitFor(() => {
+      expect(funct).toHaveAttribute("aria-selected", "true");
+    });
+    await waitFor(() => {
+      expect(savedfunctions).toHaveAttribute("aria-selected", "false");
+    });
+    userEvent.click(savedfunctions);
+    await waitFor(() => {
+      expect(savedfunctions).toHaveAttribute("aria-selected", "true");
+    });
+    const editButon0 = screen.getByTestId("edit-button-0");
+    userEvent.click(editButon0);
+    await waitFor(() => {
+      expect(screen.getByText("Edit")).toBeInTheDocument();
+    });
+  });
+
+  it("Should close discard dialog on click", async () => {
+    render(<FunctionsSection {...props} isCQLUnchanged={false} />);
+    const funct = await screen.findByTestId("function-tab");
+    const savedfunctions = await screen.findByText("Saved Functions (2)");
+    expect(funct).toBeInTheDocument();
+    expect(savedfunctions).toBeInTheDocument();
+    await waitFor(() => {
+      expect(funct).toHaveAttribute("aria-selected", "true");
+    });
+    await waitFor(() => {
+      expect(savedfunctions).toHaveAttribute("aria-selected", "false");
+    });
+    userEvent.click(savedfunctions);
+    await waitFor(() => {
+      expect(savedfunctions).toHaveAttribute("aria-selected", "true");
+    });
+    const editButon0 = screen.getByTestId("edit-button-0");
+    userEvent.click(editButon0);
+    expect(screen.getByTestId("discard-dialog")).toBeInTheDocument();
+    expect(screen.getByText("Discard Changes?")).toBeInTheDocument();
+    const cancelBtn = screen.getByTestId("discard-dialog-cancel-button");
+    expect(cancelBtn).toBeInTheDocument();
+    userEvent.click(cancelBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("discard-dialog")).not.toBeInTheDocument();
+    });
+  });
+
+  it("Should close edit dialog on click", async () => {
+    render(<FunctionsSection {...props} isCQLUnchanged={true} />);
+    const funct = await screen.findByTestId("function-tab");
+    const savedfunctions = await screen.findByText("Saved Functions (2)");
+    expect(funct).toBeInTheDocument();
+    expect(savedfunctions).toBeInTheDocument();
+    await waitFor(() => {
+      expect(funct).toHaveAttribute("aria-selected", "true");
+    });
+    await waitFor(() => {
+      expect(savedfunctions).toHaveAttribute("aria-selected", "false");
+    });
+    userEvent.click(savedfunctions);
+    await waitFor(() => {
+      expect(savedfunctions).toHaveAttribute("aria-selected", "true");
+    });
+    const editButon0 = screen.getByTestId("edit-button-0");
+    userEvent.click(editButon0);
+    await waitFor(() => {
+      expect(screen.getByText("Edit")).toBeInTheDocument();
+    });
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    expect(closeButton).toBeInTheDocument();
+    userEvent.click(closeButton);
+    await waitFor(() => {
+      expect(screen.queryByTestId("discard-dialog")).not.toBeInTheDocument();
+    });
+  });
 });
