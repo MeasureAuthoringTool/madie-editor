@@ -43,6 +43,7 @@ const Functions = ({
   functions,
   isCQLUnchanged,
   resetCql,
+  handleFunctionDelete,
 }: FunctionProps) => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -145,7 +146,15 @@ const Functions = ({
                   "aria-label": `delete-button-${row.cell.row.id}`,
                   size: "small",
                   onClick: (e) => {
-                    setSelectedFunction(row.row.original.name);
+                    const tableData = table.getRow(row.cell.row.id).original;
+                    const functionToDelete = {
+                      functionName: tableData.name,
+                      comment: tableData.comment,
+                      functionsArguments: tableData.arguments,
+                      fluentFunction: tableData.isFluent,
+                      expressionValue: tableData.logic,
+                    };
+                    setSelectedFunction(tableData);
                     if (!isCQLUnchanged) {
                       setDiscardDialog({ open: true, operation: "delete" });
                     } else {
@@ -307,7 +316,7 @@ const Functions = ({
       <MadieConfirmDialog
         open={deleteDialogOpen}
         onContinue={() => {
-          //handleDefinitionDelete(selectedDefinition);
+          handleFunctionDelete(selectedFunction);
           setDeleteDialogOpen(false);
         }}
         onClose={() => setDeleteDialogOpen(false)}

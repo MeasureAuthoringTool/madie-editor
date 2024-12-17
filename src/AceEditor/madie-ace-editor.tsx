@@ -26,6 +26,7 @@ import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuil
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
 import CqlVersion from "@madie/cql-antlr-parser/dist/src/dto/CqlVersion";
+import { FunctionLookup } from "../model/CqlBuilderLookup";
 
 export interface EditorPropsType {
   value: string;
@@ -47,6 +48,7 @@ export interface EditorPropsType {
   ) => void;
   handleDeleteLibrary?: (lib: SelectedLibrary) => void;
   handleApplyFunction?: (funct: Funct) => void;
+  handleFunctionDelete?: (funct: FunctionLookup) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];

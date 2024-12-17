@@ -19,6 +19,7 @@ export interface FunctionProps {
   isCQLUnchanged: boolean;
   functions?: FunctionLookup[];
   resetCql: Function;
+  handleFunctionDelete?: Function;
 }
 const getArgumentNames = (logic: string) => {
   const args = logic.substring(logic.indexOf("(") + 1, logic.indexOf(")"));
@@ -33,6 +34,7 @@ export default function FunctionsSection({
   isCQLUnchanged,
   cqlBuilderLookupsTypes,
   resetCql,
+  handleFunctionDelete,
 }: FunctionProps) {
   const [activeTab, setActiveTab] = useState<string>("function");
 
@@ -97,6 +99,7 @@ export default function FunctionsSection({
             isCQLUnchanged={isCQLUnchanged}
             cql={cql}
             resetCql={resetCql}
+            handleFunctionDelete={handleFunctionDelete}
           />
         )}
       </div>
