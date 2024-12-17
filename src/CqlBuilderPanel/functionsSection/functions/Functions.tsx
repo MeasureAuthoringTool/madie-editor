@@ -294,12 +294,6 @@ const Functions = ({
               operation: "edit",
             });
             setEditFunctionDialogOpen(true);
-          } else if (discardDialog?.operation === "delete") {
-            setDiscardDialog({
-              open: false,
-              operation: "delete",
-            });
-            setDeleteDialogOpen(true);
           }
         }}
         onClose={() => {
