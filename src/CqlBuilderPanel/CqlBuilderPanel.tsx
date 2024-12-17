@@ -4,6 +4,7 @@ import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 import FunctionsSection from "./functionsSection/FunctionsSection";
+// import FunctionsSection from ""
 import { useFeatureFlags } from "@madie/madie-util";
 import IncludesTabSection from "./Includes/Includes";
 import Parameters from "./Parameters/Parameters";
@@ -51,7 +52,7 @@ export default function CqlBuilderPanel({
     return "includes";
   })();
 
-  const [activeTab, setActiveTab] = useState<string>(getStartingPage);
+  const [activeTab, setActiveTab] = useState<string>("functions");
   const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
     useState<CqlBuilderLookup>();
   const [errors, setErrors] = useState<string>(null);
@@ -247,6 +248,7 @@ export default function CqlBuilderPanel({
               loading={loading}
               cql={measureStoreCql}
               isCQLUnchanged={isCQLUnchanged}
+              resetCql={resetCql}
             />
           )}
         </div>
