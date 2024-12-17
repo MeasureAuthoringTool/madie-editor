@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import _ from "lodash";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { FunctionLookup, Lookup } from "../../../model/CqlBuilderLookup";
+import { FunctionLookup } from "../../../model/CqlBuilderLookup";
 import { FunctionProps } from "../FunctionsSection";
 import {
   ColumnDef,
@@ -80,7 +80,7 @@ const Functions = ({
   const [editFunctionDialogOpen, setEditFunctionDialogOpen] =
     useState<boolean>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-  const [selectedFunction, setSelectedFunction] = useState<Lookup>();
+  const [selectedFunction, setSelectedFunction] = useState<FunctionLookup>();
   const handleFunctionEdit = () => {};
   // table data
   const data = visibleFunctions;

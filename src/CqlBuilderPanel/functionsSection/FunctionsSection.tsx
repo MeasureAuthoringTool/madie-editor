@@ -16,7 +16,6 @@ export interface FunctionProps {
   isCQLUnchanged: boolean;
   functions?: FunctionLookup[];
   resetCql?: Function;
-  cqlBuilderLookupTypes?: any;
 }
 
 const getArgumentNames = (logic: string) => {
