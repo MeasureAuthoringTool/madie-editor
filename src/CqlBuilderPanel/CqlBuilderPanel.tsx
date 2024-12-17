@@ -247,6 +247,7 @@ export default function CqlBuilderPanel({
               loading={loading}
               cql={measureStoreCql}
               isCQLUnchanged={isCQLUnchanged}
+              resetCql={resetCql}
             />
           )}
         </div>
