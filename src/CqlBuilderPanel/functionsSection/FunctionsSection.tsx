@@ -3,22 +3,22 @@ import "./Functions.scss";
 import FunctionSectionNavTabs from "./FunctionSectionNavTabs";
 import Functions from "./functions/Functions";
 import FunctionBuilder from "./functionBuilder/FunctionBuilder";
-import {
-  CqlBuilderLookup,
-  FunctionLookup,
-} from "../..//model/CqlBuilderLookup";
+import { CqlBuilderLookup, FunctionLookup } from "../../model/CqlBuilderLookup";
 import * as _ from "lodash";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
 export interface FunctionProps {
   canEdit: boolean;
   handleApplyFunction?: Function;
+  handleFunctionDelete?: Function;
   loading: boolean;
   cqlBuilderLookupsTypes?: CqlBuilderLookup;
   cql: string;
   isCQLUnchanged: boolean;
   functions?: FunctionLookup[];
+  resetCql: Function;
 }
+
 const getArgumentNames = (logic: string) => {
   const args = logic.substring(logic.indexOf("(") + 1, logic.indexOf(")"));
   return args.split(",");
@@ -27,10 +27,12 @@ const getArgumentNames = (logic: string) => {
 export default function FunctionsSection({
   canEdit,
   handleApplyFunction,
-  loading,
   cql,
   isCQLUnchanged,
   cqlBuilderLookupsTypes,
+  resetCql,
+  handleFunctionDelete,
+  loading,
 }: FunctionProps) {
   const [activeTab, setActiveTab] = useState<string>("function");
 
@@ -70,7 +72,6 @@ export default function FunctionsSection({
       }) || []
   );
   functionLookups = _.sortBy(functionLookups, (o) => o.name?.toLowerCase());
-
   return (
     <>
       <FunctionSectionNavTabs
@@ -89,11 +90,15 @@ export default function FunctionsSection({
         )}
         {activeTab === "saved-functions" && (
           <Functions
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
             canEdit={canEdit}
             loading={loading}
             functions={functionLookups}
             isCQLUnchanged={isCQLUnchanged}
             cql={cql}
+            resetCql={resetCql}
+            handleApplyFunction={handleApplyFunction}
+            handleFunctionDelete={handleFunctionDelete}
           />
         )}
       </div>

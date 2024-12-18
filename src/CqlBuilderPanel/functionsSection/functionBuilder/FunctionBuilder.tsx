@@ -6,6 +6,7 @@ import {
   Button,
   TextArea,
   TextField,
+  Toast,
 } from "@madie/madie-design-system/dist/react";
 import "../Functions.scss";
 import { FunctionSectionSchemaValidator } from "../../../validations/FunctionSectionSchemaValidator";
@@ -17,12 +18,14 @@ import ArgumentSection from "../argumentSection/ArgumentSection";
 import ExpressionEditor from "../../definitionsSection/expressionSection/ExpressionEditor";
 import { getNewExpressionsAndLines } from "../../common/utils";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
+import UseToast from "../../../common/UseToast";
 
 export interface Funct {
-  functionName?: string;
+  name?: string;
   fluentFunction?: boolean;
   functionsArguments: any;
   comment?: string;
+  expressionEditorValue?: string;
 }
 
 export interface FunctionProps {
@@ -33,6 +36,7 @@ export interface FunctionProps {
   funct?: Funct;
   onClose?: Function;
   operation?: string;
+  setEditFunctionDialogOpen?: Function;
 }
 
 export default function FunctionBuilder({
@@ -52,13 +56,14 @@ export default function FunctionBuilder({
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
+
   const formik = useFormik({
     initialValues: {
-      functionName: funct?.functionName || "",
+      functionName: funct?.name || "",
       comment: funct?.comment || "",
       fluentFunction: funct?.fluentFunction || true,
       functionsArguments: funct?.functionsArguments || [],
-      expressionEditorValue: "",
+      expressionEditorValue: funct?.expressionEditorValue || "",
       type: "",
       name: "",
     },
@@ -76,7 +81,16 @@ export default function FunctionBuilder({
   });
   // going to pass dirty down to know when we need to reset sub form
   const { resetForm, dirty } = formik;
-
+  // toast utilities
+  const {
+    toastOpen,
+    setToastOpen,
+    toastMessage,
+    setToastMessage,
+    toastType,
+    setToastType,
+    onToastClose,
+  } = UseToast();
   // update formik, and expressionEditor, cursor, lines
   const updateExpressionAndLines = (
     newEditorExpressionValue,
@@ -99,6 +113,11 @@ export default function FunctionBuilder({
   const addArgumentToFunctionsArguments = (fn) => {
     const newArgs = [...formik.values.functionsArguments, fn];
     formik.setFieldValue("functionsArguments", newArgs);
+    setToastMessage(
+      `Argument ${fn.argumentName} has been successfully added to the function.`
+    );
+    setToastType("success");
+    setToastOpen(true);
   };
 
   const deleteArgumentFromFunctionArguments = (fn) => {
@@ -223,17 +242,21 @@ export default function FunctionBuilder({
           <Button
             data-testid={`function-apply-btn`}
             disabled={!formik.values.functionName || !canEdit || !formik.dirty}
-            onClick={() => {
-              const functionToApply = {
-                functionName: formik.values.functionName,
-                comment: formik.values.comment,
-                functionsArguments: formik.values.functionsArguments,
-                fluentFunction: formik.values.fluentFunction,
-                expressionValue: formik.values.expressionEditorValue,
-              };
-              resetForm();
-              handleApplyFunction(functionToApply);
-            }}
+            onClick={
+              operation === "edit"
+                ? handleFunctionEdit
+                : () => {
+                    const functionToApply = {
+                      functionName: formik.values.functionName,
+                      comment: formik.values.comment,
+                      functionsArguments: formik.values.functionsArguments,
+                      fluentFunction: formik.values.fluentFunction,
+                      expressionValue: formik.values.expressionEditorValue,
+                    };
+                    resetForm();
+                    handleApplyFunction(functionToApply);
+                  }
+            }
           >
             Apply
           </Button>
@@ -247,6 +270,22 @@ export default function FunctionBuilder({
           }}
         />
       </form>
+      <Toast
+        toastKey="function-builder-toast"
+        toastType={toastType}
+        testId={
+          toastType === "danger"
+            ? `function-builder-error`
+            : `function-builder-success`
+        }
+        open={toastOpen}
+        message={toastMessage}
+        onClose={onToastClose}
+        autoHideDuration={6000}
+        closeButtonProps={{
+          "data-testid": "function-builder-toast-close-button",
+        }}
+      />
     </div>
   );
 }
