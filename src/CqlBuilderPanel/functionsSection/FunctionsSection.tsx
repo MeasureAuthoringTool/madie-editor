@@ -10,12 +10,13 @@ import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 export interface FunctionProps {
   canEdit: boolean;
   handleApplyFunction?: Function;
+  handleFunctionDelete?: Function;
   loading: boolean;
   cqlBuilderLookupsTypes?: CqlBuilderLookup;
   cql: string;
   isCQLUnchanged: boolean;
   functions?: FunctionLookup[];
-  resetCql?: Function;
+  resetCql: Function;
 }
 
 const getArgumentNames = (logic: string) => {
@@ -30,6 +31,7 @@ export default function FunctionsSection({
   isCQLUnchanged,
   cqlBuilderLookupsTypes,
   resetCql,
+  handleFunctionDelete,
   loading,
 }: FunctionProps) {
   const [activeTab, setActiveTab] = useState<string>("function");
@@ -96,6 +98,7 @@ export default function FunctionsSection({
             cql={cql}
             resetCql={resetCql}
             handleApplyFunction={handleApplyFunction}
+            handleFunctionDelete={handleFunctionDelete}
           />
         )}
       </div>

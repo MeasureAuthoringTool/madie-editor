@@ -85,7 +85,7 @@ describe("FunctionsSection", () => {
     const editButon0 = screen.getByTestId("edit-button-0");
     userEvent.click(editButon0);
     expect(screen.getByTestId("discard-dialog")).toBeInTheDocument();
-    expect(screen.getByText("Discard Changes?")).toBeInTheDocument();
+    expect(screen.getByText("You have unsaved changes.")).toBeInTheDocument();
     const cancelBtn = screen.getByTestId("discard-dialog-cancel-button");
     const discardBtn = screen.getByTestId("discard-dialog-continue-button");
     expect(cancelBtn).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe("FunctionsSection", () => {
     const editButon0 = screen.getByTestId("edit-button-0");
     userEvent.click(editButon0);
     expect(screen.getByTestId("discard-dialog")).toBeInTheDocument();
-    expect(screen.getByText("Discard Changes?")).toBeInTheDocument();
+    expect(screen.getByText("You have unsaved changes.")).toBeInTheDocument();
     const cancelBtn = screen.getByTestId("discard-dialog-cancel-button");
     expect(cancelBtn).toBeInTheDocument();
     userEvent.click(cancelBtn);
