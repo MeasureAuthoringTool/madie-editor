@@ -251,8 +251,20 @@ describe("CQL Function Builder Tests", () => {
 
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("function-builder-success")
+      ).toBeInTheDocument();
+    });
     const tableRow = functionArgumentTable.querySelector("tbody").children[0];
     expect(tableRow.children[1].textContent).toEqual("Test");
+    const closeButton = screen.getByTestId(
+      "function-builder-toast-close-button"
+    );
+    userEvent.click(closeButton);
+    await waitFor(() => {
+      expect(closeButton).not.toBeInTheDocument();
+    });
   });
 
   it("Should delete argument from the table", async () => {
