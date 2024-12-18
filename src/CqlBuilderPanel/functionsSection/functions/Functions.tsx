@@ -20,6 +20,7 @@ import {
   MadieConfirmDialog,
 } from "@madie/madie-design-system/dist/react";
 import Tooltip from "@mui/material/Tooltip";
+import { CQLFunction } from "../../../model/CqlFunction";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm break-all`;
@@ -51,7 +52,7 @@ const Functions = ({
   const [visibleFunctions, setVisibleFunctions] = useState<FunctionLookup[]>(
     []
   );
-  const [selectedFunction, setSelectedFunction] = useState<FunctionLookup>();
+  const [selectedFunction, setSelectedFunction] = useState<CQLFunction>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialog, setDiscardDialog] = useState({
     open: false,
@@ -147,14 +148,16 @@ const Functions = ({
                   size: "small",
                   onClick: (e) => {
                     const tableData = table.getRow(row.cell.row.id).original;
-                    const functionToDelete = {
+                    const functionToDelete: CQLFunction = {
                       functionName: tableData.name,
                       comment: tableData.comment,
-                      functionsArguments: tableData.arguments,
-                      fluentFunction: tableData.isFluent,
+                      functionsArguments: row.cell.row.original.argumentNames,
+                      fluentFunction:
+                        tableData.isFluent === "Yes" ? true : false,
                       expressionValue: tableData.logic,
+                      expression: tableData.logic,
                     };
-                    setSelectedFunction(tableData);
+                    setSelectedFunction(functionToDelete);
                     if (!isCQLUnchanged) {
                       setDiscardDialog({ open: true, operation: "delete" });
                     } else {
