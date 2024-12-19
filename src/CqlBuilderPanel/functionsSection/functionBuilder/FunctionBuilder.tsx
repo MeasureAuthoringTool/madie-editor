@@ -61,7 +61,7 @@ export default function FunctionBuilder({
     initialValues: {
       functionName: funct?.name || "",
       comment: funct?.comment || "",
-      fluentFunction: funct?.fluentFunction || true,
+      fluentFunction: funct?.name ? funct?.fluentFunction : true,
       functionsArguments: funct?.functionsArguments || [],
       expressionEditorValue: funct?.expressionEditorValue || "",
       type: "",
@@ -244,7 +244,15 @@ export default function FunctionBuilder({
             disabled={!formik.values.functionName || !canEdit || !formik.dirty}
             onClick={
               operation === "edit"
-                ? handleFunctionEdit
+                ? () => {
+                    const functionToApply = {
+                      functionName: formik.values.functionName,
+                      comment: formik.values.comment,
+                      functionsArguments: formik.values.functionsArguments,
+                      fluentFunction: formik.values.fluentFunction,
+                      expressionValue: formik.values.expressionEditorValue,
+                    };
+                  }
                 : () => {
                     const functionToApply = {
                       functionName: formik.values.functionName,

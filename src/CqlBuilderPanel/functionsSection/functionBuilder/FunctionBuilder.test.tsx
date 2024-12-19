@@ -584,20 +584,13 @@ describe("CQL Function Builder Tests", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(handleApplyFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          comment: "comment",
-          expressionValue: "after",
-          fluentFunction: true,
-          functionName: "IP",
-          functionsArguments: [
-            expect.objectContaining({
-              argumentName: "Test",
-              dataType: "test",
-            }),
-          ],
-        })
-      );
+      expect(handleApplyFn).toHaveBeenCalledWith({
+        comment: "comment",
+        expressionValue: "after",
+        fluentFunction: true,
+        functionName: "IP",
+        functionsArguments: [{ argumentName: "Test", dataType: "test" }],
+      });
     });
   });
   it("should call handleApplyFunction with a function that we've created through the UI", async () => {
@@ -710,20 +703,13 @@ describe("CQL Function Builder Tests", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(handleApplyFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          comment: "comment",
-          expressionValue: "after",
-          fluentFunction: true,
-          functionName: "IP",
-          functionsArguments: [
-            expect.objectContaining({
-              argumentName: "Test",
-              dataType: "Boolean",
-            }),
-          ],
-        })
-      );
+      expect(handleApplyFn).toHaveBeenCalledWith({
+        comment: "comment",
+        expressionValue: "after",
+        fluentFunction: true,
+        functionName: "IP",
+        functionsArguments: [{ argumentName: "Test", dataType: "Boolean" }],
+      });
     });
   });
 

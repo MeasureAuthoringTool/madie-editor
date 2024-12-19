@@ -38,6 +38,7 @@ export default function CqlBuilderPanel({
   handleDefinitionDelete,
   handleApplyFunction,
   handleFunctionDelete,
+  handleFunctionEdit,
   resetCql,
   getCqlDefinitionReturnTypes,
   makeExpanded,
@@ -246,6 +247,7 @@ export default function CqlBuilderPanel({
               canEdit={canEdit}
               handleApplyFunction={handleApplyFunction}
               handleFunctionDelete={handleFunctionDelete}
+              handleFunctionEdit={handleFunctionEdit}
               loading={loading}
               cql={measureStoreCql}
               isCQLUnchanged={isCQLUnchanged}
