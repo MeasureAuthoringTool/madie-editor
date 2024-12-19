@@ -26,6 +26,7 @@ export interface Funct {
   functionsArguments: any;
   comment?: string;
   expressionEditorValue?: string;
+  logic?: string;
 }
 
 export interface FunctionProps {
@@ -127,6 +128,31 @@ export default function FunctionBuilder({
         argument?.dataType !== fn.dataType
     );
     formik.setFieldValue("functionsArguments", newArgs);
+  };
+
+  const getFunctionArguments = (args) => {
+    let argStr = "";
+    args?.forEach((arg) => {
+      argStr += arg.argumentName + " " + arg.dataType + ", ";
+    });
+    argStr = argStr.substring(0, argStr.length - 2);
+    return argStr;
+  };
+  const getEditedFunction = (): string => {
+    let logic = "";
+    if (formik.values.comment) {
+      logic += "/*\n" + formik.values.comment + "\n*/\n";
+    }
+    logic += "define ";
+    if (formik.values.fluentFunction) {
+      logic += "fluent ";
+    }
+    logic += "function ";
+    logic += formik.values.functionName + " ";
+    logic +=
+      "(" + getFunctionArguments(formik.values.functionsArguments) + "):\n";
+    logic += formik.values.expressionEditorValue;
+    return logic;
   };
 
   return (
@@ -245,13 +271,15 @@ export default function FunctionBuilder({
             onClick={
               operation === "edit"
                 ? () => {
-                    const functionToApply = {
-                      functionName: formik.values.functionName,
-                      comment: formik.values.comment,
-                      functionsArguments: formik.values.functionsArguments,
-                      fluentFunction: formik.values.fluentFunction,
-                      expressionValue: formik.values.expressionEditorValue,
+                    const functionToEdit = {
+                      functionName: funct.name,
+                      comment: funct.comment,
+                      functionsArguments: funct.functionsArguments,
+                      fluentFunction: funct.fluentFunction,
+                      expressionValue: funct.expressionEditorValue,
+                      expression: funct.logic,
                     };
+                    handleFunctionEdit(functionToEdit, getEditedFunction());
                   }
                 : () => {
                     const functionToApply = {
