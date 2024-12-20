@@ -151,7 +151,7 @@ export default function FunctionBuilder({
     logic += formik.values.functionName + " ";
     logic +=
       "(" + getFunctionArguments(formik.values.functionsArguments) + "):\n";
-    logic += formik.values.expressionEditorValue;
+    logic += "  " + formik.values.expressionEditorValue;
     return logic;
   };
 
@@ -279,7 +279,9 @@ export default function FunctionBuilder({
                       expressionValue: funct.expressionEditorValue,
                       expression: funct.logic,
                     };
-                    handleFunctionEdit(functionToEdit, getEditedFunction());
+                    const newLogic = getEditedFunction();
+                    resetForm();
+                    handleFunctionEdit(functionToEdit, newLogic);
                   }
                 : () => {
                     const functionToApply = {
