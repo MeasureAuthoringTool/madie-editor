@@ -12,6 +12,7 @@ import {
   Pagination,
   MadieDeleteDialog,
   MadieDiscardDialog,
+  TruncateText,
 } from "@madie/madie-design-system/dist/react";
 import Skeleton from "@mui/material/Skeleton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -20,7 +21,6 @@ import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
 import { Stack } from "@mui/material";
-import TruncateText from "../../../common/truncateText/TruncateText";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 const TD = tw.td`p-3 text-left text-sm w-1/2`;
