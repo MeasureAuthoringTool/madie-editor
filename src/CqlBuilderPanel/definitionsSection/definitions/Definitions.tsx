@@ -84,7 +84,7 @@ const Definitions = ({
     managePagination();
   }, [definitions, currentPage, currentLimit]);
 
-  const populateReturnType = (index) => {
+  const getReturnType = (index) => {
     const rowModal = table.getRow(index).original;
     const returnTypes = getCqlDefinitionReturnTypes();
     return returnTypes ? returnTypes[_.camelCase(rowModal.name)] : undefined;
@@ -93,7 +93,7 @@ const Definitions = ({
   const showEditDefinitionDialog = (index) => {
     setSelectedDefinition({
       ...table.getRow(index).original,
-      returnType: populateReturnType(index),
+      returnType: getReturnType(index),
     });
   };
 
@@ -110,7 +110,7 @@ const Definitions = ({
         header: "Return Type",
         accessorKey: "returnType",
         cell: (row: any) => {
-          const returnTypeShow = populateReturnType(row.cell.row.id);
+          const returnTypeShow = getReturnType(row.cell.row.id);
           return <div>{returnTypeShow == "NA" ? "" : returnTypeShow}</div>;
         },
       },
