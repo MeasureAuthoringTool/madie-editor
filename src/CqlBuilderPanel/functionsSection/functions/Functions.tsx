@@ -84,7 +84,6 @@ const Functions = ({
     managePagination();
   }, [functions, currentPage, currentLimit]);
 
-  //const handleFunctionEdit = () => {};
   // table data
   const data = visibleFunctions;
 
