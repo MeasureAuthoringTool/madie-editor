@@ -157,6 +157,10 @@ describe("DefinitionsSection", () => {
     expect(
       screen.queryAllByTestId("definition-actions")[0]
     ).toBeInTheDocument();
+
+    expect(screen.queryByTestId("delete-button-1")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("edit-button-1")).not.toBeInTheDocument();
+
     expect(screen.queryByTestId("view-button-0")).toBeInTheDocument();
   });
 
