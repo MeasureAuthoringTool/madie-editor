@@ -111,6 +111,7 @@ const Definitions = ({
             <TruncateText
               text={info.row?.original?.comment}
               dataTestId={`definition-comments`}
+              fontSize={"0.875rem"}
             />
           );
         },
