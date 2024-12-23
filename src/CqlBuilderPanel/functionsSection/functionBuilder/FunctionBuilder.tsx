@@ -148,7 +148,7 @@ export default function FunctionBuilder({
       logic += "fluent ";
     }
     logic += "function ";
-    logic += formik.values.functionName + " ";
+    logic += '"' + formik.values.functionName + '"' + " ";
     logic +=
       "(" + getFunctionArguments(formik.values.functionsArguments) + "):\n";
     logic += "  " + formik.values.expressionEditorValue;
