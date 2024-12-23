@@ -12,6 +12,7 @@ import {
   Pagination,
   MadieDeleteDialog,
   MadieDiscardDialog,
+  TruncateText,
 } from "@madie/madie-design-system/dist/react";
 import Skeleton from "@mui/material/Skeleton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -117,6 +118,15 @@ const Definitions = ({
       {
         header: "Comment",
         accessorKey: "comment",
+        cell: (info) => {
+          return (
+            <TruncateText
+              text={info.row?.original?.comment}
+              dataTestId={`definition-comments`}
+              fontSize={"0.875rem"}
+            />
+          );
+        },
       },
       {
         header: "",
