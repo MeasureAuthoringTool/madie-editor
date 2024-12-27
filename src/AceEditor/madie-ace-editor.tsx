@@ -48,6 +48,7 @@ export interface EditorPropsType {
   handleDeleteLibrary?: (lib: SelectedLibrary) => void;
   handleApplyFunction?: (funct: Funct) => void;
   handleFunctionDelete?: (funct: any) => void;
+  handleFunctionEdit?: (funct: any, newFunct: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   inboundErrorMarkers?: Ace.MarkerLike[];

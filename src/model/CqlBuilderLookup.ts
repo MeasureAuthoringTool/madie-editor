@@ -16,6 +16,7 @@ export interface Lookup {
 export interface FunctionLookup extends Lookup {
   isFluent?: string;
   arguments?: FunctionArgument[];
+  expressionEditorValue?: string;
 }
 
 export interface FunctionArgument {
