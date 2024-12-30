@@ -62,6 +62,9 @@
         > .MuiTabs-root {
           background-color: #ededed;
           margin-left: 16px;
+          > .MuiTabs-scroller {
+            overflow: auto !important;
+          }
         }
       }
       > .panel-content {

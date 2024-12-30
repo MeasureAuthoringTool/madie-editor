@@ -2,8 +2,6 @@ declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
 
   interface FeatureFlags {
-    CQLBuilderIncludes: boolean;
-    CQLBuilderDefinitions: boolean;
     CQLBuilderParameters: boolean;
     CQLBuilderFunctions: boolean;
     QICoreCodeSearch: boolean;

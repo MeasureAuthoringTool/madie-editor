@@ -33,6 +33,15 @@ interface ExpressionsProps {
   setAutoInsert: Function;
 }
 
+export const availableTypes = [
+  "Parameters",
+  "Definitions",
+  "Functions",
+  "Fluent Functions",
+  "Timing",
+  "Pre-Defined Functions",
+];
+
 export default function ExpressionEditor(props: ExpressionsProps) {
   const {
     canEdit,
@@ -45,14 +54,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     setAutoInsert,
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
-  const availableTypes = [
-    "Parameters",
-    "Definitions",
-    "Functions",
-    "Fluent Functions",
-    "Timing",
-    "Pre-Defined Functions",
-  ];
   const [editorHeight, setEditorHeight] = useState("100px");
   const formik: any = useFormikContext();
 
@@ -95,7 +96,14 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   useEffect(() => {
     if (textAreaRef.current) {
       const lineCount = textAreaRef.current.editor.session.getLength();
-      const newHeight = Math.max(lineCount * 20, 100) + "px";
+      // newNeight should not exceed 180
+      /*
+      Text entry control (with line numbers, but only starting with 1 line, expandable as more text is added to it, max height is 11 lines and then it scrolls)
+      https://jira.cms.gov/browse/MAT-7792
+      */
+      const maxHeight = 180;
+      const proposedNewHeight = Math.max(lineCount * 20, 100);
+      const newHeight = Math.min(maxHeight, proposedNewHeight) + "px";
       setEditorHeight(newHeight);
     }
   }, [expressionEditorValue]);
@@ -108,7 +116,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       type === "Definitions" ||
       type === "Functions"
     ) {
-      if (cqlBuilderLookupsTypes[type?.toLowerCase()]) {
+      if (cqlBuilderLookupsTypes?.[type?.toLowerCase()]) {
         setNamesOptions(
           cqlBuilderLookupsTypes[type?.toLowerCase()].map((def) =>
             getDefinitionNameWithAlias(def, type?.toLowerCase())

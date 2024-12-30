@@ -74,6 +74,7 @@ const Arguments = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const managePagination = useCallback(() => {
+    //  page zero for no pages available
     if (functionArguments.length < currentLimit) {
       setOffset(0);
       setVisibleArguments([...functionArguments]);
@@ -109,6 +110,15 @@ const Arguments = ({
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
+  // maybe an additional useEffect if functionArguments. letting this happen outside of useCallback to prevent us having to compare against old values using refs.
+  // slightly less performant, but much less complicated then a bunch of refs and checking prev state to delegate pagination correctly
+  useEffect(() => {
+    if (functionArguments?.length > currentLimit) {
+      const newTotalPages = Math.ceil(functionArguments.length / currentLimit);
+      handlePageChange(null, newTotalPages);
+    }
+  }, [functionArguments, currentLimit]);
+
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
@@ -163,11 +173,15 @@ const Arguments = ({
               <div className="arrow-container">
                 <button
                   onClick={() => moveItem(row.row.index, row.row.index - 1)}
+                  disabled={row.row.index == 0}
+                  data-testId={`arg-order-up-index-${row.row.index}`}
                 >
                   <ArrowDropUpOutlinedIcon />
                 </button>
                 <button
                   onClick={() => moveItem(row.row.index, row.row.index + 1)}
+                  disabled={row.row.index === functionArguments.length - 1}
+                  data-testId={`arg-order-down-index-${row.row.index}`}
                 >
                   <ArrowDropDownOutlinedIcon />
                 </button>
@@ -191,25 +205,27 @@ const Arguments = ({
         accessorKey: "action",
         cell: (row: any) => {
           return (
-            <Stack direction="row" alignItems="center">
-              <ToolTippedIcon
-                tooltipMessage="Delete"
-                buttonProps={{
-                  "data-testid": `delete-button-${row.row.id}`,
-                  "aria-label": `delete-button-${row.row.id}`,
-                  size: "small",
-                  onClick: () => {
-                    setSelectedArgument({
-                      argumentName: row.row.original.name,
-                      dataType: row.row.original.datatype,
-                    } as FunctionArgument);
-                    setDeleteDialogOpen(true);
-                  },
-                }}
-              >
-                <DeleteOutlineIcon color="error" />
-              </ToolTippedIcon>
-            </Stack>
+            row.row.original.name && (
+              <Stack direction="row" alignItems="center">
+                <ToolTippedIcon
+                  tooltipMessage="Delete"
+                  buttonProps={{
+                    "data-testid": `delete-button-${row.row.id}`,
+                    "aria-label": `delete-button-${row.row.id}`,
+                    size: "small",
+                    onClick: () => {
+                      setSelectedArgument({
+                        argumentName: row.row.original.name,
+                        dataType: row.row.original.datatype,
+                      } as FunctionArgument);
+                      setDeleteDialogOpen(true);
+                    },
+                  }}
+                >
+                  <DeleteOutlineIcon color="error" />
+                </ToolTippedIcon>
+              </Stack>
+            )
           );
         },
       },

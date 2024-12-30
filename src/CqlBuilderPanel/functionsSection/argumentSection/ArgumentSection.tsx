@@ -16,12 +16,14 @@ import Arguments from "./Arguments";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { FunctionArgumentSchemaValidator } from "../../../validations/FunctionArgumentSchemaValidator";
+import "./ArguementsSection.scss";
 
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
   canEdit: boolean;
   addArgumentToFunctionsArguments: Function;
   deleteArgumentFromFunctionArguments: Function;
+  dirty: boolean;
 }
 
 const availableDataTypes = [
@@ -42,8 +44,8 @@ export default function ArgumentSection(props: ArgumentsProps) {
     deleteArgumentFromFunctionArguments,
     functionArguments,
     canEdit,
+    dirty,
   } = props;
-  const [functionDataType, setFunctionDataType] = useState("");
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
 
   const formik = useFormik({
@@ -59,8 +61,8 @@ export default function ArgumentSection(props: ArgumentsProps) {
   const { dataType } = formik.values;
 
   const handleSubmit = () => {
-    let value = formik.values.dataType;
-    if (functionDataType === "Other") {
+    let value = dataType;
+    if (value === "Other") {
       value = formik.values.other;
     }
     const fnToAdd = {
@@ -71,7 +73,12 @@ export default function ArgumentSection(props: ArgumentsProps) {
     formik.resetForm();
   };
   const { resetForm } = formik;
-
+  // reset inner if outer is clean (listen for reset event)
+  useEffect(() => {
+    if (!dirty) {
+      resetForm();
+    }
+  }, [dirty]);
   return (
     <>
       <div tw="flex flex-wrap">
@@ -95,11 +102,11 @@ export default function ArgumentSection(props: ArgumentsProps) {
         <div tw="flex-grow pl-5">
           <Select
             label="Available DataTypes"
-            id="type-selector"
+            id="arg-type-selector"
             inputProps={{
-              "data-testid": "type-selector-input",
+              "data-testid": "arg-type-selector-input",
             }}
-            data-testid="type-selector"
+            data-testid="arg-type-selector"
             SelectDisplayProps={{
               "aria-required": "true",
             }}
@@ -117,13 +124,15 @@ export default function ArgumentSection(props: ArgumentsProps) {
             error={Boolean(formik.errors.dataType)}
             helperText={formik.errors.dataType}
             onChange={(evt) => {
-              setFunctionDataType(evt.target.value);
               formik.setFieldValue("dataType", evt.target.value);
+              if (formik.values.other) {
+                formik.setFieldValue("other", "");
+              }
             }}
           />
         </div>
       </div>
-      {functionDataType && functionDataType === "Other" && (
+      {dataType === "Other" && (
         <div tw="flex flex-wrap">
           <div tw="pt-6 w-1/2">
             <TextField
@@ -137,8 +146,9 @@ export default function ArgumentSection(props: ArgumentsProps) {
               inputProps={{
                 "data-testid": "other-type-input",
               }}
+              required
               {...formik.getFieldProps("other")}
-              error={Boolean(formik.errors.other)}
+              error={formik.touched.other && Boolean(formik.errors.other)}
               helperText={formik.errors.other}
             />
           </div>
@@ -166,6 +176,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </Button>
       </div>
       <div style={{ paddingTop: "24px" }}>
+        {/* tableData with pagination. */}
         <Arguments
           functionArguments={functionArguments}
           canEdit={canEdit}
@@ -177,7 +188,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
         onClose={() => setConfirmationDialog(false)}
         onSubmit={() => {
           resetForm();
-          setFunctionDataType("");
           setConfirmationDialog(false);
         }}
       />

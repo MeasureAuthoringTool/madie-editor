@@ -37,35 +37,21 @@ export default function CqlBuilderPanel({
   handleDefinitionEdit,
   handleDefinitionDelete,
   handleApplyFunction,
+  handleFunctionDelete,
+  handleFunctionEdit,
   resetCql,
   getCqlDefinitionReturnTypes,
   makeExpanded,
 }) {
   const featureFlags = useFeatureFlags();
-  const {
-    CQLBuilderDefinitions,
-    CQLBuilderIncludes,
-    CQLBuilderParameters,
-    CQLBuilderFunctions,
-    QICoreCodeSearch,
-  } = featureFlags;
+  const { CQLBuilderParameters, CQLBuilderFunctions, QICoreCodeSearch } =
+    featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
-    // if cqlBuilderIncludes -> includes
-    // if BuilderDefs -> definitions
-    // if QDM -> valueSets
-    if (QICoreCodeSearch) {
-      return "codes";
-    }
-    if (CQLBuilderIncludes) {
-      return "includes";
-    }
-    if (CQLBuilderDefinitions) {
-      return "definitions";
-    }
     if (measureModel?.includes("QDM")) {
       return "valueSets";
     }
+    return "includes";
   })();
 
   const [activeTab, setActiveTab] = useState<string>(getStartingPage);
@@ -150,10 +136,8 @@ export default function CqlBuilderPanel({
         <CqlBuilderSectionPanelNavTabs
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          CQLBuilderDefinitions={CQLBuilderDefinitions}
           isQDM={measureModel?.includes("QDM")}
           CQLBuilderParameters={CQLBuilderParameters}
-          CQLBuilderIncludes={CQLBuilderIncludes}
           CQLBuilderFunctions={CQLBuilderFunctions}
           QICoreCodeSearch={QICoreCodeSearch}
         />
@@ -260,12 +244,15 @@ export default function CqlBuilderPanel({
 
           {activeTab === "functions" && (
             <FunctionsSection
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
               canEdit={canEdit}
               handleApplyFunction={handleApplyFunction}
+              handleFunctionDelete={handleFunctionDelete}
+              handleFunctionEdit={handleFunctionEdit}
               loading={loading}
               cql={measureStoreCql}
               isCQLUnchanged={isCQLUnchanged}
-              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+              resetCql={resetCql}
             />
           )}
         </div>

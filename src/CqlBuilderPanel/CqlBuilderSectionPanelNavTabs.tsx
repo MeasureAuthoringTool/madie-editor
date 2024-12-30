@@ -3,9 +3,7 @@ import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  CQLBuilderIncludes: boolean;
   CQLBuilderParameters: boolean;
-  CQLBuilderDefinitions: boolean;
   CQLBuilderFunctions: boolean;
   isQDM: boolean;
   QICoreCodeSearch: boolean;
@@ -15,8 +13,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
   const {
     activeTab,
     setActiveTab,
-    CQLBuilderDefinitions,
-    CQLBuilderIncludes,
     CQLBuilderParameters,
     CQLBuilderFunctions,
     isQDM,
@@ -31,16 +27,14 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
       }}
       type="D"
     >
-      {CQLBuilderIncludes && (
-        <Tab
-          tabIndex={0}
-          aria-label="Includes"
-          type="B"
-          label="Includes"
-          data-testid="includes-tab"
-          value="includes"
-        />
-      )}
+      <Tab
+        tabIndex={0}
+        aria-label="Includes"
+        type="B"
+        label="Includes"
+        data-testid="includes-tab"
+        value="includes"
+      />
       {isQDM && (
         <Tab
           tabIndex={0}
@@ -71,16 +65,14 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
           value="parameters"
         />
       )}
-      {CQLBuilderDefinitions && (
-        <Tab
-          tabIndex={0}
-          aria-label="Definitions"
-          type="D"
-          value="definitions"
-          label="Definitions"
-          data-testid="definitions-tab"
-        />
-      )}
+      <Tab
+        tabIndex={0}
+        aria-label="Definitions"
+        type="D"
+        value="definitions"
+        label="Definitions"
+        data-testid="definitions-tab"
+      />
       {CQLBuilderFunctions && (
         <Tab
           tabIndex={0}

@@ -24,6 +24,8 @@ const CqlEditorWithTerminology = ({
   handleDeleteLibrary,
   handleDefinitionEdit,
   handleApplyFunction,
+  handleFunctionDelete,
+  handleFunctionEdit,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
@@ -123,6 +125,8 @@ const CqlEditorWithTerminology = ({
               handleEditLibrary={handleEditLibrary}
               handleDeleteLibrary={handleDeleteLibrary}
               handleApplyFunction={handleApplyFunction}
+              handleFunctionDelete={handleFunctionDelete}
+              handleFunctionEdit={handleFunctionEdit}
               resetCql={resetCql}
               getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
             />

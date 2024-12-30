@@ -6,6 +6,7 @@ import {
   Button,
   TextArea,
   TextField,
+  Toast,
 } from "@madie/madie-design-system/dist/react";
 import "../Functions.scss";
 import { FunctionSectionSchemaValidator } from "../../../validations/FunctionSectionSchemaValidator";
@@ -14,20 +15,29 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 import { Box } from "@mui/system";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import ArgumentSection from "../argumentSection/ArgumentSection";
+import ExpressionEditor from "../../definitionsSection/expressionSection/ExpressionEditor";
+import { getNewExpressionsAndLines } from "../../common/utils";
+import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
+import UseToast from "../../../common/UseToast";
 
 export interface Funct {
-  functionName?: string;
+  name?: string;
   fluentFunction?: boolean;
   functionsArguments: any;
   comment?: string;
+  expressionEditorValue?: string;
+  logic?: string;
 }
 
 export interface FunctionProps {
+  cqlBuilderLookupsTypes: CqlBuilderLookup;
   canEdit: boolean;
   handleApplyFunction: Function;
   handleFunctionEdit?: Function;
   funct?: Funct;
   onClose?: Function;
+  operation?: string;
+  setEditFunctionDialogOpen?: Function;
 }
 
 export default function FunctionBuilder({
@@ -36,6 +46,8 @@ export default function FunctionBuilder({
   handleFunctionEdit,
   onClose,
   funct,
+  cqlBuilderLookupsTypes,
+  operation,
 }: FunctionProps) {
   const [argumentsEditorOpen, setArgumentsEditorOpen] =
     useState<boolean>(false);
@@ -43,23 +55,70 @@ export default function FunctionBuilder({
     useState<boolean>(false);
   const textAreaRef = useRef(null);
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
+  const [cursorPosition, setCursorPosition] = useState(null);
+  const [autoInsert, setAutoInsert] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      functionName: funct?.functionName || "",
+      functionName: funct?.name || "",
       comment: funct?.comment || "",
-      fluentFunction: funct?.fluentFunction || true,
+      fluentFunction: funct?.name ? funct?.fluentFunction : true,
       functionsArguments: funct?.functionsArguments || [],
+      expressionEditorValue: funct?.expressionEditorValue || "",
+      type: "",
+      name: "",
     },
     validationSchema: FunctionSectionSchemaValidator,
     enableReinitialize: true,
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      const newValues = getNewExpressionsAndLines(
+        values,
+        cursorPosition,
+        formik.values.expressionEditorValue,
+        autoInsert
+      );
+      updateExpressionAndLines(newValues[0], newValues[1]);
+    },
   });
-  const { resetForm } = formik;
+  // going to pass dirty down to know when we need to reset sub form
+  const { resetForm, dirty } = formik;
+  // toast utilities
+  const {
+    toastOpen,
+    setToastOpen,
+    toastMessage,
+    setToastMessage,
+    toastType,
+    setToastType,
+    onToastClose,
+  } = UseToast();
+  // update formik, and expressionEditor, cursor, lines
+  const updateExpressionAndLines = (
+    newEditorExpressionValue,
+    newCursorPosition
+  ) => {
+    formik.setFieldValue("expressionEditorValue", newEditorExpressionValue);
+    formik.setFieldValue("type", "");
+    formik.setFieldValue("name", "");
+
+    textAreaRef.current.editor.setValue(newEditorExpressionValue, 1);
+    textAreaRef.current.editor.moveCursorTo(
+      newCursorPosition.row,
+      newCursorPosition.column
+    );
+    textAreaRef.current.editor.clearSelection();
+    setAutoInsert(true);
+    setCursorPosition(null);
+  };
 
   const addArgumentToFunctionsArguments = (fn) => {
     const newArgs = [...formik.values.functionsArguments, fn];
     formik.setFieldValue("functionsArguments", newArgs);
+    setToastMessage(
+      `Argument ${fn.argumentName} has been successfully added to the function.`
+    );
+    setToastType("success");
+    setToastOpen(true);
   };
 
   const deleteArgumentFromFunctionArguments = (fn) => {
@@ -69,6 +128,31 @@ export default function FunctionBuilder({
         argument?.dataType !== fn.dataType
     );
     formik.setFieldValue("functionsArguments", newArgs);
+  };
+
+  const getFunctionArguments = (args) => {
+    let argStr = "";
+    args?.forEach((arg) => {
+      argStr += arg.argumentName + " " + arg.dataType + ", ";
+    });
+    argStr = argStr.substring(0, argStr.length - 2);
+    return argStr;
+  };
+  const getEditedFunction = (): string => {
+    let logic = "";
+    if (formik.values.comment) {
+      logic += "/*\n" + formik.values.comment + "\n*/\n";
+    }
+    logic += "define ";
+    if (formik.values.fluentFunction) {
+      logic += "fluent ";
+    }
+    logic += "function ";
+    logic += '"' + formik.values.functionName + '"' + " ";
+    logic +=
+      "(" + getFunctionArguments(formik.values.functionsArguments) + "):\n";
+    logic += "  " + formik.values.expressionEditorValue;
+    return logic;
   };
 
   return (
@@ -91,6 +175,15 @@ export default function FunctionBuilder({
               error={Boolean(formik.errors.functionName)}
               helperText={formik.errors.functionName}
               {...formik.getFieldProps("functionName")}
+              onChange={(e) => {
+                formik.handleChange(e);
+                if (e.target.value && !expressionEditorOpen) {
+                  setExpressionEditorOpen(true);
+                }
+                if (e.target.value && !argumentsEditorOpen) {
+                  setArgumentsEditorOpen(true);
+                }
+              }}
             />
           </div>
           <Box sx={{ marginTop: "22px" }}>
@@ -132,22 +225,33 @@ export default function FunctionBuilder({
           title="Arguments"
           showHeaderContent={argumentsEditorOpen}
         >
+          {/* functional input fields */}
           <ArgumentSection
             canEdit={canEdit}
             addArgumentToFunctionsArguments={addArgumentToFunctionsArguments}
             deleteArgumentFromFunctionArguments={
               deleteArgumentFromFunctionArguments
             }
+            dirty={dirty}
             functionArguments={formik.values.functionsArguments}
           />
         </ExpandingSection>
 
         <div style={{ marginTop: "36px" }} />
-        <ExpandingSection
-          title="Expression Editor"
-          showHeaderContent={expressionEditorOpen}
-          children={<></>}
-        />
+        <FormikProvider value={formik}>
+          <ExpressionEditor
+            canEdit={canEdit}
+            expressionEditorOpen={expressionEditorOpen}
+            cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+            textAreaRef={textAreaRef}
+            expressionEditorValue={formik.values.expressionEditorValue}
+            setExpressionEditorValue={(v) => {
+              formik.setFieldValue("expressionEditorValue", v);
+            }}
+            setCursorPosition={setCursorPosition}
+            setAutoInsert={setAutoInsert}
+          />
+        </FormikProvider>
         <div className="form-actions">
           <Button
             id="clear-function-btn"
@@ -164,8 +268,33 @@ export default function FunctionBuilder({
           <Button
             data-testid={`function-apply-btn`}
             disabled={!formik.values.functionName || !canEdit || !formik.dirty}
-            // tw="ml-4"
-            onClick={() => {}}
+            onClick={
+              operation === "edit"
+                ? () => {
+                    const functionToEdit = {
+                      functionName: funct.name,
+                      comment: funct.comment,
+                      functionsArguments: funct.functionsArguments,
+                      fluentFunction: funct.fluentFunction,
+                      expressionValue: funct.expressionEditorValue,
+                      expression: funct.logic,
+                    };
+                    const newLogic = getEditedFunction();
+                    resetForm();
+                    handleFunctionEdit(functionToEdit, newLogic);
+                  }
+                : () => {
+                    const functionToApply = {
+                      functionName: formik.values.functionName,
+                      comment: formik.values.comment,
+                      functionsArguments: formik.values.functionsArguments,
+                      fluentFunction: formik.values.fluentFunction,
+                      expressionValue: formik.values.expressionEditorValue,
+                    };
+                    resetForm();
+                    handleApplyFunction(functionToApply);
+                  }
+            }
           >
             Apply
           </Button>
@@ -179,6 +308,22 @@ export default function FunctionBuilder({
           }}
         />
       </form>
+      <Toast
+        toastKey="function-builder-toast"
+        toastType={toastType}
+        testId={
+          toastType === "danger"
+            ? `function-builder-error`
+            : `function-builder-success`
+        }
+        open={toastOpen}
+        message={toastMessage}
+        onClose={onToastClose}
+        autoHideDuration={6000}
+        closeButtonProps={{
+          "data-testid": "function-builder-toast-close-button",
+        }}
+      />
     </div>
   );
 }

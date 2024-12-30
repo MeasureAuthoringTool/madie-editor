@@ -15,7 +15,11 @@ import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Skeleton from "@mui/material/Skeleton";
-import { Pagination } from "@madie/madie-design-system/dist/react";
+import {
+  Pagination,
+  MadieConfirmDialog,
+} from "@madie/madie-design-system/dist/react";
+import EditFunctionDialog from "../EditFunctionDialog";
 import Tooltip from "@mui/material/Tooltip";
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
@@ -39,7 +43,13 @@ const Functions = ({
   loading,
   functions,
   isCQLUnchanged,
+  resetCql,
+  handleApplyFunction,
+  handleFunctionDelete,
+  handleFunctionEdit,
+  cqlBuilderLookupsTypes,
 }: FunctionProps) => {
+  // pagination utilities
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
@@ -47,10 +57,18 @@ const Functions = ({
     []
   );
 
+  const [selectedFunction, setSelectedFunction] = useState<FunctionLookup>();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [discardDialog, setDiscardDialog] = useState({
+    open: false,
+    operation: null,
+  });
+  const [editFunctionDialogOpen, setEditFunctionDialogOpen] =
+    useState<boolean>();
+
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const canGoPrev = currentPage > 1;
   const canGoNext = (() => {
     return currentPage < totalPages;
@@ -62,7 +80,6 @@ const Functions = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [functions, currentPage, currentLimit]);
@@ -82,16 +99,19 @@ const Functions = ({
       },
       {
         header: "Argument Name",
-        accessorKey: "argumentNames",
+        accessorKey: "arguments",
         cell: (row: any) => {
-          const args = row.cell.row.original.argumentNames;
+          const args = row.cell.row.original.arguments;
+          const argStrArr = args.map((arg) => {
+            return arg.argumentName + " " + arg.dataType;
+          });
           return (
             <div>
               <Tooltip
-                title={getArgNameToolTipHtml(args, args?.length)}
+                title={getArgNameToolTipHtml(argStrArr, argStrArr?.length)}
                 aria-label={args}
               >
-                <button>{getArgNameToolTipHtml(args, 2)}</button>
+                <button>{getArgNameToolTipHtml(argStrArr, 2)}</button>
               </Tooltip>
             </div>
           );
@@ -134,7 +154,14 @@ const Functions = ({
                   "data-testid": `delete-button-${row.cell.row.id}`,
                   "aria-label": `delete-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: (e) => {},
+                  onClick: (e) => {
+                    setSelectedFunction(table.getRow(row.cell.row.id).original);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialog({ open: true, operation: "delete" });
+                    } else {
+                      setDeleteDialogOpen(true);
+                    }
+                  },
                 }}
               >
                 <DeleteOutlineIcon color="error" />
@@ -145,7 +172,14 @@ const Functions = ({
                   "data-testid": `edit-button-${row.cell.row.id}`,
                   "aria-label": `edit-button-${row.cell.row.id}`,
                   size: "small",
-                  onClick: (e) => {},
+                  onClick: (e) => {
+                    setSelectedFunction(table.getRow(row.cell.row.id).original);
+                    if (!isCQLUnchanged) {
+                      setDiscardDialog({ open: true, operation: "edit" });
+                    } else {
+                      setEditFunctionDialogOpen(true);
+                    }
+                  },
                 }}
               >
                 <BorderColorOutlinedIcon color="primary" />
@@ -262,6 +296,69 @@ const Functions = ({
           hidePrevButton={!canGoPrev}
         />
       </div>
+
+      <MadieConfirmDialog
+        open={discardDialog?.open}
+        warning="This Action cannot be undone."
+        dialogTitle="Discard changes?"
+        name="discard your changes in the CQL and delete the Function from the CQL"
+        action="discard"
+        cancelText="No, Keep Working"
+        continueText="Yes, Discard All Changes"
+        onContinue={() => {
+          resetCql();
+          if (discardDialog?.operation === "edit") {
+            setDiscardDialog({
+              open: false,
+              operation: "edit",
+            });
+            setEditFunctionDialogOpen(true);
+          } else if (discardDialog?.operation === "delete") {
+            setDiscardDialog({
+              open: false,
+              operation: "delete",
+            });
+            setDeleteDialogOpen(true);
+          }
+        }}
+        onClose={() => {
+          setDiscardDialog({
+            open: false,
+            operation: null,
+          });
+        }}
+      />
+
+      <MadieConfirmDialog
+        open={deleteDialogOpen}
+        onContinue={() => {
+          handleFunctionDelete({
+            functionName: selectedFunction.name,
+            comment: selectedFunction.comment,
+            functionsArguments: selectedFunction.arguments,
+            fluentFunction: selectedFunction.isFluent === "Yes" ? true : false,
+            expressionValue: selectedFunction.logic,
+            expression: selectedFunction.logic,
+          });
+          setDeleteDialogOpen(false);
+        }}
+        onClose={() => setDeleteDialogOpen(false)}
+        action="delete"
+        dialogTitle="Are you sure?"
+        name={"delete this Function"}
+        warning={"This action cannot be undone!"}
+        continueText="Yes, Delete"
+      />
+
+      <EditFunctionDialog
+        open={editFunctionDialogOpen}
+        setEditFunctionDialogOpen={setEditFunctionDialogOpen}
+        funct={selectedFunction}
+        onClose={() => setEditFunctionDialogOpen(false)}
+        cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+        handleApplyFunction={handleApplyFunction}
+        handleFunctionEdit={handleFunctionEdit}
+      />
     </>
   );
 };
