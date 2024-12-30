@@ -32,6 +32,8 @@ export type Parameter = {
 export interface CodeSystem {
   id: string;
   lastUpdated: string;
+  oid: string;
+  fullUrl: string;
   lastUpdatedUpstream?: string;
   name?: string;
   title?: string;
@@ -53,6 +55,7 @@ export interface Code {
   svsVersion: string;
   status: CodeStatus;
   codeSystemOid?: string;
+  codeSystemUrl?: string;
   versionIncluded?: string;
   suffix?: string;
 }

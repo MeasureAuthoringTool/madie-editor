@@ -47,12 +47,16 @@ export default function CqlBuilderPanel({
     CQLBuilderIncludes,
     CQLBuilderParameters,
     CQLBuilderFunctions,
+    QICoreCodeSearch,
   } = featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
     // if cqlBuilderIncludes -> includes
     // if BuilderDefs -> definitions
     // if QDM -> valueSets
+    if (QICoreCodeSearch) {
+      return "codes";
+    }
     if (CQLBuilderIncludes) {
       return "includes";
     }
@@ -151,6 +155,7 @@ export default function CqlBuilderPanel({
           CQLBuilderParameters={CQLBuilderParameters}
           CQLBuilderIncludes={CQLBuilderIncludes}
           CQLBuilderFunctions={CQLBuilderFunctions}
+          QICoreCodeSearch={QICoreCodeSearch}
         />
         <div
           style={{
@@ -213,7 +218,6 @@ export default function CqlBuilderPanel({
             <CodesSection
               canEdit={canEdit}
               measureStoreCql={measureStoreCql}
-              cqlMetaData={cqlMetaData}
               measureModel={measureModel}
               handleCodeDelete={handleCodeDelete}
               editorVal={editorVal}

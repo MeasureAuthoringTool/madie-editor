@@ -25,6 +25,9 @@ const mockConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "terminology.com",
   },
+  cqlLibraryService: {
+    baseUrl: "library.com",
+  },
 };
 const mockCode: Code = {
   name: "Code2",
@@ -34,15 +37,20 @@ const mockCode: Code = {
   svsVersion: "2.0",
   fhirVersion: "2.0",
 };
+
+const handleApplyCode = () => jest.fn();
+const componentProps = {
+  canEdit: true,
+  allCodeSystems: mockedCodeSystems,
+  measureModel: "",
+  editorVal: "",
+  handleApplyCode: handleApplyCode,
+};
+
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
     const { findByTestId } = render(
-      <CodeSubSection
-        canEdit={false}
-        allCodeSystems={mockedCodeSystems}
-        handleChange="changed-code"
-        measureModel=""
-      />
+      <CodeSubSection {...componentProps} canEdit={false} />
     );
 
     const codeSubTabHeading = await findByTestId(
@@ -58,14 +66,7 @@ describe("CodeSub Section component", () => {
 
   it("should display code details for selected code, system, version filters", async () => {
     const { getByTestId, getByText, getByRole, queryByText, findAllByRole } =
-      render(
-        <CodeSubSection
-          canEdit={true}
-          allCodeSystems={mockedCodeSystems}
-          handleChange="changed-code"
-          measureModel=""
-        />
-      );
+      render(<CodeSubSection {...componentProps} />);
     const codeSystemSelect = getByTestId("code-system-selector-dropdown");
 
     expect(codeSystemSelect).toBeInTheDocument();
@@ -103,12 +104,7 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByText, getByRole } = render(
-      <CodeSubSection
-        canEdit={true}
-        allCodeSystems={mockedCodeSystems}
-        handleChange="changed-code"
-        measureModel=""
-      />
+      <CodeSubSection {...componentProps} />
     );
 
     const codeSystemSelect = getByTestId("code-system-selector-dropdown");
@@ -168,12 +164,7 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByRole, getByText } = render(
-      <CodeSubSection
-        canEdit={true}
-        allCodeSystems={mockedCodeSystems}
-        handleChange="changed-code"
-        measureModel=""
-      />
+      <CodeSubSection {...componentProps} />
     );
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
@@ -226,12 +217,7 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByText, getByRole } = render(
-      <CodeSubSection
-        canEdit={true}
-        allCodeSystems={mockedCodeSystems}
-        handleChange="changed-code"
-        measureModel=""
-      />
+      <CodeSubSection {...componentProps} />
     );
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
@@ -280,14 +266,7 @@ describe("CodeSub Section component", () => {
   });
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
-    const { getByTestId } = render(
-      <CodeSubSection
-        allCodeSystems={mockedCodeSystems}
-        canEdit={true}
-        handleChange="changed-code"
-        measureModel=""
-      />
-    );
+    const { getByTestId } = render(<CodeSubSection {...componentProps} />);
 
     const clearButton = getByTestId("clear-codes-btn");
     expect(clearButton).toBeDisabled();

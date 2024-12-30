@@ -4,13 +4,12 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react";
 import * as React from "react";
 import CodesSection from "./CodesSection";
 import { useCodeSystems } from "./useCodeSystems";
 import { ServiceConfig } from "../../api/useServiceConfig";
-import { CqlMetaData } from "../../api/useTerminologyServiceApi";
+import { CodeSystem } from "../../api/useTerminologyServiceApi";
 
 jest.mock("./useCodeSystems");
 
@@ -24,6 +23,7 @@ const mockConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "terminology.com",
   },
+  cqlLibraryService: { baseUrl: "library.com" },
 };
 jest.mock("../../api/useServiceConfig", () => {
   return {
@@ -37,20 +37,26 @@ const mockCodeSystems = [
     title: "code0",
     version: Date.now().toString(),
     lastUpdated: Date.now().toString(),
+    oid: "urn:oid:2.16.840.1.113883.6.1",
+    fullUr: "http://loinc.org",
   },
   {
     id: "2",
     title: "code1",
     version: Date.now().toString(),
     lastUpdated: Date.now().toString(),
+    oid: "1.2.3.2",
+    fullUr: "http://loinc.org",
   },
   {
     id: "3",
     title: "code3",
     version: Date.now().toString(),
     lastUpdated: Date.now().toString(),
+    oid: "4.5.6.6",
+    fullUr: "http://snomed.com",
   },
-];
+] as unknown as Array<CodeSystem>;
 
 const mockCql =
   "code \"Birth date\": '21112-8' from \"LOINC\" display 'Birth date'\ncodesystem \"LOINC\": 'urn:oid:2.16.840.1.113883.6.1'";
@@ -117,18 +123,18 @@ describe("CodesSection", () => {
     expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
   });
 
-  it("should render saved codes tab sectio with 1 saved code", async () => {
+  it("should render saved codes tab section with 1 saved code", async () => {
     render(
       <CodesSection
         canEdit={true}
         measureStoreCql={mockCql}
-        cqlMetaData={{} as CqlMetaData}
         measureModel=""
         handleCodeDelete={jest.fn()}
         setEditorVal={jest.fn()}
         setIsCQLUnchanged={jest.fn()}
         isCQLUnchanged={true}
         handleApplyCode={jest.fn()}
+        editorVal={""}
       />
     );
     const savedCodesSubTab = await screen.findByText("Saved Codes(1)");
@@ -144,13 +150,13 @@ describe("CodesSection", () => {
       <CodesSection
         canEdit={true}
         measureStoreCql={mockCqlWithNoCode}
-        cqlMetaData={{} as CqlMetaData}
         measureModel=""
         handleCodeDelete={jest.fn()}
         setEditorVal={jest.fn()}
         setIsCQLUnchanged={jest.fn()}
         isCQLUnchanged={true}
         handleApplyCode={jest.fn()}
+        editorVal={""}
       />
     );
     const savedCodesSubTab = await screen.findByText("Saved Codes(0)");

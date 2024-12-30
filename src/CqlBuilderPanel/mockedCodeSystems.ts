@@ -1,3 +1,5 @@
+import { CodeSystem } from "../api/useTerminologyServiceApi";
+
 export const mockedCodeSystems = [
   {
     id: "1",
@@ -53,4 +55,4 @@ export const mockedCodeSystems = [
     lastUpdatedUpstream: new Date(2001, 10, 1).toString(),
     lastUpdated: new Date(1999, 10, 1).toString(),
   },
-];
+] as Array<CodeSystem>;

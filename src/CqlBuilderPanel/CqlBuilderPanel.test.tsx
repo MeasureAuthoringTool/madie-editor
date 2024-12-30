@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import CqlBuilderPanel from "./CqlBuilderPanel";
 // @ts-ignore
 import { useFeatureFlags } from "@madie/madie-util";
@@ -6,7 +6,6 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { within } from "@testing-library/dom";
 import axios from "../api/axios-instance";
-import { act } from "react-dom/test-utils";
 import { ServiceConfig } from "../api/useServiceConfig";
 
 jest.mock("../api/axios-instance");
@@ -128,6 +127,8 @@ const props = {
   resetCql: jest.fn(),
   getCqlDefinitionReturnTypes: jest.fn(),
   makeExpanded: jest.fn(),
+  handleParameterDelete: jest.fn(),
+  editorVal: undefined,
 };
 const { getByTestId } = screen;
 
@@ -140,7 +141,8 @@ describe("CqlBuilderPanel", () => {
       data: { ...mockConfig },
     });
   });
-  it("Should load to includes tab", async () => {
+
+  it("Should load includes tab", async () => {
     render(<CqlBuilderPanel {...props} />);
     await waitFor(() => {
       expect(getByTestId("includes-tab")).toHaveAttribute(
@@ -157,7 +159,7 @@ describe("CqlBuilderPanel", () => {
     });
   });
 
-  it("Should load to valueSets tab", async () => {
+  it("Should load valueSets tab", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       CQLBuilderIncludes: false,
       QDMValueSetSearch: true,
@@ -172,7 +174,17 @@ describe("CqlBuilderPanel", () => {
     });
   });
 
-  it("Should load to definitions tab", async () => {
+  it("Should show codes tab for QICore if QICoreCodeSearch flag is on", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      QICoreCodeSearch: true,
+    }));
+    render(<CqlBuilderPanel {...props} />);
+    await waitFor(() => {
+      expect(getByTestId("codes-tab")).toHaveAttribute("aria-selected", "true");
+    });
+  });
+
+  it("Should load definitions tab", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       CQLBuilderIncludes: true,
       QDMValueSetSearch: true,

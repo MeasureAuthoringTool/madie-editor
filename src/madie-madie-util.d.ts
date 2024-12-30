@@ -6,6 +6,7 @@ declare module "@madie/madie-util" {
     CQLBuilderDefinitions: boolean;
     CQLBuilderParameters: boolean;
     CQLBuilderFunctions: boolean;
+    QICoreCodeSearch: boolean;
   }
 
   export const useOktaTokens: (storageKey?: string) => {
