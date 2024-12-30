@@ -306,7 +306,6 @@ const Functions = ({
             ? "discard your changes in the CQL and edit the Function from the CQL"
             : "discard your changes in the CQL and delete the Function from the CQL"
         }
-        // name="discard your changes in the CQL and delete the Function from the CQL"
         action="discard"
         cancelText="No, Keep Working"
         continueText="Yes, Discard All Changes"
