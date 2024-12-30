@@ -38,13 +38,12 @@ const mockCode: Code = {
   fhirVersion: "2.0",
 };
 
-const handleApplyCode = () => jest.fn();
 const componentProps = {
   canEdit: true,
   allCodeSystems: mockedCodeSystems,
   measureModel: "",
   editorVal: "",
-  handleApplyCode: handleApplyCode,
+  handleApplyCode: (c: string) => jest.fn(),
 };
 
 describe("CodeSub Section component", () => {
