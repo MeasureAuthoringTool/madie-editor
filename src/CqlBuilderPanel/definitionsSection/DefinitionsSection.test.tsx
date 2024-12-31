@@ -162,6 +162,11 @@ describe("DefinitionsSection", () => {
     expect(screen.queryByTestId("edit-button-1")).not.toBeInTheDocument();
 
     expect(screen.queryByTestId("view-button-0")).toBeInTheDocument();
+    // check if view dialog is editable
+    userEvent.click(screen.queryByTestId("view-button-0"));
+    const definitionName = screen.getByTestId("definition-name-text-input");
+    expect(definitionName).toHaveValue("SDE Sex");
+    expect(definitionName).toHaveAttribute("disabled");
   });
 
   it("Should render edit definition dialog on edit button click", async () => {
@@ -204,5 +209,51 @@ describe("DefinitionsSection", () => {
     );
     const returnType = screen.getByTestId("return-type");
     expect(returnType).toHaveTextContent(getCqlDefinitionReturnTypes().sdeSex);
+    // close the dialog
+    const button = screen.getByRole("button", { name: "Close" });
+    userEvent.click(button);
+
+    // perform delete action, should display delete confirmation dialog
+    userEvent.click(screen.queryByTestId("delete-button-0"));
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    userEvent.click(screen.getByRole("button", { name: "Yes, Delete" }));
+    expect(props.handleDefinitionDelete).toHaveBeenCalled();
+  });
+
+  it("Should show discard dialog if CQL is dirty on edit btn click", async () => {
+    const getCqlDefinitionReturnTypes = () => {
+      return {
+        sdeSex: "PatientCharacteristicSex",
+      };
+    };
+    render(
+      <DefinitionsSection
+        {...props}
+        isCQLUnchanged={false}
+        cql={
+          '/*\n this is SDE Sex definition\n*/ \ndefine "SDE Sex":\n  SDE."SDE Sex"'
+        }
+        cqlBuilderLookupsTypes={cqlBuilderLookup}
+        getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
+      />
+    );
+    // go to saved definitions tab
+    const savedDefinitionsTab = screen.getByRole("tab", {
+      name: /Saved Definitions/i,
+    });
+    expect(savedDefinitionsTab).toBeInTheDocument();
+    userEvent.click(savedDefinitionsTab);
+    const table = screen.getByRole("table");
+    expect(table).toBeInTheDocument();
+
+    // perform delete if cql is dirty, should display discard confirmation
+    userEvent.click(screen.queryByTestId("delete-button-0"));
+    expect(screen.getByTestId("discard-dialog")).toBeInTheDocument();
+    userEvent.click(
+      screen.getByRole("button", { name: "Yes, Discard All Changes" })
+    );
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    userEvent.click(screen.getByRole("button", { name: "Yes, Delete" }));
+    expect(props.handleDefinitionDelete).toHaveBeenCalled();
   });
 });
