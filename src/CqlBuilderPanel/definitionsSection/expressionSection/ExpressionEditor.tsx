@@ -116,7 +116,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       type === "Definitions" ||
       type === "Functions"
     ) {
-      if (cqlBuilderLookupsTypes[type?.toLowerCase()]) {
+      if (cqlBuilderLookupsTypes?.[type?.toLowerCase()]) {
         setNamesOptions(
           cqlBuilderLookupsTypes[type?.toLowerCase()].map((def) =>
             getDefinitionNameWithAlias(def, type?.toLowerCase())

@@ -46,6 +46,7 @@ const Functions = ({
   resetCql,
   handleApplyFunction,
   handleFunctionDelete,
+  handleFunctionEdit,
   cqlBuilderLookupsTypes,
 }: FunctionProps) => {
   // pagination utilities
@@ -83,7 +84,6 @@ const Functions = ({
     managePagination();
   }, [functions, currentPage, currentLimit]);
 
-  const handleFunctionEdit = () => {};
   // table data
   const data = visibleFunctions;
 
@@ -99,16 +99,19 @@ const Functions = ({
       },
       {
         header: "Argument Name",
-        accessorKey: "argumentNames",
+        accessorKey: "arguments",
         cell: (row: any) => {
-          const args = row.cell.row.original.argumentNames;
+          const args = row.cell.row.original.arguments;
+          const argStrArr = args.map((arg) => {
+            return arg.argumentName + " " + arg.dataType;
+          });
           return (
             <div>
               <Tooltip
-                title={getArgNameToolTipHtml(args, args?.length)}
+                title={getArgNameToolTipHtml(argStrArr, argStrArr?.length)}
                 aria-label={args}
               >
-                <button>{getArgNameToolTipHtml(args, 2)}</button>
+                <button>{getArgNameToolTipHtml(argStrArr, 2)}</button>
               </Tooltip>
             </div>
           );
@@ -298,7 +301,11 @@ const Functions = ({
         open={discardDialog?.open}
         warning="This Action cannot be undone."
         dialogTitle="Discard changes?"
-        name="discard your changes in the CQL and delete the Function from the CQL"
+        name={
+          discardDialog?.operation === "edit"
+            ? "discard your changes in the CQL and edit the Function in the CQL"
+            : "discard your changes in the CQL and delete the Function in the CQL"
+        }
         action="discard"
         cancelText="No, Keep Working"
         continueText="Yes, Discard All Changes"
