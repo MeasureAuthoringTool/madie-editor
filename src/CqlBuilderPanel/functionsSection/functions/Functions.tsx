@@ -304,7 +304,7 @@ const Functions = ({
         name={
           discardDialog?.operation === "edit"
             ? "discard your changes in the CQL and edit the Function in the CQL"
-            : "discard your changes in the CQL and delete the Function in the CQL"
+            : "discard your changes in the CQL and delete the Function from the CQL"
         }
         action="discard"
         cancelText="No, Keep Working"
