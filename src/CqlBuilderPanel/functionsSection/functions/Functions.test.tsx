@@ -5,8 +5,29 @@ import Functions from "./Functions";
 import {
   FunctionLookup,
   CqlBuilderLookup,
+  FunctionArgument,
 } from "../../../model/CqlBuilderLookup";
 
+const arg: FunctionArgument = {
+  argumentName: "Enc",
+  dataType: "Encounter",
+} as unknown as FunctionArgument;
+const arg1: FunctionArgument = {
+  argumentName: "Enc1",
+  dataType: "Encounter",
+} as unknown as FunctionArgument;
+const arg2: FunctionArgument = {
+  argumentName: "Enc2",
+  dataType: "Encounter",
+} as unknown as FunctionArgument;
+const arg3: FunctionArgument = {
+  argumentName: "Enc3",
+  dataType: "Encounter",
+} as unknown as FunctionArgument;
+const arg4: FunctionArgument = {
+  argumentName: "Enc4",
+  dataType: "Encounter",
+} as unknown as FunctionArgument;
 const saveFunctions = [
   {
     name: "isFinishedEncounter",
@@ -16,12 +37,7 @@ const saveFunctions = [
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     comment: "",
     isFluent: "Yes",
-    argumentNames: [
-      "Enc1 Encounter",
-      "Enc2 Encounter",
-      "Enc3 Encounter",
-      "Enc4 Encounter",
-    ],
+    arguments: [arg1, arg2, arg3, arg4],
   },
 ] as unknown as FunctionLookup[];
 
@@ -38,12 +54,7 @@ const cqlBuilderLookupsTypes = {
         "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
       comment: "",
       isFluent: "Yes",
-      argumentNames: [
-        "Enc1 Encounter",
-        "Enc2 Encounter",
-        "Enc3 Encounter",
-        "Enc4 Encounter",
-      ],
+      arguments: [arg1, arg2, arg3, arg4],
     },
   ],
 } as unknown as CqlBuilderLookup;
@@ -57,7 +68,7 @@ const testFunctions = [
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
     comment: "test comment",
-    argumentNames: ["Enc Encounter"],
+    arguments: [arg],
   },
   {
     name: "Test Function 2",
@@ -67,7 +78,7 @@ const testFunctions = [
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
     comment: "test comment test comment test comment test comment",
-    argumentNames: ["Enc Encounter"],
+    arguments: [arg],
   },
   {
     name: "Test Function 3",
@@ -76,7 +87,7 @@ const testFunctions = [
     logic:
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
-    argumentNames: ["Enc Encounter"],
+    arguments: [arg],
   },
   {
     name: "Test Function 4",
@@ -85,7 +96,7 @@ const testFunctions = [
     logic:
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
-    argumentNames: ["Enc Encounter"],
+    arguments: [arg],
   },
   {
     name: "Test Function 5",
@@ -94,7 +105,7 @@ const testFunctions = [
     logic:
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
-    argumentNames: ["Enc Encounter"],
+    arguments: [arg],
   },
   {
     name: "Test Function 6",
@@ -103,7 +114,7 @@ const testFunctions = [
     logic:
       "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
     isFluent: "Yes",
-    argumentNames: ["Enc Encounter"],
+    arguments: [arg],
   },
 ] as unknown as FunctionLookup[];
 

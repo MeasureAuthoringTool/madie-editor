@@ -3,7 +3,11 @@ import "./Functions.scss";
 import FunctionSectionNavTabs from "./FunctionSectionNavTabs";
 import Functions from "./functions/Functions";
 import FunctionBuilder from "./functionBuilder/FunctionBuilder";
-import { CqlBuilderLookup, FunctionLookup } from "../../model/CqlBuilderLookup";
+import {
+  CqlBuilderLookup,
+  FunctionLookup,
+  FunctionArgument,
+} from "../../model/CqlBuilderLookup";
 import * as _ from "lodash";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
@@ -11,6 +15,7 @@ export interface FunctionProps {
   canEdit: boolean;
   handleApplyFunction?: Function;
   handleFunctionDelete?: Function;
+  handleFunctionEdit?: Function;
   loading: boolean;
   cqlBuilderLookupsTypes?: CqlBuilderLookup;
   cql: string;
@@ -19,9 +24,24 @@ export interface FunctionProps {
   resetCql: Function;
 }
 
-const getArgumentNames = (logic: string) => {
+const getArgumentNames = (logic: string): FunctionArgument[] => {
   const args = logic.substring(logic.indexOf("(") + 1, logic.indexOf(")"));
-  return args.split(",");
+  const argstr = args.split(",");
+  return argstr.map((arg) => {
+    if (arg[0] === " ") {
+      arg = arg.substring(1);
+    }
+    const splitted = arg.split(" ");
+    return { argumentName: splitted[0], dataType: splitted[1] };
+  });
+};
+
+const getExpressionEditorValue = (logic: string): string => {
+  const expressionEditorValue = logic.substring(
+    logic.indexOf(":") + 1,
+    logic.length
+  );
+  return expressionEditorValue ? expressionEditorValue.trim() : "";
 };
 
 export default function FunctionsSection({
@@ -32,6 +52,7 @@ export default function FunctionsSection({
   cqlBuilderLookupsTypes,
   resetCql,
   handleFunctionDelete,
+  handleFunctionEdit,
   loading,
 }: FunctionProps) {
   const [activeTab, setActiveTab] = useState<string>("function");
@@ -52,7 +73,8 @@ export default function FunctionsSection({
           ...func,
           comment: expression?.comment,
           isFluent: "-",
-          argumentNames: getArgumentNames(func.logic),
+          arguments: getArgumentNames(func.logic),
+          expressionEditorValue: getExpressionEditorValue(func.logic),
         } as FunctionLookup;
       }) || [];
 
@@ -67,8 +89,9 @@ export default function FunctionsSection({
           ...func,
           comment: expression?.comment,
           isFluent: "Yes",
-          argumentNames: getArgumentNames(func.logic),
-        };
+          arguments: getArgumentNames(func.logic),
+          expressionEditorValue: getExpressionEditorValue(func.logic),
+        } as FunctionLookup;
       }) || []
   );
   functionLookups = _.sortBy(functionLookups, (o) => o.name?.toLowerCase());
@@ -99,6 +122,7 @@ export default function FunctionsSection({
             resetCql={resetCql}
             handleApplyFunction={handleApplyFunction}
             handleFunctionDelete={handleFunctionDelete}
+            handleFunctionEdit={handleFunctionEdit}
           />
         )}
       </div>

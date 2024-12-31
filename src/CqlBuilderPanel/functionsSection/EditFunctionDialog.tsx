@@ -54,11 +54,9 @@ const EditFunctionDialog = ({
 
   const updatedFunction = {
     ...funct,
-    fluentFunction: funct?.isFluent === true ? true : false,
-    functionsArguments: parseArgumentsFromLogicString(
-      funct?.logic ? funct?.logic : ""
-    ),
-    expressionEditorValue: funct?.logic,
+    fluentFunction: funct?.isFluent === "Yes" ? true : false,
+    functionsArguments: funct?.arguments,
+    expressionEditorValue: funct?.expressionEditorValue,
   };
 
   return (

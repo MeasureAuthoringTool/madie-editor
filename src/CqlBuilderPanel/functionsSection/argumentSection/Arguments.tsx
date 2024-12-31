@@ -205,25 +205,27 @@ const Arguments = ({
         accessorKey: "action",
         cell: (row: any) => {
           return (
-            <Stack direction="row" alignItems="center">
-              <ToolTippedIcon
-                tooltipMessage="Delete"
-                buttonProps={{
-                  "data-testid": `delete-button-${row.row.id}`,
-                  "aria-label": `delete-button-${row.row.id}`,
-                  size: "small",
-                  onClick: () => {
-                    setSelectedArgument({
-                      argumentName: row.row.original.name,
-                      dataType: row.row.original.datatype,
-                    } as FunctionArgument);
-                    setDeleteDialogOpen(true);
-                  },
-                }}
-              >
-                <DeleteOutlineIcon color="error" />
-              </ToolTippedIcon>
-            </Stack>
+            row.row.original.name && (
+              <Stack direction="row" alignItems="center">
+                <ToolTippedIcon
+                  tooltipMessage="Delete"
+                  buttonProps={{
+                    "data-testid": `delete-button-${row.row.id}`,
+                    "aria-label": `delete-button-${row.row.id}`,
+                    size: "small",
+                    onClick: () => {
+                      setSelectedArgument({
+                        argumentName: row.row.original.name,
+                        dataType: row.row.original.datatype,
+                      } as FunctionArgument);
+                      setDeleteDialogOpen(true);
+                    },
+                  }}
+                >
+                  <DeleteOutlineIcon color="error" />
+                </ToolTippedIcon>
+              </Stack>
+            )
           );
         },
       },
