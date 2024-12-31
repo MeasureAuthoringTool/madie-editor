@@ -285,7 +285,7 @@ export default function FunctionBuilder({
                   }
                 : () => {
                     const functionToApply = {
-                      functionName: formik.values.functionName,
+                      functionName: formik.values.functionName.trim(),
                       comment: formik.values.comment,
                       functionsArguments: formik.values.functionsArguments,
                       fluentFunction: formik.values.fluentFunction,
