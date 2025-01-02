@@ -6,10 +6,11 @@ export interface NavTabProps {
   setActiveTab: (value: string) => void;
   definitionCount: number;
   loading: boolean;
+  canEdit: boolean;
 }
 
 export default function DefinitionSectionNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab, definitionCount, loading } = props;
+  const { activeTab, setActiveTab, definitionCount, loading, canEdit } = props;
 
   return (
     <div style={{ borderBottom: "1px solid #b0b0b0" }} tw="flex flex-row">
@@ -27,6 +28,7 @@ export default function DefinitionSectionNavTabs(props: NavTabProps) {
         <Tab
           tabIndex={0}
           aria-label="Definition"
+          disabled={!canEdit}
           type="B"
           label="Definition"
           data-testid="definition-tab"
