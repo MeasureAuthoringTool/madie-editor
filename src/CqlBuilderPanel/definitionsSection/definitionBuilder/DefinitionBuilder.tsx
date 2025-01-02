@@ -157,53 +157,68 @@ export default function DefinitionBuilder({
           />
         </FormikProvider>
         <div className="form-actions">
-          <Button
-            variant="outline"
-            data-testid="clear-definition-btn"
-            disabled={
-              (!formik.dirty &&
-                expressionEditorValue ===
-                  (definition?.expressionValue || "")) ||
-              !canEdit
-            }
-            tw="mr-4"
-            onClick={() => {
-              resetForm();
-              setExpressionEditorValue(definition?.expressionValue || "");
-            }}
-          >
-            Clear
-          </Button>
-          <Button
-            data-testid={`definition-${
-              operation === "edit" ? "save" : "apply"
-            }-btn`}
-            disabled={
-              !formik.values.definitionName ||
-              !canEdit ||
-              !expressionEditorValue ||
-              isEditDialogFormDirty()
-            }
-            onClick={() => {
-              const definitionToApply: Definition = {
-                definitionName: formik.values.definitionName,
-                comment: formik.values.comment,
-                expressionValue: expressionEditorValue,
-              };
-              resetForm();
-              setExpressionEditorValue("");
-              if (operation === "edit") {
-                formik.setFieldValue("definitionName", "");
-                formik.setFieldValue("comment", "");
-                handleDefinitionEdit(definition, definitionToApply);
+          {canEdit ? (
+            <div>
+              <Button
+                variant="outline"
+                data-testid="clear-definition-btn"
+                disabled={
+                  (!formik.dirty &&
+                    expressionEditorValue ===
+                      (definition?.expressionValue || "")) ||
+                  !canEdit
+                }
+                tw="mr-4"
+                onClick={() => {
+                  resetForm();
+                  setExpressionEditorValue(definition?.expressionValue || "");
+                }}
+              >
+                Clear
+              </Button>
+              <Button
+                data-testid={`definition-${
+                  operation === "edit" ? "save" : "apply"
+                }-btn`}
+                disabled={
+                  !formik.values.definitionName ||
+                  !canEdit ||
+                  !expressionEditorValue ||
+                  isEditDialogFormDirty()
+                }
+                onClick={() => {
+                  const definitionToApply: Definition = {
+                    definitionName: formik.values.definitionName,
+                    comment: formik.values.comment,
+                    expressionValue: expressionEditorValue,
+                  };
+                  resetForm();
+                  setExpressionEditorValue("");
+                  if (operation === "edit") {
+                    formik.setFieldValue("definitionName", "");
+                    formik.setFieldValue("comment", "");
+                    handleDefinitionEdit(definition, definitionToApply);
+                    onClose();
+                  } else {
+                    handleApplyDefinition(definitionToApply);
+                  }
+                }}
+              >
+                {operation === "edit" ? "Save" : "Apply"}
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              data-testid="cancel-definition-btn"
+              tw="mr-4"
+              onClick={() => {
                 onClose();
-              } else {
-                handleApplyDefinition(definitionToApply);
-              }
-            }}
-          >
-            {operation === "edit" ? "Save" : "Apply"}
-          </Button>
+              }}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
       </form>
     </div>

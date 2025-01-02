@@ -11,6 +11,7 @@ interface PropTypes {
   handleDefinitionEdit: Function;
   cqlBuilderLookup: CqlBuilderLookup;
   onClose: () => void;
+  canEdit: boolean;
 }
 
 const getExpression = (definition: Lookup) => {
@@ -28,6 +29,7 @@ const DefinitionBuilderDialog = ({
   cqlBuilderLookup,
   handleDefinitionEdit,
   onClose,
+  canEdit,
 }: PropTypes) => {
   const updatedDefinition = {
     definitionName: definition?.name,
@@ -38,7 +40,8 @@ const DefinitionBuilderDialog = ({
 
   return (
     <MadieDialog
-      title="Edit"
+      form
+      title={canEdit ? "Edit" : "View"}
       dialogProps={{
         open,
         onClose: onClose,
@@ -48,7 +51,7 @@ const DefinitionBuilderDialog = ({
       }}
     >
       <DefinitionBuilder
-        canEdit={true}
+        canEdit={canEdit}
         definition={updatedDefinition}
         handleApplyDefinition={() => {}} // do nothing for now
         handleDefinitionEdit={handleDefinitionEdit}
