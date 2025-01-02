@@ -33,7 +33,9 @@ export default function DefinitionsSection({
   getCqlDefinitionReturnTypes,
   loading,
 }: DefinitionProps) {
-  const [activeTab, setActiveTab] = useState<string>("definition");
+  const [activeTab, setActiveTab] = useState<string>(
+    canEdit ? "definition" : "saved-definitions"
+  );
   const expressionDefinitions = cql
     ? new CqlAntlr(cql).parse().expressionDefinitions
     : [];
@@ -54,6 +56,7 @@ export default function DefinitionsSection({
     <>
       <DefinitionSectionNavTabs
         activeTab={activeTab}
+        canEdit={canEdit}
         setActiveTab={setActiveTab}
         definitionCount={measureDefinitions.length}
         loading={loading}
