@@ -12,16 +12,14 @@ import {
   MadieSpinner,
   Toast,
   MadieAlert,
-  Popover,
   MadieDeleteDialog,
   MadieDiscardDialog,
 } from "@madie/madie-design-system/dist/react";
-import { CqlAntlr, CqlCode } from "@madie/cql-antlr-parser/dist/src";
+import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import useTerminologyServiceApi, {
@@ -29,7 +27,6 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
-import { getOidFromString } from "@madie/madie-util";
 
 type SavedCodesColumnRow = {
   name: string;
@@ -55,29 +52,12 @@ export type SelectedCodeDetails = SavedCodesColumnRow & {
   fhirVersion?: string;
 };
 
-export const getCodeVersion = (
-  code,
-  parsedCodeSystem,
-  oid,
-  codeSystemMap,
-  matchedCodeSystemVersion
-) => {
-  if (codeSystemMap && !matchedCodeSystemVersion) {
-    //if version is added through UI, then check inn the cql meta data
-    if (code && oid && parsedCodeSystem) {
-      const parsedOid = getOidFromString(oid, "QDM")?.replace("'", "");
-      if (
-        codeSystemMap[code] &&
-        codeSystemMap[code]?.codeSystemOid === parsedOid &&
-        codeSystemMap[code]?.codeSystem === parsedCodeSystem
-      ) {
-        return codeSystemMap[code]?.svsVersion;
-      }
-    }
+export const getCodeSystemVersion = (codeSystem: CqlCodeSystem) => {
+  if (codeSystem.version) {
+    const version = codeSystem.version.replace(/['"]+/g, "");
+    return version && version.split("urn:hl7:version:").pop();
   }
-  // if version is added in the cql
-  const version = matchedCodeSystemVersion?.replace(/['"]+/g, "");
-  return version && version.split(":").pop();
+  return null;
 };
 
 export const getCodeSuffix = (code: CqlCode) => {
@@ -94,7 +74,6 @@ export default function SavedCodesSubSection({
   measureStoreCql,
   canEdit,
   handleApplyCode,
-  cqlMetaData,
   handleCodeDelete,
   setEditorVal,
   setIsCQLUnchanged,
@@ -111,8 +90,6 @@ export default function SavedCodesSubSection({
     setToastOpen(false);
   };
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<SelectedCodeDetails>(null);
   const [openEditCodeDialog, setOpenEditCodeDialog] = useState<boolean>(false);
@@ -141,14 +118,6 @@ export default function SavedCodesSubSection({
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
-  };
-
-  const handleOpen = async (
-    selectedId,
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    setSelectedReferenceId(selectedId);
-    setSelectedCodeDetails(table.getRow(selectedId).original);
   };
 
   useEffect(() => {
