@@ -4,19 +4,17 @@ import "styled-components/macro";
 import CodesSectionNavTabs from "./CodesSectionNavTabs";
 import CodeSubSection from "./codesSubSection/codeSubSection/CodeSubSection";
 import SavedCodesSubSection, {
-  getCodeVersion,
+  getCodeSystemVersion,
   getCodeSuffix,
   CodesList,
 } from "./codesSubSection/savedCodesSubSection/SavedCodesSubSection";
 import { useCodeSystems } from "./useCodeSystems";
-import { CqlMetaData } from "../../api/useTerminologyServiceApi";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import _ from "lodash";
 
 interface CodesSectionProps {
   canEdit: boolean;
   measureStoreCql: string;
-  cqlMetaData: CqlMetaData;
   measureModel: string;
   handleCodeDelete;
   editorVal: string;
@@ -29,7 +27,6 @@ interface CodesSectionProps {
 export default function CodesSection({
   canEdit,
   measureStoreCql,
-  cqlMetaData,
   measureModel,
   handleCodeDelete,
   editorVal,
@@ -43,7 +40,7 @@ export default function CodesSection({
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
 
   useEffect(() => {
-    if (measureStoreCql) {
+    if (measureStoreCql && !_.isEmpty(codeSystems)) {
       const parsedCql = new CqlAntlr(measureStoreCql).parse();
       if (!_.isEmpty(parsedCql?.codes)) {
         const codesList = parsedCql.codes.map((code) => {
@@ -53,19 +50,18 @@ export default function CodesSection({
               code.codeSystem?.replace(/['"]+/g, "")
           );
           const parsedCode = code.codeId.replace(/['"]+/g, "");
-          const parsedCodeSystem = code.codeSystem.replace(/['"]+/g, "");
-          const codeSystemVersion = getCodeVersion(
-            parsedCode,
-            parsedCodeSystem,
-            matchedCodeSystem?.oid,
-            cqlMetaData?.codeSystemMap,
-            matchedCodeSystem?.version
+          // get the code system
+          const codeSystem = codeSystems.find(
+            (codeSystem) =>
+              `'${codeSystem.oid}'` === matchedCodeSystem?.oid ||
+              `'${codeSystem.fullUrl}'` === matchedCodeSystem.oid
           );
+          const codeSystemVersion = getCodeSystemVersion(matchedCodeSystem);
           return {
             code: parsedCode,
-            codeSystem: parsedCodeSystem.replace(":" + codeSystemVersion, ""),
+            codeSystem: codeSystem.name,
             version: codeSystemVersion,
-            oid: matchedCodeSystem?.oid,
+            oid: codeSystem?.oid,
             suffix: getCodeSuffix(code),
             versionIncluded: code.codeSystem.includes(codeSystemVersion),
           };
@@ -73,7 +69,7 @@ export default function CodesSection({
         setParsedCodesList(codesList);
       }
     }
-  }, [measureStoreCql]);
+  }, [measureStoreCql, codeSystems]);
 
   return (
     <>
@@ -95,7 +91,6 @@ export default function CodesSection({
         {activeTab === "savedCodes" && (
           <SavedCodesSubSection
             measureStoreCql={measureStoreCql}
-            cqlMetaData={cqlMetaData}
             canEdit={canEdit}
             handleApplyCode={handleApplyCode}
             handleCodeDelete={handleCodeDelete}

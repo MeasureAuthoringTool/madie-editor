@@ -44,7 +44,8 @@ export default function CqlBuilderPanel({
   makeExpanded,
 }) {
   const featureFlags = useFeatureFlags();
-  const { CQLBuilderParameters, CQLBuilderFunctions } = featureFlags;
+  const { CQLBuilderParameters, CQLBuilderFunctions, QICoreCodeSearch } =
+    featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
     if (measureModel?.includes("QDM")) {
@@ -138,6 +139,7 @@ export default function CqlBuilderPanel({
           isQDM={measureModel?.includes("QDM")}
           CQLBuilderParameters={CQLBuilderParameters}
           CQLBuilderFunctions={CQLBuilderFunctions}
+          QICoreCodeSearch={QICoreCodeSearch}
         />
         <div
           style={{
@@ -200,7 +202,6 @@ export default function CqlBuilderPanel({
             <CodesSection
               canEdit={canEdit}
               measureStoreCql={measureStoreCql}
-              cqlMetaData={cqlMetaData}
               measureModel={measureModel}
               handleCodeDelete={handleCodeDelete}
               editorVal={editorVal}
