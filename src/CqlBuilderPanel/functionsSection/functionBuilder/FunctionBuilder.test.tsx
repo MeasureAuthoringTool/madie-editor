@@ -398,7 +398,7 @@ describe("CQL Function Builder Tests", () => {
 
     const applyBtn = screen.getByTestId("function-apply-btn");
     expect(applyBtn).toBeInTheDocument();
-    expect(applyBtn).toBeEnabled();
+    expect(applyBtn).not.toBeEnabled();
   });
 
   it("expression is inserted into text area when insert button is clicked", async () => {
