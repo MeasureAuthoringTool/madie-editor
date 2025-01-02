@@ -133,7 +133,8 @@ export default function FunctionBuilder({
   const getFunctionArguments = (args) => {
     let argStr = "";
     args?.forEach((arg) => {
-      argStr += arg.argumentName + " " + arg.dataType + ", ";
+      argStr +=
+        '"' + arg.argumentName + '"' + " " + '"' + arg.dataType + '"' + ", ";
     });
     argStr = argStr.substring(0, argStr.length - 2);
     return argStr;
