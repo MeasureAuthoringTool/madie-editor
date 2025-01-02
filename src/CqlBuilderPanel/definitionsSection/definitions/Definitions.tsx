@@ -17,6 +17,7 @@ import {
 import Skeleton from "@mui/material/Skeleton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import CodeOffIcon from "@mui/icons-material/CodeOff";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
@@ -132,38 +133,41 @@ const Definitions = ({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => {
-          if (!canEdit) {
-            return null;
-          }
           return (
             <Stack
               direction="row"
               alignItems="center"
               data-testid="definition-actions"
             >
+              {canEdit && (
+                <ToolTippedIcon
+                  tooltipMessage="Delete"
+                  buttonProps={{
+                    "data-testid": `delete-button-${row.cell.row.id}`,
+                    "aria-label": `delete-button-${row.cell.row.id}`,
+                    size: "small",
+                    onClick: (e) => {
+                      setSelectedDefinition(row.row.original.name);
+                      if (!isCQLUnchanged) {
+                        setDiscardDialog({ open: true, operation: "delete" });
+                      } else {
+                        setDeleteDialogOpen(true);
+                      }
+                    }, // do nothing for now
+                  }}
+                >
+                  <DeleteOutlineIcon color="error" />
+                </ToolTippedIcon>
+              )}
               <ToolTippedIcon
-                tooltipMessage="Delete"
+                tooltipMessage={canEdit ? "Edit" : "View"}
                 buttonProps={{
-                  "data-testid": `delete-button-${row.cell.row.id}`,
-                  "aria-label": `delete-button-${row.cell.row.id}`,
-                  size: "small",
-                  onClick: (e) => {
-                    setSelectedDefinition(row.row.original.name);
-                    if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "delete" });
-                    } else {
-                      setDeleteDialogOpen(true);
-                    }
-                  }, // do nothing for now
-                }}
-              >
-                <DeleteOutlineIcon color="error" />
-              </ToolTippedIcon>
-              <ToolTippedIcon
-                tooltipMessage="Edit"
-                buttonProps={{
-                  "data-testid": `edit-button-${row.cell.row.id}`,
-                  "aria-label": `edit-button-${row.cell.row.id}`,
+                  "data-testid": canEdit
+                    ? `edit-button-${row.cell.row.id}`
+                    : `view-button-${row.cell.row.id}`,
+                  "aria-label": canEdit
+                    ? `edit-button-${row.cell.row.id}`
+                    : `view-button-${row.cell.row.id}`,
                   size: "small",
                   onClick: () => {
                     showEditDefinitionDialog(row.cell.row.id);
@@ -175,7 +179,11 @@ const Definitions = ({
                   },
                 }}
               >
-                <BorderColorOutlinedIcon color="primary" />
+                {canEdit ? (
+                  <BorderColorOutlinedIcon color="primary" />
+                ) : (
+                  <CodeOffIcon color="primary" />
+                )}
               </ToolTippedIcon>
             </Stack>
           );
@@ -316,6 +324,7 @@ const Definitions = ({
         cqlBuilderLookup={cqlBuilderLookup}
         onClose={() => setOpenDefinitionDialog(false)}
         handleDefinitionEdit={handleDefinitionEdit}
+        canEdit={canEdit}
       />
       <div className="pagination-container">
         <Pagination
