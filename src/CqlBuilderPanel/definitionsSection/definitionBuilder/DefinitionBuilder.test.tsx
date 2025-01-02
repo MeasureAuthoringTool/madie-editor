@@ -32,7 +32,7 @@ describe("CQL Definition Builder Tests", () => {
     expect(screen.queryByTestId("type-selector-input")).not.toBeInTheDocument();
   });
 
-  it("Should disable Apply button with canEdit being false", async () => {
+  it("Should hide Apply button with canEdit being false", async () => {
     render(
       <DefinitionBuilder
         canEdit={false}
@@ -41,13 +41,12 @@ describe("CQL Definition Builder Tests", () => {
       />
     );
 
-    const applyBtn = screen.getByTestId("definition-apply-btn");
-    expect(applyBtn).toBeInTheDocument();
-    expect(applyBtn).toBeDisabled();
+    const applyBtn = screen.queryByTestId("definition-apply-btn");
+    expect(applyBtn).not.toBeInTheDocument();
 
-    const clearBtn = screen.getByTestId("clear-definition-btn");
+    const clearBtn = screen.getByTestId("cancel-definition-btn");
     expect(clearBtn).toBeInTheDocument();
-    expect(clearBtn).toBeDisabled();
+    expect(clearBtn).not.toBeDisabled();
   });
 
   it("Should open Expression Editor when definition name is entered", async () => {
