@@ -49,20 +49,6 @@ jest.mock("../../../../api/useTerminologyServiceApi", () =>
   jest.fn(() => mockTerminologyServiceApi)
 );
 
-const mockCqlMetaData = {
-  codeSystemMap: {
-    "8462-4": {
-      name: "8462-4",
-      display: "Diastolic blood pressure",
-      svsVersion: "2.44",
-      fhirVersion: "2.44",
-      codeSystem: "LOINC",
-      codeSystemOid: "2.16.840.1.113883.6.1",
-      status: "ACTIVE",
-    },
-  },
-};
-
 const parsedCodesList: CodesList[] = [
   {
     code: "8462-4",
@@ -88,7 +74,6 @@ describe("Saved Codes section component", () => {
       <SavedCodesSubSection
         measureStoreCql="using QDM version 1.0.000"
         canEdit={true}
-        cqlMetaData={mockCqlMetaData}
         handleApplyCode={undefined}
         handleCodeDelete={undefined}
         setEditorVal={undefined}
@@ -123,11 +108,10 @@ describe("Saved Codes section component", () => {
   });
 
   it("displaying edit dialog when edit is clicked from the select actions", async () => {
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
-        cqlMetaData={mockCqlMetaData}
         handleApplyCode={undefined}
         handleCodeDelete={undefined}
         setEditorVal={undefined}
@@ -165,11 +149,10 @@ describe("Saved Codes section component", () => {
 
   it("Should apply code on apply button click successfully", async () => {
     const handleApplyCode = jest.fn();
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
-        cqlMetaData={mockCqlMetaData}
         handleApplyCode={handleApplyCode}
         handleCodeDelete={jest.fn()}
         setEditorVal={undefined}
@@ -197,11 +180,10 @@ describe("Saved Codes section component", () => {
   });
 
   it("displaying delete dialog when delete is clicked from the select actions", async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
+    const { getByTestId, queryByText } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
-        cqlMetaData={mockCqlMetaData}
         isCQLUnchanged={true}
         handleApplyCode={undefined}
         handleCodeDelete={undefined}
@@ -240,7 +222,6 @@ describe("Saved Codes section component", () => {
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
-        cqlMetaData={mockCqlMetaData}
         isCQLUnchanged={true}
         handleCodeDelete={handleCodeDelete}
         handleApplyCode={undefined}
@@ -268,7 +249,6 @@ describe("Saved Codes section component", () => {
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
-        cqlMetaData={mockCqlMetaData}
         isCQLUnchanged={false}
         handleCodeDelete={jest.fn()}
         setEditorVal={jest.fn()}
@@ -302,7 +282,6 @@ describe("Saved Codes section component", () => {
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
         canEdit={true}
-        cqlMetaData={mockCqlMetaData}
         isCQLUnchanged={false}
         handleCodeDelete={jest.fn()}
         setEditorVal={jest.fn()}
