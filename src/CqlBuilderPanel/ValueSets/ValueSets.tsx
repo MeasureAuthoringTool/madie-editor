@@ -36,8 +36,7 @@ export default function ValueSets(props: ValueSetsProps) {
       // blank the value if it exists and it is still a search category
 
       if (values[value]) {
-        const trimmedFieldValue = values[value].toString().trim();
-        nonEmptyValues[value] = trimmedFieldValue;
+        nonEmptyValues[value] = values[value].toString().trim();
       }
     });
     // eslint-disable-next-line
