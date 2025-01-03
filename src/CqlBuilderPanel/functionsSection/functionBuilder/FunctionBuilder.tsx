@@ -272,8 +272,8 @@ export default function FunctionBuilder({
               operation === "edit"
                 ? () => {
                     const functionToEdit = {
-                      functionName: funct.name,
-                      comment: funct.comment,
+                      functionName: funct.name.trim(),
+                      comment: funct.comment.trim(),
                       functionsArguments: funct.functionsArguments,
                       fluentFunction: funct.fluentFunction,
                       expressionValue: funct.expressionEditorValue,
@@ -286,7 +286,7 @@ export default function FunctionBuilder({
                 : () => {
                     const functionToApply = {
                       functionName: formik.values.functionName.trim(),
-                      comment: formik.values.comment,
+                      comment: formik.values.comment.trim(),
                       functionsArguments: formik.values.functionsArguments,
                       fluentFunction: formik.values.fluentFunction,
                       expressionValue: formik.values.expressionEditorValue,
