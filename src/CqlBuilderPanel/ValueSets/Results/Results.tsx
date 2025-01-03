@@ -27,9 +27,7 @@ import "./Results.scss";
 import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../validations/SuffixSchemaValidator";
 
-import useTerminologyServiceApi, {
-  ValueSetForSearch,
-} from "../../../api/useTerminologyServiceApi";
+import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
 
 import {
   AppBar,
