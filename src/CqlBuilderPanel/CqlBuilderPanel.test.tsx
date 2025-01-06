@@ -173,6 +173,18 @@ describe("CqlBuilderPanel", () => {
     });
   });
 
+  it("Should load value sets search tab for QICore if QICoreValueSetSearch is on", async () => {
+    useFeatureFlags.mockImplementationOnce(() => ({
+      QICoreValueSetSearch: true,
+    }));
+    render(<CqlBuilderPanel {...props} />);
+    const valueSetTab = screen.getByTestId("valueSets-tab");
+    userEvent.click(valueSetTab);
+    await waitFor(() => {
+      expect(valueSetTab).toHaveAttribute("aria-selected", "true");
+    });
+  });
+
   it("Should show codes tab for QICore if QICoreCodeSearch flag is on", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QICoreCodeSearch: true,
