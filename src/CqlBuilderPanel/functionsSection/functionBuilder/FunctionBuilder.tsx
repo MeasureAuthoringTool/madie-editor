@@ -133,7 +133,7 @@ export default function FunctionBuilder({
   const getFunctionArguments = (args) => {
     let argStr = "";
     args?.forEach((arg) => {
-      argStr += arg.argumentName + " " + arg.dataType + ", ";
+      argStr += `"${arg.argumentName}"` + " " + arg.dataType + ", ";
     });
     argStr = argStr.substring(0, argStr.length - 2);
     return argStr;
@@ -272,8 +272,8 @@ export default function FunctionBuilder({
               operation === "edit"
                 ? () => {
                     const functionToEdit = {
-                      functionName: funct.name.trim(),
-                      comment: funct.comment.trim(),
+                      functionName: funct.name?.trim(),
+                      comment: funct.comment?.trim(),
                       functionsArguments: funct.functionsArguments,
                       fluentFunction: funct.fluentFunction,
                       expressionValue: funct.expressionEditorValue,
@@ -285,8 +285,8 @@ export default function FunctionBuilder({
                   }
                 : () => {
                     const functionToApply = {
-                      functionName: formik.values.functionName.trim(),
-                      comment: formik.values.comment.trim(),
+                      functionName: formik.values.functionName?.trim(),
+                      comment: formik.values.comment?.trim(),
                       functionsArguments: formik.values.functionsArguments,
                       fluentFunction: formik.values.fluentFunction,
                       expressionValue: formik.values.expressionEditorValue,
