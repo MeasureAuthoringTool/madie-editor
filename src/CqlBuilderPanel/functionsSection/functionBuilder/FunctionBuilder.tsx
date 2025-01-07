@@ -130,10 +130,23 @@ export default function FunctionBuilder({
     formik.setFieldValue("functionsArguments", newArgs);
   };
 
+  const validateQuotesForFunctionArguments = (argument) => {
+    if (argument.startsWith('"') && argument.endsWith("'")) {
+      return argument;
+    }
+    return `"${argument}"`;
+  };
+
   const getFunctionArguments = (args) => {
     let argStr = "";
     args?.forEach((arg) => {
-      argStr += arg.argumentName + " " + arg.dataType + ", ";
+      argStr +=
+        validateQuotesForFunctionArguments(
+          arg.argumentName.replace(/^"|"$/g, "")
+        ) +
+        " " +
+        validateQuotesForFunctionArguments(arg.dataType.replace(/^"|"$/g, "")) +
+        ", ";
     });
     argStr = argStr.substring(0, argStr.length - 2);
     return argStr;
@@ -277,8 +290,8 @@ export default function FunctionBuilder({
               operation === "edit"
                 ? () => {
                     const functionToEdit = {
-                      functionName: funct.name,
-                      comment: funct.comment,
+                      functionName: funct.name?.trim(),
+                      comment: funct.comment?.trim(),
                       functionsArguments: funct.functionsArguments,
                       fluentFunction: funct.fluentFunction,
                       expressionValue: funct.expressionEditorValue,
@@ -290,8 +303,8 @@ export default function FunctionBuilder({
                   }
                 : () => {
                     const functionToApply = {
-                      functionName: formik.values.functionName,
-                      comment: formik.values.comment,
+                      functionName: formik.values.functionName?.trim(),
+                      comment: formik.values.comment?.trim(),
                       functionsArguments: formik.values.functionsArguments,
                       fluentFunction: formik.values.fluentFunction,
                       expressionValue: formik.values.expressionEditorValue,
