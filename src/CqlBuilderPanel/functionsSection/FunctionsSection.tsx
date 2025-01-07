@@ -26,14 +26,24 @@ export interface FunctionProps {
 
 const getArgumentNames = (logic: string): FunctionArgument[] => {
   const args = logic.substring(logic.indexOf("(") + 1, logic.indexOf(")"));
-  const argstr = args.split(",");
-  return argstr.map((arg) => {
-    if (arg[0] === " ") {
-      arg = arg.substring(1);
-    }
-    const splitted = arg.split(" ");
-    return { argumentName: splitted[0], dataType: splitted[1] };
+
+  let functArgs: FunctionArgument[] = [];
+  // regex by comma but not the comma within double quotes:
+  // e.g. Encounter "Encounter, Performed", "Encounter 2" "Encounter, Performed"
+  const regexByComma = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
+  const resultByComma = args.split(regexByComma);
+
+  resultByComma.forEach((str) => {
+    //regex by space but not the space within double quotes, same example as above
+    const regexBySpace = /\w+|"(?:\\"|[^"])+"/g;
+    const resultBySpace = str.match(regexBySpace);
+
+    functArgs.push({
+      argumentName: resultBySpace[0],
+      dataType: resultBySpace[1],
+    });
   });
+  return functArgs;
 };
 
 const getExpressionEditorValue = (logic: string): string => {
