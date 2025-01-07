@@ -280,7 +280,12 @@ export default function FunctionBuilder({
           </Button>
           <Button
             data-testid={`function-apply-btn`}
-            disabled={!formik.values.functionName || !canEdit || !formik.dirty}
+            disabled={
+              !formik.values.functionName ||
+              !formik.values.expressionEditorValue ||
+              !canEdit ||
+              !formik.dirty
+            }
             onClick={
               operation === "edit"
                 ? () => {
