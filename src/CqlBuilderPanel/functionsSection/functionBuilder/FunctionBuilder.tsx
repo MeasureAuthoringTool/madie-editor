@@ -130,10 +130,23 @@ export default function FunctionBuilder({
     formik.setFieldValue("functionsArguments", newArgs);
   };
 
+  const validateQuotesForFunctionArguments = (argument) => {
+    if (argument.startsWith('"') && argument.endsWith("'")) {
+      return argument;
+    }
+    return `"${argument}"`;
+  };
+
   const getFunctionArguments = (args) => {
     let argStr = "";
     args?.forEach((arg) => {
-      argStr += `"${arg.argumentName}"` + " " + arg.dataType + ", ";
+      argStr +=
+        validateQuotesForFunctionArguments(
+          arg.argumentName.replace(/^"|"$/g, "")
+        ) +
+        " " +
+        validateQuotesForFunctionArguments(arg.dataType.replace(/^"|"$/g, "")) +
+        ", ";
     });
     argStr = argStr.substring(0, argStr.length - 2);
     return argStr;
