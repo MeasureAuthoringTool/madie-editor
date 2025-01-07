@@ -20,6 +20,8 @@ describe("Results Section component", () => {
         setShowResultsTable={setShowResultsTable}
         code={code}
         handleApplyCode={jest.fn()}
+        editorVal="using QDM version 1.0.000"
+        measureModel={"QDM"}
       />
     );
     expect(
@@ -70,6 +72,8 @@ describe("Results Section component", () => {
         setShowResultsTable={setShowResultsTable}
         code={undefined}
         handleApplyCode={jest.fn()}
+        editorVal="using QDM version 1.0.000"
+        measureModel={"QDM"}
       />
     );
 

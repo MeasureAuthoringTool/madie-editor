@@ -52,6 +52,13 @@ export type SelectedCodeDetails = SavedCodesColumnRow & {
   fhirVersion?: string;
 };
 
+export const getFhirCodeSystemVersion = (codeSystemVersion) => {
+  if (_.startsWith(codeSystemVersion, "http://snomed.info")) {
+    return _.last(_.split(codeSystemVersion, "/"));
+  }
+  return codeSystemVersion;
+};
+
 export const getCodeSystemVersion = (codeSystem: CqlCodeSystem) => {
   if (codeSystem.version) {
     const version = codeSystem.version.replace(/['"]+/g, "");
@@ -72,6 +79,7 @@ export const getCodeSuffix = (code: CqlCode) => {
 
 export default function SavedCodesSubSection({
   measureStoreCql,
+  measureModel,
   canEdit,
   handleApplyCode,
   handleCodeDelete,
@@ -182,7 +190,9 @@ export default function SavedCodesSubSection({
       },
       {
         header: "System Version",
-        accessorKey: "svsVersion",
+        accessorKey: measureModel?.includes("QDM")
+          ? "svsVersion"
+          : "fhirVersion",
       },
       {
         header: "",
@@ -309,7 +319,7 @@ export default function SavedCodesSubSection({
     setSelectedCodeDetails({
       ...selectedCode,
       suffix: parsedCode?.suffix,
-      versionIncluded: parsedCode.versionIncluded,
+      versionIncluded: parsedCode?.versionIncluded,
     });
   };
 
@@ -369,16 +379,20 @@ export default function SavedCodesSubSection({
             ) : (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id} data-testid={`saved-code-row-${row.id}`}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} tw="p-2">
-                      {cell.column.id === "status"
-                        ? getCodeStatus(cell.getValue())
-                        : flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                    </td>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td key={cell.id} tw="p-2">
+                        {cell.column.id === "status"
+                          ? getCodeStatus(cell.getValue())
+                          : cell.column.id === "fhirVersion"
+                          ? getFhirCodeSystemVersion(cell.getValue())
+                          : flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))
             )
@@ -391,6 +405,7 @@ export default function SavedCodesSubSection({
       </table>
 
       <EditCodeDetailsDialog
+        measureModel={measureModel}
         selectedCodeDetails={selectedCodeDetails}
         onApplyCode={handleApplyCode}
         open={openEditCodeDialog}

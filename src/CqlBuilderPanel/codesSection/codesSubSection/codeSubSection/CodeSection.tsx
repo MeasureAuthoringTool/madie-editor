@@ -11,9 +11,9 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import ExpandingSection from "../../../../common/ExpandingSection";
 import { useFormik } from "formik";
 import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";
-import { uniq } from "lodash";
+import _ from "lodash";
 import moment from "moment";
-import { MenuItem } from "@mui/material";
+import { MenuItem, Tooltip } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
 import ControlledAutoComplete from "../../../../common/ControlledAutoComplete";
 
@@ -28,7 +28,21 @@ interface CodeSectionProps {
 interface MenuObj {
   value: string;
   label: string;
+  fullValue: string;
 }
+
+const renderMenuItems = (options) =>
+  options.map(({ value, label, fullValue }) => (
+    <MenuItem
+      key={`${value}-option`}
+      value={value}
+      data-testid={`${value}-option`}
+    >
+      <Tooltip key={`${label}-tooltip`} title={fullValue} arrow>
+        <span>{label}</span>
+      </Tooltip>
+    </MenuItem>
+  ));
 
 export default function CodeSection({
   handleFormSubmit,
@@ -41,7 +55,7 @@ export default function CodeSection({
   // if we open tab before information has arrived, we need to trigger a useEffect
   useEffect(() => {
     if (allCodeSystems?.length) {
-      const filteredTitles = uniq(allCodeSystems.map((t) => t.name)).map(
+      const filteredTitles = _.uniq(allCodeSystems.map((t) => t.name)).map(
         (name) => ({
           value: name,
           label: name,
@@ -68,53 +82,49 @@ export default function CodeSection({
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
     if (formik.values.title) {
-      const availableVersions = allCodeSystems
+      // filter out code entries that matches with CodeSystem Title
+      const matchedCodeSystems = allCodeSystems
         .filter((c) => c.name === formik.values.title)
-        .filter((c) => c.qdmDisplayVersion !== null)
+        .filter((c) => c.qdmDisplayVersion !== null || c.version !== null)
         .sort((a, b) => {
           const dateA = new Date(a.lastUpdatedUpstream);
           const dateB = new Date(b.lastUpdatedUpstream);
           return dateB.getTime() - dateA.getTime();
         });
-      setAvailableVersions(
-        availableVersions
-          .map((cs) => ({
-            value: cs.version,
-            label: cs.qdmDisplayVersion,
-          }))
-          .filter((cs) => {
-            if (measureModel === "QDM v5.6") {
-              return cs.label !== null;
-            }
-            return true;
-          })
-      );
-      formik.setFieldValue("version", availableVersions[0]?.version);
+      // creates a list of value, label obj based on model and filters out if version is null
+      // We want to display qdm version but when retrieving codes we have to use fhir Version
+      const availableVersionsList = matchedCodeSystems
+        .map((m) => ({
+          value: m.version,
+          label: _.includes(measureModel, "QDM")
+            ? m.qdmDisplayVersion
+            : m.version,
+        }))
+        .filter((m) => m.label !== null);
+      // if version is URL ( ex: SNOMEDCT ) then fetch the version parameter
+      const updatedVerionList = availableVersionsList.map((a) => {
+        const isUrl = a.label.includes("http://");
+        const version = isUrl ? _.last(a.label.split("/")) : a.label;
+        return {
+          value: a.value,
+          label: version,
+          fullValue: a.value,
+        };
+      });
+      setAvailableVersions(updatedVerionList);
+      formik.setFieldValue("version", updatedVerionList[0]?.value);
     } else {
       setAvailableVersions([]);
       formik.setFieldValue("version", "");
     }
-  }, [formik.values.title]);
+  }, [formik.values.title, measureModel, allCodeSystems]);
+
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
         <SearchIcon />
       </InputAdornment>
     ),
-  };
-
-  const renderMenuItems = (options: MenuObj[]) => {
-    return [
-      ...options.map(({ value, label }) => (
-        <MenuItem
-          key={`${label}-option`}
-          value={value}
-          data-testid={`${label}-option`}
-        >
-          {label}
-        </MenuItem>
-      )),
-    ];
   };
 
   function trimCodeInput() {

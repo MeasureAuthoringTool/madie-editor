@@ -59,7 +59,7 @@ export default function CodesSection({
           const codeSystemVersion = getCodeSystemVersion(matchedCodeSystem);
           return {
             code: parsedCode,
-            codeSystem: codeSystem.name,
+            codeSystem: codeSystem?.name,
             version: codeSystemVersion,
             oid: codeSystem?.oid,
             suffix: getCodeSuffix(code),
@@ -91,6 +91,7 @@ export default function CodesSection({
         {activeTab === "savedCodes" && (
           <SavedCodesSubSection
             measureStoreCql={measureStoreCql}
+            measureModel={measureModel}
             canEdit={canEdit}
             handleApplyCode={handleApplyCode}
             handleCodeDelete={handleCodeDelete}

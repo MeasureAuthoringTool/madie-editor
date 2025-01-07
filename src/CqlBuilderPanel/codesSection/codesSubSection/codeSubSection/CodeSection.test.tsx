@@ -9,14 +9,14 @@ const readOnly = true;
 const handleFormSubmitMock = jest.fn();
 
 describe("Code Section component", () => {
-  it("should display all the fields in the Code(s) section", async () => {
+  it("should display all the fields in the Code(s) section for QDM", async () => {
     render(
       <CodeSection
         canEdit={readOnly}
         allCodeSystems={mockedCodeSystems}
         handleFormSubmit={handleFormSubmitMock}
         blankResults={jest.fn()}
-        measureModel=""
+        measureModel="QDM v5.6"
       />
     );
 
