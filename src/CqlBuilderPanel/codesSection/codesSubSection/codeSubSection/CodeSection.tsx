@@ -102,7 +102,7 @@ export default function CodeSection({
         }))
         .filter((m) => m.label !== null);
       // if version is URL ( ex: SNOMEDCT ) then fetch the version parameter
-      const updatedVerionList = availableVersionsList.map((a) => {
+      const updatedVersionList = availableVersionsList.map((a) => {
         const isUrl = a.label.includes("http://");
         const version = isUrl ? _.last(a.label.split("/")) : a.label;
         return {
@@ -111,8 +111,8 @@ export default function CodeSection({
           fullValue: a.value,
         };
       });
-      setAvailableVersions(updatedVerionList);
-      formik.setFieldValue("version", updatedVerionList[0]?.value);
+      setAvailableVersions(updatedVersionList);
+      formik.setFieldValue("version", updatedVersionList[0]?.value);
     } else {
       setAvailableVersions([]);
       formik.setFieldValue("version", "");
