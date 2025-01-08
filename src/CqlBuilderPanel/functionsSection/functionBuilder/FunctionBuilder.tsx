@@ -154,14 +154,14 @@ export default function FunctionBuilder({
   const getEditedFunction = (): string => {
     let logic = "";
     if (formik.values.comment) {
-      logic += "/*\n" + formik.values.comment + "\n*/\n";
+      logic += "/*\n" + formik.values.comment.replace(/\s+/g, " ") + "\n*/\n";
     }
     logic += "define ";
     if (formik.values.fluentFunction) {
       logic += "fluent ";
     }
     logic += "function ";
-    logic += '"' + formik.values.functionName + '"' + " ";
+    logic += '"' + formik.values.functionName.replace(/\s+/g, " ") + '"' + " ";
     logic +=
       "(" + getFunctionArguments(formik.values.functionsArguments) + "):\n";
     logic += "  " + formik.values.expressionEditorValue;
@@ -290,8 +290,8 @@ export default function FunctionBuilder({
               operation === "edit"
                 ? () => {
                     const functionToEdit = {
-                      functionName: funct.name?.trim(),
-                      comment: funct.comment?.trim(),
+                      functionName: funct.name?.trim().replace(/\s+/g, " "),
+                      comment: funct.comment?.trim().replace(/\s+/g, " "),
                       functionsArguments: funct.functionsArguments,
                       fluentFunction: funct.fluentFunction,
                       expressionValue: funct.expressionEditorValue,
@@ -303,8 +303,12 @@ export default function FunctionBuilder({
                   }
                 : () => {
                     const functionToApply = {
-                      functionName: formik.values.functionName?.trim(),
-                      comment: formik.values.comment?.trim(),
+                      functionName: formik.values.functionName
+                        ?.trim()
+                        .replace(/\s+/g, " "),
+                      comment: formik.values.comment
+                        ?.trim()
+                        .replace(/\s+/g, " "),
                       functionsArguments: formik.values.functionsArguments,
                       fluentFunction: formik.values.fluentFunction,
                       expressionValue: formik.values.expressionEditorValue,
