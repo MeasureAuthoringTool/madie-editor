@@ -38,10 +38,17 @@ const getArgumentNames = (logic: string): FunctionArgument[] => {
     const regexBySpace = /\w+|"(?:\\"|[^"])+"/g;
     const resultBySpace = str.match(regexBySpace);
 
-    functArgs.push({
-      argumentName: resultBySpace[0],
-      dataType: resultBySpace[1],
-    });
+    if (resultBySpace) {
+      functArgs.push({
+        argumentName: resultBySpace?.[0],
+        dataType: resultBySpace?.[1],
+      });
+    } else {
+      functArgs.push({
+        argumentName: "",
+        dataType: "",
+      });
+    }
   });
   return functArgs;
 };
