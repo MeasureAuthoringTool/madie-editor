@@ -39,8 +39,8 @@ const getArgumentNames = (logic: string): FunctionArgument[] => {
     const resultBySpace = str.match(regexBySpace);
 
     functArgs.push({
-      argumentName: resultBySpace[0],
-      dataType: resultBySpace[1],
+      argumentName: resultBySpace ? resultBySpace?.[0] : "",
+      dataType: resultBySpace ? resultBySpace?.[0] : "",
     });
   });
   return functArgs;
