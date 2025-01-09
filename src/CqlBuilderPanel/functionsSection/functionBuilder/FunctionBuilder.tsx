@@ -283,6 +283,7 @@ export default function FunctionBuilder({
             disabled={
               !formik.values.functionName ||
               !formik.values.expressionEditorValue ||
+              formik.values.functionsArguments?.length < 1 ||
               !canEdit ||
               !formik.dirty
             }
