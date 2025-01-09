@@ -66,7 +66,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
       value = formik.values.other;
     }
     const fnToAdd = {
-      argumentName: formik.values.argumentName?.trim(),
+      argumentName: formik.values.argumentName?.trim().replace(/\s+/g, " "),
       dataType: value,
     };
     addArgumentToFunctionsArguments(fnToAdd);
