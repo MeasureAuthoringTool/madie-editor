@@ -168,6 +168,12 @@ export default function FunctionBuilder({
     return logic;
   };
 
+  const validateArguments = (functionArguments) => {
+    return !functionArguments.some(
+      (argument) => argument.argumentName && argument.dataType
+    );
+  };
+
   return (
     <div>
       <form id="function-form" onSubmit={formik.handleSubmit}>
@@ -284,6 +290,8 @@ export default function FunctionBuilder({
             disabled={
               !formik.values.functionName ||
               !formik.values.expressionEditorValue ||
+              (formik.values.fluentFunction &&
+                validateArguments(formik.values.functionsArguments)) ||
               !canEdit ||
               !formik.dirty
             }
