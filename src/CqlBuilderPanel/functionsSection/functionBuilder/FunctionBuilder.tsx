@@ -247,6 +247,7 @@ export default function FunctionBuilder({
             }
             dirty={dirty}
             functionArguments={formik.values.functionsArguments}
+            isFluentFunction={formik.values.fluentFunction}
           />
         </ExpandingSection>
 
