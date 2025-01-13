@@ -340,4 +340,64 @@ describe("Editor Validation Test", () => {
     );
     expect(errorsResult.externalErrors.length).toBe(1);
   });
+
+  it("Should show updated message when the include library lines doesn't have the version info", async () => {
+    const elmTranslationWithExternalErrors: ElmTranslation = {
+      externalErrors: [],
+      errorExceptions: [
+        {
+          startLine: 7,
+          startChar: 1,
+          endLine: 7,
+          endChar: 38,
+          errorType: "ELM",
+          errorSeverity: "Error",
+          targetIncludeLibraryId: "ErrorTest",
+          targetIncludeLibraryVersionId: "0.0.000",
+          type: "",
+          message: "Library resource FHIRHelpers version 'null' is not found.",
+        },
+        {
+          startLine: 1,
+          startChar: 0,
+          endLine: 1,
+          endChar: 0,
+          errorType: "ELM",
+          errorSeverity: "Error",
+          targetIncludeLibraryId: "ErrorTest",
+          targetIncludeLibraryVersionId: "0.0.000",
+          type: null,
+          message:
+            "FHIRHelpers is required as an included library for QI-Core. Please add the appropriate version of FHIRHelpers to your CQL.",
+        },
+      ],
+      library: elmTranslationLibraryWithValueSets,
+    };
+    mockedAxios.put.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            json: JSON.stringify(elmTranslationWithExternalErrors),
+          },
+          status: 200,
+        });
+      }
+    });
+    const editorContent: string =
+      "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000' \n" +
+      "using QICore version '4.1.0' \n" +
+      "include FHIRHelpers called FHIRHelpers \n" +
+      "codesystem \"ActPriority:HL7V3.0_2021-03\": 'http://terminology.hl7.org/CodeSystem/v3-ActPriority' version 'HL7V3.0_2021-03' \n" +
+      "code \"preop\": 'p' from \"ActPriority:HL7V3.0_2021-03\" display 'preop' \n" +
+      'valueset "ONC Administrative Sex": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
+
+    const errorsResult = await useGetAllErrors(editorContent, false);
+    expect(errorsResult.errors.length).toBe(5);
+    expect(errorsResult.errors[0].message).toEqual(
+      "include FHIRHelpers statement is missing version. Please add a version to the include"
+    );
+  });
 });
