@@ -158,4 +158,9 @@ for function
 // comment 2
 define function MyFunctions(encounter1 Encounter, encounter2 Encounter, encounter3 Encounter, encounter4 Encounter):
   3
+
+define function "test function not found in builder lookup"():
+  3
+define fluent function "test fluent function not found in builder lookup"(Enc Encounter):
+  (Enc E where E.status = 'finished') is not null
 `;

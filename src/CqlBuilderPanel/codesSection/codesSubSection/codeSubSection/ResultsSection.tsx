@@ -7,6 +7,7 @@ import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import ExpandingSection from "../../../../common/ExpandingSection";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import _ from "lodash";
 
 import {
   useReactTable,
@@ -19,6 +20,7 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
+import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
 
 type ResultSectionProps = {
   showResultsTable: boolean;
@@ -26,6 +28,7 @@ type ResultSectionProps = {
   code: Code;
   handleApplyCode;
   editorVal: string;
+  measureModel?: string;
 };
 
 type ResultsColumnRow = {
@@ -43,6 +46,7 @@ export default function ResultsSection({
   code,
   handleApplyCode,
   editorVal,
+  measureModel,
 }: ResultSectionProps) {
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<ResultsColumnRow>(null);
@@ -76,7 +80,9 @@ export default function ResultsSection({
       },
       {
         header: "System Version",
-        accessorKey: "svsVersion",
+        accessorKey: measureModel?.includes("QDM")
+          ? "svsVersion"
+          : "fhirVersion",
       },
       {
         header: "",
@@ -205,6 +211,8 @@ export default function ResultsSection({
                         <td key={cell.id} tw="p-2">
                           {cell.column.id === "status"
                             ? getCodeStatus(cell.getValue())
+                            : cell.column.id === "fhirVersion"
+                            ? getFhirCodeSystemVersion(cell.getValue())
                             : flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
@@ -217,6 +225,7 @@ export default function ResultsSection({
               </tbody>
             </table>
             <EditCodeDetailsDialog
+              measureModel={measureModel}
               selectedCodeDetails={selectedCodeDetails}
               onApplyCode={handleApplyCode}
               open={openEditCodeDialog}

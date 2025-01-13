@@ -1,11 +1,12 @@
 import * as React from "react";
 import CodeSubSection from "./CodeSubSection";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
 import { ServiceConfig } from "../../../../api/useServiceConfig";
 import axios from "../../../../api/axios-instance";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
+import { within } from "@testing-library/dom";
 
 jest.mock("../../useCodeSystems");
 jest.mock("../../../../api/axios-instance");
@@ -32,10 +33,10 @@ const mockConfig: ServiceConfig = {
 const mockCode: Code = {
   name: "Code2",
   display: "this is test code",
-  codeSystem: "System2",
+  codeSystem: "System 1",
   status: CodeStatus.ACTIVE,
-  svsVersion: "2.0",
-  fhirVersion: "2.0",
+  svsVersion: "HL7V3.0_2019-12",
+  fhirVersion: "HL7V3.0_2019-12",
 };
 
 const componentProps = {
@@ -43,7 +44,7 @@ const componentProps = {
   allCodeSystems: mockedCodeSystems,
   measureModel: "",
   editorVal: "",
-  handleApplyCode: (c: string) => jest.fn(),
+  handleApplyCode: () => jest.fn(),
 };
 
 describe("CodeSub Section component", () => {
@@ -64,35 +65,30 @@ describe("CodeSub Section component", () => {
   });
 
   it("should display code details for selected code, system, version filters", async () => {
-    const { getByTestId, getByText, getByRole, queryByText, findAllByRole } =
-      render(<CodeSubSection {...componentProps} />);
-    const codeSystemSelect = getByTestId("code-system-selector-dropdown");
-
+    const { getByTestId } = render(<CodeSubSection {...componentProps} />);
+    // Selecting a Code System
+    const codeSystemSelect = screen.getByTestId(
+      "code-system-selector-dropdown"
+    );
     expect(codeSystemSelect).toBeInTheDocument();
+    expect(codeSystemSelect).toBeEnabled();
 
-    const codeSystemSelectButton = getByRole("button", {
+    const codeSystemSelectButton = screen.getByRole("button", {
       name: "Open",
     });
-
     userEvent.click(codeSystemSelectButton);
 
-    expect(getByText("System1")).toBeInTheDocument();
-    expect(getByText("System2")).toBeInTheDocument();
-
-    userEvent.type(codeSystemSelectButton, "System1");
-
-    expect(getByText("System1")).toBeInTheDocument();
-    expect(queryByText("System2")).not.toBeInTheDocument();
-    expect(codeSystemSelect).toBeEnabled();
-    userEvent.click(codeSystemSelect);
-
-    const codeSystemOptions = await findAllByRole("option");
-    expect(codeSystemOptions.length).toEqual(1);
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions.length).toEqual(3);
+    expect(codeSystemOptions[0]).toHaveTextContent("System1");
+    expect(codeSystemOptions[1]).toHaveTextContent("AdministrativeGender");
+    expect(codeSystemOptions[2]).toHaveTextContent("SNOMEDCT");
     userEvent.click(codeSystemOptions[0]);
 
     expect(getByTestId("clear-codes-btn")).not.toBeDisabled();
     expect(getByTestId("codes-search-btn")).toBeDisabled();
   });
+
   it("should display all the fields in the Code(s) section", async () => {
     mockedAxios.get.mockImplementation((url) => {
       if (url === "/env-config/serviceConfig.json") {
@@ -102,48 +98,61 @@ describe("CodeSub Section component", () => {
         return Promise.resolve({ data: mockCode });
       }
     });
-    const { getByTestId, findByTestId, getByText, getByRole } = render(
-      <CodeSubSection {...componentProps} />
-    );
+    const { findByTestId } = render(<CodeSubSection {...componentProps} />);
 
-    const codeSystemSelect = getByTestId("code-system-selector-dropdown");
-    const codeSystemSelectButton = getByRole("button", {
+    const searchButton = screen.getByRole("button", { name: "Search" });
+    const clearButton = screen.getByRole("button", { name: "Clear" });
+    expect(searchButton).toBeDisabled();
+    expect(clearButton).toBeDisabled();
+
+    // Selecting a Code System
+    const codeSystemSelect = screen.getByTestId(
+      "code-system-selector-dropdown"
+    );
+    expect(codeSystemSelect).toBeInTheDocument();
+    expect(codeSystemSelect).toBeEnabled();
+
+    const codeSystemSelectButton = screen.getByRole("button", {
       name: "Open",
     });
     userEvent.click(codeSystemSelectButton);
-    userEvent.click(getByText("System2"));
-    expect(codeSystemSelect).toBeInTheDocument();
 
-    const codeSystemVersionSelect = getByTestId(
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions.length).toEqual(3);
+    expect(codeSystemOptions[0]).toHaveTextContent("System1");
+    expect(codeSystemOptions[1]).toHaveTextContent("AdministrativeGender");
+    expect(codeSystemOptions[2]).toHaveTextContent("SNOMEDCT");
+    userEvent.click(codeSystemOptions[0]);
+
+    // Selecting a Code System Version
+    const comboBoxContainer = screen.getByTestId(
       "code-system-version-selector"
-    ) as HTMLInputElement;
+    );
+    const codeSystemVersionSelect =
+      within(comboBoxContainer).getByRole("combobox");
+    expect(codeSystemVersionSelect).toHaveTextContent("2.0");
     expect(codeSystemVersionSelect).toBeEnabled();
-    expect(codeSystemVersionSelect).toBeInTheDocument();
-    const codeSystemVersionSelectInput = getByTestId(
-      "code-system-version-selector-input"
-    ) as HTMLInputElement;
-    expect(codeSystemVersionSelectInput).toBeInTheDocument();
-    expect(codeSystemVersionSelectInput.value).toBe("2.0");
-    const codeSystemSelectInput = getByTestId("code-system-selector-input");
-    fireEvent.change(codeSystemSelectInput, {
-      target: { value: "S" },
-    });
-    userEvent.click(getByText("System1"));
-    expect(codeSystemVersionSelectInput.value).toBe("2.0");
+    userEvent.click(codeSystemVersionSelect);
+    const codeSystemVersionOptions = await screen.findAllByRole("option");
+    expect(codeSystemVersionOptions.length).toEqual(2);
+    userEvent.click(codeSystemVersionOptions[1]);
+    expect(codeSystemVersionSelect).toHaveTextContent("1.0");
 
-    const codeText = getByTestId("code-text-input");
+    // Selecting a code
+    const codeText = screen.getByTestId("code-text");
     expect(codeText).toBeEnabled();
-    expect(codeText).toBeInTheDocument();
-    const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
-    fireEvent.change(codeTextInput, {
-      target: { value: "System1" },
-    });
+    userEvent.click(codeText);
+    const codeTextInput = screen.getByTestId(
+      "code-text-input"
+    ) as HTMLInputElement;
+    userEvent.type(codeTextInput, "Code");
+    expect(codeTextInput.value).toBe("Code");
 
-    expect(codeTextInput.value).toBe("System1");
-    expect(getByTestId("code-list-updated-date")).toBeInTheDocument();
-    expect(getByTestId("codes-search-btn")).toBeEnabled();
-    expect(getByTestId("clear-codes-btn")).toBeEnabled();
-    fireEvent.click(getByTestId("codes-search-btn"));
+    await waitFor(() => {
+      expect(clearButton).toBeEnabled();
+      expect(searchButton).not.toBeDisabled();
+    });
+    userEvent.click(searchButton);
 
     const resultTable = await findByTestId("codes-results-tbl");
     const tableRow = resultTable.querySelector("tbody").children[0];
@@ -162,45 +171,57 @@ describe("CodeSub Section component", () => {
         return Promise.resolve({ response: { status: 404 } });
       }
     });
-    const { getByTestId, findByTestId, getByRole, getByText } = render(
+    const { getByTestId, findByTestId, getByRole } = render(
       <CodeSubSection {...componentProps} />
     );
+
+    const searchButton = screen.getByRole("button", { name: "Search" });
+    const clearButton = screen.getByRole("button", { name: "Clear" });
+    expect(searchButton).toBeDisabled();
+    expect(clearButton).toBeDisabled();
+
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
     });
     userEvent.click(codeSystemSelectButton);
-    userEvent.click(getByText("System2"));
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions.length).toEqual(3);
+    expect(codeSystemOptions[0]).toHaveTextContent("System1");
+    expect(codeSystemOptions[1]).toHaveTextContent("AdministrativeGender");
+    expect(codeSystemOptions[2]).toHaveTextContent("SNOMEDCT");
+    userEvent.click(codeSystemOptions[1]);
 
-    const codeSystemVersionSelect = getByTestId(
+    // Making sure the latest version is already selected
+    const comboBoxContainer = screen.getByTestId(
       "code-system-version-selector"
-    ) as HTMLInputElement;
+    );
+    const codeSystemVersionSelect =
+      within(comboBoxContainer).getByRole("combobox");
+    expect(codeSystemVersionSelect).toHaveTextContent("2016-07-01");
     expect(codeSystemVersionSelect).toBeEnabled();
-    expect(codeSystemVersionSelect).toBeInTheDocument();
-    const codeSystemVersionSelectInput = getByTestId(
-      "code-system-version-selector-input"
-    ) as HTMLInputElement;
-    expect(codeSystemVersionSelectInput).toBeInTheDocument();
-    expect(codeSystemVersionSelectInput.value).toBe("2.0");
-    const codeSystemSelectInput = getByTestId("code-system-selector-input");
-    fireEvent.change(codeSystemSelectInput, {
-      target: { value: "S" },
-    });
-    userEvent.click(getByText("System1"));
-    expect(codeSystemVersionSelectInput.value).toBe("2.0");
+    userEvent.click(codeSystemVersionSelect);
 
-    const codeText = getByTestId("code-text-input");
+    // Selecting a Code System Version
+    const codeSystemVersionOptions = await screen.findAllByRole("option");
+    expect(codeSystemVersionOptions.length).toEqual(2);
+    expect(codeSystemVersionOptions[0]).toHaveTextContent("2016-07-01");
+    expect(codeSystemVersionOptions[1]).toHaveTextContent("2015-07-01");
+    userEvent.click(codeSystemVersionOptions[1]);
+
+    expect(codeSystemVersionSelect).toHaveTextContent("2015-07-01");
+
+    const codeText = screen.getByTestId("code-text");
     expect(codeText).toBeEnabled();
-    expect(codeText).toBeInTheDocument();
     const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
-    fireEvent.change(codeTextInput, {
-      target: { value: "System1" },
+    userEvent.type(codeTextInput, "invalid Code");
+
+    expect(codeTextInput.value).toBe("invalid Code");
+
+    await waitFor(() => {
+      expect(clearButton).toBeEnabled();
+      expect(searchButton).not.toBeDisabled();
     });
-
-    expect(codeTextInput.value).toBe("System1");
-
-    expect(getByTestId("codes-search-btn")).toBeEnabled();
-    expect(getByTestId("clear-codes-btn")).toBeEnabled();
-    userEvent.click(getByTestId("codes-search-btn"));
+    userEvent.click(searchButton);
     const resultTable = await findByTestId("codes-results-tbl");
     const tableRow = resultTable.querySelector("tbody").children[0];
     expect(tableRow.children[0].textContent).toEqual("No Results were found");
@@ -215,43 +236,53 @@ describe("CodeSub Section component", () => {
         return Promise.reject({ response: { status: 500 } });
       }
     });
-    const { getByTestId, findByTestId, getByText, getByRole } = render(
+    const { getByTestId, findByTestId, getByRole } = render(
       <CodeSubSection {...componentProps} />
     );
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
     });
     userEvent.click(codeSystemSelectButton);
-    userEvent.click(getByText("System2"));
-    const codeSystemVersionSelect = getByTestId(
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions.length).toEqual(3);
+    expect(codeSystemOptions[0]).toHaveTextContent("System1");
+    expect(codeSystemOptions[1]).toHaveTextContent("AdministrativeGender");
+    expect(codeSystemOptions[2]).toHaveTextContent("SNOMEDCT");
+    userEvent.click(codeSystemOptions[1]);
+
+    // Making sure the latest version is already selected
+    const comboBoxContainer = screen.getByTestId(
       "code-system-version-selector"
-    ) as HTMLInputElement;
+    );
+    const codeSystemVersionSelect =
+      within(comboBoxContainer).getByRole("combobox");
+    expect(codeSystemVersionSelect).toHaveTextContent("2016-07-01");
     expect(codeSystemVersionSelect).toBeEnabled();
-    expect(codeSystemVersionSelect).toBeInTheDocument();
-    const codeSystemVersionSelectInput = getByTestId(
-      "code-system-version-selector-input"
-    ) as HTMLInputElement;
-    expect(codeSystemVersionSelectInput).toBeInTheDocument();
-    expect(codeSystemVersionSelectInput.value).toBe("2.0");
-    const codeSystemSelectInput = getByTestId("code-system-selector-input");
-    fireEvent.change(codeSystemSelectInput, {
-      target: { value: "S" },
-    });
-    userEvent.click(getByText("System1"));
-    expect(codeSystemVersionSelectInput.value).toBe("2.0");
+    userEvent.click(codeSystemVersionSelect);
 
-    const codeText = getByTestId("code-text-input");
-    expect(codeText).toBeEnabled();
-    expect(codeText).toBeInTheDocument();
+    // Selecting a Code System Version
+    const codeSystemVersionOptions = await screen.findAllByRole("option");
+    expect(codeSystemVersionOptions.length).toEqual(2);
+    expect(codeSystemVersionOptions[0]).toHaveTextContent("2016-07-01");
+    expect(codeSystemVersionOptions[1]).toHaveTextContent("2015-07-01");
+    userEvent.click(codeSystemVersionOptions[1]);
+
+    expect(codeSystemVersionSelect).toHaveTextContent("2015-07-01");
+
     const codeTextInput = getByTestId("code-text-input") as HTMLInputElement;
-    fireEvent.change(codeTextInput, {
-      target: { value: "System1" },
+    userEvent.type(codeTextInput, "Code");
+
+    expect(codeTextInput.value).toBe("Code");
+
+    const searchButton = screen.getByRole("button", { name: "Search" });
+    const clearButton = screen.getByRole("button", { name: "Clear" });
+    await waitFor(() => {
+      expect(clearButton).toBeEnabled();
+      expect(searchButton).toBeEnabled();
     });
 
-    expect(codeTextInput.value).toBe("System1");
-    expect(getByTestId("codes-search-btn")).toBeEnabled();
-    expect(getByTestId("clear-codes-btn")).toBeEnabled();
-    userEvent.click(getByTestId("codes-search-btn"));
+    userEvent.click(searchButton);
+
     const errorMessage = await findByTestId("fetch-code-error-message");
     expect(errorMessage.textContent).toEqual(
       "An issue occurred while retrieving the code from VSAC. Please try again. If the issue continues, please contact helpdesk."
