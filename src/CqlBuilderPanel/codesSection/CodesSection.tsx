@@ -63,7 +63,9 @@ export default function CodesSection({
             version: codeSystemVersion,
             oid: codeSystem?.oid,
             suffix: getCodeSuffix(code),
-            versionIncluded: code.codeSystem.includes(codeSystemVersion),
+            versionIncluded: code.codeSystem?.startsWith(`"SNOMEDCT`)
+              ? !_.isEmpty(codeSystemVersion)
+              : code.codeSystem.includes(codeSystemVersion),
           };
         });
         setParsedCodesList(codesList);

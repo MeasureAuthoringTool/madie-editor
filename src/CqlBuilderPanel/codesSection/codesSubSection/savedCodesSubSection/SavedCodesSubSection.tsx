@@ -440,7 +440,7 @@ export default function SavedCodesSubSection({
       <MadieDeleteDialog
         open={deleteDialogModalOpen}
         onContinue={() => {
-          handleCodeDelete(selectedCodeDetails);
+          handleCodeDelete(selectedCodeDetails, measureModel);
         }}
         onClose={() => {
           setDeleteDialogModalOpen(false);
