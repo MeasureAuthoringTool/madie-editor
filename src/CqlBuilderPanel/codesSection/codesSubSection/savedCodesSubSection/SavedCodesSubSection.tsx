@@ -87,7 +87,6 @@ export default function SavedCodesSubSection({
   setIsCQLUnchanged,
   isCQLUnchanged,
   parsedCodesList,
-  measureModel,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
