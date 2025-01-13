@@ -1,12 +1,15 @@
 import React from "react";
 import { MadieDialog, TextField } from "@madie/madie-design-system/dist/react";
 import { Checkbox, FormControlLabel } from "@mui/material";
-import tw from "twin.macro";
+import "twin.macro";
 import "styled-components/macro";
 import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../../validations/SuffixSchemaValidator";
+import _ from "lodash";
+import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
 
 export default function EditCodeDetailsDialog({
+  measureModel,
   selectedCodeDetails,
   onApplyCode,
   open,
@@ -76,7 +79,9 @@ export default function EditCodeDetailsDialog({
           <div tw="flex-grow pl-5" data-testid="code-system-version-info">
             <p className="result-label">Code System Version</p>
             <span className="result-value">
-              {selectedCodeDetails?.svsVersion}
+              {_.includes(measureModel, "QDM")
+                ? selectedCodeDetails?.svsVersion
+                : getFhirCodeSystemVersion(selectedCodeDetails?.fhirVersion)}
             </span>
           </div>
         </div>
