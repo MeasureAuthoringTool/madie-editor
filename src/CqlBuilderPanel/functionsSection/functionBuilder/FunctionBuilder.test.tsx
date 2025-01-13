@@ -887,6 +887,7 @@ describe("CQL Function Builder Tests", () => {
             { dataType: "Integer", argumentName: "Test" },
             { dataType: "Integer", argumentName: "Test" },
             { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "" },
           ],
         }}
       />
