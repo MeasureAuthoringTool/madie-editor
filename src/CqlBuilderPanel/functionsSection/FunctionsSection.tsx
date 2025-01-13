@@ -71,40 +71,37 @@ export default function FunctionsSection({
     ? new CqlAntlr(cql).parse().expressionDefinitions
     : [];
 
-  let functionLookups: FunctionLookup[] =
-    cqlBuilderLookupsTypes?.functions
-      ?.filter((func) => !func.libraryName)
-      .map((func) => {
-        // get the comments for CQL definition from antlr parser expressions
-        const expression = expressionDefinitions.find(
-          (expression) => func.logic == expression.text
-        );
-        return {
-          ...func,
+  let functionLookups: FunctionLookup[] = [];
+  expressionDefinitions?.forEach((expression) => {
+    if (expression.name === "function") {
+      const found = cqlBuilderLookupsTypes?.functions?.find(
+        (funct) => funct.logic === expression.text
+      );
+      if (found) {
+        functionLookups.push({
+          ...found,
           comment: expression?.comment,
           isFluent: "-",
-          arguments: getArgumentNames(func.logic),
-          expressionEditorValue: getExpressionEditorValue(func.logic),
-        } as FunctionLookup;
-      }) || [];
-
-  functionLookups = functionLookups.concat(
-    cqlBuilderLookupsTypes?.fluentFunctions
-      ?.filter((func) => !func.libraryName)
-      .map((func) => {
-        const expression = expressionDefinitions.find(
-          (expression) => func.logic == expression.text
-        );
-        return {
-          ...func,
+          arguments: getArgumentNames(found.logic),
+          expressionEditorValue: getExpressionEditorValue(found.logic),
+        } as FunctionLookup);
+      }
+    } else if (expression.name === "fluent") {
+      const found = cqlBuilderLookupsTypes?.fluentFunctions?.find(
+        (funct) => funct.logic === expression.text
+      );
+      if (found) {
+        functionLookups.push({
+          ...found,
           comment: expression?.comment,
           isFluent: "Yes",
-          arguments: getArgumentNames(func.logic),
-          expressionEditorValue: getExpressionEditorValue(func.logic),
-        } as FunctionLookup;
-      }) || []
-  );
-  functionLookups = _.sortBy(functionLookups, (o) => o.name?.toLowerCase());
+          arguments: getArgumentNames(found.logic),
+          expressionEditorValue: getExpressionEditorValue(found.logic),
+        } as FunctionLookup);
+      }
+    }
+  });
+
   return (
     <>
       <FunctionSectionNavTabs

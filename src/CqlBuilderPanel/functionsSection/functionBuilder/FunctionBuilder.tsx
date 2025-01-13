@@ -112,7 +112,12 @@ export default function FunctionBuilder({
   };
 
   const addArgumentToFunctionsArguments = (fn) => {
-    const newArgs = [...formik.values.functionsArguments, fn];
+    const newArgs = [
+      ...formik.values.functionsArguments.filter(
+        (arg) => arg.argumentName !== ""
+      ),
+      fn,
+    ];
     formik.setFieldValue("functionsArguments", newArgs);
     setToastMessage(
       `Argument ${fn.argumentName} has been successfully added to the function.`
@@ -166,6 +171,12 @@ export default function FunctionBuilder({
       "(" + getFunctionArguments(formik.values.functionsArguments) + "):\n";
     logic += "  " + formik.values.expressionEditorValue;
     return logic;
+  };
+
+  const validateArguments = (functionArguments) => {
+    return !functionArguments.some(
+      (argument) => argument.argumentName && argument.dataType
+    );
   };
 
   return (
@@ -247,6 +258,7 @@ export default function FunctionBuilder({
             }
             dirty={dirty}
             functionArguments={formik.values.functionsArguments}
+            isFluentFunction={formik.values.fluentFunction}
           />
         </ExpandingSection>
 
@@ -284,7 +296,7 @@ export default function FunctionBuilder({
               !formik.values.functionName ||
               !formik.values.expressionEditorValue ||
               (formik.values.fluentFunction &&
-                formik.values.functionsArguments?.length < 1) ||
+                validateArguments(formik.values.functionsArguments)) ||
               !canEdit ||
               !formik.dirty
             }

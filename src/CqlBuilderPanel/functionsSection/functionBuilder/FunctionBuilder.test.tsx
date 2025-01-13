@@ -231,9 +231,17 @@ describe("CQL Function Builder Tests", () => {
     expect(clearButton).toBeInTheDocument();
     expect(clearButton).toBeEnabled();
 
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
+    const dataTypeDropdown = await screen.findByTestId(
+      "arg-type-selector-input"
+    );
+    fireEvent.change(dataTypeDropdown, {
+      target: { value: "Boolean" },
+    });
+
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeEnabled();
+    });
 
     fireEvent.click(clearButton);
 
@@ -267,12 +275,18 @@ describe("CQL Function Builder Tests", () => {
     });
     expect(argumentNameInput.value).toBe("Test");
 
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
+    const dataTypeDropdown = await screen.findByTestId(
+      "arg-type-selector-input"
+    );
+    fireEvent.change(dataTypeDropdown, {
+      target: { value: "Boolean" },
+    });
 
-    fireEvent.click(addButton);
-
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeEnabled();
+      fireEvent.click(addButton);
+    });
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
     await waitFor(() => {
@@ -314,11 +328,18 @@ describe("CQL Function Builder Tests", () => {
     });
     expect(argumentNameInput.value).toBe("Test");
 
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
+    const dataTypeDropdown = await screen.findByTestId(
+      "arg-type-selector-input"
+    );
+    fireEvent.change(dataTypeDropdown, {
+      target: { value: "Boolean" },
+    });
 
-    fireEvent.click(addButton);
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeEnabled();
+      fireEvent.click(addButton);
+    });
 
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
@@ -710,12 +731,11 @@ describe("CQL Function Builder Tests", () => {
       target: { value: "Boolean" },
     });
 
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
-    // get available dataTypes 0
-
-    fireEvent.click(addButton);
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeEnabled();
+      fireEvent.click(addButton);
+    });
 
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
@@ -832,11 +852,11 @@ describe("CQL Function Builder Tests", () => {
       target: { value: "Boolean" },
     });
 
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
-
-    fireEvent.click(addButton);
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeEnabled();
+      fireEvent.click(addButton);
+    });
 
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
@@ -867,6 +887,7 @@ describe("CQL Function Builder Tests", () => {
             { dataType: "Integer", argumentName: "Test" },
             { dataType: "Integer", argumentName: "Test" },
             { dataType: "Integer", argumentName: "Test" },
+            { dataType: "Integer", argumentName: "" },
           ],
         }}
       />
@@ -940,13 +961,11 @@ describe("CQL Function Builder Tests", () => {
     fireEvent.change(dataTypeDropdown, {
       target: { value: "Boolean" },
     });
-
-    const addButton = screen.getByTestId("function-argument-add-btn");
-    expect(addButton).toBeInTheDocument();
-    expect(addButton).toBeEnabled();
-
-    fireEvent.click(addButton);
-
+    await waitFor(() => {
+      const addButton = screen.getByTestId("function-argument-add-btn");
+      expect(addButton).toBeEnabled();
+      fireEvent.click(addButton);
+    });
     const functionArgumentTable = screen.getByTestId("function-argument-tbl");
     expect(functionArgumentTable).toBeInTheDocument();
     const tableRow = functionArgumentTable.querySelector("tbody").children[0];

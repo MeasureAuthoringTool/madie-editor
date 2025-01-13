@@ -22,6 +22,7 @@ interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
   canEdit: boolean;
   addArgumentToFunctionsArguments: Function;
+  isFluentFunction: boolean;
   deleteArgumentFromFunctionArguments: Function;
   dirty: boolean;
 }
@@ -43,6 +44,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
     addArgumentToFunctionsArguments,
     deleteArgumentFromFunctionArguments,
     functionArguments,
+    isFluentFunction,
     canEdit,
     dirty,
   } = props;
@@ -84,6 +86,9 @@ export default function ArgumentSection(props: ArgumentsProps) {
       <div tw="flex flex-wrap">
         <div tw="w-1/2">
           <TextField
+            required={
+              isFluentFunction || formik.values.dataType ? "required" : ""
+            }
             label="Name"
             id="argument-name-field"
             name="argumentName"
@@ -101,6 +106,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </div>
         <div tw="flex-grow pl-5">
           <Select
+            required={formik.values.argumentName ? "required" : ""}
             label="Available DataTypes"
             id="arg-type-selector"
             inputProps={{
@@ -169,7 +175,13 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </Button>
         <Button
           data-testid={`function-argument-add-btn`}
-          disabled={!canEdit || !formik.isValid || !formik.dirty}
+          disabled={
+            !canEdit ||
+            !formik.isValid ||
+            !formik.dirty ||
+            !formik.values.argumentName ||
+            !formik.values.dataType
+          }
           onClick={handleSubmit}
         >
           Add
