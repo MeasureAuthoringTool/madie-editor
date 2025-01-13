@@ -90,7 +90,7 @@ const fluentFunctions = [
     libraryName: null,
     libraryAlias: null,
     logic:
-      "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n(Enc E where E.status = 'finished') is not null",
+      "define fluent function \"isFinishedEncounter\"(Enc Encounter):\n  (Enc E where E.status = 'finished') is not null",
     startLine: 0,
     comment: null,
   },
