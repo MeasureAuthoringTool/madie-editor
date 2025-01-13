@@ -88,5 +88,14 @@ const updateErrorTypeForTranslationErrors = (
   allErrorsArray.forEach((error) => {
     error.errorType = "ELM";
   });
-  return allErrorsArray;
+  return allErrorsArray.map((item) => {
+    const match = item.message?.match(/Library resource (.+?) version 'null'/);
+    if (match && match[1]) {
+      return {
+        ...item,
+        message: `include ${match[1]} statement is missing version. Please add a version to the include`,
+      };
+    }
+    return item;
+  });
 };
