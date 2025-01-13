@@ -79,6 +79,7 @@ export default function SavedCodesSubSection({
   setIsCQLUnchanged,
   isCQLUnchanged,
   parsedCodesList,
+  measureModel,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -425,7 +426,7 @@ export default function SavedCodesSubSection({
       <MadieDeleteDialog
         open={deleteDialogModalOpen}
         onContinue={() => {
-          handleCodeDelete(selectedCodeDetails);
+          handleCodeDelete(selectedCodeDetails, measureModel);
         }}
         onClose={() => {
           setDeleteDialogModalOpen(false);
