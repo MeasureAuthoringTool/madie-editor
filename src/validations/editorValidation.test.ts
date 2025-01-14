@@ -397,7 +397,7 @@ describe("Editor Validation Test", () => {
     const errorsResult = await useGetAllErrors(editorContent, false);
     expect(errorsResult.errors.length).toBe(5);
     expect(errorsResult.errors[0].message).toEqual(
-      "include FHIRHelpers statement is missing version. Please add a version to the include"
+      "include FHIRHelpers statement is missing version. Please add a version to the include."
     );
   });
 });
