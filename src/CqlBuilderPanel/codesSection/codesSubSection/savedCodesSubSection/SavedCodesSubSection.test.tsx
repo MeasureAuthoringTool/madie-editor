@@ -38,6 +38,17 @@ const mockCodeDetailsList: any = {
       codeSystemOid: "2.16.840.1.113883.6.1",
       status: "ACTIVE",
     },
+    {
+      name: "10000006",
+      display: "Radiating chest pain (finding)",
+      fhirVersion: "http://snomed.info/sct/731000124108/version/20240901",
+      svsVersion: "2024-09",
+      codeSystem: "SNOMEDCT",
+      codeSystemOid: "2.16.840.1.113883.6.96",
+      codeSystemUrl: "http://snomed.info/sct",
+      status: "ACTIVE",
+      versionIncluded: false,
+    },
   ],
 };
 
@@ -61,18 +72,18 @@ const parsedCodesList: CodesList[] = [
 ];
 
 describe("Saved Codes section component", () => {
-  const checkRows = async (number: number) => {
+  const checkRows = async (numberOfRows: number) => {
     const tableBody = await screen.findByTestId("saved-codes-tbl-body");
     expect(tableBody).toBeInTheDocument();
     const visibleRows = await within(tableBody).findAllByRole("row");
-    await waitFor(() => {
-      expect(visibleRows).toHaveLength(number);
-    });
+    expect(visibleRows).toHaveLength(numberOfRows);
   };
-  it("should display the saved codes table when navigated to the saved codes tab ", async () => {
+
+  it("should display the saved codes table when navigated to the saved codes tab for QDM", async () => {
     render(
       <SavedCodesSubSection
         measureStoreCql="using QDM version 1.0.000"
+        measureModel={"QDM"}
         canEdit={true}
         handleApplyCode={undefined}
         handleCodeDelete={undefined}
@@ -104,13 +115,88 @@ describe("Saved Codes section component", () => {
     ).toBeInTheDocument();
     const savedCodesTable = await screen.findByTestId("saved-codes-tbl");
     expect(savedCodesTable).toBeInTheDocument();
-    await checkRows(2);
+    await checkRows(3);
+
+    // Check the content of Saved Codes table
+    const firstRow = await screen.findByTestId("saved-code-row-0");
+    expect(firstRow.children.item(1)).toHaveTextContent("8462-4");
+    expect(firstRow.children.item(2)).toHaveTextContent(
+      "Diastolic blood pressure"
+    );
+    expect(firstRow.children.item(3)).toHaveTextContent("LOINC:2.6");
+    expect(firstRow.children.item(4)).toHaveTextContent("2.6");
+
+    const thirdRow = await screen.findByTestId("saved-code-row-2");
+    expect(thirdRow.children.item(1)).toHaveTextContent("10000006");
+    expect(thirdRow.children.item(2)).toHaveTextContent(
+      "Radiating chest pain (finding)"
+    );
+    expect(thirdRow.children.item(3)).toHaveTextContent("SNOMEDCT");
+    expect(thirdRow.children.item(4)).toHaveTextContent("2024-09");
   });
 
-  it("displaying edit dialog when edit is clicked from the select actions", async () => {
+  it("should display the saved codes table when navigated to the saved codes tab for QiCore", async () => {
+    render(
+      <SavedCodesSubSection
+        measureStoreCql="using FHIR version 1.0.000"
+        measureModel={"QiCore"}
+        canEdit={true}
+        handleApplyCode={undefined}
+        handleCodeDelete={undefined}
+        setEditorVal={undefined}
+        setIsCQLUnchanged={undefined}
+        isCQLUnchanged={undefined}
+        parsedCodesList={parsedCodesList}
+      />
+    );
+    expect(
+      screen.getByRole("columnheader", {
+        name: "Code",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", {
+        name: "Description",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", {
+        name: "Code System",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", {
+        name: "System Version",
+      })
+    ).toBeInTheDocument();
+    const savedCodesTable = await screen.findByTestId("saved-codes-tbl");
+    expect(savedCodesTable).toBeInTheDocument();
+    await checkRows(3);
+
+    // Check the content of Saved Codes table
+    const firstRow = await screen.findByTestId("saved-code-row-0");
+    expect(firstRow.children.item(1)).toHaveTextContent("8462-4");
+    expect(firstRow.children.item(2)).toHaveTextContent(
+      "Diastolic blood pressure"
+    );
+    expect(firstRow.children.item(3)).toHaveTextContent("LOINC:2.6");
+    expect(firstRow.children.item(4)).toHaveTextContent("2.6");
+
+    const thirdRow = await screen.findByTestId("saved-code-row-2");
+    expect(thirdRow.children.item(1)).toHaveTextContent("10000006");
+    expect(thirdRow.children.item(2)).toHaveTextContent(
+      "Radiating chest pain (finding)"
+    );
+    expect(thirdRow.children.item(3)).toHaveTextContent("SNOMEDCT");
+    // Should display FHIR Version instead of SVS for QiCore Measures
+    expect(thirdRow.children.item(4)).toHaveTextContent("20240901");
+  });
+
+  it("displaying edit dialog when edit is clicked from the select actions for QDM", async () => {
     const { getByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
+        measureModel={"QDM"}
         canEdit={true}
         handleApplyCode={undefined}
         handleCodeDelete={undefined}
@@ -121,26 +207,73 @@ describe("Saved Codes section component", () => {
       />
     );
 
-    await checkRows(2);
+    await checkRows(3);
 
     expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
 
-    const editButton = getByTestId(`edit-code-0`);
+    const editButton = getByTestId(`edit-code-2`);
     expect(editButton).toBeInTheDocument();
 
-    const removeButton = getByTestId(`delete-code-0`);
+    const removeButton = getByTestId(`delete-code-2`);
     expect(removeButton).toBeInTheDocument();
 
     userEvent.click(editButton);
 
     await waitFor(() => {
       expect(getByTestId("dialog-form")).toBeInTheDocument();
+      const codeSystemVersionInfo = screen.getByTestId(
+        "code-system-version-info"
+      );
+      expect(codeSystemVersionInfo).toHaveTextContent("2024-09");
     });
 
+    // edit firstCode to check the suffx value
+    userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    userEvent.click(getByTestId(`edit-code-0`));
     const suffixInput = screen.getByTestId(
       "code-suffix-field-input"
     ) as HTMLInputElement;
     expect(suffixInput.value).toBe("1");
+
+    const cancelButton = getByTestId("cancel-button");
+    expect(cancelButton).toBeInTheDocument();
+    userEvent.click(cancelButton);
+  });
+
+  it("displaying edit dialog when edit is clicked from the select actions for QiCore", async () => {
+    const { getByTestId } = render(
+      <SavedCodesSubSection
+        measureStoreCql="using FHIR version 1.0.000"
+        measureModel={"QiCore"}
+        canEdit={true}
+        handleApplyCode={undefined}
+        handleCodeDelete={undefined}
+        setEditorVal={undefined}
+        setIsCQLUnchanged={undefined}
+        isCQLUnchanged={undefined}
+        parsedCodesList={parsedCodesList}
+      />
+    );
+
+    await checkRows(3);
+
+    expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
+
+    const editButton = getByTestId(`edit-code-2`);
+    expect(editButton).toBeInTheDocument();
+
+    const removeButton = getByTestId(`delete-code-2`);
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(editButton);
+
+    await waitFor(() => {
+      expect(getByTestId("dialog-form")).toBeInTheDocument();
+      const codeSystemVersionInfo = screen.getByTestId(
+        "code-system-version-info"
+      );
+      expect(codeSystemVersionInfo).toHaveTextContent("20240901");
+    });
 
     const cancelButton = getByTestId("cancel-button");
     expect(cancelButton).toBeInTheDocument();
@@ -152,6 +285,7 @@ describe("Saved Codes section component", () => {
     const { getByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
+        measureModel={"QDM"}
         canEdit={true}
         handleApplyCode={handleApplyCode}
         handleCodeDelete={jest.fn()}
@@ -161,7 +295,7 @@ describe("Saved Codes section component", () => {
         parsedCodesList={parsedCodesList}
       />
     );
-    await checkRows(2);
+    await checkRows(3);
     const editButton = getByTestId(`edit-code-0`);
     userEvent.click(editButton);
     await waitFor(() => {
@@ -183,6 +317,7 @@ describe("Saved Codes section component", () => {
     const { getByTestId, queryByText } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
+        measureModel={"QDM"}
         canEdit={true}
         isCQLUnchanged={true}
         handleApplyCode={undefined}
@@ -193,7 +328,7 @@ describe("Saved Codes section component", () => {
       />
     );
 
-    await checkRows(2);
+    await checkRows(3);
 
     expect(getByTestId("saved-code-row-0")).toBeInTheDocument();
 
@@ -221,6 +356,7 @@ describe("Saved Codes section component", () => {
     const { getByTestId, queryByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
+        measureModel={"QDM"}
         canEdit={true}
         isCQLUnchanged={true}
         handleCodeDelete={handleCodeDelete}
@@ -230,7 +366,7 @@ describe("Saved Codes section component", () => {
         parsedCodesList={parsedCodesList}
       />
     );
-    await checkRows(2);
+    await checkRows(3);
 
     const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();
@@ -248,6 +384,7 @@ describe("Saved Codes section component", () => {
     const { getByTestId, queryByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
+        measureModel={"QDM"}
         canEdit={true}
         isCQLUnchanged={false}
         handleCodeDelete={jest.fn()}
@@ -257,7 +394,7 @@ describe("Saved Codes section component", () => {
         parsedCodesList={parsedCodesList}
       />
     );
-    await checkRows(2);
+    await checkRows(3);
 
     const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();
@@ -281,6 +418,7 @@ describe("Saved Codes section component", () => {
     const { getByTestId, queryByTestId } = render(
       <SavedCodesSubSection
         measureStoreCql={mockMeasureStoreCql}
+        measureModel={"QDM"}
         canEdit={true}
         isCQLUnchanged={false}
         handleCodeDelete={jest.fn()}
@@ -290,7 +428,7 @@ describe("Saved Codes section component", () => {
         parsedCodesList={parsedCodesList}
       />
     );
-    await checkRows(2);
+    await checkRows(3);
 
     const removeButton = getByTestId(`delete-code-0`);
     expect(removeButton).toBeInTheDocument();

@@ -112,7 +112,12 @@ export default function FunctionBuilder({
   };
 
   const addArgumentToFunctionsArguments = (fn) => {
-    const newArgs = [...formik.values.functionsArguments, fn];
+    const newArgs = [
+      ...formik.values.functionsArguments.filter(
+        (arg) => arg.argumentName !== ""
+      ),
+      fn,
+    ];
     formik.setFieldValue("functionsArguments", newArgs);
     setToastMessage(
       `Argument ${fn.argumentName} has been successfully added to the function.`
