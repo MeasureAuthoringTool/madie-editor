@@ -74,6 +74,7 @@ export default function CodeSection({
     validationSchema: CodeSubSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {
+      trimCodeInput(values);
       handleFormSubmit(values);
     },
   });
@@ -127,8 +128,9 @@ export default function CodeSection({
     ),
   };
 
-  function trimCodeInput() {
-    formik.setFieldValue("code", formik.values.code.trim());
+  function trimCodeInput(values) {
+    values.code = values.code.trim();
+    formik.setFieldValue("code", values.code);
   }
 
   return (
@@ -221,7 +223,6 @@ export default function CodeSection({
                   InputProps={searchInputProps}
                   onChange={formik.handleChange}
                   value={formik.values.code}
-                  onBlur={trimCodeInput}
                   name="code"
                   disabled={!formik.values.title}
                   helperText={formik.touched.code && formik.errors.code}
