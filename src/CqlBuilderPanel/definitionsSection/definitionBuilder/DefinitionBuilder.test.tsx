@@ -467,8 +467,6 @@ describe("CQL Definition Builder Tests", () => {
         screen.getByTestId("definition-name-helper-text")
       ).toHaveTextContent("Definition Name is required");
     });
-
-    screen.debug(undefined, 300000);
     expect(applyBtn).toBeDisabled();
   });
 
