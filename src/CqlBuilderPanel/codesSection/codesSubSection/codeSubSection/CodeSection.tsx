@@ -224,6 +224,9 @@ export default function CodeSection({
                   onBlur={trimCodeInput}
                   name="code"
                   disabled={!formik.values.title}
+                  helperText={formik.touched.code && formik.errors.code}
+                  error={formik.touched.code && Boolean(formik.errors.code)}
+                  {...formik.getFieldProps("code")}
                 />
               </div>
               <div tw="float-right">

@@ -379,6 +379,99 @@ describe("CQL Definition Builder Tests", () => {
     expect(definitionName.value).toBe("IP");
   });
 
+  it("apply button is disabled if no Definition Name is provided after expression is inserted into the expression editor", async () => {
+    render(
+      <DefinitionBuilder
+        canEdit={true}
+        handleApplyDefinition={jest.fn()}
+        cqlBuilderLookup={cqlBuilderLookup}
+      />
+    );
+
+    const definitionNameInput = (await screen.findByTestId(
+      "definition-name-text-input"
+    )) as HTMLInputElement;
+    expect(definitionNameInput).toBeInTheDocument();
+    expect(definitionNameInput.value).toBe("");
+
+    fireEvent.change(definitionNameInput, {
+      target: { value: "IP" },
+    });
+    expect(definitionNameInput.value).toBe("IP");
+
+    const definitionCommentTextBox = await screen.findByRole("textbox", {
+      name: "Comment",
+    });
+    expect(definitionCommentTextBox).toBeInTheDocument();
+
+    const definitionCommentInput = (await screen.findByTestId(
+      "definition-comment-text"
+    )) as HTMLInputElement;
+    expect(definitionCommentInput.value).toBe("");
+
+    fireEvent.change(definitionCommentInput, {
+      target: { value: "comment" },
+    });
+    expect(definitionCommentInput.value).toBe("comment");
+    expect(
+      screen.getByTestId("terminology-section-Expression Editor-sub-heading")
+    ).toBeInTheDocument();
+
+    const typeInput = screen.getByTestId(
+      "type-selector-input"
+    ) as HTMLInputElement;
+    expect(typeInput).toBeInTheDocument();
+    expect(typeInput.value).toBe("");
+
+    fireEvent.change(typeInput, {
+      target: { value: "Timing" },
+    });
+    expect(typeInput.value).toBe("Timing");
+
+    const nameAutoComplete = screen.getByTestId("name-selector");
+    expect(nameAutoComplete).toBeInTheDocument();
+    const nameComboBox = within(nameAutoComplete).getByRole("combobox");
+    //name dropdown is populated with values based on type
+    await waitFor(() => expect(nameComboBox).toBeEnabled());
+
+    const nameDropDown = await screen.findByTestId("name-selector");
+    fireEvent.keyDown(nameDropDown, { key: "ArrowDown" });
+
+    const nameOptions = await screen.findAllByRole("option");
+    expect(nameOptions).toHaveLength(70);
+
+    const insertBtn = screen.getByTestId("expression-insert-btn");
+    expect(insertBtn).toBeInTheDocument();
+    expect(insertBtn).toBeDisabled();
+
+    fireEvent.click(nameOptions[0]);
+    expect(insertBtn).toBeEnabled();
+
+    fireEvent.click(insertBtn);
+    const definitionName = (await screen.findByTestId(
+      "definition-name-text-input"
+    )) as HTMLInputElement;
+    expect(definitionName.value).toBe("IP");
+    expect(insertBtn).toBeDisabled();
+
+    const applyBtn = screen.getByTestId("definition-apply-btn");
+    expect(applyBtn).toBeInTheDocument();
+    expect(applyBtn).toBeEnabled();
+
+    fireEvent.change(definitionNameInput, {
+      target: { value: "" },
+    });
+    expect(definitionNameInput.value).toBe("");
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("definition-name-helper-text")
+      ).toHaveTextContent("Definition Name is required");
+    });
+
+    screen.debug(undefined, 300000);
+    expect(applyBtn).toBeDisabled();
+  });
+
   it("To check if expressions are formatted as expected before inserting in ace editor", () => {
     const expressionValues = {
       definitionName: "Test",

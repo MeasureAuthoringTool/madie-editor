@@ -116,6 +116,8 @@ export default function DefinitionBuilder({
               inputProps={{
                 "data-testid": "definition-name-text-input",
               }}
+              helperText={formik.errors.definitionName}
+              error={Boolean(formik.errors.definitionName)}
               {...formik.getFieldProps("definitionName")}
             />
           </div>
