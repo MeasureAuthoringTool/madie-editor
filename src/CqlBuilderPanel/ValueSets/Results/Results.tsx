@@ -264,7 +264,6 @@ export default function Results(props: ResultsProps) {
         ...selectedValueSetDetails,
         suffix: values.suffix,
       };
-      console.log("formik.submit()", _.cloneDeep(value));
       try {
         handleApplyValueSet({
           ...selectedValueSetDetails,
@@ -287,7 +286,6 @@ export default function Results(props: ResultsProps) {
 
   const handleDetailsClick = async (selectedReferenceId?) => {
     setOpenPopoverOptions(false);
-    console.log("selectedReferenceId", selectedReferenceId);
     console.error("findMe:" + props.resultBundle);
     const bundleEntry = getValueSetEntryFromBundle(selectedReferenceId);
     bundleEntry && setVsJson(JSON.stringify(bundleEntry, null, 2));
