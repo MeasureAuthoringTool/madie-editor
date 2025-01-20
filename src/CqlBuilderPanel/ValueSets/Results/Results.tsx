@@ -21,8 +21,8 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import * as _ from "lodash";
 
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./Results.scss";
 import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../validations/SuffixSchemaValidator";
@@ -39,6 +39,13 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ValueSet } from "fhir/r4";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
+import ActionCenter, { ActionItemDef } from "../../common/ActionCenter";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import { Box } from "@mui/system";
+import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -130,6 +137,24 @@ export default function Results(props: ResultsProps) {
 
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
   const aceRef = useRef<AceEditor>(null);
+  const [actions, setActions] = useState<ActionItemDef[]>([
+    {
+      name: "Edit",
+      icon: <BorderColorOutlinedIcon color="primary" />,
+      onClick: (targetContext: any) => {
+        setSelectedReferenceId(targetContext.selectedReferenceId);
+        setSelectedValueSetDetails(targetContext.selectedValueSetDetails);
+        handleEditValueSetDetails();
+      },
+    },
+    {
+      name: "View",
+      icon: <CodeOffOutlinedIcon color="primary" />,
+      onClick: (targetContext: any) => {
+        handleDetailsClick(targetContext.selectedReferenceId);
+      },
+    },
+  ]);
 
   const handleOpen = async (selectedId, event) => {
     setOpenPopoverOptions(true);
@@ -179,23 +204,44 @@ export default function Results(props: ResultsProps) {
         header: "",
         accessorKey: "apply",
         cell: (row: any) => {
+          const valueSetDetails = table.getRow(row.cell.row.id).original;
           return (
-            <div className="inline-flex gap-x-2">
-              <button
-                className="action-button"
-                onClick={(e) => {
-                  handleOpen(row.cell.row.id, e);
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 1,
+                alignItems: "right",
+                justifyContent: "right",
+              }}
+            >
+              <ToolTippedIcon
+                tooltipMessage="Apply"
+                buttonProps={{
+                  "data-testid": `apply-valueset-${row.cell.row.id}`,
+                  "aria-label": `apply-valueset-${row.cell.row.id}`,
+                  size: "small",
+                  onClick: () => {
+                    setSelectedReferenceId(valueSetDetails.oid);
+                    setSelectedValueSetDetails(valueSetDetails);
+                    handleApplyValueSet(valueSetDetails);
+                  },
                 }}
-                tw="text-blue-600 hover:text-blue-900"
-                data-testid={`select-action-${row.cell.id}`}
-                aria-label={`select-action-${row.cell.id}`}
               >
-                <div className="action">Select</div>
-                <div className="chevron-container">
-                  <ExpandMoreIcon sx={{ color: "#0073c8" }} />
-                </div>
-              </button>
-            </div>
+                <ControlPointIcon color="primary" />
+              </ToolTippedIcon>
+              <Box sx={{ flexGrow: 1 }} />
+              <ActionCenter
+                canEdit={true}
+                actions={actions}
+                target={{
+                  rowId: row.cell.row.id,
+                  selectedReferenceId: valueSetDetails.oid,
+                  selectedValueSetDetails: valueSetDetails,
+                }}
+                idSuffix={`${row.cell.row.id}`}
+              />
+            </Box>
           );
         },
       },
@@ -214,10 +260,19 @@ export default function Results(props: ResultsProps) {
     },
     validationSchema: SuffixSchemaValidator,
     onSubmit: (values) => {
-      handleApplyValueSet({
+      const value = {
         ...selectedValueSetDetails,
         suffix: values.suffix,
-      });
+      };
+      console.log("formik.submit()", _.cloneDeep(value));
+      try {
+        handleApplyValueSet({
+          ...selectedValueSetDetails,
+          suffix: values.suffix,
+        });
+      } catch (error) {
+        console.error("An error occurred while applying the valueset", error);
+      }
       toggleClose();
     },
   });
@@ -230,8 +285,9 @@ export default function Results(props: ResultsProps) {
     }).resource as ValueSet;
   };
 
-  const handleDetailsClick = async () => {
+  const handleDetailsClick = async (selectedReferenceId?) => {
     setOpenPopoverOptions(false);
+    console.log("selectedReferenceId", selectedReferenceId);
     console.error("findMe:" + props.resultBundle);
     const bundleEntry = getValueSetEntryFromBundle(selectedReferenceId);
     bundleEntry && setVsJson(JSON.stringify(bundleEntry, null, 2));
