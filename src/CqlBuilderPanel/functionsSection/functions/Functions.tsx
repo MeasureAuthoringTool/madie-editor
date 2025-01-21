@@ -189,7 +189,7 @@ const Functions = ({
         },
       },
     ],
-    [functions, isCQLUnchanged]
+    [canEdit, functions, isCQLUnchanged]
   );
 
   const table = useReactTable({
