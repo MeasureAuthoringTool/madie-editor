@@ -169,8 +169,6 @@ export default function SavedCodesSubSection({
     setTotalPages,
   ]);
 
-  console.log("canEdit in saved components", canEdit);
-
   const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
   const columns = useMemo<ColumnDef<SavedCodesColumnRow>[]>(
     () => [
