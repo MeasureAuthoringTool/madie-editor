@@ -190,7 +190,7 @@ const Definitions = ({
         },
       },
     ],
-    [definitions]
+    [canEdit, definitions]
   );
 
   const table = useReactTable({

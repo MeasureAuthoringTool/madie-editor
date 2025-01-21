@@ -246,7 +246,7 @@ export default function SavedCodesSubSection({
         ),
       },
     ],
-    [isCQLUnchanged]
+    [canEdit, isCQLUnchanged, measureModel]
   );
 
   const table = useReactTable({

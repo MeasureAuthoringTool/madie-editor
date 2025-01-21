@@ -277,7 +277,7 @@ const Results = ({
           ...columnDefs,
         ]
       : columnDefs;
-  }, [cqlLibraries, isCQLUnchanged]);
+  }, [canEdit, cqlLibraries, isCQLUnchanged]);
 
   const table = useReactTable({
     data,
