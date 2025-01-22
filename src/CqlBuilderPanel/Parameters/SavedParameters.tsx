@@ -148,7 +148,7 @@ const SavedParameters = ({
         },
       },
     ],
-    [parameters, isCQLUnchanged]
+    [canEdit, parameters, isCQLUnchanged]
   );
 
   const table = useReactTable({
