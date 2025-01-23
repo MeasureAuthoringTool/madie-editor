@@ -119,7 +119,6 @@ export default function Search(props: SearchProps) {
           selectedVal: { label: string; value: string }[] | null,
           reason
         ) => {
-          console.log("here", selectedVal, reason);
           if (reason === "removeOption") {
             formBlanker(selectedVal);
           }
