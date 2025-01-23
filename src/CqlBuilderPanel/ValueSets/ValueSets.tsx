@@ -51,9 +51,16 @@ export default function ValueSets(props: ValueSetsProps) {
         setResultsOpen(true);
       })
       .catch((e) => {
+        clearSearch();
         console.error("Error retrieving value sets from vsac, : ", e);
         setLoading(false);
       });
+  };
+
+  const clearSearch = () => {
+    setResultValuesSets([]);
+    setResultBundle("");
+    setFilteredValueSets([]);
   };
 
   //  Title is the human friendly version, the mockup refers to it as name, but there are spaces.
@@ -97,7 +104,11 @@ export default function ValueSets(props: ValueSetsProps) {
         </div>
       )}
       <ExpandingSection title="Search" showHeaderContent={true}>
-        <Search canEdit={canEdit} handleSearch={handleSearch} />
+        <Search
+          canEdit={canEdit}
+          handleSearch={handleSearch}
+          clearSearch={clearSearch}
+        />
       </ExpandingSection>
       <ExpandingSection title="Filter" showHeaderContent={false}>
         <Filter
