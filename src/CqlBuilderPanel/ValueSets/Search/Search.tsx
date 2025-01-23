@@ -34,9 +34,10 @@ SEARCH_CATEGORIES.forEach((obj) => {
 interface SearchProps {
   canEdit: boolean;
   handleSearch: Function;
+  clearSearch: Function;
 }
 export default function Search(props: SearchProps) {
-  const { canEdit, handleSearch } = props;
+  const { canEdit, handleSearch, clearSearch } = props;
 
   const formik = useFormik({
     initialValues: {
@@ -193,7 +194,10 @@ export default function Search(props: SearchProps) {
           variant="outline"
           data-testid="clear-valuesets-btn"
           disabled={!formik.dirty}
-          onClick={resetForm}
+          onClick={() => {
+            resetForm();
+            clearSearch();
+          }}
         >
           Clear
         </Button>
