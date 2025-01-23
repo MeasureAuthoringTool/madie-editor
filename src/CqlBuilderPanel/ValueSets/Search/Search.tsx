@@ -156,7 +156,6 @@ export default function Search(props: SearchProps) {
         limitTags={8}
       />
       <div className="search-container">
-        {console.log(disableVersion)}
         {groupedRows.map((group, index) => (
           // each row
           <div key={index} className="search-row">
@@ -170,6 +169,11 @@ export default function Search(props: SearchProps) {
                       prefix="Search"
                       label={SEARCH_MAP[value]}
                       trimField={trimField}
+                      placeHolder={
+                        value == "version" && disableVersion
+                          ? "OID/URL must be entered first"
+                          : ""
+                      }
                       disabled={value == "version" ? disableVersion : false}
                     />
                     <div style={{ width: "100%" }} />
@@ -182,6 +186,11 @@ export default function Search(props: SearchProps) {
                   prefix="Search"
                   label={SEARCH_MAP[value]}
                   trimField={trimField}
+                  placeHolder={
+                    value == "version" && disableVersion
+                      ? "OID/URL must be entered first"
+                      : ""
+                  }
                   disabled={value == "version" ? disableVersion : false}
                 />
               );
