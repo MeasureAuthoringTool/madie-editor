@@ -126,7 +126,10 @@ export default function Search(props: SearchProps) {
         disabled={!canEdit}
         options={SEARCH_CATEGORIES}
         getOptionDisabled={(option) => {
-          if (option.value === "version") {
+          if (
+            option.value === "version" &&
+            !formik.values.searchCategories.some((obj) => obj.value === "url")
+          ) {
             return formik.values.url === "";
           }
           return false;
