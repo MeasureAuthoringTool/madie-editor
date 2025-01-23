@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ControlledAutoComplete from "../../../common/ControlledAutoComplete";
 import { useFormik } from "formik";
 import SearchField from "../../../common/SearchField";
@@ -66,9 +66,7 @@ export default function Search(props: SearchProps) {
       await handleSearch(formik.values);
     },
   });
-  const [disableVersion, setDisableVersion] = useState<boolean>(
-    !!!formik.values.url
-  );
+
   const trimField = (fieldName) => {
     formik.setFieldValue(fieldName, formik.values[fieldName].trim());
   };
@@ -88,10 +86,6 @@ export default function Search(props: SearchProps) {
   for (let i = 0; i < formik.values.searchCategories.length; i += 2) {
     groupedRows.push(formik.values.searchCategories.slice(i, i + 2));
   }
-
-  useEffect(() => {
-    setDisableVersion(!!!formik.values.url);
-  }, [formik.values.url]);
 
   // given a list of selected value not to mutate,
   // { label, value}
@@ -170,11 +164,15 @@ export default function Search(props: SearchProps) {
                       label={SEARCH_MAP[value]}
                       trimField={trimField}
                       placeHolder={
-                        value == "version" && disableVersion
+                        value == "version" && formik.values.url.length === 0
                           ? "OID/URL must be entered first"
                           : ""
                       }
-                      disabled={value == "version" ? disableVersion : false}
+                      disabled={
+                        value == "version"
+                          ? formik.values.url.length === 0
+                          : false
+                      }
                     />
                     <div style={{ width: "100%" }} />
                   </>
@@ -187,11 +185,13 @@ export default function Search(props: SearchProps) {
                   label={SEARCH_MAP[value]}
                   trimField={trimField}
                   placeHolder={
-                    value == "version" && disableVersion
+                    value == "version" && formik.values.url.length === 0
                       ? "OID/URL must be entered first"
                       : ""
                   }
-                  disabled={value == "version" ? disableVersion : false}
+                  disabled={
+                    value == "version" ? formik.values.url.length === 0 : false
+                  }
                 />
               );
             })}
