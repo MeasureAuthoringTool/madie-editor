@@ -99,6 +99,9 @@ export default function Search(props: SearchProps) {
         formik.setFieldValue(value, "");
       }
     });
+    if (!saveMap["url"] && formik.values["version"]) {
+      formik.setFieldValue("version", "");
+    }
   };
 
   return (
@@ -111,12 +114,20 @@ export default function Search(props: SearchProps) {
         formControl={formik.getFieldProps("searchCategories")}
         onClose={undefined}
         {...formik.getFieldProps("searchCategories")}
-        onChange={(_event: any, selectedVal: string | null, reason) => {
+        onChange={(
+          _event: any,
+          selectedVal: { label: string; value: string }[] | null,
+          reason
+        ) => {
+          console.log("here", selectedVal, reason);
           if (reason === "removeOption") {
             formBlanker(selectedVal);
           }
           if (reason === "clear") {
             formBlanker([]);
+          }
+          if (!selectedVal.some((obj) => obj.value === "url")) {
+            selectedVal = selectedVal.filter((obj) => obj.value !== "version");
           }
           formik.setFieldValue("searchCategories", selectedVal);
         }}
