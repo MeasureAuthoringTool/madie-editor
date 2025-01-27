@@ -221,9 +221,15 @@ export default function CodeSection({
                   InputProps={searchInputProps}
                   onChange={formik.handleChange}
                   value={formik.values.code}
-                  onBlur={trimCodeInput}
                   name="code"
                   disabled={!formik.values.title}
+                  helperText={formik.touched.code && formik.errors.code}
+                  error={formik.touched.code && Boolean(formik.errors.code)}
+                  {...formik.getFieldProps("code")}
+                  onBlur={() => {
+                    formik.setFieldTouched("code", true);
+                    trimCodeInput();
+                  }}
                 />
               </div>
               <div tw="float-right">
