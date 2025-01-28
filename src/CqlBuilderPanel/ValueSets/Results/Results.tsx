@@ -232,7 +232,6 @@ export default function Results(props: ResultsProps) {
               </ToolTippedIcon>
               <Box sx={{ flexGrow: 1 }} />
               <ActionCenter
-                canEdit={true}
                 actions={actions}
                 target={{
                   rowId: row.cell.row.id,

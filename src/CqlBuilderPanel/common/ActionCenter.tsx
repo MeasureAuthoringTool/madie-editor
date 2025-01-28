@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { SpeedDial, SpeedDialAction, Tooltip } from "@mui/material";
 
 export interface PropTypes {
-  canEdit: boolean;
   actions?: ActionItemDef[];
   idSuffix?: string;
   target: any;
@@ -14,7 +13,7 @@ export interface ActionItemDef {
   onClick: (target: any) => void;
 }
 
-const ActionCenter = ({ canEdit, actions, idSuffix, target }: PropTypes) => {
+const ActionCenter = ({ actions, idSuffix, target }: PropTypes) => {
   const [open, setOpen] = useState(false);
   const suffix = idSuffix ? `-${idSuffix}` : "";
 
