@@ -62,9 +62,19 @@ describe("Code Section component", () => {
     const codeText = screen.getByTestId("code-text");
     expect(codeText).toBeEnabled();
     userEvent.click(codeText);
+
     const codeTextInput = screen.getByTestId(
       "code-text-input"
     ) as HTMLInputElement;
+    fireEvent.focusOut(codeTextInput);
+    await waitFor(() => {
+      expect(clearButton).toBeEnabled();
+      expect(searchButton).toBeDisabled();
+      expect(screen.getByTestId("code-helper-text")).toHaveTextContent(
+        "Code is required"
+      );
+    });
+
     userEvent.type(codeTextInput, "Code");
     expect(codeTextInput.value).toBe("Code");
 
