@@ -88,14 +88,10 @@ describe("ValueSets Results", () => {
     );
 
     await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
+      const selectButton = getByTestId(`apply-valueset-0`);
       userEvent.click(selectButton);
     });
 
-    const applyButton = getByTestId(
-      `apply-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
-    );
-    userEvent.click(applyButton);
     expect(handleApplyValueSet).toHaveBeenCalled();
   });
 
@@ -111,13 +107,11 @@ describe("ValueSets Results", () => {
     );
 
     await waitFor(() => {
-      const selectButton = getByTestId(`select-action-0_apply`);
-      userEvent.click(selectButton);
+      const actionCenterButton = screen.getByTestId(`action-center-button-0`);
+      userEvent.click(actionCenterButton);
     });
 
-    const detailsButton = getByTestId(
-      `details-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
-    );
+    const detailsButton = await screen.findByTestId(`action-center-0_View`);
     userEvent.click(detailsButton);
   });
 
@@ -132,11 +126,11 @@ describe("ValueSets Results", () => {
       />
     );
 
-    const selectButton = await findByTestId(`select-action-0_apply`);
-    userEvent.click(selectButton);
-    const editButton = await findByTestId(
-      `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
-    );
+    await waitFor(() => {
+      const actionCenterButton = screen.getByTestId(`action-center-button-0`);
+      userEvent.click(actionCenterButton);
+    });
+    const editButton = await screen.findByTestId(`action-center-0_Edit`);
     userEvent.click(editButton);
     const continueButton = await findByTestId("apply-suffix-continue-button");
     const cancelButton = await findByTestId("apply-suffix-cancel-button");
@@ -175,11 +169,11 @@ describe("ValueSets Results", () => {
       />
     );
 
-    const selectButton = screen.getByTestId(`select-action-0_apply`);
-    userEvent.click(selectButton);
-    const editButton = await findByTestId(
-      `edit-valueset-urn:oid:2.16.840.1.113762.1.4.1111.163`
-    );
+    await waitFor(() => {
+      const actionCenterButton = screen.getByTestId(`action-center-button-0`);
+      userEvent.click(actionCenterButton);
+    });
+    const editButton = await screen.findByTestId(`action-center-0_Edit`);
     userEvent.click(editButton);
 
     const continueButton = await findByTestId("apply-suffix-continue-button");
