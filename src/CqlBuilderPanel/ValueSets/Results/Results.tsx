@@ -139,19 +139,19 @@ export default function Results(props: ResultsProps) {
   const aceRef = useRef<AceEditor>(null);
   const [actions, setActions] = useState<ActionItemDef[]>([
     {
+      name: "View",
+      icon: <CodeOffOutlinedIcon color="primary" />,
+      onClick: (targetContext: any) => {
+        handleDetailsClick(targetContext.selectedReferenceId);
+      },
+    },
+    {
       name: "Edit",
       icon: <BorderColorOutlinedIcon color="primary" />,
       onClick: (targetContext: any) => {
         setSelectedReferenceId(targetContext.selectedReferenceId);
         setSelectedValueSetDetails(targetContext.selectedValueSetDetails);
         handleEditValueSetDetails();
-      },
-    },
-    {
-      name: "View",
-      icon: <CodeOffOutlinedIcon color="primary" />,
-      onClick: (targetContext: any) => {
-        handleDetailsClick(targetContext.selectedReferenceId);
       },
     },
   ]);
