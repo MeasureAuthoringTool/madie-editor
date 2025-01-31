@@ -164,14 +164,12 @@ export default function Search(props: SearchProps) {
                       label={SEARCH_MAP[value]}
                       trimField={trimField}
                       placeHolder={
-                        value == "version" && formik.values.url.length === 0
+                        value === "version" && !formik.values.url
                           ? "OID/URL must be entered first"
                           : ""
                       }
                       disabled={
-                        value == "version"
-                          ? formik.values.url.length === 0
-                          : false
+                        value === "version" ? !formik.values.url : false
                       }
                     />
                     <div style={{ width: "100%" }} />
@@ -185,12 +183,12 @@ export default function Search(props: SearchProps) {
                   label={SEARCH_MAP[value]}
                   trimField={trimField}
                   placeHolder={
-                    value == "version" && formik.values.url.length === 0
+                    value === "version" && !formik.values.url
                       ? "OID/URL must be entered first"
                       : ""
                   }
                   disabled={
-                    value == "version" ? formik.values.url.length === 0 : false
+                    value === "version" ? !formik.values.url.length : false
                   }
                 />
               );
