@@ -187,9 +187,7 @@ export default function Search(props: SearchProps) {
                       ? "OID/URL must be entered first"
                       : ""
                   }
-                  disabled={
-                    value === "version" ? !formik.values.url.length : false
-                  }
+                  disabled={value === "version" ? !formik.values.url : false}
                 />
               );
             })}
