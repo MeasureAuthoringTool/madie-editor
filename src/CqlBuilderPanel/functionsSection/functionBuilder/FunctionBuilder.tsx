@@ -328,7 +328,7 @@ export default function FunctionBuilder({
                       expressionValue: formik.values.expressionEditorValue,
                     };
                     const result = handleApplyFunction(functionToApply);
-                    if (result == "success") {
+                    if (result === "success") {
                       resetForm();
                     }
                   }
