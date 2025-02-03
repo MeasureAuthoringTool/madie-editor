@@ -400,4 +400,53 @@ describe("Editor Validation Test", () => {
       "include FHIRHelpers statement is missing version. Please add a version to the include."
     );
   });
+
+  it("Validate editor definitions show access modifier errors", async () => {
+    const editorContent: string =
+      "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000' \n" +
+      "using QICore version '4.1.0' \n" +
+      'define public "Denominator":\n  "Initial Population"';
+
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: fhirValueset,
+          status: 200,
+        });
+      }
+    });
+    mockedAxios.put.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: customCqlCodesValid,
+          status: 200,
+        });
+      } else if (
+        args &&
+        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            json: JSON.stringify(elmTranslationWithNoErrors),
+          },
+          status: 200,
+        });
+      }
+    });
+    const errorsResult: ValidationResult = await useGetAllErrors(
+      editorContent,
+      true
+    );
+
+    expect(errorsResult?.errors.length).toBe(1);
+    expect(errorsResult?.errors[0].message).toBe(
+      "Access modifiers like Public and Private can not be used in MADiE."
+    );
+  });
 });

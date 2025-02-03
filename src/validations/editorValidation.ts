@@ -76,7 +76,9 @@ export const useGetAllErrors = async (
     }
 
     if (accessModifierCqlErrors && accessModifierCqlErrors.length > 0) {
-      accessModifierCqlErrors.map((newT) => allErrorsArray.push(newT));
+      accessModifierCqlErrors.map((modifierError) =>
+        allErrorsArray.push(modifierError)
+      );
     }
 
     return {
