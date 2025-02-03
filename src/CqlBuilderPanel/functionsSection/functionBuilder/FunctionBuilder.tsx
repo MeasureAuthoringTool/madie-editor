@@ -327,8 +327,10 @@ export default function FunctionBuilder({
                       fluentFunction: formik.values.fluentFunction,
                       expressionValue: formik.values.expressionEditorValue,
                     };
-                    resetForm();
-                    handleApplyFunction(functionToApply);
+                    const result = handleApplyFunction(functionToApply);
+                    if (result === "success") {
+                      resetForm();
+                    }
                   }
             }
           >

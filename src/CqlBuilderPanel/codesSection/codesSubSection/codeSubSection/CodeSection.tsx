@@ -74,7 +74,6 @@ export default function CodeSection({
     validationSchema: CodeSubSectionSchemaValidator,
     enableReinitialize: true,
     onSubmit: (values) => {
-      trimCodeInput(values);
       handleFormSubmit(values);
     },
   });
@@ -128,9 +127,8 @@ export default function CodeSection({
     ),
   };
 
-  function trimCodeInput(values) {
-    values.code = values.code.trim();
-    formik.setFieldValue("code", values.code);
+  function trimCodeInput() {
+    formik.setFieldValue("code", formik.values.code.trim());
   }
 
   return (
@@ -228,6 +226,10 @@ export default function CodeSection({
                   helperText={formik.touched.code && formik.errors.code}
                   error={formik.touched.code && Boolean(formik.errors.code)}
                   {...formik.getFieldProps("code")}
+                  onBlur={() => {
+                    formik.setFieldTouched("code", true);
+                    trimCodeInput();
+                  }}
                 />
               </div>
               <div tw="float-right">

@@ -133,15 +133,29 @@ describe("ValueSets Page", () => {
     userEvent.click(getByText("Status"));
     userEvent.click(categoriesSelectButton);
     userEvent.click(getByText("Title"));
+    userEvent.click(categoriesSelectButton);
+    userEvent.click(getByText("OID/URL"));
+    userEvent.click(categoriesSelectButton);
+    userEvent.click(getByText("Definition Version"));
     expect(getByTestId("code-text-input")).toBeInTheDocument();
     expect(getByTestId("status-text-input")).toBeInTheDocument();
     expect(getByTestId("title-text-input")).toBeInTheDocument();
+    expect(getByTestId("url-text-input")).toBeInTheDocument();
+    expect(getByTestId("version-text-input")).toBeInTheDocument();
     const deleteCodeButton = getByRole("button", { name: "Code" });
     const deleteIcon = within(deleteCodeButton).getByTestId("CancelIcon");
     userEvent.click(deleteIcon);
     await waitFor(() => {
       expect(queryByTestId("code-text-input")).not.toBeInTheDocument();
     });
+    const deleteURLButton = getByRole("button", { name: "OID/URL" });
+    const deleteURLIcon = within(deleteURLButton).getByTestId("CancelIcon");
+    userEvent.click(deleteURLIcon);
+    await waitFor(() => {
+      expect(queryByTestId("url-text-input")).not.toBeInTheDocument();
+      expect(queryByTestId("version-text-input")).not.toBeInTheDocument();
+    });
+
     const clearButton = getByLabelText("Clear");
     userEvent.click(clearButton);
     await waitFor(() => {

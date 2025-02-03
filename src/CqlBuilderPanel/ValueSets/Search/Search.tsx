@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ControlledAutoComplete from "../../../common/ControlledAutoComplete";
 import { useFormik } from "formik";
 import SearchField from "../../../common/SearchField";
@@ -34,9 +34,10 @@ SEARCH_CATEGORIES.forEach((obj) => {
 interface SearchProps {
   canEdit: boolean;
   handleSearch: Function;
+  clearSearch: Function;
 }
 export default function Search(props: SearchProps) {
-  const { canEdit, handleSearch } = props;
+  const { canEdit, handleSearch, clearSearch } = props;
 
   const formik = useFormik({
     initialValues: {
@@ -65,6 +66,7 @@ export default function Search(props: SearchProps) {
       await handleSearch(formik.values);
     },
   });
+
   const trimField = (fieldName) => {
     formik.setFieldValue(fieldName, formik.values[fieldName].trim());
   };
@@ -99,6 +101,9 @@ export default function Search(props: SearchProps) {
         formik.setFieldValue(value, "");
       }
     });
+    if (!saveMap["url"] && formik.values["version"]) {
+      formik.setFieldValue("version", "");
+    }
   };
 
   return (
@@ -111,12 +116,19 @@ export default function Search(props: SearchProps) {
         formControl={formik.getFieldProps("searchCategories")}
         onClose={undefined}
         {...formik.getFieldProps("searchCategories")}
-        onChange={(_event: any, selectedVal: string | null, reason) => {
+        onChange={(
+          _event: any,
+          selectedVal: { label: string; value: string }[] | null,
+          reason
+        ) => {
           if (reason === "removeOption") {
             formBlanker(selectedVal);
           }
           if (reason === "clear") {
             formBlanker([]);
+          }
+          if (!selectedVal.some((obj) => obj.value === "url")) {
+            selectedVal = selectedVal.filter((obj) => obj.value !== "version");
           }
           formik.setFieldValue("searchCategories", selectedVal);
         }}
@@ -126,7 +138,10 @@ export default function Search(props: SearchProps) {
         disabled={!canEdit}
         options={SEARCH_CATEGORIES}
         getOptionDisabled={(option) => {
-          if (option.value === "version") {
+          if (
+            option.value === "version" &&
+            !formik.values.searchCategories.some((obj) => obj.value === "url")
+          ) {
             return formik.values.url === "";
           }
           return false;
@@ -148,6 +163,14 @@ export default function Search(props: SearchProps) {
                       prefix="Search"
                       label={SEARCH_MAP[value]}
                       trimField={trimField}
+                      placeHolder={
+                        value === "version" && !formik.values.url
+                          ? "OID/URL must be entered first"
+                          : ""
+                      }
+                      disabled={
+                        value === "version" ? !formik.values.url : false
+                      }
                     />
                     <div style={{ width: "100%" }} />
                   </>
@@ -159,6 +182,12 @@ export default function Search(props: SearchProps) {
                   prefix="Search"
                   label={SEARCH_MAP[value]}
                   trimField={trimField}
+                  placeHolder={
+                    value === "version" && !formik.values.url
+                      ? "OID/URL must be entered first"
+                      : ""
+                  }
+                  disabled={value === "version" ? !formik.values.url : false}
                 />
               );
             })}
@@ -170,7 +199,10 @@ export default function Search(props: SearchProps) {
           variant="outline"
           data-testid="clear-valuesets-btn"
           disabled={!formik.dirty}
-          onClick={resetForm}
+          onClick={() => {
+            resetForm();
+            clearSearch();
+          }}
         >
           Clear
         </Button>
