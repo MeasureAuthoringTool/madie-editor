@@ -68,7 +68,6 @@ export default function Search(props: SearchProps) {
   });
 
   useEffect(() => {
-    console.log("trigger");
     if (!formik.values.url.length) {
       formik.setFieldValue("version", "");
     }
