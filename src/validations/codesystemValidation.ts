@@ -2,7 +2,6 @@ import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
 import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
-import { ErrorMessage } from "formik";
 
 // customCqlCode contains validation result from VSAC
 // This object can be cached in future, to avoid calling VSAC everytime.

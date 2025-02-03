@@ -50,9 +50,9 @@ export const useGetAllErrors = async (
     let allErrorsArray: ElmTranslationError[] =
       updateErrorTypeForTranslationErrors(translationResults);
 
-    const identifierErrors: ElmTranslationError[] = getAccessModifierErrors(
-      cqlResult.expressionDefinitions
-    );
+    // returning errors if the definitions have access modifiers
+    const accessModifierCqlErrors: ElmTranslationError[] =
+      getAccessModifierErrors(cqlResult.expressionDefinitions);
 
     // Filter out external errors for include error type
     // find will return the first found object
@@ -75,8 +75,8 @@ export const useGetAllErrors = async (
       });
     }
 
-    if (identifierErrors && identifierErrors.length > 0) {
-      identifierErrors.map((newT) => allErrorsArray.push(newT));
+    if (accessModifierCqlErrors && accessModifierCqlErrors.length > 0) {
+      accessModifierCqlErrors.map((newT) => allErrorsArray.push(newT));
     }
 
     return {
