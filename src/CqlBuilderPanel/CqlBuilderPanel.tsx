@@ -45,7 +45,6 @@ export default function CqlBuilderPanel({
 }) {
   const featureFlags = useFeatureFlags();
   const {
-    CQLBuilderParameters,
     CQLBuilderFunctions,
     QICoreCodeSearch,
     QICoreValueSetSearch,
@@ -141,7 +140,6 @@ export default function CqlBuilderPanel({
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isQDM={measureModel?.includes("QDM")}
-          CQLBuilderParameters={CQLBuilderParameters}
           CQLBuilderFunctions={CQLBuilderFunctions}
           QICoreCodeSearch={QICoreCodeSearch}
           QICoreValueSetSearch={QICoreValueSetSearch}
