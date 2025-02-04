@@ -4,14 +4,12 @@ export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
   isQDM: boolean;
-  QICoreValueSetSearch: boolean;
 }
 
 export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
   const {
     activeTab,
     setActiveTab,
-    QICoreValueSetSearch,
     isQDM,
   } = props;
 
@@ -32,7 +30,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
         data-testid="includes-tab"
         value="includes"
       />
-      {(isQDM || QICoreValueSetSearch) && (
         <Tab
           tabIndex={0}
           aria-label="Value Sets"
@@ -41,8 +38,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
           data-testid="valueSets-tab"
           value="valueSets"
         />
-      )}
-      {(isQDM) && (
         <Tab
           tabIndex={0}
           aria-label="Codes"
@@ -51,7 +46,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
           data-testid="codes-tab"
           value="codes"
         />
-      )}
         <Tab
           tabIndex={0}
           aria-label="Parameters"

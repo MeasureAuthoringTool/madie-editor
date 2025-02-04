@@ -45,7 +45,6 @@ export default function CqlBuilderPanel({
 }) {
   const featureFlags = useFeatureFlags();
   const {
-    QICoreValueSetSearch,
   } = featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
@@ -138,7 +137,6 @@ export default function CqlBuilderPanel({
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isQDM={measureModel?.includes("QDM")}
-          QICoreValueSetSearch={QICoreValueSetSearch}
         />
         <div
           style={{

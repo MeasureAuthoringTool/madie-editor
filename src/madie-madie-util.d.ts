@@ -2,7 +2,7 @@ declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
 
   interface FeatureFlags {
-    QICoreValueSetSearch: boolean;
+
   }
 
   export const useOktaTokens: (storageKey?: string) => {
