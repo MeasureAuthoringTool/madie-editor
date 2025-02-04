@@ -33,7 +33,7 @@ export const mapCodeSystemErrorsToTranslationErrors = (
   return result;
 };
 
-export const getAccessModifierErrors = (definitions) => {
+export const validateAccessModifierErrors = (definitions) => {
   const result = [];
   const accessModifierIncludedDefinitions = definitions.filter((definition) =>
     /\bdefine\s+(public|private)\b/.test(definition.text)
@@ -47,11 +47,6 @@ export const getAccessModifierErrors = (definitions) => {
         def.stop.line - totalLineExcludingCommentsInDefinition + 1;
     } else {
       errorStartLine = def.start.line;
-      def.stop.position =
-        def.text.indexOf("\n") !== -1
-          ? def.text.indexOf("\n")
-          : def.text.length;
-      def.stop.line = def.start.line;
     }
 
     const cqlObj = {

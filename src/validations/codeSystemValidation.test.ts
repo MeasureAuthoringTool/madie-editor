@@ -1,7 +1,7 @@
 import axios from "../api/axios-instance";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import ValidateCustomCqlCodes, {
-  getAccessModifierErrors,
+  validateAccessModifierErrors,
   getCustomCqlCodes,
   mapCodeSystemErrorsToTranslationErrors,
 } from "./codesystemValidation";
@@ -433,7 +433,7 @@ describe("Validating for Access Modifiers", () => {
       },
     ];
     const accessModifierCqlErrors: ElmTranslationError[] =
-      getAccessModifierErrors(definitions);
+      validateAccessModifierErrors(definitions);
 
     expect(accessModifierCqlErrors.length).toBe(2);
     expect(accessModifierCqlErrors[0].startLine).toBe(30);
