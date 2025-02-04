@@ -635,20 +635,6 @@ describe("CqlBuilderPanel", () => {
     expect(options[1]).toHaveTextContent("Latest()");
   });
 
-  it("Parameters tab does not exist", async () => {
-    useFeatureFlags.mockImplementationOnce(() => ({
-      QDMValueSetSearch: true,
-      qdmCodeSearch: true,
-      CQLBuilderParameters: false,
-    }));
-    mockedAxios.put.mockResolvedValue({
-      data: mockCqlBuilderLookUpData,
-    });
-    render(<CqlBuilderPanel {...props} />);
-    const parameterTab = await screen.queryByText("Parameters");
-    expect(parameterTab).not.toBeInTheDocument();
-  });
-
   it("Parameters tab exists and it's enabled", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
@@ -880,20 +866,5 @@ describe("CqlBuilderPanel", () => {
     const parameterTab = await screen.queryByText("Functions");
     expect(parameterTab).toBeInTheDocument();
     expect(parameterTab).toBeEnabled();
-  });
-
-  it("Functions tab does not exist", async () => {
-    useFeatureFlags.mockImplementationOnce(() => ({
-      QDMValueSetSearch: true,
-      qdmCodeSearch: true,
-      CQLBuilderParameters: true,
-      CQLBuilderFunctions: false,
-    }));
-    mockedAxios.put.mockResolvedValue({
-      data: mockCqlBuilderLookUpData,
-    });
-    render(<CqlBuilderPanel {...props} />);
-    const parameterTab = await screen.queryByText("Functions");
-    expect(parameterTab).not.toBeInTheDocument();
   });
 });

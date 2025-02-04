@@ -7,11 +7,7 @@ export interface NavTabProps {
 }
 
 export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
-  const {
-    activeTab,
-    setActiveTab,
-    isQDM,
-  } = props;
+  const { activeTab, setActiveTab, isQDM } = props;
 
   return (
     <Tabs
@@ -30,30 +26,30 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
         data-testid="includes-tab"
         value="includes"
       />
-        <Tab
-          tabIndex={0}
-          aria-label="Value Sets"
-          type="B"
-          label="Value Sets"
-          data-testid="valueSets-tab"
-          value="valueSets"
-        />
-        <Tab
-          tabIndex={0}
-          aria-label="Codes"
-          type="D"
-          label="Codes"
-          data-testid="codes-tab"
-          value="codes"
-        />
-        <Tab
-          tabIndex={0}
-          aria-label="Parameters"
-          type="D"
-          label="Parameters"
-          data-testid="parameters-tab"
-          value="parameters"
-        />
+      <Tab
+        tabIndex={0}
+        aria-label="Value Sets"
+        type="B"
+        label="Value Sets"
+        data-testid="valueSets-tab"
+        value="valueSets"
+      />
+      <Tab
+        tabIndex={0}
+        aria-label="Codes"
+        type="D"
+        label="Codes"
+        data-testid="codes-tab"
+        value="codes"
+      />
+      <Tab
+        tabIndex={0}
+        aria-label="Parameters"
+        type="D"
+        label="Parameters"
+        data-testid="parameters-tab"
+        value="parameters"
+      />
       <Tab
         tabIndex={0}
         aria-label="Definitions"
@@ -62,14 +58,14 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
         label="Definitions"
         data-testid="definitions-tab"
       />
-        <Tab
-          tabIndex={0}
-          aria-label="Functions"
-          type="D"
-          value="functions"
-          label="Functions"
-          data-testid="functions-tab"
-        />
+      <Tab
+        tabIndex={0}
+        aria-label="Functions"
+        type="D"
+        value="functions"
+        label="Functions"
+        data-testid="functions-tab"
+      />
     </Tabs>
   );
 }
