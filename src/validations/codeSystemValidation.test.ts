@@ -1,6 +1,7 @@
 import axios from "../api/axios-instance";
 import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
 import ValidateCustomCqlCodes, {
+  validateAccessModifierErrors,
   getCustomCqlCodes,
   mapCodeSystemErrorsToTranslationErrors,
 } from "./codesystemValidation";
@@ -384,5 +385,58 @@ describe("Code System validation", () => {
         customCqlCodesWithCodeSystemInvalid
       );
     expect(elmTranslationErrors.length).toBe(1);
+  });
+});
+
+describe("Validating for Access Modifiers", () => {
+  it("generating errors when access modifiers are used in the definitions ", () => {
+    const definitions = [
+      {
+        text: 'define private "SDE Payer":\n  ["Patient Characteristic Payer": "Payer Type"]',
+        start: {
+          line: 23,
+          position: 0,
+        },
+        stop: {
+          line: 31,
+          position: 47,
+        },
+        name: "private",
+        expression: ":",
+        comment: "test\nnow",
+      },
+      {
+        text: 'define "SDE Race":\n  ["Patient Characteristic Race": "Race"]',
+        start: {
+          line: 33,
+          position: 0,
+        },
+        stop: {
+          line: 34,
+          position: 40,
+        },
+        name: '"SDE Race"',
+        expression: '["Patient Characteristic Race":"Race"]',
+      },
+      {
+        text: 'define public "Qualifying Encounters":\n  ( ["Encounter, Performed": "Encounter Inpatient"]\n    union ["Encounter, Performed": "Emergency Department Visit"]\n    union ["Encounter, Performed": "Acute Inpatient"]\n    union ["Encounter, Performed": "Active Bleeding"]\n    union ["Encounter, Performed": "Observation Services"] ) Encounter\n    where Encounter.relevantPeriod ends during "Measurement Period"',
+        start: {
+          line: 40,
+          position: 0,
+        },
+        stop: {
+          line: 40,
+          position: 39,
+        },
+        name: "public",
+        expression: ":",
+      },
+    ];
+    const accessModifierCqlErrors: ElmTranslationError[] =
+      validateAccessModifierErrors(definitions);
+
+    expect(accessModifierCqlErrors.length).toBe(2);
+    expect(accessModifierCqlErrors[0].startLine).toBe(30);
+    expect(accessModifierCqlErrors[1].startLine).toBe(40);
   });
 });

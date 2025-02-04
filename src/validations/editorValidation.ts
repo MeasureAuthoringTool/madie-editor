@@ -3,6 +3,7 @@ import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import ValidateCustomCqlCodes, {
   getCustomCqlCodes,
+  validateAccessModifierErrors,
   mapCodeSystemErrorsToTranslationErrors,
 } from "../validations/codesystemValidation";
 import TranslateCql from "../validations/elmTranslateValidation";
@@ -49,6 +50,10 @@ export const useGetAllErrors = async (
     let allErrorsArray: ElmTranslationError[] =
       updateErrorTypeForTranslationErrors(translationResults);
 
+    // returning errors if the definitions have access modifiers
+    const accessModifierCqlErrors: ElmTranslationError[] =
+      validateAccessModifierErrors(cqlResult.expressionDefinitions);
+
     // Filter out external errors for include error type
     // find will return the first found object
     let externalErrors: ElmTranslationExternalError[] = [];
@@ -69,6 +74,13 @@ export const useGetAllErrors = async (
         allErrorsArray.push(valueSet);
       });
     }
+
+    if (accessModifierCqlErrors && accessModifierCqlErrors.length > 0) {
+      accessModifierCqlErrors.map((modifierError) =>
+        allErrorsArray.push(modifierError)
+      );
+    }
+
     return {
       externalErrors: externalErrors,
       translation: translationResults,
