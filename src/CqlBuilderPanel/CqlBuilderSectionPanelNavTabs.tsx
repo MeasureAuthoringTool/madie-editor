@@ -3,7 +3,6 @@ import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  CQLBuilderFunctions: boolean;
   isQDM: boolean;
   QICoreCodeSearch: boolean;
   QICoreValueSetSearch: boolean;
@@ -13,7 +12,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
   const {
     activeTab,
     setActiveTab,
-    CQLBuilderFunctions,
     QICoreCodeSearch,
     QICoreValueSetSearch,
     isQDM,
@@ -72,7 +70,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
         label="Definitions"
         data-testid="definitions-tab"
       />
-      {CQLBuilderFunctions && (
         <Tab
           tabIndex={0}
           aria-label="Functions"
@@ -81,7 +78,6 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
           label="Functions"
           data-testid="functions-tab"
         />
-      )}
     </Tabs>
   );
 }
