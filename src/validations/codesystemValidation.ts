@@ -33,6 +33,43 @@ export const mapCodeSystemErrorsToTranslationErrors = (
   return result;
 };
 
+export const validateAccessModifierErrors = (definitions) => {
+  const result = [];
+  const accessModifierIncludedDefinitions = definitions.filter((definition) =>
+    /\bdefine\s+(public|private)\b/.test(definition.text)
+  );
+  accessModifierIncludedDefinitions.forEach((def) => {
+    let errorStartLine;
+    if (def?.comment) {
+      const totalLineExcludingCommentsInDefinition =
+        def.text.split("\n").length;
+      errorStartLine =
+        def.stop.line - totalLineExcludingCommentsInDefinition + 1;
+    } else {
+      errorStartLine = def.start.line;
+    }
+
+    const cqlObj = {
+      start: {
+        line: errorStartLine,
+        position: def.start.position,
+      },
+      stop: {
+        line: errorStartLine,
+        position:
+          def.text.indexOf("\n") !== -1
+            ? def.text.indexOf("\n")
+            : def.text.length,
+      },
+      errorMessage:
+        "Access modifiers like Public and Private can not be used in MADiE.",
+    };
+
+    result.push(getCqlErrors(cqlObj, "Error", "Access Modifier"));
+  });
+  return result;
+};
+
 const getCqlErrors = (cqlObj, errorSeverity, errorType) => {
   return {
     startLine: cqlObj.start.line,
