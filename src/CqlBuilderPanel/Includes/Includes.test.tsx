@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import Includes from "./Includes";
 import userEvent from "@testing-library/user-event";
 import { mockServiceConfig } from "../../__mocks__/mockServiceConfig";
@@ -28,6 +28,7 @@ const props = {
   handleApplyLibrary: () => jest.fn(),
   handleEditLibrary: () => jest.fn(),
   handleDeleteLibrary: () => jest.fn(),
+  hasCqlError: false,
 };
 
 describe("Includes", () => {
@@ -46,5 +47,21 @@ describe("Includes", () => {
     await waitFor(() => {
       expect(savedLibraryTab).toHaveTextContent("Saved Libraries (1)");
     });
+  });
+
+  it("Should display not display included libraries when CQL has errors", async () => {
+    const newProps = { ...props, hasCqlError: true };
+    render(<Includes {...newProps} />);
+    userEvent.click(await screen.findByTestId("saved-libraries-tab"));
+
+    const savedLibrariesTable = await screen.findByTestId(
+      "library-results-tbl"
+    );
+    expect(savedLibrariesTable).toBeInTheDocument();
+    const tableBody = await screen.findByTestId("library-results-table-body");
+    expect(tableBody).toBeInTheDocument();
+    const visibleRows = await within(tableBody).findAllByRole("row");
+    expect(visibleRows).toHaveLength(1);
+    expect(visibleRows[0]).toHaveTextContent("No Results were found");
   });
 });

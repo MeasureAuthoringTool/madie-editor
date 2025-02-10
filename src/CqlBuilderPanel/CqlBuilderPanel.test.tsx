@@ -129,6 +129,7 @@ const props = {
   editorVal: undefined,
   handleFunctionDelete: undefined,
   handleFunctionEdit: undefined,
+  hasCqlError: false,
 };
 const { getByTestId } = screen;
 
@@ -645,7 +646,7 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     render(<CqlBuilderPanel {...props} />);
-    const parameterTab = await screen.queryByText("Parameters");
+    const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).not.toBeInTheDocument();
   });
 
@@ -660,7 +661,7 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     render(<CqlBuilderPanel {...newProps} />);
-    const parameterTab = await screen.queryByText("Parameters");
+    const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     expect(parameterTab).toBeEnabled();
   });
@@ -675,12 +676,12 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     let result = render(<CqlBuilderPanel {...props} />);
-    const parameterTab = await screen.queryByText("Parameters");
+    const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
     expect(screen.getByTestId("cql-editor-parameters")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByTestId("saved-parameters-tab"));
+    userEvent.click(screen.getByTestId("saved-parameters-tab"));
 
     await waitFor(() => {
       expect(screen.getByTestId("saved-parameters-tab")).toHaveAttribute(
@@ -690,7 +691,7 @@ describe("CqlBuilderPanel", () => {
     });
     expect(screen.getByTestId("saved-parameters")).toBeInTheDocument();
     // switch back
-    await userEvent.click(screen.getByTestId("parameter-tab"));
+    userEvent.click(screen.getByTestId("parameter-tab"));
     await waitFor(() => {
       expect(screen.getByTestId("parameter-tab")).toHaveAttribute(
         "aria-selected",
@@ -726,6 +727,7 @@ describe("CqlBuilderPanel", () => {
       expect(aceEditor.value).toContain("");
     });
   });
+
   it("Parameters apply works and clears input fields", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
@@ -740,12 +742,12 @@ describe("CqlBuilderPanel", () => {
     applyParameter.mockReturnValue("success");
     const copiedProps = { ...props, handleApplyParameter: applyParameter };
     let result = render(<CqlBuilderPanel {...copiedProps} />);
-    const parameterTab = await screen.queryByText("Parameters");
+    const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
     expect(screen.getByTestId("cql-editor-parameters")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByTestId("saved-parameters-tab"));
+    userEvent.click(screen.getByTestId("saved-parameters-tab"));
 
     await waitFor(() => {
       expect(screen.getByTestId("saved-parameters-tab")).toHaveAttribute(
@@ -755,7 +757,7 @@ describe("CqlBuilderPanel", () => {
     });
     expect(screen.getByTestId("saved-parameters")).toBeInTheDocument();
     // switch back
-    await userEvent.click(screen.getByTestId("parameter-tab"));
+    userEvent.click(screen.getByTestId("parameter-tab"));
     await waitFor(() => {
       expect(screen.getByTestId("parameter-tab")).toHaveAttribute(
         "aria-selected",
@@ -795,6 +797,7 @@ describe("CqlBuilderPanel", () => {
       expect(aceEditor.value).toContain("");
     });
   });
+
   it("Parameters apply did not work, fields did not get updated", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
@@ -809,12 +812,12 @@ describe("CqlBuilderPanel", () => {
     applyParameter.mockReturnValue("failure");
     const copiedProps = { ...props, handleApplyParameter: applyParameter };
     let result = render(<CqlBuilderPanel {...copiedProps} />);
-    const parameterTab = await screen.queryByText("Parameters");
+    const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
     expect(screen.getByTestId("cql-editor-parameters")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByTestId("saved-parameters-tab"));
+    userEvent.click(screen.getByTestId("saved-parameters-tab"));
 
     await waitFor(() => {
       expect(screen.getByTestId("saved-parameters-tab")).toHaveAttribute(
@@ -824,7 +827,7 @@ describe("CqlBuilderPanel", () => {
     });
     expect(screen.getByTestId("saved-parameters")).toBeInTheDocument();
     // switch back
-    await userEvent.click(screen.getByTestId("parameter-tab"));
+    userEvent.click(screen.getByTestId("parameter-tab"));
     await waitFor(() => {
       expect(screen.getByTestId("parameter-tab")).toHaveAttribute(
         "aria-selected",
@@ -877,7 +880,7 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     render(<CqlBuilderPanel {...newProps} />);
-    const parameterTab = await screen.queryByText("Functions");
+    const parameterTab = screen.queryByText("Functions");
     expect(parameterTab).toBeInTheDocument();
     expect(parameterTab).toBeEnabled();
   });
@@ -893,7 +896,16 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     render(<CqlBuilderPanel {...props} />);
-    const parameterTab = await screen.queryByText("Functions");
+    const parameterTab = screen.queryByText("Functions");
     expect(parameterTab).not.toBeInTheDocument();
+  });
+
+  it("Should display error text when CQL has errors", async () => {
+    const newProps = { ...props, hasCqlError: true };
+    render(<CqlBuilderPanel {...newProps} />);
+    const errorMessage = await screen.findByRole("alert");
+    expect(errorMessage).toHaveTextContent(
+      "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+    );
   });
 });

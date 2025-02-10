@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import SavedCodesSubSection, { CodesList } from "./SavedCodesSubSection";
 import { mockMeasureStoreCql } from "../../../__mocks__/MockMeasureStoreCql";
 import { TerminologyServiceApi } from "../../../../api/useTerminologyServiceApi";
@@ -91,6 +85,7 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
     expect(
@@ -147,6 +142,7 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
     expect(
@@ -204,6 +200,7 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
 
@@ -252,6 +249,7 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
 
@@ -293,6 +291,7 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={undefined}
         isCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
     await checkRows(3);
@@ -325,6 +324,7 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
 
@@ -344,7 +344,7 @@ describe("Saved Codes section component", () => {
     expect(getByTestId("delete-dialog-continue-button")).toBeInTheDocument();
     expect(getByTestId("delete-dialog-cancel-button")).toBeInTheDocument();
 
-    fireEvent.click(getByTestId("delete-dialog-cancel-button"));
+    userEvent.click(getByTestId("delete-dialog-cancel-button"));
     await waitFor(() => {
       const submitButton = queryByText("Yes, Delete");
       expect(submitButton).not.toBeInTheDocument();
@@ -364,6 +364,7 @@ describe("Saved Codes section component", () => {
         setEditorVal={undefined}
         setIsCQLUnchanged={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
     await checkRows(3);
@@ -376,7 +377,7 @@ describe("Saved Codes section component", () => {
     expect(getByTestId("delete-dialog-continue-button")).toBeInTheDocument();
     expect(getByTestId("delete-dialog-cancel-button")).toBeInTheDocument();
 
-    fireEvent.click(getByTestId("delete-dialog-continue-button"));
+    userEvent.click(getByTestId("delete-dialog-continue-button"));
     expect(queryByTestId("delete-dialog-body")).toBeNull();
   });
 
@@ -392,6 +393,7 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={jest.fn()}
         handleApplyCode={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
     await checkRows(3);
@@ -404,13 +406,13 @@ describe("Saved Codes section component", () => {
     expect(getByTestId("discard-dialog-continue-button")).toBeInTheDocument();
     expect(getByTestId("discard-dialog-cancel-button")).toBeInTheDocument();
 
-    fireEvent.click(getByTestId("discard-dialog-continue-button"));
+    userEvent.click(getByTestId("discard-dialog-continue-button"));
 
     expect(getByTestId("delete-dialog")).toBeInTheDocument();
     expect(getByTestId("delete-dialog-continue-button")).toBeInTheDocument();
     expect(getByTestId("delete-dialog-cancel-button")).toBeInTheDocument();
 
-    fireEvent.click(getByTestId("delete-dialog-continue-button"));
+    userEvent.click(getByTestId("delete-dialog-continue-button"));
     expect(queryByTestId("delete-dialog-body")).toBeNull();
   });
 
@@ -426,6 +428,7 @@ describe("Saved Codes section component", () => {
         setIsCQLUnchanged={jest.fn()}
         handleApplyCode={undefined}
         parsedCodesList={parsedCodesList}
+        hasCqlError={false}
       />
     );
     await checkRows(3);
@@ -440,7 +443,7 @@ describe("Saved Codes section component", () => {
     const closeBtn = getByTestId("close-button");
     expect(closeBtn).toBeInTheDocument();
 
-    fireEvent.click(getByTestId("discard-dialog-cancel-button"));
+    userEvent.click(getByTestId("discard-dialog-cancel-button"));
     expect(queryByTestId("delete-dialog")).not.toBeInTheDocument();
   });
 });
