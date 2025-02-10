@@ -134,7 +134,6 @@ export default function CqlBuilderPanel({
         <CqlBuilderSectionPanelNavTabs
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          isQDM={measureModel?.includes("QDM")}
         />
         <div
           style={{

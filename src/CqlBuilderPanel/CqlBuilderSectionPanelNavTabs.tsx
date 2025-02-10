@@ -3,11 +3,10 @@ import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  isQDM: boolean;
 }
 
 export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab, isQDM } = props;
+  const { activeTab, setActiveTab } = props;
 
   return (
     <Tabs
