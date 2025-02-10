@@ -44,7 +44,6 @@ export default function CqlBuilderPanel({
   makeExpanded,
 }) {
   const featureFlags = useFeatureFlags();
-  // const {} = featureFlags;
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
   const getStartingPage = (() => {
     if (measureModel?.includes("QDM")) {

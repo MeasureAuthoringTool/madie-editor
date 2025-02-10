@@ -1,8 +1,6 @@
 declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
 
-  interface FeatureFlags {}
-
   export const useOktaTokens: (storageKey?: string) => {
     getAccessToken: () => any;
     getAccessTokenObj: () => any;
