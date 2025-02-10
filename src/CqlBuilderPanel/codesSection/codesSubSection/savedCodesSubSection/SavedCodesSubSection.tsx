@@ -87,6 +87,7 @@ export default function SavedCodesSubSection({
   setIsCQLUnchanged,
   isCQLUnchanged,
   parsedCodesList,
+  hasCqlError,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -134,7 +135,7 @@ export default function SavedCodesSubSection({
 
   //load codes when actual measure cql is changed
   useEffect(() => {
-    if (measureStoreCql && parsedCodesList?.length > 0) {
+    if (measureStoreCql && parsedCodesList?.length > 0 && !hasCqlError) {
       RetrieveCodeDetailsList(parsedCodesList);
     }
   }, [measureStoreCql]);
