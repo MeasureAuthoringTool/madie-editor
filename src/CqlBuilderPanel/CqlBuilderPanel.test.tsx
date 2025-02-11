@@ -95,7 +95,6 @@ const mockCqlBuilderLookUpData = {
 
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn().mockReturnValue({
-    CQLBuilderFunctions: true,
     QDMValueSetSearch: true,
     qdmCodeSearch: true,
   }),
@@ -171,30 +170,6 @@ describe("CqlBuilderPanel", () => {
         "aria-selected",
         "true"
       );
-    });
-  });
-
-  it("Should load value sets search tab for QICore if QICoreValueSetSearch is on", async () => {
-    useFeatureFlags.mockImplementationOnce(() => ({
-      QICoreValueSetSearch: true,
-    }));
-    render(<CqlBuilderPanel {...props} />);
-    const valueSetTab = screen.getByTestId("valueSets-tab");
-    userEvent.click(valueSetTab);
-    await waitFor(() => {
-      expect(valueSetTab).toHaveAttribute("aria-selected", "true");
-    });
-  });
-
-  it("Should show codes tab for QICore if QICoreCodeSearch flag is on", async () => {
-    useFeatureFlags.mockImplementationOnce(() => ({
-      QICoreCodeSearch: true,
-    }));
-    render(<CqlBuilderPanel {...props} />);
-    const codesTab = screen.getByTestId("codes-tab");
-    userEvent.click(codesTab);
-    await waitFor(() => {
-      expect(codesTab).toHaveAttribute("aria-selected", "true");
     });
   });
 
@@ -636,25 +611,10 @@ describe("CqlBuilderPanel", () => {
     expect(options[1]).toHaveTextContent("Latest()");
   });
 
-  it("Parameters tab does not exist", async () => {
-    useFeatureFlags.mockImplementationOnce(() => ({
-      QDMValueSetSearch: true,
-      qdmCodeSearch: true,
-      CQLBuilderParameters: false,
-    }));
-    mockedAxios.put.mockResolvedValue({
-      data: mockCqlBuilderLookUpData,
-    });
-    render(<CqlBuilderPanel {...props} />);
-    const parameterTab = screen.queryByText("Parameters");
-    expect(parameterTab).not.toBeInTheDocument();
-  });
-
   it("Parameters tab exists and it's enabled", async () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
       qdmCodeSearch: true,
-      CQLBuilderParameters: true,
     }));
     const newProps = { ...props, canEdit: false };
     mockedAxios.put.mockResolvedValue({
@@ -670,7 +630,6 @@ describe("CqlBuilderPanel", () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
       qdmCodeSearch: true,
-      CQLBuilderParameters: true,
     }));
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
@@ -732,7 +691,6 @@ describe("CqlBuilderPanel", () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
       qdmCodeSearch: true,
-      CQLBuilderParameters: true,
     }));
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
@@ -802,7 +760,6 @@ describe("CqlBuilderPanel", () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
       qdmCodeSearch: true,
-      CQLBuilderParameters: true,
     }));
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
@@ -872,8 +829,6 @@ describe("CqlBuilderPanel", () => {
     useFeatureFlags.mockImplementationOnce(() => ({
       QDMValueSetSearch: true,
       qdmCodeSearch: true,
-      CQLBuilderParameters: true,
-      CQLBuilderFunctions: true,
     }));
     const newProps = { ...props, canEdit: false };
     mockedAxios.put.mockResolvedValue({
@@ -883,21 +838,6 @@ describe("CqlBuilderPanel", () => {
     const parameterTab = screen.queryByText("Functions");
     expect(parameterTab).toBeInTheDocument();
     expect(parameterTab).toBeEnabled();
-  });
-
-  it("Functions tab does not exist", async () => {
-    useFeatureFlags.mockImplementationOnce(() => ({
-      QDMValueSetSearch: true,
-      qdmCodeSearch: true,
-      CQLBuilderParameters: true,
-      CQLBuilderFunctions: false,
-    }));
-    mockedAxios.put.mockResolvedValue({
-      data: mockCqlBuilderLookUpData,
-    });
-    render(<CqlBuilderPanel {...props} />);
-    const parameterTab = screen.queryByText("Functions");
-    expect(parameterTab).not.toBeInTheDocument();
   });
 
   it("Should display error text when CQL has errors", async () => {
