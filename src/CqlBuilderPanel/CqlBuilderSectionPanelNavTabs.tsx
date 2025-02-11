@@ -3,23 +3,10 @@ import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  CQLBuilderParameters: boolean;
-  CQLBuilderFunctions: boolean;
-  isQDM: boolean;
-  QICoreCodeSearch: boolean;
-  QICoreValueSetSearch: boolean;
 }
 
 export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
-  const {
-    activeTab,
-    setActiveTab,
-    CQLBuilderParameters,
-    CQLBuilderFunctions,
-    QICoreCodeSearch,
-    QICoreValueSetSearch,
-    isQDM,
-  } = props;
+  const { activeTab, setActiveTab } = props;
 
   return (
     <Tabs
@@ -38,36 +25,30 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
         data-testid="includes-tab"
         value="includes"
       />
-      {(isQDM || QICoreValueSetSearch) && (
-        <Tab
-          tabIndex={0}
-          aria-label="Value Sets"
-          type="B"
-          label="Value Sets"
-          data-testid="valueSets-tab"
-          value="valueSets"
-        />
-      )}
-      {(isQDM || QICoreCodeSearch) && (
-        <Tab
-          tabIndex={0}
-          aria-label="Codes"
-          type="D"
-          label="Codes"
-          data-testid="codes-tab"
-          value="codes"
-        />
-      )}
-      {CQLBuilderParameters && (
-        <Tab
-          tabIndex={0}
-          aria-label="Parameters"
-          type="D"
-          label="Parameters"
-          data-testid="parameters-tab"
-          value="parameters"
-        />
-      )}
+      <Tab
+        tabIndex={0}
+        aria-label="Value Sets"
+        type="B"
+        label="Value Sets"
+        data-testid="valueSets-tab"
+        value="valueSets"
+      />
+      <Tab
+        tabIndex={0}
+        aria-label="Codes"
+        type="D"
+        label="Codes"
+        data-testid="codes-tab"
+        value="codes"
+      />
+      <Tab
+        tabIndex={0}
+        aria-label="Parameters"
+        type="D"
+        label="Parameters"
+        data-testid="parameters-tab"
+        value="parameters"
+      />
       <Tab
         tabIndex={0}
         aria-label="Definitions"
@@ -76,16 +57,14 @@ export default function CqlBuilderSectionPanelNavTabs(props: NavTabProps) {
         label="Definitions"
         data-testid="definitions-tab"
       />
-      {CQLBuilderFunctions && (
-        <Tab
-          tabIndex={0}
-          aria-label="Functions"
-          type="D"
-          value="functions"
-          label="Functions"
-          data-testid="functions-tab"
-        />
-      )}
+      <Tab
+        tabIndex={0}
+        aria-label="Functions"
+        type="D"
+        value="functions"
+        label="Functions"
+        data-testid="functions-tab"
+      />
     </Tabs>
   );
 }
