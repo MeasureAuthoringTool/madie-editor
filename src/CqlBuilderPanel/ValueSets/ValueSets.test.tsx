@@ -164,6 +164,32 @@ describe("ValueSets Page", () => {
     });
   });
 
+  it("Should clear Version on URL clear", async () => {
+    render(<ValueSets canEdit />);
+    const categoriesSelectButton = getByRole("button", {
+      name: "Open",
+    });
+
+    userEvent.click(categoriesSelectButton);
+    userEvent.click(getByText("OID/URL"));
+    userEvent.click(categoriesSelectButton);
+    userEvent.click(getByText("Definition Version"));
+    const urlTextInput = await screen.findByTestId("url-text-input");
+    const versionTextInput = await screen.findByTestId("version-text-input");
+    expect(urlTextInput).toBeInTheDocument();
+    expect(versionTextInput).toBeInTheDocument();
+    expect(versionTextInput).toBeDisabled();
+    userEvent.type(
+      urlTextInput,
+      "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105"
+    );
+    expect(versionTextInput).toBeEnabled();
+    userEvent.type(versionTextInput, "20201122");
+    expect(versionTextInput.value).toEqual("20201122");
+    userEvent.clear(urlTextInput);
+    expect(versionTextInput.value).toEqual("");
+  });
+
   it("Should enable submit button when a dynamic search field has text in it, should remove all values on clear", async () => {
     render(<ValueSets canEdit />);
     const categoriesSelectButton = getByRole("button", {
