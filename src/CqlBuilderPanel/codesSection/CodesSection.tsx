@@ -22,6 +22,7 @@ interface CodesSectionProps {
   setIsCQLUnchanged: Function;
   isCQLUnchanged: boolean;
   handleApplyCode;
+  hasCqlError?: boolean;
 }
 
 export default function CodesSection({
@@ -34,13 +35,14 @@ export default function CodesSection({
   setIsCQLUnchanged,
   isCQLUnchanged,
   handleApplyCode,
+  hasCqlError,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("code");
   const { codeSystems } = useCodeSystems();
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
 
   useEffect(() => {
-    if (measureStoreCql && !_.isEmpty(codeSystems)) {
+    if (measureStoreCql && !hasCqlError && !_.isEmpty(codeSystems)) {
       const parsedCql = new CqlAntlr(measureStoreCql).parse();
       if (!_.isEmpty(parsedCql?.codes)) {
         const codesList = parsedCql.codes.map((code) => {
@@ -101,6 +103,7 @@ export default function CodesSection({
             setIsCQLUnchanged={setIsCQLUnchanged}
             isCQLUnchanged={isCQLUnchanged}
             parsedCodesList={parsedCodesList}
+            hasCqlError={hasCqlError}
           />
         )}
       </div>

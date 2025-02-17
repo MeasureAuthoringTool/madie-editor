@@ -1,15 +1,10 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import * as React from "react";
 import CodesSection from "./CodesSection";
 import { useCodeSystems } from "./useCodeSystems";
 import { ServiceConfig } from "../../api/useServiceConfig";
 import { CodeSystem } from "../../api/useTerminologyServiceApi";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("./useCodeSystems");
 
@@ -72,7 +67,7 @@ mockUseCodeSystems.mockReturnValue({
 });
 const renderEditor = () => {
   // @ts-ignore: required props not required for tests
-  return render(<CodesSection canEdit={true} />);
+  return render(<CodesSection canEdit={true} hasCqlError={false} />);
 };
 
 describe("CodesSection", () => {
@@ -80,17 +75,11 @@ describe("CodesSection", () => {
     renderEditor();
     const code = await screen.findByTestId("code-tab");
     const savedCodes = await screen.findByText("Saved Codes(0)");
-
-    act(() => {
-      fireEvent.click(code);
-    });
+    userEvent.click(code);
     await waitFor(() => {
       expect(code).toHaveAttribute("aria-selected", "true");
     });
-
-    act(() => {
-      fireEvent.click(savedCodes);
-    });
+    userEvent.click(savedCodes);
     await waitFor(() => {
       expect(savedCodes).toHaveAttribute("aria-selected", "true");
     });
@@ -100,9 +89,7 @@ describe("CodesSection", () => {
     renderEditor();
     const codeSubTab = await screen.findByTestId("code-tab");
     expect(codeSubTab).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(codeSubTab);
-    });
+    userEvent.click(codeSubTab);
     expect(codeSubTab).toHaveAttribute("aria-selected", "true");
 
     const codesSectionHeading = await screen.findByText("Code(s)");
@@ -117,9 +104,7 @@ describe("CodesSection", () => {
     renderEditor();
     const savedCodesSubTab = await screen.findByText("Saved Codes(0)");
     expect(savedCodesSubTab).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(savedCodesSubTab);
-    });
+    userEvent.click(savedCodesSubTab);
     expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
   });
 
@@ -139,13 +124,11 @@ describe("CodesSection", () => {
     );
     const savedCodesSubTab = await screen.findByText("Saved Codes(1)");
     expect(savedCodesSubTab).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(savedCodesSubTab);
-    });
+    userEvent.click(savedCodesSubTab);
     expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
   });
 
-  it("should render saved codes tab sectio with 0 saved code", async () => {
+  it("should render saved codes tab section with 0 saved code", async () => {
     render(
       <CodesSection
         canEdit={true}
@@ -161,9 +144,22 @@ describe("CodesSection", () => {
     );
     const savedCodesSubTab = await screen.findByText("Saved Codes(0)");
     expect(savedCodesSubTab).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(savedCodesSubTab);
-    });
+    userEvent.click(savedCodesSubTab);
     expect(savedCodesSubTab).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("Should not render saved codes list when CQL has errors", async () => {
+    renderEditor();
+    const savedCodesSubTab = await screen.findByText("Saved Codes(0)");
+    expect(savedCodesSubTab).toBeInTheDocument();
+    userEvent.click(savedCodesSubTab);
+
+    const savedCodesTable = await screen.findByTestId("saved-codes-tbl");
+    expect(savedCodesTable).toBeInTheDocument();
+    const tableBody = await screen.findByTestId("saved-codes-tbl-body");
+    expect(tableBody).toBeInTheDocument();
+    const visibleRows = await within(tableBody).findAllByRole("row");
+    expect(visibleRows).toHaveLength(1);
+    expect(visibleRows[0]).toHaveTextContent("No Results were found");
   });
 });

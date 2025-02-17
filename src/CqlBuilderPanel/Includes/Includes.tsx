@@ -15,6 +15,7 @@ interface IncludesProps {
   handleApplyLibrary: (library) => void;
   handleEditLibrary: (selectedLibrary, editedLibrary) => void;
   handleDeleteLibrary: (library) => void;
+  hasCqlError: boolean;
 }
 
 export default function Includes({
@@ -27,14 +28,17 @@ export default function Includes({
   handleApplyLibrary,
   handleEditLibrary,
   handleDeleteLibrary,
+  hasCqlError,
 }: IncludesProps) {
   const [activeLibraryTab, setActiveLibraryTab] = useState<string>("library");
   const [includedLibraryCount, setIncludedLibraryCount] = useState<number>(0);
 
   useEffect(() => {
-    if (cql) {
+    if (cql && !hasCqlError) {
       const count = new CqlAntlr(cql).parse().includes?.length;
       setIncludedLibraryCount(count || 0);
+    } else {
+      setIncludedLibraryCount(0);
     }
   }, [cql]);
 
@@ -66,6 +70,7 @@ export default function Includes({
           setEditorValue={setEditorValue}
           handleDeleteLibrary={handleDeleteLibrary}
           handleEditLibrary={handleEditLibrary}
+          hasCqlError={hasCqlError}
         />
       )}
     </div>

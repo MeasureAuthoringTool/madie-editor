@@ -23,6 +23,7 @@ interface PropTypes {
   setEditorValue: (cql) => void;
   handleDeleteLibrary: (library) => void;
   handleEditLibrary: (selectedLibrary, editedLibrary) => void;
+  hasCqlError: boolean;
 }
 
 const SavedLibraryIncludes = ({
@@ -34,6 +35,7 @@ const SavedLibraryIncludes = ({
   setEditorValue,
   handleDeleteLibrary,
   handleEditLibrary,
+  hasCqlError,
 }: PropTypes) => {
   const [libraries, setLibraries] = useState<CqlLibrary[]>([]);
   const libraryService = useRef(useCqlLibraryServiceApi());
@@ -104,8 +106,10 @@ const SavedLibraryIncludes = ({
   );
 
   useEffect(() => {
-    if (cql) {
+    if (cql && !hasCqlError) {
       fetchIncludedLibraries(cql);
+    } else {
+      setLibraries([]);
     }
   }, [cql, fetchIncludedLibraries]);
 
