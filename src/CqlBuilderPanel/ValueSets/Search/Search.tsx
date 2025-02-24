@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ControlledAutoComplete from "../../../common/ControlledAutoComplete";
 import { useFormik } from "formik";
 import SearchField from "../../../common/SearchField";
@@ -66,6 +66,12 @@ export default function Search(props: SearchProps) {
       await handleSearch(formik.values);
     },
   });
+
+  useEffect(() => {
+    if (!formik.values.url.length) {
+      formik.setFieldValue("version", "");
+    }
+  }, [formik.values.url.length > 0]);
 
   const trimField = (fieldName) => {
     formik.setFieldValue(fieldName, formik.values[fieldName].trim());

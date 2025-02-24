@@ -42,6 +42,7 @@ export default function CqlBuilderPanel({
   resetCql,
   getCqlDefinitionReturnTypes,
   makeExpanded,
+  hasCqlError,
 }) {
   const featureFlags = useFeatureFlags();
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
@@ -63,65 +64,72 @@ export default function CqlBuilderPanel({
 
   useEffect(() => {
     if (measureStoreCql && measureStoreCql.trim().length > 0) {
-      if (measureModel?.includes("QDM")) {
-        qdmElmTranslationServiceApi
-          .then((qdmElmTranslationServiceApi) => {
-            qdmElmTranslationServiceApi
-              .getCqlBuilderLookups(measureStoreCql)
-              .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                setErrors(null);
-                setCqlBuilderLookupsTypes(axiosResponse?.data);
-              })
-              .catch((error) => {
-                setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-
-                setErrors(
-                  "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
-                );
-                console.error(error);
-              })
-              .finally(() => {
-                setLoading(false);
-              });
-          })
-          .catch((error) => {
-            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-
-            setErrors(
-              "Unable to retrieve Service Config, Please try again or contact Helpdesk"
-            );
-            console.error(error);
-            setLoading(false);
-          });
+      if (hasCqlError) {
+        setErrors(
+          "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+        );
+        setLoading(false);
       } else {
-        fhirElmTranslationServiceApi
-          .then((fhirElmTranslationServiceApi) => {
-            fhirElmTranslationServiceApi
-              .getCqlBuilderLookups(measureStoreCql)
-              .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                setCqlBuilderLookupsTypes(axiosResponse?.data);
-              })
-              .catch((error) => {
-                setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+        if (measureModel?.includes("QDM")) {
+          qdmElmTranslationServiceApi
+            .then((qdmElmTranslationServiceApi) => {
+              qdmElmTranslationServiceApi
+                .getCqlBuilderLookups(measureStoreCql)
+                .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+                  setErrors(null);
+                  setCqlBuilderLookupsTypes(axiosResponse?.data);
+                })
+                .catch((error) => {
+                  setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
 
-                setErrors(
-                  "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
-                );
-                console.error(error);
-              })
-              .finally(() => {
-                setLoading(false);
-              });
-          })
-          .catch((error) => {
-            setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+                  setErrors(
+                    "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+                  );
+                  console.error(error);
+                })
+                .finally(() => {
+                  setLoading(false);
+                });
+            })
+            .catch((error) => {
+              setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
 
-            setErrors(
-              "Unable to retrieve Service Config, Please try again or contact Helpdesk"
-            );
-            console.error(error);
-            setLoading(false);
-          });
+              setErrors(
+                "Unable to retrieve Service Config, Please try again or contact Helpdesk"
+              );
+              console.error(error);
+              setLoading(false);
+            });
+        } else {
+          fhirElmTranslationServiceApi
+            .then((fhirElmTranslationServiceApi) => {
+              fhirElmTranslationServiceApi
+                .getCqlBuilderLookups(measureStoreCql)
+                .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+                  setCqlBuilderLookupsTypes(axiosResponse?.data);
+                })
+                .catch((error) => {
+                  setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
+                  setErrors(
+                    "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+                  );
+                  console.error(error);
+                })
+                .finally(() => {
+                  setLoading(false);
+                });
+            })
+            .catch((error) => {
+              setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
+              setErrors(
+                "Unable to retrieve Service Config, Please try again or contact Helpdesk"
+              );
+              console.error(error);
+              setLoading(false);
+            });
+        }
       }
     } else {
       setLoading(false);
@@ -184,6 +192,7 @@ export default function CqlBuilderPanel({
               handleApplyLibrary={handleApplyLibrary}
               handleEditLibrary={handleEditLibrary}
               handleDeleteLibrary={handleDeleteLibrary}
+              hasCqlError={hasCqlError}
             />
           )}
           {activeTab === "valueSets" && (
@@ -203,6 +212,7 @@ export default function CqlBuilderPanel({
               setIsCQLUnchanged={setIsCQLUnchanged}
               isCQLUnchanged={isCQLUnchanged}
               handleApplyCode={handleApplyCode}
+              hasCqlError={hasCqlError}
             />
           )}
           {activeTab === "parameters" && (
