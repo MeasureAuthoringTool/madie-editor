@@ -6,6 +6,7 @@ import MadieAceEditor, {
   updateEditorContent,
   setCommandEnabled,
   updateUsingStatements,
+  parseEditorContent,
 } from "./madie-ace-editor";
 
 import "ace-builds/src-noconflict/mode-java";
@@ -759,5 +760,35 @@ describe("updateUsingStatements", () => {
     );
     expect(isCqlUpdated).toEqual(true);
     expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
+  });
+});
+
+describe("parseEditorContent", () => {
+  it("should should report an error when context is empty", async () => {
+    const cql =
+      "library SimpleEncounterMeasure version '0.0.000'\n" +
+      "using QICore version '4.1.1'";
+    const errors = parseEditorContent(cql);
+    expect(errors.length).toEqual(1);
+    expect(errors[0].message).toEqual("Measure Context must be 'Patient'.");
+  });
+
+  it("should should report an error when context is anything but Patient", async () => {
+    const cql =
+      "library SimpleEncounterMeasure version '0.0.000'\n" +
+      "using QICore version '4.1.1'" +
+      "context Encounter";
+    const errors = parseEditorContent(cql);
+    expect(errors.length).toEqual(1);
+    expect(errors[0].message).toEqual("Measure Context must be 'Patient'.");
+  });
+
+  it("should should not report an error when context is Patient", async () => {
+    const cql =
+      "library SimpleEncounterMeasure version '0.0.000'\n" +
+      "using QICore version '4.1.1'\n" +
+      "context Patient";
+    const errors = parseEditorContent(cql);
+    expect(errors.length).toEqual(0);
   });
 });
