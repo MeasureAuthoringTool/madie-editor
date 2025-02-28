@@ -22,8 +22,7 @@ export interface ValidationResult {
 }
 
 export const useGetAllErrors = async (
-  cql: string,
-  checkContext: boolean
+  cql: string
 ): Promise<ValidationResult> => {
   if (cql && cql.trim().length > 0) {
     const cqlResult: CqlResult = new CqlAntlr(cql).parse();
@@ -37,7 +36,7 @@ export const useGetAllErrors = async (
           cqlResult?.usings[0]?.name
         ),
 
-        TranslateCql(cql, cqlResult?.usings[0]?.name, checkContext),
+        TranslateCql(cql, cqlResult?.usings[0]?.name),
         GetValueSetErrors(
           cqlResult.valueSets,
           isLoggedInUMLS.valueOf(),
@@ -54,17 +53,6 @@ export const useGetAllErrors = async (
     const accessModifierCqlErrors: ElmTranslationError[] =
       validateAccessModifierErrors(cqlResult.expressionDefinitions);
 
-    // Filter out external errors for include error type
-    // find will return the first found object
-    let externalErrors: ElmTranslationExternalError[] = [];
-    if (translationResults?.externalErrors?.length > 0) {
-      const includeLibraryError: ElmTranslationExternalError =
-        translationResults.externalErrors.find(
-          (externalErrors) => externalErrors.errorType === "include"
-        );
-      externalErrors.push(includeLibraryError);
-    }
-
     codeSystemCqlErrors.forEach((codeError) => {
       allErrorsArray.push(codeError);
     });
@@ -80,9 +68,8 @@ export const useGetAllErrors = async (
         allErrorsArray.push(modifierError)
       );
     }
-
     return {
-      externalErrors: externalErrors,
+      externalErrors: translationResults?.externalErrors,
       translation: translationResults,
       errors: allErrorsArray,
     };

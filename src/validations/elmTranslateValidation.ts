@@ -4,8 +4,7 @@ import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationService
 
 const TranslateCql = async (
   cql: string,
-  model: string,
-  checkContext: boolean
+  model: string
 ): Promise<ElmTranslation> => {
   const qdmElmTranslationServiceApi = await useQdmElmTranslationServiceApi();
   const fhirElmTranslationServiceApi = await useFhirElmTranslationServiceApi();
@@ -14,10 +13,7 @@ const TranslateCql = async (
     if (model === "QDM") {
       return await qdmElmTranslationServiceApi.translateCqlToElm(cql);
     } else {
-      return await fhirElmTranslationServiceApi.translateCqlToElm(
-        cql,
-        checkContext
-      );
+      return await fhirElmTranslationServiceApi.translateCqlToElm(cql);
     }
   }
   return null;

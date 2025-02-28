@@ -7,10 +7,7 @@ import { AxiosResponse } from "axios";
 export class FhirElmTranslationServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
-  async translateCqlToElm(
-    cql: string,
-    checkContext: boolean
-  ): Promise<ElmTranslation> {
+  async translateCqlToElm(cql: string): Promise<ElmTranslation> {
     if (this.baseUrl) {
       try {
         const resp = await axios.put(
@@ -28,9 +25,7 @@ export class FhirElmTranslationServiceApi {
               "disable-list-demotion": true,
               "disable-list-promotion": true,
               "validate-units": true,
-              checkContext: checkContext,
             },
-            timeout: 15000,
           }
         );
         if (resp.status === 200) {
