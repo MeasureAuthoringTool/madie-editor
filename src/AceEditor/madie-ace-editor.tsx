@@ -191,6 +191,13 @@ export const parseEditorContent = (content): CqlError[] => {
     if (parseOutput.errors && parseOutput.errors.length > 0) {
       errors = parseOutput.errors;
     }
+    if (!parseOutput?.context?.text?.includes("Patient")) {
+      errors.push({
+        message: "Measure Context must be 'Patient'.",
+        start: parseOutput?.context?.start,
+        stop: parseOutput?.context?.stop,
+      });
+    }
   }
   return errors;
 };

@@ -19,7 +19,7 @@ export class FhirElmTranslationServiceApi {
               "Content-Type": "text/plain",
             },
             params: {
-              showWarnings: true,
+              errorSeverity: "Info",
               annotations: true,
               locators: true,
               "disable-list-demotion": true,
