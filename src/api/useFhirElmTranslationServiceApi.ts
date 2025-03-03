@@ -30,7 +30,6 @@ export class FhirElmTranslationServiceApi {
               "validate-units": true,
               checkContext: checkContext,
             },
-            timeout: 15000,
           }
         );
         if (resp.status === 200) {

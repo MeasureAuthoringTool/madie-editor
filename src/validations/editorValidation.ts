@@ -54,17 +54,6 @@ export const useGetAllErrors = async (
     const accessModifierCqlErrors: ElmTranslationError[] =
       validateAccessModifierErrors(cqlResult.expressionDefinitions);
 
-    // Filter out external errors for include error type
-    // find will return the first found object
-    let externalErrors: ElmTranslationExternalError[] = [];
-    if (translationResults?.externalErrors?.length > 0) {
-      const includeLibraryError: ElmTranslationExternalError =
-        translationResults.externalErrors.find(
-          (externalErrors) => externalErrors.errorType === "include"
-        );
-      externalErrors.push(includeLibraryError);
-    }
-
     codeSystemCqlErrors.forEach((codeError) => {
       allErrorsArray.push(codeError);
     });
@@ -80,9 +69,8 @@ export const useGetAllErrors = async (
         allErrorsArray.push(modifierError)
       );
     }
-
     return {
-      externalErrors: externalErrors,
+      externalErrors: translationResults?.externalErrors,
       translation: translationResults,
       errors: allErrorsArray,
     };
