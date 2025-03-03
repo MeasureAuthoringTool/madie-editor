@@ -371,10 +371,10 @@ export const mapParserErrorsToAceAnnotations = (
   let annotations: Ace.Annotation[] = [];
   if (errors) {
     annotations = errors.map((error) => ({
-      row: error.start.line - 1,
-      column: error.start.position,
+      row: error.start?.line - 1,
+      column: error.start?.position,
       type: "error",
-      text: `Parse: ${error.start.position}:${error.stop.position} | ${error.message}`,
+      text: `Parse: ${error.start?.position}:${error.stop?.position} | ${error.message}`,
     }));
   }
   return annotations;
@@ -385,10 +385,10 @@ export const mapParserErrorsToAceMarkers = (errors: CqlError[]) => {
   if (errors) {
     markers = errors.map((error) => ({
       range: new Range(
-        error.start.line - 1,
-        error.start.position,
-        error.stop.line - 1,
-        error.stop.position
+        error.start?.line - 1,
+        error.start?.position,
+        error.stop?.line - 1,
+        error.stop?.position
       ),
       clazz: "editor-error-underline",
       type: "text",
