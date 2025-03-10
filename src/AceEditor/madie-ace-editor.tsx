@@ -76,6 +76,12 @@ export interface UpdatedCqlObject {
   isUsingStatementChanged?: boolean;
   isValueSetChanged?: boolean;
   isFhirHelpersAliasChanged?: boolean;
+  isConceptRemoved?: boolean;
+}
+
+export interface ParsedCqlObject {
+  cql: ParsedCql;
+  isConceptRemoved?: boolean;
 }
 
 export const updateUsingStatements = (
@@ -202,26 +208,24 @@ export const parseEditorContent = (content): CqlError[] => {
   return errors;
 };
 
-const parseCql = (editorVal): ParsedCql => {
+const parseCql = (editorVal): ParsedCqlObject => {
   //TODO: post MVP, move to ANTLR Parser, possibly the listener?
   //look at/use enterConceptDefinition
+  let isConceptRemoved = false;
   if (editorVal) {
-    const conceptToRemove = editorVal?.match(/^\s*concept .*/gm);
+    const conceptToRemove = editorVal?.match(/^\s*concept[\s\S]*?}.*/gim);
     if (conceptToRemove) {
       conceptToRemove.map((conceptLine) => {
-        editorVal = editorVal?.replace(
-          conceptLine,
-          "/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/"
-        );
+        editorVal = editorVal?.replace(conceptLine, "");
       });
+      isConceptRemoved = true;
     }
     const parsedCql = new CqlAntlr(editorVal)?.parse();
     const cqlArrayToBeFiltered = editorVal?.split("\n");
     const libraryContent = parsingLibrary(parsedCql, cqlArrayToBeFiltered);
     return {
-      cqlArrayToBeFiltered,
-      libraryContent,
-      parsedCql,
+      cql: { cqlArrayToBeFiltered, libraryContent, parsedCql },
+      isConceptRemoved: isConceptRemoved,
     };
   }
 };
@@ -255,13 +259,15 @@ const updateCql = (
   libraryName,
   libraryVersion,
   usedModel,
-  modelVersion
+  modelVersion,
+  conceptRemoved
 ): UpdatedCqlObject => {
   const cqlUpdates = {
     cql: "",
     isLibraryStatementChanged: false,
     isUsingStatementChanged: false,
     isValueSetChanged: false,
+    isConceptRemoved: false,
   } as UpdatedCqlObject;
 
   if (parsedEditorCql) {
@@ -316,6 +322,7 @@ const updateCql = (
     }
     cqlUpdates.cql = parsedEditorCql?.cqlArrayToBeFiltered?.join("\n");
   }
+  cqlUpdates.isConceptRemoved = conceptRemoved;
   return cqlUpdates;
 };
 
@@ -335,22 +342,24 @@ export const updateEditorContent = async (
   ) {
     const parsedEditorCql = await parseCql(editorVal || "");
     return updateCql(
-      parsedEditorCql,
+      parsedEditorCql?.cql,
       libraryName,
       versionString,
       usingName,
-      usingVersion
+      usingVersion,
+      parsedEditorCql?.isConceptRemoved
     );
   } else {
     if (existingCql && existingCqlLibraryName !== libraryName) {
       const parsedEditorCql = await parseCql(existingCql);
       if (parsedEditorCql) {
         return updateCql(
-          parsedEditorCql,
+          parsedEditorCql?.cql,
           libraryName,
           versionString,
           usingName,
-          usingVersion
+          usingVersion,
+          parsedEditorCql?.isConceptRemoved
         );
       }
     }
@@ -362,7 +371,7 @@ export const updateEditorContent = async (
 
 export const isUsingStatementEmpty = (editorVal): boolean => {
   const parsedContents = parseCql(editorVal);
-  return parsedContents?.parsedCql?.usings?.length === 0;
+  return parsedContents?.cql?.parsedCql?.usings?.length === 0;
 };
 
 export const mapParserErrorsToAceAnnotations = (

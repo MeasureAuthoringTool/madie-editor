@@ -494,11 +494,10 @@ describe("synching the cql", () => {
 });
 describe("ParsingCQL Function, Kill Concept Declaration", () => {
   it("Replace concept declaration with comment", async () => {
-    const expectValue = `library Testing version '0.0.000'
-/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const expectValue = `library Testing version '0.0.000'\n`;
     const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
-  concept lalala`,
+  concept "lalala" { "test" }`,
       "",
       "Testing",
       "Test",
@@ -529,11 +528,10 @@ I want to decalre a concept lalala`,
   });
 
   it("Replace concept declaration with comment even with a LOT of spaces", async () => {
-    const expectValue = `library Testing version '0.0.000'
-/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const expectValue = `library Testing version '0.0.000'\n`;
     const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
-                    concept lalala`,
+                    concept "lalala" { "test" }`,
       "",
       "Testing",
       "Test",
@@ -549,11 +547,10 @@ I want to decalre a concept lalala`,
 
 describe("isUsingStatementEmpty", () => {
   it("Replace concept declaration with comment", async () => {
-    const expectValue = `library Testing version '0.0.000'
-/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const expectValue = `library Testing version '0.0.000'\n`;
     const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
-  concept lalala`,
+  concept "lalala" { "test" }`,
       "",
       "Testing",
       "Test",
@@ -567,11 +564,10 @@ describe("isUsingStatementEmpty", () => {
   });
 
   it("Replace concept declaration with comment even with a LOT of spaces", async () => {
-    const expectValue = `library Testing version '0.0.000'
-/*CONCEPT DECLARATION REMOVED: CQL concept construct shall NOT be used.*/`;
+    const expectValue = `library Testing version '0.0.000'\n`;
     const updatedContents = await updateEditorContent(
       `library MesTest2 version '0.0.000'
-                    concept lalala`,
+                    concept "lalala" { "test" }`,
       "",
       "Testing",
       "Test",
