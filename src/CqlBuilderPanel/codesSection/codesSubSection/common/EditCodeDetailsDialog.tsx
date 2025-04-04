@@ -17,7 +17,7 @@ export default function EditCodeDetailsDialog({
 }) {
   const formik = useFormik({
     initialValues: {
-      suffix: selectedCodeDetails?.suffix,
+      suffix: selectedCodeDetails?.suffix || "",
       versionIncluded: selectedCodeDetails?.versionIncluded || false,
     },
     validationSchema: SuffixSchemaValidator,
