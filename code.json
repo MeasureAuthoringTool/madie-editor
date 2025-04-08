@@ -20,13 +20,7 @@
   "platforms": [],
   "categories": [],
   "softwareType": "",
-  "languages": [
-    "TypeScript",
-    "SCSS",
-    "JavaScript",
-    "CSS",
-    "Shell"
-  ],
+  "languages": ["TypeScript", "SCSS", "JavaScript", "CSS", "Shell"],
   "maintenance": "",
   "date": {
     "created": "2021-08-31T22:30:47Z",
