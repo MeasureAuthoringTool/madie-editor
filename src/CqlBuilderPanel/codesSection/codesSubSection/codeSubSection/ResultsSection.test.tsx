@@ -180,8 +180,10 @@ describe("Results Section component", () => {
     userEvent.type(suffixInput, "12345");
     userEvent.tab();
     await waitFor(() => {
-      expect(suffixInput.value).toEqual("1234"); // max length is 4
-      expect(screen.getByTestId("apply-button")).toBeEnabled();
+      expect(screen.getByTestId("code-suffix-helper-text").textContent).toEqual(
+        "Suffix length must be 4 digits or less"
+      );
+      expect(screen.getByTestId("apply-button")).toBeDisabled();
     });
 
     // valid suffix values
