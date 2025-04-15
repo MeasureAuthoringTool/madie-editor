@@ -142,11 +142,11 @@ const Results = ({
   const data = visibleLibraries.map((library) => {
     return {
       id: library.id,
-      librarySetId: library.librarySet.librarySetId,
+      librarySetId: library.librarySet?.librarySetId,
       name: library.cqlLibraryName,
       version: library.version,
       alias: library.alias,
-      owner: library.librarySet.owner,
+      owner: library.librarySet?.owner,
     };
   });
 
