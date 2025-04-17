@@ -77,13 +77,13 @@ describe("LibrarySearch component tests", () => {
       [
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
-        mockCqlLibraries[0].createdBy,
+        mockCqlLibraries[0].owner,
         "",
       ],
       [
         mockCqlLibraries[1].cqlLibraryName,
         mockCqlLibraries[1].version,
-        mockCqlLibraries[1].createdBy,
+        mockCqlLibraries[1].owner,
         "",
       ],
     ];

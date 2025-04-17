@@ -146,7 +146,7 @@ const Results = ({
       name: library.cqlLibraryName,
       version: library.version,
       alias: library.alias,
-      owner: library.createdBy,
+      owner: library.owner,
     };
   });
 
