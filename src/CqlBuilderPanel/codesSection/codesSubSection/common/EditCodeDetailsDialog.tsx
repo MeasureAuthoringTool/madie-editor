@@ -17,7 +17,7 @@ export default function EditCodeDetailsDialog({
 }) {
   const formik = useFormik({
     initialValues: {
-      suffix: selectedCodeDetails?.suffix,
+      suffix: selectedCodeDetails?.suffix || "",
       versionIncluded: selectedCodeDetails?.versionIncluded || false,
     },
     validationSchema: SuffixSchemaValidator,
@@ -102,6 +102,7 @@ export default function EditCodeDetailsDialog({
               helperText={formik.errors["suffix"]}
               size="small"
               error={Boolean(formik.errors.suffix)}
+              maxLength={4}
             />
           </div>
           <div tw="flex-grow pl-5 mt-2">

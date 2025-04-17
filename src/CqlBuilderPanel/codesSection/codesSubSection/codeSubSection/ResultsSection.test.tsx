@@ -183,9 +183,9 @@ describe("Results Section component", () => {
       expect(screen.getByTestId("code-suffix-helper-text").textContent).toEqual(
         "Suffix length must be 4 digits or less"
       );
+      expect(screen.getByTestId("apply-button")).toBeDisabled();
     });
-    // suffix is still invalid
-    expect(screen.getByTestId("apply-button")).toBeDisabled();
+
     // valid suffix values
     userEvent.clear(suffixInput);
     userEvent.type(suffixInput, "1234");
