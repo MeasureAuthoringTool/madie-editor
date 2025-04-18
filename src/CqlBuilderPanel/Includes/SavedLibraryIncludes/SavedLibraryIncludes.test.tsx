@@ -65,7 +65,7 @@ describe("SavedLibraryIncludes Component tests", () => {
         mockCqlLibraries[0].alias,
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
-        mockCqlLibraries[0].librarySet.owner,
+        "",
         "",
       ],
     ];
