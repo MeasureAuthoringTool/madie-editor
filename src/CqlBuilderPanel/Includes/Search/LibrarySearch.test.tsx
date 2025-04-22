@@ -78,13 +78,13 @@ describe("LibrarySearch component tests", () => {
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
         mockCqlLibraries[0].owner,
-        "",
+        "View / Apply",
       ],
       [
         mockCqlLibraries[1].cqlLibraryName,
         mockCqlLibraries[1].version,
         mockCqlLibraries[1].owner,
-        "",
+        "View / Apply",
       ],
     ];
     await waitFor(() => {
@@ -184,9 +184,7 @@ describe("LibrarySearch component tests", () => {
     const searchBtn = screen.getByTestId("search-btn");
     userEvent.click(searchBtn);
     await waitFor(() => {
-      const viewApplyBtn = screen.getByRole("button", {
-        name: /edit-button-0/i,
-      });
+      const viewApplyBtn = screen.getByTestId("edit-button-0");
       userEvent.click(viewApplyBtn);
     });
     const versionSelect = screen.getByTestId("version-select");
@@ -247,9 +245,7 @@ describe("LibrarySearch component tests", () => {
     const searchBtn = screen.getByTestId("search-btn");
     userEvent.click(searchBtn);
     await waitFor(() => {
-      const viewApplyBtn = screen.getByRole("button", {
-        name: /edit-button-0/i,
-      });
+      const viewApplyBtn = screen.getByTestId("edit-button-0");
       userEvent.click(viewApplyBtn);
     });
     const versionSelect = screen.getByTestId("version-select");
@@ -306,9 +302,7 @@ describe("LibrarySearch component tests", () => {
     const searchBtn = screen.getByTestId("search-btn");
     userEvent.click(searchBtn);
     await waitFor(() => {
-      const viewApplyBtn = screen.getByRole("button", {
-        name: /edit-button-0/i,
-      });
+      const viewApplyBtn = screen.getByTestId("edit-button-0");
       userEvent.click(viewApplyBtn);
     });
     expect(screen.getByRole("alert")).toHaveTextContent(fetchCqlErrorMessage);
