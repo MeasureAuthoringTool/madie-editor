@@ -84,6 +84,7 @@ const SavedLibraryIncludes = ({
                 alias: getAlias(parsedCql.includes, lib),
                 librarySet: lib.librarySet,
                 draft: false,
+                librarySetId: lib.librarySetId,
               } as CqlLibrary;
             });
             setLibraries(cqlLibraries);
