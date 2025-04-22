@@ -1,9 +1,6 @@
 import React from "react";
 import { Stack } from "@mui/material";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
-import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
+import { Button } from "@madie/madie-design-system/dist/react";
 
 interface PropTypes {
   id: number;
@@ -27,42 +24,31 @@ const IncludeResultActions = ({
       {canEdit && (
         <>
           {showDeleteAction && (
-            <ToolTippedIcon
-              tooltipMessage="Delete"
-              buttonProps={{
-                "data-testid": `delete-button-${id}`,
-                "aria-label": `delete-button-${id}`,
-                size: "small",
-                onClick: () => onDelete(id),
+            <Button
+              variant="outline"
+              data-testid={`delete-button-${id}`}
+              disabled={false}
+              tw="mr-4"
+              onClick={() => {
+                onDelete(id);
               }}
             >
-              <DeleteOutlineIcon color="error" />
-            </ToolTippedIcon>
+              Delete
+            </Button>
           )}
-          <ToolTippedIcon
-            tooltipMessage="Edit"
-            buttonProps={{
-              "data-testid": `edit-button-${id}`,
-              "aria-label": `edit-button-${id}`,
-              size: "small",
-              onClick: () => onEdit(id, true),
+          <Button
+            variant="outline"
+            data-testid={`edit-button-${id}`}
+            disabled={false}
+            tw="mr-4"
+            onClick={() => {
+              onEdit(id, canEdit);
             }}
           >
-            <BorderColorOutlinedIcon color="primary" />
-          </ToolTippedIcon>
+            View / Apply
+          </Button>
         </>
       )}
-      <ToolTippedIcon
-        tooltipMessage="View"
-        buttonProps={{
-          "data-testid": `view-button-${id}`,
-          "aria-label": `view-button-${id}`,
-          size: "small",
-          onClick: () => onView(id),
-        }}
-      >
-        <CodeOffOutlinedIcon color="primary" />
-      </ToolTippedIcon>
     </Stack>
   );
 };

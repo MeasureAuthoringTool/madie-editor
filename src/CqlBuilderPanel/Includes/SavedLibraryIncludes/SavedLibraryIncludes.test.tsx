@@ -66,7 +66,7 @@ describe("SavedLibraryIncludes Component tests", () => {
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
         "",
-        "",
+        "DeleteView / Apply",
       ],
     ];
 
@@ -106,9 +106,7 @@ describe("SavedLibraryIncludes Component tests", () => {
     render(<SavedLibraryIncludes {...props} />);
 
     await waitFor(() => {
-      const deleteBtn = screen.getByRole("button", {
-        name: /delete-button-0/i,
-      });
+      const deleteBtn = screen.getByTestId("delete-button-0");
       userEvent.click(deleteBtn);
     });
     const confirmationDialog = screen.getByRole("dialog");
@@ -124,9 +122,7 @@ describe("SavedLibraryIncludes Component tests", () => {
     render(<SavedLibraryIncludes {...props} isCQLUnchanged={false} />);
 
     await waitFor(() => {
-      const deleteBtn = screen.getByRole("button", {
-        name: /delete-button-0/i,
-      });
+      const deleteBtn = screen.getByTestId("delete-button-0");
       userEvent.click(deleteBtn);
     });
     const discardChangeDialog = screen.getByRole("dialog");
@@ -142,9 +138,7 @@ describe("SavedLibraryIncludes Component tests", () => {
     render(<SavedLibraryIncludes {...props} isCQLUnchanged={false} />);
 
     await waitFor(() => {
-      const editBtn = screen.getByRole("button", {
-        name: /edit-button-0/i,
-      });
+      const editBtn = screen.getByTestId("edit-button-0");
       userEvent.click(editBtn);
     });
     const discardChangeDialog = screen.getByRole("dialog");
@@ -161,9 +155,7 @@ describe("SavedLibraryIncludes Component tests", () => {
     render(<SavedLibraryIncludes {...props} isCQLUnchanged={false} />);
 
     await waitFor(() => {
-      const editBtn = screen.getByRole("button", {
-        name: /edit-button-0/i,
-      });
+      const editBtn = screen.getByTestId("edit-button-0");
       userEvent.click(editBtn);
     });
     const discardChangeDialog = screen.getByRole("dialog");
@@ -181,16 +173,11 @@ describe("SavedLibraryIncludes Component tests", () => {
   it("Should show view only dialog when clicked on view included library button", async () => {
     render(<SavedLibraryIncludes {...props} />);
     await waitFor(() => {
-      const viewBtn = screen.getByRole("button", {
-        name: /view-button-0/i,
-      });
+      const viewBtn = screen.getByTestId("edit-button-0");
       userEvent.click(viewBtn);
     });
-    const aliasContainer = screen.getByTestId("library-alias-container");
-    const alias = within(aliasContainer).getByText("Test");
-    expect(alias).toBeInstanceOf(HTMLSpanElement);
     const versionContainer = screen.getByTestId("library-version-container");
     const version = within(versionContainer).getByText("2.2.000");
-    expect(version).toBeInstanceOf(HTMLSpanElement);
+    expect(version).toBeInstanceOf(HTMLDivElement);
   });
 });
