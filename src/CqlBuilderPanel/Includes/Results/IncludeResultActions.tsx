@@ -27,36 +27,33 @@ const IncludeResultActions = ({
 }: PropTypes) => {
   return (
     <Stack direction="row" alignItems="center">
-      {canEdit && (
+      {showDeleteAction && canEdit && (
         <>
-          {showDeleteAction && (
-            <>
-              <ToolTippedIcon
-                tooltipMessage="Delete"
-                buttonProps={{
-                  "data-testid": `delete-button-${id}`,
-                  "aria-label": `delete-button-${id}`,
-                  size: "small",
-                  onClick: () => onDelete(id),
-                }}
-              >
-                <DeleteOutlineIcon color="error" />
-              </ToolTippedIcon>
-              <ToolTippedIcon
-                tooltipMessage="Edit"
-                buttonProps={{
-                  "data-testid": `edit-button-${id}`,
-                  "aria-label": `edit-button-${id}`,
-                  size: "small",
-                  onClick: () => onEdit(id, true),
-                }}
-              >
-                <BorderColorOutlinedIcon color="primary" />
-              </ToolTippedIcon>
-            </>
-          )}
+          <ToolTippedIcon
+            tooltipMessage="Delete"
+            buttonProps={{
+              "data-testid": `delete-button-${id}`,
+              "aria-label": `delete-button-${id}`,
+              size: "small",
+              onClick: () => onDelete(id),
+            }}
+          >
+            <DeleteOutlineIcon color="error" />
+          </ToolTippedIcon>
+          <ToolTippedIcon
+            tooltipMessage="Edit"
+            buttonProps={{
+              "data-testid": `edit-button-${id}`,
+              "aria-label": `edit-button-${id}`,
+              size: "small",
+              onClick: () => onEdit(id, true),
+            }}
+          >
+            <BorderColorOutlinedIcon color="primary" />
+          </ToolTippedIcon>
         </>
       )}
+
       {operation === "edit" && (
         <ToolTippedIcon
           tooltipMessage="View"
