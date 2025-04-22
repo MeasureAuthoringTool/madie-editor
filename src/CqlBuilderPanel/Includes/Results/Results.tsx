@@ -262,6 +262,7 @@ const Results = ({
               onDelete={showDeleteConfirmation}
               onEdit={showLibraryDetails}
               onView={showLibraryDetails}
+              operation={operation}
             />
           );
         },

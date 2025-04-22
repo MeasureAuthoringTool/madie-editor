@@ -66,7 +66,7 @@ describe("SavedLibraryIncludes Component tests", () => {
         mockCqlLibraries[0].cqlLibraryName,
         mockCqlLibraries[0].version,
         "",
-        "DeleteView / Apply",
+        "",
       ],
     ];
 
