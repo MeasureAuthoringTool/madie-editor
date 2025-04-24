@@ -173,11 +173,15 @@ const CqlLibraryDetailsDialog = ({
         maxWidth: "md",
         "data-testid": "view-apply-library-dialog",
       }}
-      cancelButtonProps={{
-        cancelText: "Cancel",
-        variant: "outline-filled",
-        "data-testid": "cancel-button",
-      }}
+      cancelButtonProps={
+        operation === "edit" && !canEdit
+          ? {
+              cancelText: "Cancel",
+              variant: "outline-filled",
+              "data-testid": "cancel-button",
+            }
+          : ""
+      }
       continueButtonProps={
         canEdit
           ? {
