@@ -53,8 +53,7 @@ const IncludeResultActions = ({
           </ToolTippedIcon>
         </>
       )}
-
-      {operation === "edit" && (
+      {operation === "edit" && !canEdit && (
         <ToolTippedIcon
           tooltipMessage="View"
           buttonProps={{
