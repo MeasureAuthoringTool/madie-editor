@@ -125,7 +125,6 @@ const CqlLibraryDetailsDialog = ({
       return <ReadOnlyLabelValue label="Alias" value={library?.alias} />;
     }
   };
-
   const getLibraryVersionView = () => {
     if (canEdit) {
       return (
