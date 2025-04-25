@@ -173,24 +173,18 @@ const CqlLibraryDetailsDialog = ({
         maxWidth: "md",
         "data-testid": "view-apply-library-dialog",
       }}
-      cancelButtonProps={
-        operation === "edit" && !canEdit
-          ? {
-              cancelText: "Cancel",
-              variant: "outline-filled",
-              "data-testid": "cancel-button",
-            }
-          : ""
-      }
+      cancelButtonProps={{
+        cancelText: "Cancel",
+        variant: "outline-filled",
+        "data-testid": "cancel-button",
+      }}
       continueButtonProps={
-        canEdit
-          ? {
-              type: "submit",
-              continueText: "Apply",
-              disabled: !canEdit || !(formik.isValid && formik.dirty),
-              "data-testid": "apply-button",
-            }
-          : ""
+        canEdit && {
+          type: "submit",
+          continueText: "Apply",
+          disabled: !canEdit || !(formik.isValid && formik.dirty),
+          "data-testid": "apply-button",
+        }
       }
     >
       <div tw="flex flex-row">
