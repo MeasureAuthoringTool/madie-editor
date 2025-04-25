@@ -125,7 +125,6 @@ const CqlLibraryDetailsDialog = ({
       return <ReadOnlyLabelValue label="Alias" value={library?.alias} />;
     }
   };
-
   const getLibraryVersionView = () => {
     if (canEdit) {
       return (
@@ -173,15 +172,11 @@ const CqlLibraryDetailsDialog = ({
         maxWidth: "md",
         "data-testid": "view-apply-library-dialog",
       }}
-      cancelButtonProps={
-        operation === "edit" && !canEdit
-          ? {
-              cancelText: "Cancel",
-              variant: "outline-filled",
-              "data-testid": "cancel-button",
-            }
-          : ""
-      }
+      cancelButtonProps={{
+        cancelText: "Cancel",
+        variant: "outline-filled",
+        "data-testid": "cancel-button",
+      }}
       continueButtonProps={
         canEdit
           ? {
