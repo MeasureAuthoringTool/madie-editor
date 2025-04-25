@@ -179,12 +179,14 @@ const CqlLibraryDetailsDialog = ({
         "data-testid": "cancel-button",
       }}
       continueButtonProps={
-        canEdit && {
-          type: "submit",
-          continueText: "Apply",
-          disabled: !canEdit || !(formik.isValid && formik.dirty),
-          "data-testid": "apply-button",
-        }
+        canEdit
+          ? {
+              type: "submit",
+              continueText: "Apply",
+              disabled: !canEdit || !(formik.isValid && formik.dirty),
+              "data-testid": "apply-button",
+            }
+          : ""
       }
     >
       <div tw="flex flex-row">
