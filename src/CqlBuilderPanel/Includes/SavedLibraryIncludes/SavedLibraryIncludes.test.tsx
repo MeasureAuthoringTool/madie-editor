@@ -180,4 +180,54 @@ describe("SavedLibraryIncludes Component tests", () => {
     const version = within(versionContainer).getByText("2.2.000");
     expect(version).toBeInstanceOf(HTMLDivElement);
   });
+
+  it("Should show view only dialog with no Apply button", async () => {
+    render(
+      <SavedLibraryIncludes
+        cql={cql}
+        canEdit={false}
+        measureModel={"QDM"}
+        handleDeleteLibrary={jest.fn()}
+        isCQLUnchanged={true}
+        hasCqlError={false}
+        setEditorValue={jest.fn()}
+        setIsCQLUnchanged={jest.fn()}
+        handleEditLibrary={jest.fn()}
+      />
+    );
+    await waitFor(() => {
+      const viewBtn = screen.getByTestId("view-button-0");
+      userEvent.click(viewBtn);
+    });
+
+    const cancelBtn = screen.getByTestId("cancel-button");
+    expect(cancelBtn).toBeInTheDocument();
+    const applyBtn = screen.queryByTestId("apply-button");
+    expect(applyBtn).not.toBeInTheDocument();
+  });
+
+  it("Should show edit dialog with Apply button", async () => {
+    render(
+      <SavedLibraryIncludes
+        cql={cql}
+        canEdit={true}
+        measureModel={"QDM"}
+        handleDeleteLibrary={jest.fn()}
+        isCQLUnchanged={true}
+        hasCqlError={false}
+        setEditorValue={jest.fn()}
+        setIsCQLUnchanged={jest.fn()}
+        handleEditLibrary={jest.fn()}
+      />
+    );
+    await waitFor(() => {
+      const viewBtn = screen.getByTestId("edit-button-0");
+      userEvent.click(viewBtn);
+    });
+
+    const cancelBtn = screen.getByTestId("cancel-button");
+    expect(cancelBtn).toBeInTheDocument();
+    const applyBtn = screen.getByTestId("apply-button");
+    expect(applyBtn).toBeInTheDocument();
+  });
 });
