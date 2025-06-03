@@ -8,6 +8,15 @@ import userEvent from "@testing-library/user-event";
 
 jest.mock("./useCodeSystems");
 
+jest.mock("@madie/madie-util", () => ({
+  useFeatureFlags: () => ({
+    MinimizeAlerts: false,
+  }),
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
+}));
+
 const mockConfig: ServiceConfig = {
   qdmElmTranslationService: {
     baseUrl: "elm.com",
