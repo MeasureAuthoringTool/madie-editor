@@ -10,6 +10,9 @@ jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
   }),
+  useFeatureFlags: () => ({
+    MinimizeAlerts: false,
+  }),
 }));
 
 const mockCodeDetailsList: any = {
