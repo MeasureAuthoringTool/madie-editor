@@ -19,7 +19,6 @@ export class QdmElmTranslationServiceApi {
               "Content-Type": "text/plain",
             },
             params: {
-              errorSeverity: "Info",
               annotations: true,
               locators: true,
               "disable-list-demotion": true,
