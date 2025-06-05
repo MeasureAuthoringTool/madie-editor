@@ -27,6 +27,7 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
+import { useFeatureFlags } from "@madie/madie-util";
 
 type SavedCodesColumnRow = {
   name: string;
@@ -323,6 +324,7 @@ export default function SavedCodesSubSection({
       versionIncluded: parsedCode?.versionIncluded,
     });
   };
+  const featureFlags = useFeatureFlags();
 
   return (
     <div>
@@ -342,6 +344,7 @@ export default function SavedCodesSubSection({
             </div>
           }
           canClose={false}
+          minimizeAlerts={featureFlags?.MinimizeAlerts}
         />
       )}
 
