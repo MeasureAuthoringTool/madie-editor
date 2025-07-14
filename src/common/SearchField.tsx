@@ -1,7 +1,7 @@
 import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { TextField } from "@madie/madie-design-system/dist/react";
+import { InputAdornment } from '@mui/material';
+import { TextField } from "@madie/madie-design-system";
 
 interface FormikFieldProps {
   name: string;

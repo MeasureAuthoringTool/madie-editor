@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import ControlledAutoComplete from "../../../common/ControlledAutoComplete";
 import { useFormik } from "formik";
 import SearchField from "../../../common/SearchField";
-import { Button } from "@madie/madie-design-system/dist/react";
+import { Button } from "@madie/madie-design-system";
 
 // human readable label & formik value / query param key
 export const SEARCH_CATEGORIES = [

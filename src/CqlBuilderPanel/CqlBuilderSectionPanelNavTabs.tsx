@@ -1,5 +1,6 @@
 import React from "react";
-import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
+import { Tabs, Tab } from "@madie/madie-design-system";
+
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;

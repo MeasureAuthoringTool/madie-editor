@@ -19,7 +19,7 @@ import {
   MadieDiscardDialog,
   Pagination,
   Toast,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import CqlLibraryDetailsDialog, {
   SelectedLibrary,
 } from "../CqlLibraryDetailsDialog";

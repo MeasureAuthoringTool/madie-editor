@@ -6,7 +6,7 @@ import Results from "./Results/Results";
 import useTerminologyServiceApi, {
   ValueSetForSearch,
 } from "../../api/useTerminologyServiceApi";
-import { MadieSpinner } from "@madie/madie-design-system/dist/react";
+import { MadieSpinner } from "@madie/madie-design-system";
 import "./ValueSets.scss";
 
 interface ValueSetsProps {

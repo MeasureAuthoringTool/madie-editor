@@ -6,7 +6,7 @@ import {
   Button,
   AutoComplete,
   TextField,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import * as _ from "lodash";

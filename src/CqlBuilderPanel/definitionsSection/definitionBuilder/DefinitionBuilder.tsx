@@ -6,7 +6,7 @@ import {
   Button,
   TextArea,
   TextField,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import "../Definitions.scss";
 import { DefinitionSectionSchemaValidator } from "../../../validations/DefinitionSectionSchemaValidator";
 import ExpressionEditor from "../expressionSection/ExpressionEditor";

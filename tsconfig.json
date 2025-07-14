@@ -1,11 +1,15 @@
 {
   "extends": "ts-config-single-spa",
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationDir": "dist",
     "declarationMap": true,
     "jsx": "react-jsx",
-    "target": "es6",
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
     "sourceMap": true,
     "skipLibCheck": true
   },

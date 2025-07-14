@@ -4,7 +4,7 @@ import Search from "../Search";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
 } from "../../../api/useCqlLibraryServiceApi";
-import { Toast } from "@madie/madie-design-system/dist/react";
+import { Toast } from "@madie/madie-design-system";
 import Results from "../Results/Results";
 import toastReducer from "../../../common/ToastReducer";
 

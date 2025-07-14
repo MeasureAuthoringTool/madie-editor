@@ -4,7 +4,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
-import { Button } from "@madie/madie-design-system/dist/react";
+import { Button } from "@madie/madie-design-system";
 
 interface PropTypes {
   id: number;

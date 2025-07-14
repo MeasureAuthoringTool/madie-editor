@@ -1,5 +1,5 @@
 import React from "react";
-import { MadieDialog } from "@madie/madie-design-system/dist/react";
+import { MadieDialog } from "@madie/madie-design-system";
 import FunctionBuilder from "./functionBuilder/FunctionBuilder";
 
 interface PropTypes {

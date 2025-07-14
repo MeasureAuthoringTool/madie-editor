@@ -21,7 +21,7 @@ import {
   MadieDeleteDialog,
   Pagination,
   Toast,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import { Stack } from "@mui/material";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import "./Arguments.scss";

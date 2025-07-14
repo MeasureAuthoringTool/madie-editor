@@ -24,24 +24,21 @@ module.exports = (webpackConfigEnv, argv) => {
     orgPackagesAsExternal: false,
   });
 
-  // This must be updated for any single-spa applications or utilities,
-  // or any other package to be loaded externally
-  const externalsConfig = {
-    externals: ["@madie/madie-util"],
+  const babelLoaderRule = {
+    test: /\.(js|ts|jsx|tsx)$/,
+    exclude: /node_modules/,
+    use: "babel-loader", // Uses shared babel.config.js
   };
 
   const newCssRule = {
     module: {
       rules: [
-        { test: /\.m?js/, type: "javascript/auto" },
+        { test: /\.m?js$/, type: "javascript/auto" },
+        babelLoaderRule,
         {
           test: /\.css$/i,
           include: [/node_modules/, /src/],
-          use: [
-            "style-loader",
-            "css-loader", // uses modules: true, which I think we want. Parent does not
-            "postcss-loader",
-          ],
+          use: ["style-loader", "css-loader", "postcss-loader"],
         },
         {
           test: /\.scss$/,
@@ -49,31 +46,25 @@ module.exports = (webpackConfigEnv, argv) => {
             extensions: [".scss", ".sass"],
           },
           use: [
-            {
-              loader: "style-loader",
-            },
+            "style-loader",
             {
               loader: "css-loader",
               options: { sourceMap: true, importLoaders: 2 },
             },
             {
               loader: "postcss-loader",
-              options: {
-                sourceMap: true,
-              },
+              options: { sourceMap: true },
             },
-            {
-              loader: "sass-loader",
-            },
+            "sass-loader",
           ],
           exclude: /node_modules/,
         },
         { test: /\.json$/, type: "json" },
+        
       ],
     },
   };
 
-  // node polyfills
   const polyfillConfig = {
     resolve: {
       fallback: {
@@ -83,5 +74,33 @@ module.exports = (webpackConfigEnv, argv) => {
     plugins: [new NodePolyfillPlugin()],
   };
 
-  return merge(defaultConfig, polyfillConfig, newCssRule, externalsConfig);
+  const esmOutputConfig = {
+    output: {
+      filename: "madie-madie-editor.js",
+      module: true,
+      library: {
+        type: "module"
+      },
+      environment: {
+        module: true
+      }
+    },
+    experiments: {
+      outputModule: true
+    },
+    externalsType: "module",
+    externals: {
+      react: "react",
+      "react-dom": "react-dom",
+      "react-dom/client": "react-dom/client",
+      // these will compile common jsx and break every esm build without using them as externals.
+      'react/jsx-runtime': 'react/jsx-runtime',
+      'react/jsx-dev-runtime': 'react/jsx-dev-runtime',
+      
+      "@madie/madie-root": "@madie/madie-root",
+      "@madie/madie-util": "@madie/madie-util"
+    }
+  };
+
+  return merge(defaultConfig, polyfillConfig, newCssRule, esmOutputConfig);
 };

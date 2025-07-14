@@ -1,7 +1,6 @@
 import React from "react";
 import { FormControl, Autocomplete, Checkbox } from "@mui/material";
-import PropTypes from "prop-types";
-import { TextField } from "@madie/madie-design-system/dist/react/";
+import { TextField } from "@madie/madie-design-system";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import "./ControlledAutoCompleteStyles.scss";
@@ -151,23 +150,6 @@ const ControlledAutoComplete = ({
       />
     </FormControl>
   );
-};
-
-ControlledAutoComplete.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string,
-  placeHolder: PropTypes.shape({
-    name: PropTypes.string,
-    value: PropTypes.any,
-  }),
-  defaultValue: PropTypes.any,
-  required: PropTypes.bool,
-  disabled: PropTypes.bool,
-  error: PropTypes.bool,
-  helperText: PropTypes.string,
-  options: PropTypes.arrayOf(PropTypes.string),
-  multipleSelect: PropTypes.bool,
-  limitTags: PropTypes.number,
 };
 
 export default ControlledAutoComplete;

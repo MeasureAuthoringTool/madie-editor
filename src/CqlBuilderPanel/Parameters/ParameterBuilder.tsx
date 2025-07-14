@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
-import { Button, TextField } from "@madie/madie-design-system/dist/react";
+import { Button, TextField } from "@madie/madie-design-system";
 import "./Parameters.scss";
 import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValidator";
 import AceEditor from "react-ace";

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useFormik } from "formik";
 import ExpandingSection from "../../common/ExpandingSection";
-import { TextField, Button } from "@madie/madie-design-system/dist/react";
+import { TextField, Button } from "@madie/madie-design-system";
 import AceEditor from "react-ace";
 import * as Yup from "yup";
 
