@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { CqlAntlr, CqlInclude } from "@madie/cql-antlr-parser/dist/src";
-import { Toast } from "@madie/madie-design-system/dist/react";
+import { Toast } from "@madie/madie-design-system";
 import Results from "../Results/Results";
 import useCqlLibraryServiceApi, {
   CqlLibrary,

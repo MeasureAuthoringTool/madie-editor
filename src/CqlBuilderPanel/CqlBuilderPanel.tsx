@@ -11,7 +11,7 @@ import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceAp
 import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
 import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
 import { AxiosResponse } from "axios";
-import { MadieAlert } from "@madie/madie-design-system/dist/react";
+import { MadieAlert } from "@madie/madie-design-system";
 import { IconButton } from "@mui/material";
 import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
 

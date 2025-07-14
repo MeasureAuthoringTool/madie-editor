@@ -5,7 +5,7 @@ import {
   Select,
   Button,
   AutoComplete,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import {

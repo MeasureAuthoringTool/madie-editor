@@ -13,7 +13,7 @@ import {
   Popover,
   MadieDialog,
   TextField,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 
 import {
   useReactTable,

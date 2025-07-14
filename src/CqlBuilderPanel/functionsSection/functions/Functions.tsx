@@ -18,7 +18,7 @@ import Skeleton from "@mui/material/Skeleton";
 import {
   Pagination,
   MadieConfirmDialog,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import EditFunctionDialog from "../EditFunctionDialog";
 import Tooltip from "@mui/material/Tooltip";
 

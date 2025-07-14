@@ -1,5 +1,5 @@
 import React from "react";
-import { MadieDialog, TextField } from "@madie/madie-design-system/dist/react";
+import { MadieDialog, TextField } from "@madie/madie-design-system";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import "twin.macro";
 import "styled-components/macro";

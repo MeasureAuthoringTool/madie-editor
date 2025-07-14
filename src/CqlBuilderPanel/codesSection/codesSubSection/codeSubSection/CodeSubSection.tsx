@@ -6,7 +6,7 @@ import useTerminologyServiceApi, {
   CodeSystem,
 } from "../../../../api/useTerminologyServiceApi";
 import "./CodeSubSection.scss";
-import { Toast } from "@madie/madie-design-system/dist/react";
+import { Toast } from "@madie/madie-design-system";
 
 interface CodeSectionProps {
   canEdit: boolean;

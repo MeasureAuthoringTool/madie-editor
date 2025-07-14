@@ -14,7 +14,7 @@ import {
   MadieAlert,
   MadieDeleteDialog,
   MadieDiscardDialog,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";

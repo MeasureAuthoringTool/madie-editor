@@ -1,7 +1,7 @@
 import React from "react";
 import ControlledAutoComplete from "../../../common/ControlledAutoComplete";
 import { useFormik } from "formik";
-import { Button } from "@madie/madie-design-system/dist/react";
+import { Button } from "@madie/madie-design-system";
 import SearchField from "../../../common/SearchField";
 
 export const FILTER_CATEGORIES = [

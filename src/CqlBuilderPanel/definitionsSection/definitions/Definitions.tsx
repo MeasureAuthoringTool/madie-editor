@@ -13,7 +13,7 @@ import {
   MadieDeleteDialog,
   MadieDiscardDialog,
   TruncateText,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import Skeleton from "@mui/material/Skeleton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";

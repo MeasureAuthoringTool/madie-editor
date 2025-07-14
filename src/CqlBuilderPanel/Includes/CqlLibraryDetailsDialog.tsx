@@ -6,7 +6,7 @@ import {
   MadieDialog,
   TextField,
   Select,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import AceEditor from "react-ace";
 import { useFormik } from "formik";
 import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";

@@ -7,7 +7,7 @@ import {
   TextArea,
   TextField,
   Toast,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import "../Functions.scss";
 import { FunctionSectionSchemaValidator } from "../../../validations/FunctionSectionSchemaValidator";
 import ExpandingSection from "../../../common/ExpandingSection";

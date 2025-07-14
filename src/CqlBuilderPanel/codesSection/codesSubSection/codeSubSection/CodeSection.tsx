@@ -5,9 +5,9 @@ import {
   Select,
   TextField,
   Button,
-} from "@madie/madie-design-system/dist/react";
+} from "@madie/madie-design-system";
 import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { InputAdornment } from '@mui/material';
 import ExpandingSection from "../../../../common/ExpandingSection";
 import { useFormik } from "formik";
 import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";

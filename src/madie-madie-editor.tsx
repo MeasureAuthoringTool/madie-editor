@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import ReactDOM from "react-dom";
+import ReactDOMClient from "react-dom/client";
 import singleSpaReact from "single-spa-react";
 import Root from "./root.component";
 import MadieAceEditor, {
@@ -17,15 +17,18 @@ import {
   useGetAllErrors,
 } from "../src/validations/editorValidation";
 
+
 const lifecycles = singleSpaReact({
   React,
-  ReactDOM,
+  ReactDOMClient,
+  renderType: "createRoot",
   rootComponent: Root,
-  errorBoundary(err, info, props) {
-    // Customize the root error boundary for your microfrontend here.
-    return null;
+    errorBoundary(err, info, props) {
+    console.error("madie-cql-library-error", err);
+    return <div>The app has fallen and cannot get up. Please contact the help desk.</div>;
   },
 });
+
 
 export const MadieTerminologyEditor: FC<EditorPropsType> =
   CqlEditorWithTerminology;
