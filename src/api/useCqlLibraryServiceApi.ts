@@ -57,10 +57,9 @@ export class CqlLibraryServiceApi {
     }
   }
 
-  getVersionedCqlLibraryByNameVersionAndModel(
+  getVersionedCqlLibraryByNameVersion(
     name: string,
-    version: string,
-    model: string
+    version: string
   ): Promise<AxiosResponse<CqlLibrary>> {
     return axios.get(`${this.baseUrl}/cql-libraries/versioned`, {
       headers: {
@@ -69,7 +68,6 @@ export class CqlLibraryServiceApi {
       params: {
         name,
         version,
-        model,
         includeElm: false,
       },
     });
