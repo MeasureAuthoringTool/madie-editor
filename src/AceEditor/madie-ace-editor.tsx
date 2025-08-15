@@ -25,6 +25,10 @@ import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuil
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
 import CqlVersion from "@madie/cql-antlr-parser/dist/src/dto/CqlVersion";
+import {
+  makeAceSearchElementsAccessible,
+  wireAceSearchNavigation,
+} from "./ace-utils";
 
 export interface EditorPropsType {
   value: string;
@@ -507,21 +511,7 @@ const MadieAceEditor = ({
 
       // Cannot figure out a good way to gain access to searchBox logic, so just crawl the DOM and make elements tabbable
       requestAnimationFrame(() => {
-        document
-          .querySelectorAll<HTMLElement>(
-            ".ace_search input, .ace_search [action], .ace_searchbtn_close"
-          )
-          .forEach((el) => {
-            el.tabIndex = 0; // So we can navigate across block style.
-            el.setAttribute("role", "button"); // So we can hit spans.
-            // These buttons were never made with 508 compliance. The logic for on click is elsewhere, gonna hook it up anyway using a dom listener.
-            el.addEventListener("keydown", (e: KeyboardEvent) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault(); // prevent scrolling for space
-                el.click();
-              }
-            });
-          });
+        makeAceSearchElementsAccessible();
 
         // Top row
         const findPrevBtn = document.querySelector<HTMLElement>(
@@ -570,19 +560,7 @@ const MadieAceEditor = ({
         searchInSelectionBtn?.setAttribute("aria-label", "Search In Selection");
 
         // Rewire two buttons for option/ctrl +tab flow. Absolute positioning pulls x to unreachable area. this fixes it
-        findAllBtn?.addEventListener("keydown", (e: KeyboardEvent) => {
-          if (e.key === "Tab" && e.altKey && !e.shiftKey) {
-            e.preventDefault();
-            document.querySelector<HTMLElement>('span[action="hide"]')?.focus();
-          }
-        });
-
-        hideBtn?.addEventListener("keydown", (e: KeyboardEvent) => {
-          if (e.key === "Tab" && e.altKey && !e.shiftKey) {
-            e.preventDefault();
-            toggleReplaceBtn?.focus();
-          }
-        });
+        wireAceSearchNavigation(findAllBtn, hideBtn, toggleReplaceBtn);
       });
       //@ts-ignore
     } else if (editor.searchBox.active) {
