@@ -66,10 +66,9 @@ const SavedLibraryIncludes = ({
         const promises = parsedCql?.includes.map(async (l) => {
           return (
             await libraryService.current
-          ).getVersionedCqlLibraryByNameVersionAndModel(
+          ).getVersionedCqlLibraryByNameVersion(
             l.name,
-            l.version.replace(/["']/g, ""),
-            measureModel
+            l.version.replace(/["']/g, "")
           );
         });
 

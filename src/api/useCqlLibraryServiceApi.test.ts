@@ -74,15 +74,14 @@ describe("CqlLibraryServiceApi Tests", () => {
     }
   });
 
-  it("Should return versioned cql library for given name, version and model", async () => {
+  it("Should return versioned cql library for given name and version", async () => {
     mockedAxios.get.mockImplementation((url) =>
       Promise.resolve({ data: cqlLibraries[0], status: 200 })
     );
     const response =
-      await cqlLibraryServiceApi.getVersionedCqlLibraryByNameVersionAndModel(
+      await cqlLibraryServiceApi.getVersionedCqlLibraryByNameVersion(
         "Test_1",
-        "1.1.111",
-        "QDM"
+        "1.1.111"
       );
     expect(response.status).toEqual(200);
     expect(response.data.cqlLibraryName).toEqual(

@@ -10,7 +10,6 @@ import "ace-builds/src-noconflict/ext-searchbox";
 
 const ace = require("ace-builds/src-noconflict/ace");
 ace.config.set("basePath", require("ace-builds").config.basePath);
-
 import CqlMode from "./cql-mode";
 import { Ace, Range } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
@@ -26,6 +25,10 @@ import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuil
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
 import CqlVersion from "@madie/cql-antlr-parser/dist/src/dto/CqlVersion";
+import {
+  makeAceSearchElementsAccessible,
+  wireAceSearchNavigation,
+} from "./ace-utils";
 
 export interface EditorPropsType {
   value: string;
@@ -505,16 +508,70 @@ const MadieAceEditor = ({
     //@ts-ignore
     if (!editor?.searchBox) {
       editor.execCommand("find");
-      // @ts-ignore
+
+      // Cannot figure out a good way to gain access to searchBox logic, so just crawl the DOM and make elements tabbable
+      requestAnimationFrame(() => {
+        makeAceSearchElementsAccessible();
+
+        // Top row
+        const findPrevBtn = document.querySelector<HTMLElement>(
+          'span[action="findPrev"]'
+        );
+        findPrevBtn?.setAttribute("aria-label", "Find Previous");
+
+        const findNextBtn = document.querySelector<HTMLElement>(
+          'span[action="findNext"]'
+        );
+        findNextBtn?.setAttribute("aria-label", "Find Next");
+
+        const findAllBtn = document.querySelector<HTMLElement>(
+          'span[action="findAll"]'
+        );
+        findAllBtn?.setAttribute("aria-label", "Find All");
+
+        const hideBtn = document.querySelector<HTMLElement>(
+          'span[action="hide"]'
+        );
+        hideBtn?.setAttribute("aria-label", "Close Search");
+
+        // Bottom row
+        const toggleReplaceBtn = document.querySelector<HTMLElement>(
+          'span[action="toggleReplace"]'
+        );
+        toggleReplaceBtn?.setAttribute("aria-label", "Toggle Replace");
+        const toggleRegexModeBtn = document.querySelector<HTMLElement>(
+          'span[action="toggleRegexpMode"]'
+        );
+        toggleRegexModeBtn?.setAttribute("aria-label", "Toggle Regex Mode");
+        const toggleCaseSensitiveBtn = document.querySelector<HTMLElement>(
+          'span[action="toggleCaseSensitive"]'
+        );
+        toggleCaseSensitiveBtn?.setAttribute(
+          "aria-label",
+          "Toggle Case Sensitive Mode"
+        );
+        const toggleWholeWordsBtn = document.querySelector<HTMLElement>(
+          'span[action="toggleWholeWords"]'
+        );
+        toggleWholeWordsBtn?.setAttribute("aria-label", "Toggle Whole Words");
+        const searchInSelectionBtn = document.querySelector<HTMLElement>(
+          'span[action="searchInSelection"]'
+        );
+        searchInSelectionBtn?.setAttribute("aria-label", "Search In Selection");
+
+        // Rewire two buttons for option/ctrl +tab flow. Absolute positioning pulls x to unreachable area. this fixes it
+        wireAceSearchNavigation(findAllBtn, hideBtn, toggleReplaceBtn);
+      });
+      //@ts-ignore
     } else if (editor.searchBox.active) {
-      // @ts-ignore
+      //@ts-ignore
       editor.searchBox.hide();
-      // assume that it's been executed
     } else {
       //@ts-ignore
       editor.searchBox.show();
     }
   };
+
   useEffect(() => {
     if (editor && validationsEnabled) {
       let session = editor.getSession();
@@ -581,7 +638,6 @@ const MadieAceEditor = ({
         }}
         onLoad={(aceEditor) => {
           // On load we want to tell the ace editor that it's inside of a scrollabel page
-          aceEditor.setOption("autoScrollEditorIntoView", true);
           setEditor(aceEditor);
         }}
         width="100%"

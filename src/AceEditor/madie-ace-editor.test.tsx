@@ -1,5 +1,5 @@
 import * as React from "react";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import MadieAceEditor, {
   mapParserErrorsToAceAnnotations,
   mapParserErrorsToAceMarkers,
@@ -787,4 +787,65 @@ describe("parseEditorContent", () => {
     const errors = parseEditorContent(cql);
     expect(errors.length).toEqual(0);
   });
+});
+
+it("408 and keyboard events", () => {
+  jest.useFakeTimers();
+
+  // Mock requestAnimationFrame to run
+  const rafCallbacks: FrameRequestCallback[] = [];
+  jest
+    .spyOn(window, "requestAnimationFrame")
+    .mockImplementation((cb: FrameRequestCallback) => {
+      rafCallbacks.push(cb);
+      return 1;
+    });
+
+  const execCommandMock = jest.fn();
+  const showMock = jest.fn();
+  const hideMock = jest.fn();
+
+  render(<MadieAceEditor value="" onChange={() => {}} />);
+  (window as any).aceRef = {
+    current: {
+      editor: {
+        execCommand: execCommandMock,
+        searchBox: { active: false, show: showMock, hide: hideMock },
+      },
+    },
+  };
+
+  // Don't know how to get the searchbox to show up. So we'll make a fake one
+  const fakeInput = document.createElement("input");
+  const fakeSpan = document.createElement("span");
+  fakeSpan.setAttribute("action", "something");
+  const fakeClose = document.createElement("span");
+  fakeClose.className = "ace_searchbtn_close";
+
+  document.body.append(fakeInput, fakeSpan, fakeClose);
+
+  const findAllBtn = document.createElement("span");
+  findAllBtn.setAttribute("action", "findAll");
+  const hideBtn = document.createElement("span");
+  hideBtn.setAttribute("action", "hide");
+  const toggleReplaceBtn = document.createElement("span");
+  toggleReplaceBtn.setAttribute("action", "toggleReplace");
+  document.body.append(findAllBtn, hideBtn, toggleReplaceBtn);
+
+  // Fire event to trigger toggleSearchBox
+  window.dispatchEvent(new CustomEvent("toggleEditorSearchBox"));
+
+  // Run the requestAnimationFrame callback now
+  rafCallbacks.forEach((cb) => cb(0));
+
+  fireEvent.keyDown(fakeInput, { key: "Enter" });
+
+  // Trigger Space
+  fireEvent.keyDown(fakeSpan, { key: " " });
+
+  // Trigger Alt+Tab
+  fireEvent.keyDown(findAllBtn, { key: "Tab", altKey: true });
+
+  // Trigger Alt+Tab on hideBtn
+  fireEvent.keyDown(hideBtn, { key: "Tab", altKey: true });
 });
