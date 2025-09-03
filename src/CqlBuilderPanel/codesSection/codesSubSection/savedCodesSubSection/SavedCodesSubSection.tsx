@@ -342,7 +342,6 @@ export default function SavedCodesSubSection({
             </div>
           }
           canClose={false}
-          minimizeAlerts={true}
         />
       )}
 

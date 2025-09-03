@@ -176,6 +176,7 @@ export default function CqlBuilderPanel({
                 </div>
               }
               canClose={false}
+              minimizeAlerts={false}
             />
           </div>
         )}
