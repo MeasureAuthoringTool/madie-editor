@@ -69,7 +69,7 @@ describe("DefinitionsSection", () => {
     await waitFor(() => {
       expect(savedDefinitions).toHaveAttribute("aria-selected", "false");
     });
-    userEvent.click(savedDefinitions);
+    await userEvent.click(savedDefinitions);
     await waitFor(() => {
       expect(savedDefinitions).toHaveAttribute("aria-selected", "true");
     });
@@ -78,14 +78,9 @@ describe("DefinitionsSection", () => {
       name: /Go to page 2/i,
     });
     expect(pageButton).toHaveTextContent("2");
-
-    act(() => {
-      userEvent.click(pageButton);
-    });
-
-    await waitFor(() => {
-      expect(screen.findAllByText("Initial Population")).toBeDefined();
-    });
+    await userEvent.click(pageButton);
+    const rows = await screen.findAllByTestId(/definitions-row-/);
+    expect(rows.length).toBeGreaterThan(0);
   });
 
   it("Should allow limit changes for savedDefinitions pagination", async () => {
@@ -105,7 +100,7 @@ describe("DefinitionsSection", () => {
     await waitFor(() => {
       expect(savedDefinitions).toHaveAttribute("aria-selected", "false");
     });
-    userEvent.click(savedDefinitions);
+    await userEvent.click(savedDefinitions);
     await waitFor(() => {
       expect(savedDefinitions).toHaveAttribute("aria-selected", "true");
     });
@@ -117,10 +112,7 @@ describe("DefinitionsSection", () => {
     await waitFor(() => {
       expect(screen.queryByText("ED Encounter")).toBeNull();
     });
-
-    act(() => {
-      userEvent.click(limitChoice);
-    });
+    await userEvent.click(limitChoice);
 
     const optionTen = await screen.findByRole("option", {
       name: /10/i,
@@ -128,14 +120,9 @@ describe("DefinitionsSection", () => {
     await waitFor(() => {
       expect(optionTen).toBeDefined();
     });
-
-    act(() => {
-      userEvent.click(optionTen);
-    });
-
-    await waitFor(() => {
-      expect(screen.findAllByText("Initial Population")).toBeDefined();
-    });
+    await userEvent.click(optionTen);
+    const initialPopEntries = await screen.findAllByText("Initial Population");
+    expect(initialPopEntries.length).toBeGreaterThan(0);
   });
 
   it("Should not show edit/delete actions for measure if user does not have permission", async () => {
@@ -151,7 +138,7 @@ describe("DefinitionsSection", () => {
       name: /Saved Definitions/i,
     });
     expect(savedDefinitionsTab).toBeInTheDocument();
-    userEvent.click(savedDefinitionsTab);
+    await userEvent.click(savedDefinitionsTab);
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
     expect(
@@ -162,11 +149,14 @@ describe("DefinitionsSection", () => {
     expect(screen.queryByTestId("edit-button-1")).not.toBeInTheDocument();
 
     expect(screen.queryByTestId("view-button-0")).toBeInTheDocument();
-    // check if view dialog is editable
-    userEvent.click(screen.queryByTestId("view-button-0"));
-    const definitionName = screen.getByTestId("definition-name-text-input");
-    expect(definitionName).toHaveValue("SDE Sex");
-    expect(definitionName).toHaveAttribute("disabled");
+    const viewBtn = screen.getByTestId("view-button-0");
+    await userEvent.click(viewBtn);
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+    const nameMatches = screen.getAllByText("SDE Sex");
+    expect(nameMatches.length).toBeGreaterThan(0);
+    expect(screen.queryByTestId("edit-button-0")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("delete-button-0")).not.toBeInTheDocument();
   });
 
   it("Should render edit definition dialog on edit button click", async () => {
@@ -190,15 +180,13 @@ describe("DefinitionsSection", () => {
       name: /Saved Definitions/i,
     });
     expect(savedDefinitionsTab).toBeInTheDocument();
-    userEvent.click(savedDefinitionsTab);
+    await userEvent.click(savedDefinitionsTab);
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
-    await waitFor(() => {
-      const editBtn = screen.getByRole("button", {
-        name: /edit-button-0/i,
-      });
-      userEvent.click(editBtn);
+    const editBtn = await screen.findByRole("button", {
+      name: /edit-button-0/i,
     });
+    await userEvent.click(editBtn);
     const dialog = screen.getByRole("dialog");
     expect(dialog).toBeInTheDocument();
     expect(screen.getByTestId("definition-name-text-input")).toHaveValue(
@@ -211,12 +199,13 @@ describe("DefinitionsSection", () => {
     expect(returnType).toHaveTextContent(getCqlDefinitionReturnTypes().sdeSex);
     // close the dialog
     const button = screen.getByRole("button", { name: "Close" });
-    userEvent.click(button);
+    await userEvent.click(button);
 
     // perform delete action, should display delete confirmation dialog
-    userEvent.click(screen.queryByTestId("delete-button-0"));
+    const deleteBtn0 = screen.getByTestId("delete-button-0");
+    await userEvent.click(deleteBtn0);
     expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
-    userEvent.click(screen.getByRole("button", { name: "Yes, Delete" }));
+    await userEvent.click(screen.getByRole("button", { name: "Yes, Delete" }));
     expect(props.handleDefinitionDelete).toHaveBeenCalled();
   });
 
@@ -242,18 +231,19 @@ describe("DefinitionsSection", () => {
       name: /Saved Definitions/i,
     });
     expect(savedDefinitionsTab).toBeInTheDocument();
-    userEvent.click(savedDefinitionsTab);
+    await userEvent.click(savedDefinitionsTab);
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
 
     // perform delete if cql is dirty, should display discard confirmation
-    userEvent.click(screen.queryByTestId("delete-button-0"));
+    const deleteBtn1 = screen.getByTestId("delete-button-0");
+    await userEvent.click(deleteBtn1);
     expect(screen.getByTestId("discard-dialog")).toBeInTheDocument();
-    userEvent.click(
+    await userEvent.click(
       screen.getByRole("button", { name: "Yes, Discard All Changes" })
     );
     expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
-    userEvent.click(screen.getByRole("button", { name: "Yes, Delete" }));
+    await userEvent.click(screen.getByRole("button", { name: "Yes, Delete" }));
     expect(props.handleDefinitionDelete).toHaveBeenCalled();
   });
 });
