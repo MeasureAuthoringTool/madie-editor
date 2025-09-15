@@ -52,45 +52,174 @@ describe("makeAceSearchElementsAccessible", () => {
 });
 
 describe("wireAceSearchNavigation", () => {
+  let elements: Record<string, HTMLElement>;
+
   beforeEach(() => {
     document.body.innerHTML = "";
-  });
+    elements = {
+      searchButton: document.createElement("button"),
+      findPrevBtn: document.createElement("button"),
+      findNextBtn: document.createElement("button"),
+      findAllBtn: document.createElement("button"),
+      hideBtn: document.createElement("button"),
+      replaceSearchField: document.createElement("input"),
+      replaceAndFindNextBtn: document.createElement("button"),
+      toggleReplaceBtn: document.createElement("button"),
+      replaceAllBtn: document.createElement("button"),
+      toggleRegexModeBtn: document.createElement("button"),
+      toggleCaseSensitiveBtn: document.createElement("button"),
+      toggleWholeWordBtn: document.createElement("button"),
+      searchInSelectionBtn: document.createElement("button"),
+    };
 
-  it("focuses hideBtn when Alt+Tab pressed on findAllBtn", () => {
-    const findAllBtn = document.createElement("span");
-    const hideBtn = document.createElement("span");
-    hideBtn.setAttribute("action", "hide");
+    elements.toggleReplaceBtn.textContent = "-";
 
-    const focusMock = jest.fn();
-    hideBtn.focus = focusMock;
+    // Append to document to allow focus
+    Object.values(elements).forEach((el) => document.body.appendChild(el));
 
-    document.body.appendChild(hideBtn);
-    wireAceSearchNavigation(findAllBtn, hideBtn, null);
-
-    findAllBtn.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Tab", altKey: true, bubbles: true })
+    wireAceSearchNavigation(
+      elements.searchButton,
+      elements.findPrevBtn,
+      elements.findNextBtn,
+      elements.findAllBtn,
+      elements.hideBtn,
+      elements.replaceSearchField,
+      elements.replaceAndFindNextBtn,
+      elements.toggleReplaceBtn,
+      elements.replaceAllBtn,
+      elements.toggleRegexModeBtn,
+      elements.toggleCaseSensitiveBtn,
+      elements.toggleWholeWordBtn,
+      elements.searchInSelectionBtn
     );
-
-    expect(focusMock).toHaveBeenCalled();
   });
 
-  it("focuses toggleReplaceBtn when Alt+Tab pressed on hideBtn", () => {
-    const hideBtn = document.createElement("span");
-    const toggleReplaceBtn = document.createElement("span");
+  const triggerTab = (el: HTMLElement, shiftKey = false) => {
+    const event = new KeyboardEvent("keydown", {
+      key: "Tab",
+      shiftKey,
+    });
+    el.dispatchEvent(event);
+  };
 
-    const focusMock = jest.fn();
-    toggleReplaceBtn.focus = focusMock;
+  const expectFocus = (
+    sourceEl: HTMLElement,
+    targetEl: HTMLElement,
+    shiftKey = false
+  ) => {
+    const focusSpy = jest.spyOn(targetEl, "focus");
+    triggerTab(sourceEl, shiftKey);
+    expect(focusSpy).toHaveBeenCalled();
+  };
 
-    wireAceSearchNavigation(null, hideBtn, toggleReplaceBtn);
-
-    hideBtn.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Tab", altKey: true, bubbles: true })
+  it("should set aria-labels correctly", () => {
+    expect(elements.searchButton).toHaveAttribute("aria-label", "Search");
+    expect(elements.findPrevBtn).toHaveAttribute("aria-label", "Find Previous");
+    expect(elements.findNextBtn).toHaveAttribute("aria-label", "Find Next");
+    expect(elements.findAllBtn).toHaveAttribute("aria-label", "Find All");
+    expect(elements.hideBtn).toHaveAttribute("aria-label", "Close Search");
+    expect(elements.replaceSearchField).toHaveAttribute(
+      "aria-label",
+      "Replace With"
     );
-
-    expect(focusMock).toHaveBeenCalled();
+    expect(elements.replaceAndFindNextBtn).toHaveAttribute(
+      "aria-label",
+      "Replace and Find Next"
+    );
+    expect(elements.replaceAllBtn).toHaveAttribute("aria-label", "Replace All");
+    expect(elements.toggleReplaceBtn).toHaveAttribute(
+      "aria-label",
+      "Toggle Replace"
+    );
+    expect(elements.toggleRegexModeBtn).toHaveAttribute(
+      "aria-label",
+      "Toggle Regex Mode"
+    );
+    expect(elements.toggleCaseSensitiveBtn).toHaveAttribute(
+      "aria-label",
+      "Toggle Case Sensitive Mode"
+    );
+    expect(elements.toggleWholeWordBtn).toHaveAttribute(
+      "aria-label",
+      "Toggle Whole Words"
+    );
+    expect(elements.searchInSelectionBtn).toHaveAttribute(
+      "aria-label",
+      "Search In Selection"
+    );
   });
 
-  it("does nothing if buttons are not provided", () => {
-    expect(() => wireAceSearchNavigation()).not.toThrow();
+  it("should navigate forward and backward through elements using Tab", () => {
+    // Forward tabbing
+    expectFocus(elements.searchButton, elements.findPrevBtn);
+    expectFocus(elements.findPrevBtn, elements.findNextBtn);
+    expectFocus(elements.findNextBtn, elements.findAllBtn);
+    expectFocus(elements.findAllBtn, elements.hideBtn);
+    expectFocus(elements.hideBtn, elements.replaceSearchField);
+    expectFocus(elements.replaceSearchField, elements.replaceAndFindNextBtn);
+    expectFocus(elements.replaceAndFindNextBtn, elements.replaceAllBtn);
+    expectFocus(elements.replaceAllBtn, elements.toggleReplaceBtn);
+    expectFocus(elements.toggleReplaceBtn, elements.toggleRegexModeBtn);
+    expectFocus(elements.toggleRegexModeBtn, elements.toggleCaseSensitiveBtn);
+    expectFocus(elements.toggleCaseSensitiveBtn, elements.toggleWholeWordBtn);
+    expectFocus(elements.toggleWholeWordBtn, elements.searchInSelectionBtn);
+    expectFocus(elements.searchInSelectionBtn, elements.searchButton);
+    // Backward tabbing
+    expectFocus(elements.searchButton, elements.searchInSelectionBtn, true);
+    expectFocus(
+      elements.searchInSelectionBtn,
+      elements.toggleWholeWordBtn,
+      true
+    );
+    expectFocus(
+      elements.toggleWholeWordBtn,
+      elements.toggleCaseSensitiveBtn,
+      true
+    );
+    expectFocus(
+      elements.toggleCaseSensitiveBtn,
+      elements.toggleRegexModeBtn,
+      true
+    );
+    expectFocus(elements.toggleRegexModeBtn, elements.toggleReplaceBtn, true);
+    expectFocus(elements.toggleReplaceBtn, elements.replaceAllBtn, true);
+    expectFocus(elements.replaceAllBtn, elements.replaceAndFindNextBtn, true);
+    expectFocus(
+      elements.replaceAndFindNextBtn,
+      elements.replaceSearchField,
+      true
+    );
+    expectFocus(elements.replaceSearchField, elements.hideBtn, true);
+    expectFocus(elements.hideBtn, elements.findAllBtn, true);
+    expectFocus(elements.findAllBtn, elements.findNextBtn, true);
+    expectFocus(elements.findNextBtn, elements.findPrevBtn, true);
+    expectFocus(elements.findPrevBtn, elements.searchButton, true);
+  });
+
+  it("should handle conditional replace visibility logic", () => {
+    const replaceFocusSpy = jest
+      .spyOn(elements.replaceSearchField, "focus")
+      .mockImplementation(() => {});
+    const toggleFocusSpy = jest
+      .spyOn(elements.toggleReplaceBtn, "focus")
+      .mockImplementation(() => {});
+
+    // replace is visible
+    elements.toggleReplaceBtn.textContent = "-";
+    triggerTab(elements.hideBtn);
+    expect(replaceFocusSpy).toHaveBeenCalled();
+
+    // replace is hidden
+    elements.toggleReplaceBtn.textContent = "+";
+    triggerTab(elements.hideBtn);
+    expect(toggleFocusSpy).toHaveBeenCalled();
+
+    // Clean up
+    replaceFocusSpy.mockRestore();
+    toggleFocusSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
   });
 });

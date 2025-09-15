@@ -444,7 +444,6 @@ const MadieAceEditor = ({
   );
   const [isParsing, setParsing] = useState<boolean>(undefined);
   const aceRef = useRef<AceEditor>(null);
-
   aceRef?.current?.editor?.on("focus", function () {
     setCommandEnabled(editor, "indent", true);
     setCommandEnabled(editor, "outdent", true);
@@ -454,6 +453,7 @@ const MadieAceEditor = ({
     setCommandEnabled(editor, "outdent", true);
   });
 
+  // This command disables the normal tab behavior when focused in editor. Allowing a user to tab forward or shift tab back
   aceRef?.current?.editor?.commands.addCommand({
     name: "escape",
     bindKey: { win: "Esc", mac: "Esc" },
@@ -512,55 +512,63 @@ const MadieAceEditor = ({
       // Cannot figure out a good way to gain access to searchBox logic, so just crawl the DOM and make elements tabbable
       requestAnimationFrame(() => {
         makeAceSearchElementsAccessible();
-
-        // Top row
+        const searchButton =
+          document.querySelector<HTMLElement>(".ace_search_field");
         const findPrevBtn = document.querySelector<HTMLElement>(
           'span[action="findPrev"]'
         );
-        findPrevBtn?.setAttribute("aria-label", "Find Previous");
-
         const findNextBtn = document.querySelector<HTMLElement>(
           'span[action="findNext"]'
         );
-        findNextBtn?.setAttribute("aria-label", "Find Next");
-
         const findAllBtn = document.querySelector<HTMLElement>(
           'span[action="findAll"]'
         );
-        findAllBtn?.setAttribute("aria-label", "Find All");
-
         const hideBtn = document.querySelector<HTMLElement>(
           'span[action="hide"]'
         );
-        hideBtn?.setAttribute("aria-label", "Close Search");
-
+        const replaceSearchField = document.querySelector(
+          'input.ace_search_field[placeholder="Replace with"][role="button"]'
+        );
+        const replaceAndFindNextBtn = document.querySelector<HTMLElement>(
+          'span[action="replaceAndFindNext"]'
+        );
+        const replaceAllBtn = document.querySelector<HTMLElement>(
+          'span[action="replaceAll"]'
+        );
         // Bottom row
         const toggleReplaceBtn = document.querySelector<HTMLElement>(
           'span[action="toggleReplace"]'
         );
-        toggleReplaceBtn?.setAttribute("aria-label", "Toggle Replace");
         const toggleRegexModeBtn = document.querySelector<HTMLElement>(
           'span[action="toggleRegexpMode"]'
         );
-        toggleRegexModeBtn?.setAttribute("aria-label", "Toggle Regex Mode");
         const toggleCaseSensitiveBtn = document.querySelector<HTMLElement>(
           'span[action="toggleCaseSensitive"]'
         );
-        toggleCaseSensitiveBtn?.setAttribute(
-          "aria-label",
-          "Toggle Case Sensitive Mode"
-        );
+
         const toggleWholeWordsBtn = document.querySelector<HTMLElement>(
           'span[action="toggleWholeWords"]'
         );
-        toggleWholeWordsBtn?.setAttribute("aria-label", "Toggle Whole Words");
         const searchInSelectionBtn = document.querySelector<HTMLElement>(
           'span[action="searchInSelection"]'
         );
-        searchInSelectionBtn?.setAttribute("aria-label", "Search In Selection");
-
-        // Rewire two buttons for option/ctrl +tab flow. Absolute positioning pulls x to unreachable area. this fixes it
-        wireAceSearchNavigation(findAllBtn, hideBtn, toggleReplaceBtn);
+        // Wire up tabbing and shift tabbing for all the elements in the search box
+        wireAceSearchNavigation(
+          searchButton,
+          findPrevBtn,
+          findNextBtn,
+          findAllBtn,
+          hideBtn,
+          // @ts-ignore
+          replaceSearchField,
+          replaceAndFindNextBtn,
+          toggleReplaceBtn,
+          replaceAllBtn,
+          toggleRegexModeBtn,
+          toggleCaseSensitiveBtn,
+          toggleWholeWordsBtn,
+          searchInSelectionBtn
+        );
       });
       //@ts-ignore
     } else if (editor.searchBox.active) {
