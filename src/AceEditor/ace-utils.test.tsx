@@ -94,7 +94,15 @@ describe("wireAceSearchNavigation", () => {
     );
   });
 
+  // get the full coverage clause
+  const triggerPkey = (el: HTMLElement) => {
+    const event = new KeyboardEvent("keydown", {
+      key: "P",
+    });
+    el.dispatchEvent(event);
+  };
   const triggerTab = (el: HTMLElement, shiftKey = false) => {
+    triggerPkey(el);
     const event = new KeyboardEvent("keydown", {
       key: "Tab",
       shiftKey,
@@ -194,6 +202,11 @@ describe("wireAceSearchNavigation", () => {
     expectFocus(elements.findAllBtn, elements.findNextBtn, true);
     expectFocus(elements.findNextBtn, elements.findPrevBtn, true);
     expectFocus(elements.findPrevBtn, elements.searchButton, true);
+  });
+
+  it("should trigger nav back", () => {
+    elements.toggleReplaceBtn.textContent = "+";
+    expectFocus(elements.toggleReplaceBtn, elements.hideBtn, true);
   });
 
   it("should handle conditional replace visibility logic", () => {

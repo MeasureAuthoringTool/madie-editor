@@ -91,7 +91,6 @@ export function wireAceSearchNavigation(
   hideBtn?.setAttribute("aria-label", "Close Search");
   hideBtn?.addEventListener("keydown", (e: KeyboardEvent) => {
     const isReplaceVisible = toggleReplaceBtn?.textContent === "-" || false;
-    // console.log('isReplaceVisible', isReplaceVisible);
     if (e.key === "Tab") {
       e.preventDefault();
       e.stopPropagation();
