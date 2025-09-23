@@ -229,6 +229,24 @@ export class TerminologyServiceApi {
     });
   }
 
+  async checkLogin(): Promise<Boolean> {
+    try {
+      const resp = await axios.get(
+        `${this.baseUrl}/vsac/umls-credentials/status`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+            "Content-Type": "text/plain",
+          },
+          timeout: 15000,
+        }
+      );
+      return resp.status === 200;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getCodesAndCodeSystems(codesList): Promise<AxiosResponse<Code[]>> {
     return await axios.post<any>(
       `${this.baseUrl}/terminology/codes`,

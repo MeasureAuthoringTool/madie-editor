@@ -1,7 +1,7 @@
-import { useTerminologyServiceApi } from "@madie/madie-util";
+import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
 
 const CheckLogin = async (): Promise<Boolean> => {
-  const terminologyServiceApi = useTerminologyServiceApi();
+  const terminologyServiceApi = await useTerminologyServiceApi();
   let isLoggedIn = false;
   await terminologyServiceApi
     .checkLogin()
