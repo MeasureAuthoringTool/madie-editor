@@ -229,7 +229,7 @@ export class TerminologyServiceApi {
     });
   }
 
-async checkLogin(): Promise<Boolean> {
+  async checkLogin(): Promise<Boolean> {
     try {
       const resp = await axios.get(
         `${this.baseUrl}/vsac/umls-credentials/status`,
