@@ -36,7 +36,14 @@
     "lastModified": "2025-03-12T18:34:33Z",
     "metadataLastUpdated": "2025-03-12T18:35:26.080Z"
   },
-  "tags": ["madie", "measure-authoring", "ecqm", "quality-measures", "healthcare", "single-spa"],
+  "tags": [
+    "madie",
+    "measure-authoring",
+    "ecqm",
+    "quality-measures",
+    "healthcare",
+    "single-spa"
+  ],
   "contact": {
     "email": "semanticbits-madie-help@icf.com",
     "name": "MADiE Support Team"

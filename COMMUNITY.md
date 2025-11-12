@@ -8,9 +8,9 @@ madie-editor is supported by a dedicated team of individuals fulfilling various 
 
 Roles to include, but not limited to: Project Owner, Technical Lead, Developers/Contributors, Community Manager, Security Team, Policy Advisor, Contracting Officer's Representative, Compliance Officer, Procurement Officer -->
 
-| Role   | Name    | Affiliation    |
-| :----- | :------ | :------------- |
-| Tech Lead | Nate Moraca | ICF |
-| Tech Lead | Joe Kotanchik | ICF |
-| Security | Riddhi Desai  | ICF |
-| Security Lead | Ben Ohe  | ICF |
+| Role          | Name          | Affiliation |
+| :------------ | :------------ | :---------- |
+| Tech Lead     | Nate Moraca   | ICF         |
+| Tech Lead     | Joe Kotanchik | ICF         |
+| Security      | Riddhi Desai  | ICF         |
+| Security Lead | Ben Ohe       | ICF         |
