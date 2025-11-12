@@ -10,4 +10,7 @@ Roles to include, but not limited to: Project Owner, Technical Lead, Developers/
 
 | Role   | Name    | Affiliation    |
 | :----- | :------ | :------------- |
-| Tech Lead | Benjamin Ohe | CCSQ |
+| Tech Lead | Nate Moraca | ICF |
+| Tech Lead | Joe Kotanchik | ICF |
+| Security | Riddhi Desai  | ICF |
+| Security Lead | Ben Ohe  | ICF |
