@@ -237,7 +237,7 @@ const Functions = ({
           borderBottom: "solid 1px #8c8c8c",
         }}
       >
-        <thead tw="bg-slate">
+        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
