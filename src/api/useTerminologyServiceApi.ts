@@ -37,9 +37,13 @@ export interface CodeSystem {
   lastUpdatedUpstream?: string;
   name?: string;
   title?: string;
-  version?: string;
-  qdmDisplayVersion?: string;
+  version?: CodeSystemVersion;
   versionId?: string;
+}
+
+export interface CodeSystemVersion {
+  fhirVersion: string;
+  vsacVersion: string;
 }
 
 export enum CodeStatus {
