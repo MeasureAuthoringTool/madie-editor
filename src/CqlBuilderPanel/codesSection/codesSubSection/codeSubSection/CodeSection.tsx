@@ -85,7 +85,10 @@ export default function CodeSection({
       // filter out code entries that matches with CodeSystem Title
       const matchedCodeSystems = allCodeSystems
         .filter((c) => c.name === formik.values.title)
-        .filter((c) => c.qdmDisplayVersion !== null || c.version !== null)
+        .filter(
+          (c) =>
+            c.version?.vsacVersion !== null || c.version?.fhirVersion !== null
+        )
         .sort((a, b) => {
           const dateA = new Date(a.lastUpdatedUpstream);
           const dateB = new Date(b.lastUpdatedUpstream);
@@ -95,10 +98,12 @@ export default function CodeSection({
       // We want to display qdm version but when retrieving codes we have to use fhir Version
       const availableVersionsList = matchedCodeSystems
         .map((m) => ({
-          value: m.version,
+          value: _.includes(measureModel, "QDM")
+            ? m.version?.vsacVersion
+            : m.version?.fhirVersion,
           label: _.includes(measureModel, "QDM")
-            ? m.qdmDisplayVersion
-            : m.version,
+            ? m.version?.vsacVersion
+            : m.version?.fhirVersion,
         }))
         .filter((m) => m.label !== null);
       // if version is URL ( ex: SNOMEDCT ) then fetch the version parameter

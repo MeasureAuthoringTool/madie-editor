@@ -5,8 +5,10 @@ export const mockedCodeSystems = [
     id: "1",
     name: "System1",
     title: "System 1",
-    version: "1.0",
-    qdmDisplayVersion: "HL7V3.0_2019-12",
+    version: {
+      vsacVersion: "HL7V3.0_2019-12",
+      fhirVersion: "1.0",
+    },
     lastUpdatedUpstream: new Date(1999, 10, 1).toString(),
     lastUpdated: new Date(1999, 10, 1).toString(),
   },
@@ -14,8 +16,10 @@ export const mockedCodeSystems = [
     id: "2",
     name: "System1",
     title: "System 1",
-    version: "2.0",
-    qdmDisplayVersion: "HL7V3.0_2019-02",
+    version: {
+      vsacVersion: "HL7V3.0_2019-02",
+      fhirVersion: "2.0",
+    },
     lastUpdatedUpstream: new Date(2000, 10, 1).toString(),
     lastUpdated: new Date(1999, 10, 1).toString(),
   },
@@ -26,9 +30,11 @@ export const mockedCodeSystems = [
     lastUpdatedUpstream: "2017-02-02T05:00:00.000+00:00",
     name: "AdministrativeGender",
     oid: "urn:oid:2.16.840.1.113883.5.1",
-    qdmDisplayVersion: "HL7V3.0_2016-07",
     title: "AdministrativeGender",
-    version: "2016-07-01",
+    version: {
+      fhirVersion: "2016-07-01",
+      vsacVersion: "HL7V3.0_2016-07",
+    },
     versionId: "2617317427",
   },
   {
@@ -38,9 +44,11 @@ export const mockedCodeSystems = [
     lastUpdatedUpstream: "2016-06-20T04:00:00.000+00:00",
     name: "AdministrativeGender",
     oid: "urn:oid:2.16.840.1.113883.5.1",
-    qdmDisplayVersion: "HL7V3.0_2015-07",
     title: "AdministrativeGender",
-    version: "2015-07-01",
+    version: {
+      fhirVersion: "2015-07-01",
+      vsacVersion: "HL7V3.0_2015-07",
+    },
     versionId: "2903671356",
   },
   {
@@ -50,9 +58,11 @@ export const mockedCodeSystems = [
     lastUpdatedUpstream: "2018-09-17T04:00:00.000+00:00",
     name: "SNOMEDCT",
     oid: "urn:oid:2.16.840.1.113883.6.96",
-    qdmDisplayVersion: "2018-09",
     title: "SNOMED-CT US Edition",
-    version: "http://snomed.info/sct/731000124108/version/20180901",
+    version: {
+      fhirVersion: "http://snomed.info/sct/731000124108/version/20180901",
+      vsacVersion: "2018-09",
+    },
     versionId: "669066113",
   },
   {
@@ -62,9 +72,11 @@ export const mockedCodeSystems = [
     lastUpdatedUpstream: "2013-10-29T04:00:00.000+00:00",
     name: "SNOMEDCT",
     oid: "urn:oid:2.16.840.1.113883.6.96",
-    qdmDisplayVersion: "2013-09",
     title: "SNOMED-CT US Edition",
-    version: "http://snomed.info/sct/731000124108/version/20130901",
+    version: {
+      fhirVersion: "http://snomed.info/sct/731000124108/version/20130901",
+      vsacVersion: "2013-09",
+    },
     versionId: "3764777214",
   },
 ] as Array<CodeSystem>;

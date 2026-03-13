@@ -86,7 +86,7 @@ describe("Code Section component", () => {
     await waitFor(() => {
       expect(handleFormSubmitMock).toHaveBeenCalledWith({
         title: "System1",
-        version: "1.0",
+        version: "HL7V3.0_2019-12",
         code: "Code",
       });
     });
@@ -298,5 +298,66 @@ describe("Code Section component", () => {
     expect(codeSearchButton).toBeDisabled();
     const clearButton = getByTestId("clear-codes-btn");
     expect(clearButton).toBeDisabled();
+  });
+
+  it("should filter out code systems where both vsacVersion and fhirVersion are null and keep those with only one non-null version", async () => {
+    const codeSystemsWithNullVersions = [
+      {
+        id: "1",
+        name: "NullVsac",
+        title: "Null Vsac System",
+        version: {
+          vsacVersion: null,
+          fhirVersion: "1.0",
+        },
+        lastUpdatedUpstream: new Date(2000, 10, 1).toString(),
+        lastUpdated: new Date(2000, 10, 1).toString(),
+      },
+      {
+        id: "2",
+        name: "NullVsac",
+        title: "Null Vsac System",
+        version: {
+          vsacVersion: null,
+          fhirVersion: null,
+        },
+        lastUpdatedUpstream: new Date(1999, 10, 1).toString(),
+        lastUpdated: new Date(1999, 10, 1).toString(),
+      },
+    ];
+
+    render(
+      <CodeSection
+        canEdit={readOnly}
+        allCodeSystems={codeSystemsWithNullVersions}
+        handleFormSubmit={handleFormSubmitMock}
+        blankResults={jest.fn()}
+        measureModel="QiCore v5.0.0"
+      />
+    );
+
+    // Select the "NullVsac" code system
+    const codeSystemSelectButton = screen.getByRole("button", {
+      name: "Open",
+    });
+    userEvent.click(codeSystemSelectButton);
+
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions.length).toEqual(1);
+    expect(codeSystemOptions[0]).toHaveTextContent("NullVsac");
+    userEvent.click(codeSystemOptions[0]);
+
+    // Only the entry with fhirVersion "1.0" should appear (the one with both null is filtered out)
+    const comboBoxContainer = screen.getByTestId(
+      "code-system-version-selector"
+    );
+    const codeSystemVersionSelect =
+      within(comboBoxContainer).getByRole("combobox");
+    expect(codeSystemVersionSelect).toHaveTextContent("1.0");
+    userEvent.click(codeSystemVersionSelect);
+
+    const codeSystemVersionOptions = await screen.findAllByRole("option");
+    expect(codeSystemVersionOptions.length).toEqual(1);
+    expect(codeSystemVersionOptions[0]).toHaveTextContent("1.0");
   });
 });
