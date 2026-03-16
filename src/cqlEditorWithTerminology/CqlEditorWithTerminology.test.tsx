@@ -45,6 +45,10 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 
 describe("CqlEditorWithTerminology component", () => {
+  afterEach(() => {
+    window.history.replaceState({}, "", window.location.pathname);
+  });
+
   it("should have CQL Builder panel closed by default", async () => {
     const props = {
       value: "",
