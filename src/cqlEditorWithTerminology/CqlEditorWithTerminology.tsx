@@ -108,6 +108,9 @@ const CqlEditorWithTerminology = ({
             <CqlBuilderPanel
               makeExpanded={() => {
                 setExpanded(true);
+                const url = new URL(window.location.href);
+                url.searchParams.delete("tab");
+                window.history.replaceState({}, "", url.toString());
               }}
               canEdit={!readOnly}
               measureStoreCql={measureStoreCql}

@@ -137,4 +137,31 @@ describe("CqlEditorWithTerminology component", () => {
     fireEvent.click(collapseBtn);
     expect(await screen.queryByTestId("valueSets-tab")).not.toBeInTheDocument();
   });
+
+  it("should open panel when URL has tab param and remove tab param on collapse", async () => {
+    window.history.replaceState({}, "", "?tab=codes");
+    const props = {
+      value: "",
+      onChange: jest.fn(),
+      handleClick: true,
+      handleApplyValueSet: jest.fn(),
+      handleApplyLibrary: jest.fn(),
+      handleDeleteLibrary: jest.fn(),
+      measureModel: "QDM 5.6",
+    };
+    render(<CqlEditorWithTerminology {...props} />);
+    expect(screen.queryByTestId("expanded-button")).not.toBeInTheDocument();
+    expect(screen.getByTestId("collapsed-button")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Codes" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    fireEvent.click(screen.getByTestId("collapsed-button"));
+    await waitFor(() => {
+      expect(screen.queryByTestId("codes-tab")).not.toBeInTheDocument();
+    });
+    const params = new URLSearchParams(window.location.search);
+    expect(params.has("tab")).toBe(false);
+  });
 });
