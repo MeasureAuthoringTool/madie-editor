@@ -86,8 +86,14 @@ export default function CqlBuilderPanel({
     [setActiveTabState]
   );
 
-  // Sync tab state with browser back/forward navigation
+  // Sync tab state with browser back/forward and set initial URL
   useEffect(() => {
+    if (!getTabFromUrl()) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", activeTab);
+      window.history.replaceState({}, "", url.toString());
+    }
+
     const onPopState = () => {
       const tab = getTabFromUrl();
       if (tab) {
@@ -97,15 +103,6 @@ export default function CqlBuilderPanel({
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
-
-  // Set initial URL if no tab param present
-  useEffect(() => {
-    if (!getTabFromUrl()) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("tab", activeTab);
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
     useState<CqlBuilderLookup>();
