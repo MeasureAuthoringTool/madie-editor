@@ -43,7 +43,11 @@ const CqlEditorWithTerminology = ({
   getCqlDefinitionReturnTypes,
   hasCqlError,
 }: EditorPropsType) => {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return !params.has("tab");
+  });
+
   const toggleSearch = () => {
     const event = new CustomEvent("toggleEditorSearchBox");
     window.dispatchEvent(event);
