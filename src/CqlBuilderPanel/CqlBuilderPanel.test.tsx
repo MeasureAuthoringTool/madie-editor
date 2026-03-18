@@ -135,6 +135,7 @@ const { getByTestId } = screen;
 describe("CqlBuilderPanel", () => {
   afterEach(() => {
     jest.clearAllMocks();
+    window.history.replaceState({}, "", window.location.pathname);
   });
   beforeEach(() => {
     mockedAxios.get.mockResolvedValue({
@@ -847,5 +848,63 @@ describe("CqlBuilderPanel", () => {
     expect(errorMessage).toHaveTextContent(
       "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
     );
+  });
+
+  it("Should initialize active tab from URL param and update URL on tab change", async () => {
+    window.history.replaceState({}, "", "?tab=codes");
+    render(<CqlBuilderPanel {...props} />);
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Codes" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get("tab")).toBe("definitions");
+  });
+
+  it("Should fall back to default tab when URL has invalid tab param", async () => {
+    window.history.replaceState({}, "", "?tab=invalidTab");
+    render(<CqlBuilderPanel {...{ ...props, measureModel: "QDM 5.6" }} />);
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Value Sets" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+  });
+
+  it("Should sync tab state when browser back/forward is used", async () => {
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Codes" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Codes" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+    userEvent.click(screen.getByRole("tab", { name: "Functions" }));
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Functions" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    window.history.back();
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: "Codes" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
   });
 });

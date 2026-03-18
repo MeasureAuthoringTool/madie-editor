@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import CqlBuilderSectionPanelNavTabs from "./CqlBuilderSectionPanelNavTabs";
 import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
@@ -14,6 +14,27 @@ import { AxiosResponse } from "axios";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { IconButton } from "@mui/material";
 import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
+
+const VALID_TABS = [
+  "includes",
+  "valueSets",
+  "codes",
+  "parameters",
+  "definitions",
+  "functions",
+];
+
+function getTabFromUrl(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get("tab");
+  return tab && VALID_TABS.includes(tab) ? tab : null;
+}
+
+function setTabInUrl(tab: string) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("tab", tab);
+  window.history.pushState({}, "", url.toString());
+}
 
 export default function CqlBuilderPanel({
   canEdit,
@@ -53,7 +74,36 @@ export default function CqlBuilderPanel({
     return "includes";
   })();
 
-  const [activeTab, setActiveTab] = useState<string>(getStartingPage);
+  const [activeTab, setActiveTabState] = useState<string>(
+    getTabFromUrl() || getStartingPage
+  );
+
+  const setActiveTab = useCallback(
+    (tab: string) => {
+      setActiveTabState(tab);
+      setTabInUrl(tab);
+    },
+    [setActiveTabState]
+  );
+
+  // Sync tab state with browser back/forward and set initial URL
+  useEffect(() => {
+    if (!getTabFromUrl()) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", activeTab);
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    const onPopState = () => {
+      const tab = getTabFromUrl();
+      if (tab) {
+        setActiveTabState(tab);
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
     useState<CqlBuilderLookup>();
   const [errors, setErrors] = useState<string>(null);
