@@ -87,7 +87,7 @@
     "sass-loader": "^12.6.0",
     "single-spa": "^5.9.3",
     "single-spa-react": "^4.6.1",
-    "styled-components": "^5.3.3",
+    "styled-components": "^5.3.7",
     "tailwindcss": "^3.4.13",
     "twin.macro": "^3.4.0",
     "yup": "^1.4.0"
