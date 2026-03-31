@@ -27,7 +27,13 @@ module.exports = (webpackConfigEnv, argv) => {
   // This must be updated for any single-spa applications or utilities,
   // or any other package to be loaded externally
   const externalsConfig = {
-    externals: ["@madie/madie-util"],
+    externals: [
+      "@madie/madie-util",
+      // Shared singleton libraries — loaded once via import map
+      "@emotion/react",
+      "@emotion/styled",
+      "styled-components",
+    ],
   };
 
   const newCssRule = {
