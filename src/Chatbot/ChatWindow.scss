@@ -103,6 +103,7 @@
     flex-direction: column;
     gap: 12px;
     background: #fafafa;
+    position: relative;
 
     .chat-window--dark & {
       background: #252526;

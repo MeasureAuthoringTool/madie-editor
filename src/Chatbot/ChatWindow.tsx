@@ -4,6 +4,7 @@ import SendIcon from "@mui/icons-material/Send";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { IconButton, Select, MenuItem, FormControl } from "@mui/material";
+import ApiKeyDialog from "./ApiKeyDialog";
 import "./ChatWindow.scss";
 
 interface ChatMessage {
@@ -38,6 +39,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<Mode>("Ask");
   const [model, setModel] = useState(MODELS[0]);
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -52,6 +55,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const handleSend = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
+
+    if (!apiKeys[model]) {
+      setShowApiKeyDialog(true);
+      return;
+    }
 
     setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
     setInput("");
@@ -70,6 +78,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         },
       ]);
     }, 500);
+  };
+
+  const handleSaveApiKey = (apiKey: string, _persist: boolean) => {
+    setApiKeys((prev) => ({ ...prev, [model]: apiKey }));
+    setShowApiKeyDialog(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -142,6 +155,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <div className="chat-window__message-content">{msg.content}</div>
           </div>
         ))}
+        {showApiKeyDialog && (
+          <ApiKeyDialog
+            model={model}
+            onSave={handleSaveApiKey}
+            onCancel={() => setShowApiKeyDialog(false)}
+          />
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -208,7 +228,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <Select
               data-testid="chat-model-select"
               value={model}
-              onChange={(e) => setModel(e.target.value)}
+              onChange={(e) => {
+                const newModel = e.target.value;
+                setModel(newModel);
+                if (!apiKeys[newModel]) {
+                  setShowApiKeyDialog(true);
+                }
+              }}
               variant="outlined"
               MenuProps={{
                 anchorOrigin: { vertical: "top", horizontal: "left" },

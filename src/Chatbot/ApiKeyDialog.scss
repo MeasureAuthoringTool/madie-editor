@@ -1,0 +1,40 @@
+.apikey-dialog {
+  align-self: center;
+  width: 90%;
+  max-width: 360px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .chat-window--dark & {
+    background: #2d2d30;
+    border-color: #3e3e42;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #0073c8;
+    user-select: none;
+
+    .chat-window--dark & {
+      color: #4da6ff;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+  }
+}
