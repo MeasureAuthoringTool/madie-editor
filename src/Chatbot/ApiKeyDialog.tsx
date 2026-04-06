@@ -94,6 +94,7 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
       }
     >
       <div
+        role="toolbar"
         className="apikey-dialog__header"
         onMouseDown={handleDragMouseDown}
         style={{ cursor: "grab" }}
