@@ -1,5 +1,4 @@
 import React, { useState, useRef, useCallback } from "react";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { TextField, Checkbox, FormControlLabel, Button } from "@mui/material";
 import "./ApiKeyDialog.scss";
 

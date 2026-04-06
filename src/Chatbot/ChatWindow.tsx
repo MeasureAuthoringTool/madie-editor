@@ -25,6 +25,17 @@ const MODELS = [
   "gemini-2.5-pro",
 ];
 
+const MODEL_PROVIDER: Record<string, string> = {
+  "gpt-5.4": "OPENAI",
+  "gpt-5.4mini": "OPENAI",
+  "gpt-5.3-codex": "OPENAI",
+  "gemini-3.1-pro-preview": "GOOGLE",
+  "gemini-2.5-flash": "GOOGLE",
+  "gemini-2.5-pro": "GOOGLE",
+};
+
+const getProvider = (model: string): string => MODEL_PROVIDER[model] ?? model;
+
 interface ChatWindowProps {
   onClose?: () => void;
   theme?: "light" | "dark";
@@ -58,7 +69,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    if (!apiKeys[model]) {
+    if (!apiKeys[getProvider(model)]) {
       setShowApiKeyDialog(true);
       return;
     }
@@ -74,8 +85,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     }
 
     const chatRequest = {
-      api_key: apiKeys[model],
-      provider: "OPENAI", // this should be based on model selection.
+      api_key: apiKeys[getProvider(model)],
+      provider: getProvider(model),
       model: model,
       messages: updatedMessages,
     };
@@ -103,7 +114,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   const handleSaveApiKey = (apiKey: string, _persist: boolean) => {
-    setApiKeys((prev) => ({ ...prev, [model]: apiKey }));
+    setApiKeys((prev) => ({ ...prev, [getProvider(model)]: apiKey }));
     setShowApiKeyDialog(false);
   };
 
@@ -263,7 +274,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               onChange={(e) => {
                 const newModel = e.target.value;
                 setModel(newModel);
-                if (!apiKeys[newModel]) {
+                if (!apiKeys[getProvider(newModel)]) {
                   setShowApiKeyDialog(true);
                 }
               }}
