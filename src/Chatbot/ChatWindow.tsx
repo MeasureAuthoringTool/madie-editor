@@ -4,6 +4,8 @@ import SendIcon from "@mui/icons-material/Send";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { IconButton, Select, MenuItem, FormControl } from "@mui/material";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import ApiKeyDialog from "./ApiKeyDialog";
 import "./ChatWindow.scss";
 import useAIServiceApi from "../api/useAIService";
@@ -185,7 +187,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <div className="chat-window__message-label">
               {msg.role === "user" ? "You" : "Clara"}
             </div>
-            <div className="chat-window__message-content">{msg.content}</div>
+            <div className="chat-window__message-content">
+              {msg.role === "assistant" ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {msg.content}
+                </ReactMarkdown>
+              ) : (
+                msg.content
+              )}
+            </div>
           </div>
         ))}
         {isLoading && (
