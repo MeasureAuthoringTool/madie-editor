@@ -15,11 +15,22 @@
     }
 
     .left-panel {
+      height: calc(100% - 48px);
+      overflow: hidden;
+
       > .panel-content {
-        height: inherit;
+        height: 100%;
         > div {
-          height: inherit;
+          height: 100%;
         }
+      }
+
+      > .chat-panel-wrapper {
+        flex: 1 1 50%;
+        min-width: 0;
+        height: 100%;
+        max-height: calc(100vh - 260px);
+        overflow: hidden;
       }
     }
     .right-panel > div {
@@ -50,10 +61,11 @@
         }
       }
     }
-    .left-panel,
     .right-panel {
       height: 100%;
-
+    }
+    .left-panel,
+    .right-panel {
       background: #fff;
       > .tab-container {
         background-color: #ededed;

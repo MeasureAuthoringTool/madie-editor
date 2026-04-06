@@ -7,6 +7,8 @@ import CqlBuilderPanel from "../CqlBuilderPanel/CqlBuilderPanel";
 import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
 import { IconButton } from "@mui/material";
 import Search from "@mui/icons-material/Search";
+import ChatIcon from "@mui/icons-material/ChatOutlined";
+import ChatPanel from "../Chatbot/ChatPanel";
 
 const CqlEditorWithTerminology = ({
   value,
@@ -47,6 +49,7 @@ const CqlEditorWithTerminology = ({
     const params = new URLSearchParams(window.location.search);
     return !params.has("tab");
   });
+  const [chatOpen, setChatOpen] = useState(false);
 
   const toggleSearch = () => {
     const event = new CustomEvent("toggleEditorSearchBox");
@@ -67,6 +70,16 @@ const CqlEditorWithTerminology = ({
             >
               <Search />
             </IconButton>
+            <IconButton
+              data-testid="editor-chat-button"
+              aria-label="toggle chat"
+              style={{
+                color: chatOpen ? "#005a9e" : "#0073c8",
+              }}
+              onClick={() => setChatOpen((prev) => !prev)}
+            >
+              <ChatIcon />
+            </IconButton>
             {expanded && (
               <IconButton
                 data-testid="expanded-button"
@@ -86,9 +99,14 @@ const CqlEditorWithTerminology = ({
               </IconButton>
             )}
           </div>
-          <div className="left-panel">
-            <div className="panel-content">
-              {/* needs to be difference between parent and sibling */}
+          <div
+            className="left-panel"
+            style={{ display: "flex", flexDirection: "row" }}
+          >
+            <div
+              className="panel-content"
+              style={{ flex: chatOpen ? "1 1 50%" : "1 1 100%" }}
+            >
               <MadieAceEditor
                 value={value}
                 onChange={onChange}
@@ -101,6 +119,11 @@ const CqlEditorWithTerminology = ({
                 setOutboundAnnotations={setOutboundAnnotations}
               />
             </div>
+            {chatOpen && (
+              <div className="chat-panel-wrapper">
+                <ChatPanel onChatToggle={() => setChatOpen(false)} />
+              </div>
+            )}
           </div>
         </Allotment.Pane>
         {!expanded && (
