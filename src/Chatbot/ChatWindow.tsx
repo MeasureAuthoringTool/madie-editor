@@ -62,7 +62,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       return;
     }
 
-    setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
+    const updatedMessages: ChatMessage[] = [
+      ...messages,
+      { role: "user", content: trimmed },
+    ];
+    setMessages(updatedMessages);
     setInput("");
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
@@ -72,7 +76,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       api_key: apiKeys[model],
       provider: "OPENAI", // this should be based on model selection.
       model: model,
-      messages: messages,
+      messages: updatedMessages,
     };
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const aiService = await useAIServiceApi();
