@@ -6,6 +6,7 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { IconButton, Select, MenuItem, FormControl } from "@mui/material";
 import ApiKeyDialog from "./ApiKeyDialog";
 import "./ChatWindow.scss";
+import useAIServiceApi from "../api/useAIService";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -16,12 +17,12 @@ const MODES = ["Ask", "Agent"] as const;
 type Mode = (typeof MODES)[number];
 
 const MODELS = [
-  "GPT-4o",
-  "GPT-4",
-  "GPT-3.5 Turbo",
-  "Claude 3.5 Sonnet",
-  "Claude 3 Opus",
-  "Gemini 1.5 Pro",
+  "gpt-5.4",
+  "gpt-5.4mini",
+  "gpt-5.3-codex",
+  "gemini-3.1-pro-preview",
+  "gemini-2.5-flash",
+  "gemini-2.5-pro",
 ];
 
 interface ChatWindowProps {
@@ -52,7 +53,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     inputRef.current?.focus();
   }, []);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
@@ -67,17 +68,29 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       inputRef.current.style.height = "auto";
     }
 
-    // Placeholder assistant response
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "This is a placeholder response. AI integration coming soon!",
-        },
-      ]);
-    }, 500);
+    const chatRequest = {
+      api_key: apiKeys[model],
+      provider: "OPENAI", // this should be based on model selection.
+      model: model,
+      messages: messages,
+    };
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const aiService = await useAIServiceApi();
+    aiService
+      .claraChat(chatRequest)
+      .then((resp) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: resp.content,
+          },
+        ]);
+      })
+      .catch((error) => {
+        // TODO: show toast
+        console.error(error);
+      });
   };
 
   const handleSaveApiKey = (apiKey: string, _persist: boolean) => {
