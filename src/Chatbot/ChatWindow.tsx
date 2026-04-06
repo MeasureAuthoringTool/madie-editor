@@ -38,6 +38,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<Mode>("Ask");
   const [model, setModel] = useState(MODELS[0]);
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
@@ -80,6 +81,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     };
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const aiService = await useAIServiceApi();
+    setIsLoading(true);
     aiService
       .claraChat(chatRequest)
       .then((resp) => {
@@ -94,6 +96,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       .catch((error) => {
         // TODO: show toast
         console.error(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -172,6 +177,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <div className="chat-window__message-content">{msg.content}</div>
           </div>
         ))}
+        {isLoading && (
+          <div className="chat-window__message chat-window__message--assistant">
+            <div className="chat-window__message-label">Clara</div>
+            <div className="chat-window__typing-indicator">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        )}
         {showApiKeyDialog && (
           <ApiKeyDialog
             model={model}
@@ -208,7 +223,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             aria-label="send message"
             className="chat-window__send-btn"
             onClick={handleSend}
-            disabled={!input.trim()}
+            disabled={!input.trim() || isLoading}
             size="small"
           >
             <SendIcon fontSize="small" />
