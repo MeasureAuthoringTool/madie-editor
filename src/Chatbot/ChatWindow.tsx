@@ -22,6 +22,10 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   isError?: boolean;
+  tokens?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+  };
 }
 
 const MODES = ["Ask", "Agent"] as const;
@@ -129,7 +133,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         // ai-service unavailable or user not authenticated yet — start with no saved keys
       }
     })();
-  }, []);
+  }, [aiService]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -141,6 +145,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const hasKeyForProvider = (provider: string) =>
     !!savedKeyIds[provider] || !!sessionKeys[provider];
+
+  const getTotalTokens = () => {
+    return messages.reduce((total, msg) => {
+      if (msg.tokens) {
+        return total + msg.tokens.prompt_tokens + msg.tokens.completion_tokens;
+      }
+      return total;
+    }, 0);
+  };
 
   const handleSend = async () => {
     const trimmed = input.trim();
@@ -178,7 +191,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       .then((resp) => {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: resp.content },
+          { role: "assistant", content: resp.content, tokens: resp.usage },
         ]);
       })
       .catch((error) => {
@@ -319,6 +332,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           >
             <div className="chat-window__message-label">
               {msg.role === "user" ? "You" : "Clara"}
+              {msg.tokens && msg.role === "assistant" && (
+                <span
+                  className="chat-window__message-tokens"
+                  title={`Prompt: ${msg.tokens.prompt_tokens}, Completion: ${msg.tokens.completion_tokens}`}
+                >
+                  {msg.tokens.prompt_tokens + msg.tokens.completion_tokens}{" "}
+                  tokens
+                </span>
+              )}
             </div>
             <div className="chat-window__message-content">
               {msg.role === "assistant" ? (
@@ -349,6 +371,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             onSave={handleSaveApiKey}
             onCancel={() => setShowApiKeyDialog(false)}
           />
+        )}
+        {messages.length > 0 && getTotalTokens() > 0 && (
+          <div className="chat-window__token-summary">
+            <span className="chat-window__token-summary-label">
+              Total tokens used:
+            </span>
+            <span className="chat-window__token-summary-value">
+              {getTotalTokens()}
+            </span>
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
