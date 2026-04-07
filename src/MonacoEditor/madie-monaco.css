@@ -1,0 +1,7 @@
+.madie-monaco-editor {
+  .editor-error-underline {
+    text-decoration: underline;
+    text-decoration-color: red;
+    text-decoration-style: wavy;
+  }
+}

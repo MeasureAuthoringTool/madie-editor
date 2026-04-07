@@ -2,13 +2,13 @@ import React, { FC } from "react";
 import ReactDOM from "react-dom";
 import singleSpaReact from "single-spa-react";
 import Root from "./root.component";
-import MadieAceEditor, {
+import MadieMonacoEditor, {
   EditorPropsType,
   parseEditorContent,
   isUsingStatementEmpty,
   updateEditorContent,
   UpdatedCqlObject,
-} from "./AceEditor/madie-ace-editor";
+} from "./MonacoEditor/madie-monaco-editor";
 import CqlEditorWithTerminology from "./cqlEditorWithTerminology/CqlEditorWithTerminology";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/TranslatedElmModels";
@@ -29,7 +29,7 @@ const lifecycles = singleSpaReact({
 
 export const MadieTerminologyEditor: FC<EditorPropsType> =
   CqlEditorWithTerminology;
-export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
+export const MadieEditor: FC<EditorPropsType> = MadieMonacoEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 
 export type { ElmTranslationError };

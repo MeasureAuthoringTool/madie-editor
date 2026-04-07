@@ -1,5 +1,7 @@
 import React, { MouseEvent, useState } from "react";
-import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
+import MadieMonacoEditor, {
+  EditorPropsType,
+} from "../MonacoEditor/madie-monaco-editor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import "./CqlEditorWithTerminology.scss";
@@ -107,7 +109,7 @@ const CqlEditorWithTerminology = ({
               className="panel-content"
               style={{ flex: chatOpen ? "1 1 50%" : "1 1 100%" }}
             >
-              <MadieAceEditor
+              <MadieMonacoEditor
                 value={value}
                 onChange={onChange}
                 height={height}
