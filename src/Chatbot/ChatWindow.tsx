@@ -13,10 +13,50 @@ import useAIServiceApi from "../api/useAIService";
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  isError?: boolean;
 }
 
 const MODES = ["Ask", "Agent"] as const;
 type Mode = (typeof MODES)[number];
+
+function parseErrorMessage(error: Error): {
+  message: string;
+  isAuthError: boolean;
+} {
+  const msg = error.message || "";
+  if (
+    msg.includes("401") ||
+    msg.includes("Unauthorized") ||
+    msg.includes("AuthenticationError")
+  ) {
+    return {
+      message:
+        "Your API key is invalid or expired. Please check your key and try again.",
+      isAuthError: true,
+    };
+  }
+  if (
+    msg.includes("429") ||
+    msg.includes("Too Many Requests") ||
+    msg.includes("RateLimitError")
+  ) {
+    return {
+      message: "Rate limit exceeded. Please wait a moment and try again.",
+      isAuthError: false,
+    };
+  }
+  if (msg.includes("500") || msg.includes("Internal Server Error")) {
+    return {
+      message:
+        "The AI service encountered an internal error. Please try again later.",
+      isAuthError: false,
+    };
+  }
+  return {
+    message: "Something went wrong. Please try again.",
+    isAuthError: false,
+  };
+}
 
 const MODELS = [
   "gpt-5.4",
@@ -107,8 +147,22 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         ]);
       })
       .catch((error) => {
-        // TODO: show toast
-        console.error(error);
+        const { message, isAuthError } = parseErrorMessage(error);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: message,
+            isError: true,
+          } as ChatMessage,
+        ]);
+        if (isAuthError) {
+          setApiKeys((prev) => {
+            const updated = { ...prev };
+            delete updated[getProvider(model)];
+            return updated;
+          });
+        }
       })
       .finally(() => {
         setIsLoading(false);
@@ -182,7 +236,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`chat-window__message chat-window__message--${msg.role}`}
+            className={`chat-window__message chat-window__message--${msg.role}${
+              msg.isError ? " chat-window__message--error" : ""
+            }`}
           >
             <div className="chat-window__message-label">
               {msg.role === "user" ? "You" : "Clara"}

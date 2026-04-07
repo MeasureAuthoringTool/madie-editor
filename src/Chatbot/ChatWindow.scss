@@ -162,6 +162,26 @@
         color: #e0e0e0;
       }
     }
+
+    &--error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+
+      .chat-window--dark & {
+        background: #3b1515;
+        border-color: #7f1d1d;
+        color: #fca5a5;
+      }
+
+      .chat-window__message-label {
+        color: #dc2626;
+
+        .chat-window--dark & {
+          color: #f87171;
+        }
+      }
+    }
   }
 
   &__message-label {
