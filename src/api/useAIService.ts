@@ -64,7 +64,8 @@ export class AIServiceApi {
     const response = await fetch(`${BASE_URL}/ai/keys`, {
       headers: this.authHeaders(),
     });
-    if (!response.ok) throw new Error(`Failed to list keys: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`Failed to list keys: ${response.status}`);
     return response.json();
   }
 
@@ -94,7 +95,8 @@ export class AIServiceApi {
       method: "DELETE",
       headers: this.authHeaders(),
     });
-    if (!response.ok) throw new Error(`Failed to delete key: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`Failed to delete key: ${response.status}`);
   }
 }
 
