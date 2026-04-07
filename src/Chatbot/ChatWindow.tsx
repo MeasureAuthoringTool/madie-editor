@@ -184,11 +184,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           } as ChatMessage,
         ]);
         if (isAuthError) {
-          setApiKeys((prev) => {
+          const errorProvider = getProvider(model);
+          setSavedKeyIds((prev) => {
             const updated = { ...prev };
-            delete updated[getProvider(model)];
+            delete updated[errorProvider];
             return updated;
           });
+          setSessionKeys((prev) => {
+            const updated = { ...prev };
+            delete updated[errorProvider];
+            return updated;
+          });
+          setShowApiKeyDialog(true);
         }
       })
       .finally(() => {
