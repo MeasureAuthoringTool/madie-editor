@@ -102,9 +102,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { getAccessToken } = useOktaTokens();
+  const getAccessTokenRef = useRef(getAccessToken);
+  getAccessTokenRef.current = getAccessToken;
+
   const aiService = useMemo(
-    () => new AIServiceApi(getAccessToken),
-    [getAccessToken]
+    () => new AIServiceApi(() => getAccessTokenRef.current()),
+    []
   );
 
   const measureId = window.location.pathname.split("/")[2];
@@ -126,7 +129,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         // ai-service unavailable or user not authenticated yet — start with no saved keys
       }
     })();
-  }, [aiService]);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

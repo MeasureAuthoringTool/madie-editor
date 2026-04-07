@@ -30,9 +30,9 @@ module.exports = (webpackConfigEnv, argv) => {
     externals: [
       "@madie/madie-util",
       // Shared singleton libraries — loaded once via import map
-      // "@emotion/react",
-      // "@emotion/styled",
-      // "styled-components",
+      "@emotion/react",
+      "@emotion/styled",
+      "styled-components",
     ],
   };
 
