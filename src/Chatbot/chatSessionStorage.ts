@@ -1,4 +1,5 @@
 const STORAGE_KEY = "madie-chat-sessions";
+const MODEL_KEY = "madie-chat-model";
 
 function getSessionMap(): Record<string, string> {
   try {
@@ -22,4 +23,20 @@ export function clearSessionId(measureId: string): void {
   const map = getSessionMap();
   delete map[measureId];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+}
+
+export function getPreferredModel(defaultModel: string): string {
+  try {
+    return localStorage.getItem(MODEL_KEY) || defaultModel;
+  } catch {
+    return defaultModel;
+  }
+}
+
+export function setPreferredModel(model: string): void {
+  try {
+    localStorage.setItem(MODEL_KEY, model);
+  } catch {
+    // localStorage unavailable — silently ignore
+  }
 }

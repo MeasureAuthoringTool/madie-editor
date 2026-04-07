@@ -18,7 +18,7 @@ import ApiKeyDialog from "./ApiKeyDialog";
 import "./ChatWindow.scss";
 import { AIServiceApi, MeasureContext } from "../api/useAIService";
 import { useOktaTokens } from "@madie/madie-util";
-import { getSessionId, setSessionId, clearSessionId } from "./chatSessionStorage";
+import { getSessionId, setSessionId, clearSessionId, getPreferredModel, setPreferredModel } from "./chatSessionStorage";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -113,7 +113,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [savedKeyIds, setSavedKeyIds] = useState<Record<string, string>>({});
   // provider → raw api_key (in-memory only, per-call mode, not persisted)
   const [sessionKeys, setSessionKeys] = useState<Record<string, string>>({});
-  const [model, setModel] = useState("gpt-5.4");
+  const [model, setModel] = useState(() => getPreferredModel("gpt-5.4"));
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -529,6 +529,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               onChange={(e) => {
                 const newModel = e.target.value;
                 setModel(newModel);
+                setPreferredModel(newModel);
                 if (!hasKeyForProvider(getProvider(newModel))) {
                   setShowApiKeyDialog(true);
                 }
