@@ -107,6 +107,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     [getAccessToken]
   );
 
+  const measureId = window.location.pathname.split("/")[2];
+
   // Load any keys the user has previously persisted in the ai-service
   useEffect(() => {
     (async () => {
@@ -164,6 +166,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           provider,
           model,
           messages: updatedMessages,
+          measure_id: measureId,
         };
 
     setIsLoading(true);
