@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -15,7 +15,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ApiKeyDialog from "./ApiKeyDialog";
 import "./ChatWindow.scss";
-import useAIServiceApi from "../api/useAIService";
+import { AIServiceApi } from "../api/useAIService";
+import { useOktaTokens } from "@madie/madie-util";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -100,12 +101,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { getAccessToken } = useOktaTokens();
+  const aiService = useMemo(
+    () => new AIServiceApi(getAccessToken),
+    [getAccessToken]
+  );
 
   // Load any keys the user has previously persisted in the ai-service
   useEffect(() => {
     (async () => {
       try {
-        const aiService = await useAIServiceApi();
         const keys = await aiService.listKeys();
         const map: Record<string, string> = {};
         // If the user has multiple keys for a provider, use the most recently created active one
@@ -119,7 +124,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         // ai-service unavailable or user not authenticated yet — start with no saved keys
       }
     })();
-  }, []);
+  }, [aiService]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -161,8 +166,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           messages: updatedMessages,
         };
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const aiService = await useAIServiceApi();
     setIsLoading(true);
     aiService
       .claraChat(chatRequest)
@@ -206,7 +209,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     const provider = getProvider(model);
     if (persist) {
       try {
-        const aiService = await useAIServiceApi();
         // If a saved key already exists for this provider, delete it first to avoid duplicates
         if (savedKeyIds[provider]) {
           await aiService.deleteKey(savedKeyIds[provider]);
@@ -228,7 +230,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       // Not persisted — store in memory only; remove any previously saved key for this provider
       if (savedKeyIds[provider]) {
         try {
-          const aiService = await useAIServiceApi();
           await aiService.deleteKey(savedKeyIds[provider]);
           setSavedKeyIds((prev) => {
             const next = { ...prev };
