@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
+import AddIcon from "@mui/icons-material/Add";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import {
@@ -15,8 +16,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ApiKeyDialog from "./ApiKeyDialog";
 import "./ChatWindow.scss";
-import { AIServiceApi } from "../api/useAIService";
+import { AIServiceApi, MeasureContext } from "../api/useAIService";
 import { useOktaTokens } from "@madie/madie-util";
+import { getSessionId, setSessionId, clearSessionId } from "./chatSessionStorage";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -85,14 +87,25 @@ interface ChatWindowProps {
   onClose?: () => void;
   theme?: "light" | "dark";
   onToggleTheme?: () => void;
+  measureId?: string;
+  measureContext?: MeasureContext;
+}
+
+function getMeasureIdFromUrl(): string | null {
+  const match = window.location.pathname.match(/\/measures\/([^/]+)/);
+  return match ? match[1] : null;
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({
   onClose,
   theme = "light",
   onToggleTheme,
+  measureId: measureIdProp,
+  measureContext,
 }) => {
+  const measureId = measureIdProp ?? getMeasureIdFromUrl();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [sessionId, setActiveSessionId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<Mode>("Ask");
@@ -114,8 +127,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     []
   );
 
-  const measureId = window.location.pathname.split("/")[2];
-
   // Load any keys the user has previously persisted in the ai-service
   useEffect(() => {
     (async () => {
@@ -134,6 +145,43 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       }
     })();
   }, [aiService]);
+
+  // Load or create a chat session for the current measure
+  useEffect(() => {
+    if (!measureId) return;
+    (async () => {
+      try {
+        const storedSessionId = getSessionId(measureId);
+        if (storedSessionId) {
+          // Try to resume the existing session
+          try {
+            const session = await aiService.getSession(storedSessionId);
+            setMessages(
+              session.messages.map((m) => ({
+                role: m.role as "user" | "assistant",
+                content: m.content,
+              }))
+            );
+            setActiveSessionId(storedSessionId);
+            return;
+          } catch {
+            // Session not found (deleted or expired) — fall through to create a new one
+            clearSessionId(measureId);
+          }
+        }
+        // No stored session or it was stale — create a fresh one
+        const newSession = await aiService.createSession(
+          measureId,
+          measureContext
+        );
+        setActiveSessionId(newSession.id);
+        setSessionId(measureId, newSession.id);
+        setMessages([]);
+      } catch {
+        // Session service unavailable — operate without persistence
+      }
+    })();
+  }, [measureId, aiService]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -176,13 +224,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     }
 
     const chatRequest = savedKeyIds[provider]
-      ? { key_id: savedKeyIds[provider], model, messages: updatedMessages }
+      ? {
+          key_id: savedKeyIds[provider],
+          model,
+          messages: [{ role: "user", content: trimmed }],
+          session_id: sessionId ?? undefined,
+        }
       : {
           api_key: sessionKeys[provider],
           provider,
           model,
-          messages: updatedMessages,
-          measure_id: measureId,
+          messages: [{ role: "user", content: trimmed }],
+          session_id: sessionId ?? undefined,
         };
 
     setIsLoading(true);
@@ -222,6 +275,19 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  const handleNewSession = async () => {
+    if (!measureId) return;
+    try {
+      const newSession = await aiService.createSession(measureId, measureContext);
+      setActiveSessionId(newSession.id);
+      setSessionId(measureId, newSession.id);
+      setMessages([]);
+    } catch {
+      // If session creation fails, just clear local messages
+      setMessages([]);
+    }
   };
 
   const handleSaveApiKey = async (apiKey: string, persist: boolean) => {
@@ -285,6 +351,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </span>
         </div>
         <div className="chat-window__header-actions">
+          {measureId && (
+            <IconButton
+              data-testid="new-session-button"
+              aria-label="new chat session"
+              size="small"
+              onClick={handleNewSession}
+              className="chat-window__new-session-btn"
+              title="New session"
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          )}
           {onToggleTheme && (
             <IconButton
               data-testid="theme-toggle-button"

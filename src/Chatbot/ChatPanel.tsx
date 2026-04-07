@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import ChatWindow from "./ChatWindow";
 import "./ChatPanel.scss";
+import { MeasureContext } from "../api/useAIService";
 
 interface ChatPanelProps {
   onChatToggle?: () => void;
+  measureId?: string;
+  measureContext?: MeasureContext;
 }
 
 type Theme = "light" | "dark";
 
-const ChatPanel: React.FC<ChatPanelProps> = ({ onChatToggle }) => {
+const ChatPanel: React.FC<ChatPanelProps> = ({
+  onChatToggle,
+  measureId,
+  measureContext,
+}) => {
   const [theme, setTheme] = useState<Theme>("light");
 
   const toggleTheme = () => {
@@ -22,6 +29,8 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ onChatToggle }) => {
           onClose={onChatToggle}
           theme={theme}
           onToggleTheme={toggleTheme}
+          measureId={measureId}
+          measureContext={measureContext}
         />
       </div>
     </div>

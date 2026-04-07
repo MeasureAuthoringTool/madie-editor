@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from "react";
+import React, { MouseEvent, useMemo, useState } from "react";
 import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
@@ -9,6 +9,11 @@ import { IconButton } from "@mui/material";
 import Search from "@mui/icons-material/Search";
 import ChatIcon from "@mui/icons-material/ChatOutlined";
 import ChatPanel from "../Chatbot/ChatPanel";
+
+function getMeasureIdFromUrl(): string | null {
+  const match = window.location.pathname.match(/\/measures\/([^/]+)/);
+  return match ? match[1] : null;
+}
 
 const CqlEditorWithTerminology = ({
   value,
@@ -50,6 +55,12 @@ const CqlEditorWithTerminology = ({
     return !params.has("tab");
   });
   const [chatOpen, setChatOpen] = useState(false);
+
+  const measureId = getMeasureIdFromUrl();
+  const measureContext = useMemo(
+    () => (measureModel ? { model: measureModel } : undefined),
+    [measureModel]
+  );
 
   const toggleSearch = () => {
     const event = new CustomEvent("toggleEditorSearchBox");
@@ -121,7 +132,11 @@ const CqlEditorWithTerminology = ({
             </div>
             {chatOpen && (
               <div className="chat-panel-wrapper">
-                <ChatPanel onChatToggle={() => setChatOpen(false)} />
+                <ChatPanel
+                  onChatToggle={() => setChatOpen(false)}
+                  measureId={measureId ?? undefined}
+                  measureContext={measureContext}
+                />
               </div>
             )}
           </div>

@@ -10,6 +10,9 @@ export interface ClaraChatRequestSavedKey {
   key_id: string;
   model: string;
   messages: ClaraChatMessage[];
+  session_id?: string;
+  context?: string;
+  context_type?: string;
 }
 
 // Mode 2: pass the key per-call (never persisted server-side)
@@ -18,6 +21,9 @@ export interface ClaraChatRequestInlineKey {
   provider: string;
   model: string;
   messages: ClaraChatMessage[];
+  session_id?: string;
+  context?: string;
+  context_type?: string;
 }
 
 export type ClaraChatRequest =
@@ -29,6 +35,38 @@ export interface AiKeySummary {
   provider: string;
   label: string;
   active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// ── Session types ──────────────────────────────────────────────────────────────
+
+export interface MeasureContext {
+  measure_name?: string;
+  library_name?: string;
+  description?: string;
+  model?: string;
+}
+
+export interface ChatSessionMessage {
+  role: string;
+  content: string;
+}
+
+export interface ChatSessionSummary {
+  id: string;
+  measure_id: string;
+  message_count: number;
+  context: MeasureContext;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatSessionDetail {
+  id: string;
+  measure_id: string;
+  messages: ChatSessionMessage[];
+  context: MeasureContext;
   created_at: string;
   updated_at: string;
 }
@@ -97,6 +135,73 @@ export class AIServiceApi {
     });
     if (!response.ok)
       throw new Error(`Failed to delete key: ${response.status}`);
+  }
+
+  // ── Session methods ──────────────────────────────────────────────────────────
+
+  async createSession(
+    measureId: string,
+    context?: MeasureContext
+  ): Promise<ChatSessionDetail> {
+    const response = await fetch(`${BASE_URL}/ai/sessions`, {
+      method: "POST",
+      headers: this.authHeaders(),
+      body: JSON.stringify({ measure_id: measureId, context: context ?? {} }),
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create session: ${errorText}`);
+    }
+    return response.json();
+  }
+
+  async getSession(sessionId: string): Promise<ChatSessionDetail> {
+    const response = await fetch(`${BASE_URL}/ai/sessions/${sessionId}`, {
+      headers: this.authHeaders(),
+    });
+    if (!response.ok)
+      throw new Error(`Failed to get session: ${response.status}`);
+    return response.json();
+  }
+
+  async listSessions(measureId?: string): Promise<ChatSessionSummary[]> {
+    const url = new URL(`${BASE_URL}/ai/sessions`);
+    if (measureId) url.searchParams.set("measure_id", measureId);
+    const response = await fetch(url.toString(), {
+      headers: this.authHeaders(),
+    });
+    if (!response.ok)
+      throw new Error(`Failed to list sessions: ${response.status}`);
+    return response.json();
+  }
+
+  async deleteSession(sessionId: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/ai/sessions/${sessionId}`, {
+      method: "DELETE",
+      headers: this.authHeaders(),
+    });
+    if (!response.ok)
+      throw new Error(`Failed to delete session: ${response.status}`);
+  }
+
+  async compactSession(
+    sessionId: string,
+    keyId: string,
+    model?: string
+  ): Promise<ChatSessionDetail> {
+    const response = await fetch(
+      `${BASE_URL}/ai/sessions/${sessionId}/compact`,
+      {
+        method: "POST",
+        headers: this.authHeaders(),
+        body: JSON.stringify({ key_id: keyId, model: model ?? "gpt-4o-mini" }),
+      }
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to compact session: ${errorText}`);
+    }
+    return response.json();
   }
 }
 
