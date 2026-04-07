@@ -3,7 +3,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import { IconButton, Select, MenuItem, FormControl } from "@mui/material";
+import {
+  IconButton,
+  Select,
+  MenuItem,
+  FormControl,
+  Divider,
+  ListSubheader,
+} from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ApiKeyDialog from "./ApiKeyDialog";
@@ -58,15 +65,6 @@ function parseErrorMessage(error: Error): {
   };
 }
 
-const MODELS = [
-  "gpt-5.4",
-  "gpt-5.4mini",
-  "gpt-5.3-codex",
-  "gemini-3.1-pro-preview",
-  "gemini-2.5-flash",
-  "gemini-2.5-pro",
-];
-
 const MODEL_PROVIDER: Record<string, string> = {
   "gpt-5.4": "OPENAI",
   "gpt-5.4mini": "OPENAI",
@@ -93,11 +91,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<Mode>("Ask");
-  const [model, setModel] = useState(MODELS[0]);
   // provider → key_id returned by the ai-service (encrypted server-side)
   const [savedKeyIds, setSavedKeyIds] = useState<Record<string, string>>({});
   // provider → raw api_key (in-memory only, per-call mode, not persisted)
   const [sessionKeys, setSessionKeys] = useState<Record<string, string>>({});
+  const [model, setModel] = useState("gpt-5.4");
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -424,8 +423,24 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 },
               }}
             >
-              {MODELS.map((m) => (
-                <MenuItem key={m} value={m}>
+              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "600" }}>
+                OPENAI :
+              </ListSubheader>
+              {["gpt-5.4", "gpt-5.4mini", "gpt-5.3-codex"].map((m) => (
+                <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
+                  {m}
+                </MenuItem>
+              ))}
+              <Divider sx={{ margin: "4px 0" }} />
+              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "600" }}>
+                GOOGLE :
+              </ListSubheader>
+              {[
+                "gemini-3.1-pro-preview",
+                "gemini-2.5-flash",
+                "gemini-2.5-pro",
+              ].map((m) => (
+                <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
                   {m}
                 </MenuItem>
               ))}
