@@ -94,10 +94,33 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<Mode>("Ask");
   const [model, setModel] = useState(MODELS[0]);
-  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  // provider → key_id returned by the ai-service (encrypted server-side)
+  const [savedKeyIds, setSavedKeyIds] = useState<Record<string, string>>({});
+  // provider → raw api_key (in-memory only, per-call mode, not persisted)
+  const [sessionKeys, setSessionKeys] = useState<Record<string, string>>({});
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load any keys the user has previously persisted in the ai-service
+  useEffect(() => {
+    (async () => {
+      try {
+        const aiService = await useAIServiceApi();
+        const keys = await aiService.listKeys();
+        const map: Record<string, string> = {};
+        // If the user has multiple keys for a provider, use the most recently created active one
+        for (const key of keys) {
+          if (key.active && !map[key.provider]) {
+            map[key.provider] = key.id;
+          }
+        }
+        setSavedKeyIds(map);
+      } catch {
+        // ai-service unavailable or user not authenticated yet — start with no saved keys
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -107,11 +130,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     inputRef.current?.focus();
   }, []);
 
+  const hasKeyForProvider = (provider: string) =>
+    !!savedKeyIds[provider] || !!sessionKeys[provider];
+
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    if (!apiKeys[getProvider(model)]) {
+    const provider = getProvider(model);
+    if (!hasKeyForProvider(provider)) {
       setShowApiKeyDialog(true);
       return;
     }
@@ -126,12 +153,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       inputRef.current.style.height = "auto";
     }
 
-    const chatRequest = {
-      api_key: apiKeys[getProvider(model)],
-      provider: getProvider(model),
-      model: model,
-      messages: updatedMessages,
-    };
+    const chatRequest = savedKeyIds[provider]
+      ? { key_id: savedKeyIds[provider], model, messages: updatedMessages }
+      : {
+          api_key: sessionKeys[provider],
+          provider,
+          model,
+          messages: updatedMessages,
+        };
+
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const aiService = await useAIServiceApi();
     setIsLoading(true);
@@ -140,10 +170,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       .then((resp) => {
         setMessages((prev) => [
           ...prev,
-          {
-            role: "assistant",
-            content: resp.content,
-          },
+          { role: "assistant", content: resp.content },
         ]);
       })
       .catch((error) => {
@@ -169,8 +196,45 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       });
   };
 
-  const handleSaveApiKey = (apiKey: string, _persist: boolean) => {
-    setApiKeys((prev) => ({ ...prev, [getProvider(model)]: apiKey }));
+  const handleSaveApiKey = async (apiKey: string, persist: boolean) => {
+    const provider = getProvider(model);
+    if (persist) {
+      try {
+        const aiService = await useAIServiceApi();
+        // If a saved key already exists for this provider, delete it first to avoid duplicates
+        if (savedKeyIds[provider]) {
+          await aiService.deleteKey(savedKeyIds[provider]);
+        }
+        const saved = await aiService.saveKey(provider, apiKey);
+        setSavedKeyIds((prev) => ({ ...prev, [provider]: saved.id }));
+        // Clear any in-memory session key for this provider since it's now persisted
+        setSessionKeys((prev) => {
+          const next = { ...prev };
+          delete next[provider];
+          return next;
+        });
+      } catch (err) {
+        console.error("Failed to persist API key:", err);
+        // Fall back to session-only if the service call fails
+        setSessionKeys((prev) => ({ ...prev, [provider]: apiKey }));
+      }
+    } else {
+      // Not persisted — store in memory only; remove any previously saved key for this provider
+      if (savedKeyIds[provider]) {
+        try {
+          const aiService = await useAIServiceApi();
+          await aiService.deleteKey(savedKeyIds[provider]);
+          setSavedKeyIds((prev) => {
+            const next = { ...prev };
+            delete next[provider];
+            return next;
+          });
+        } catch (err) {
+          console.error("Failed to delete persisted key:", err);
+        }
+      }
+      setSessionKeys((prev) => ({ ...prev, [provider]: apiKey }));
+    }
     setShowApiKeyDialog(false);
   };
 
@@ -267,6 +331,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         {showApiKeyDialog && (
           <ApiKeyDialog
             model={model}
+            provider={getProvider(model)}
+            hasPersistedKey={!!savedKeyIds[getProvider(model)]}
             onSave={handleSaveApiKey}
             onCancel={() => setShowApiKeyDialog(false)}
           />
@@ -340,7 +406,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               onChange={(e) => {
                 const newModel = e.target.value;
                 setModel(newModel);
-                if (!apiKeys[getProvider(newModel)]) {
+                if (!hasKeyForProvider(getProvider(newModel))) {
                   setShowApiKeyDialog(true);
                 }
               }}

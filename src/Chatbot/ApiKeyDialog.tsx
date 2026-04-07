@@ -4,17 +4,21 @@ import "./ApiKeyDialog.scss";
 
 interface ApiKeyDialogProps {
   model: string;
+  provider: string;
+  hasPersistedKey: boolean;
   onSave: (apiKey: string, persist: boolean) => void;
   onCancel: () => void;
 }
 
 const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
   model,
+  provider: _provider,
+  hasPersistedKey,
   onSave,
   onCancel,
 }) => {
   const [apiKeyInput, setApiKeyInput] = useState("");
-  const [persistKey, setPersistKey] = useState(false);
+  const [persistKey, setPersistKey] = useState(hasPersistedKey);
   const [dialogPos, setDialogPos] = useState<{ x: number; y: number } | null>(
     null
   );
