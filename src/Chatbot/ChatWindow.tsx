@@ -284,7 +284,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           return updated;
         });
       },
-      () => {
+      (usage) => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          if (usage) {
+            updated[assistantIdx] = {
+              ...updated[assistantIdx],
+              tokens: usage,
+            };
+          }
+          return updated;
+        });
         setIsStreaming(false);
       },
       (error) => {
