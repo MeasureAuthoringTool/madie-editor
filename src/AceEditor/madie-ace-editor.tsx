@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
 import * as _ from "lodash";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
@@ -71,6 +71,13 @@ export interface EditorPropsType {
   // conditional props used to pass up annotations outside of the editor
   setOutboundAnnotations?: Function;
   hasCqlError?: boolean;
+  // Code Review
+  commentedLines?: number[]; // 1-based line numbers that have comments
+  onAddComment?: (
+    lineNumber: number,
+    lineContent: string,
+    position: { top: number; left: number }
+  ) => void;
 }
 
 export interface UpdatedCqlObject {
@@ -430,6 +437,8 @@ const MadieAceEditor = ({
   readOnly = false,
   validationsEnabled = true,
   setOutboundAnnotations,
+  commentedLines = [],
+  onAddComment,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<Ace.Editor>();
   const [editorAnnotations, setEditorAnnotations] = useState<Ace.Annotation[]>(
@@ -634,6 +643,221 @@ const MadieAceEditor = ({
       .setAttribute("aria-label", "Cql editor");
   });
 
+  // ── Gutter: hover + icon ──────────────────────────────────────────────────
+  const gutterHoverRef = useRef<{
+    plusEl: HTMLDivElement | null;
+    currentRow: number | null;
+    cleanupFns: Array<() => void>;
+  }>({ plusEl: null, currentRow: null, cleanupFns: [] });
+
+  const updateGutterCommentIcons = useCallback(() => {
+    if (!editor || !onAddComment) return;
+    const editorContainer = editor.container as HTMLElement;
+    const gutter = editorContainer.querySelector(".ace_gutter") as HTMLElement;
+    if (!gutter) return;
+
+    // Remove stale comment dots (appended to editorContainer, not gutter)
+    editorContainer
+      .querySelectorAll(".ace-gutter-comment-dot")
+      .forEach((el) => el.remove());
+
+    const renderer = (editor as any).renderer;
+    const session = editor.getSession();
+    const lineHeight: number = renderer.lineHeight || 16;
+    const scrollTop: number = session.getScrollTop();
+    const firstRow: number = renderer.getFirstVisibleRow();
+    const lastRow: number = renderer.getLastVisibleRow();
+    const gutterWidth: number = gutter.getBoundingClientRect().width;
+
+    commentedLines.forEach((lineNum) => {
+      const row = lineNum - 1; // 0-based
+      if (row < firstRow || row > lastRow) return;
+
+      // top relative to editor container
+      const topPx =
+        row * lineHeight - scrollTop + Math.floor(lineHeight / 2) - 7;
+      // right-aligned inside gutter column
+      const leftPx = gutterWidth - 18;
+
+      const dot = document.createElement("div");
+      dot.className = "ace-gutter-comment-dot";
+      dot.title = "View comments on this line";
+      dot.style.cssText = `
+        position: absolute;
+        left: ${leftPx}px;
+        top: ${topPx}px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #e8a020;
+        cursor: pointer;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        color: #fff;
+        font-weight: 700;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        line-height: 1;
+        pointer-events: auto;
+      `;
+      dot.textContent = "●";
+      editorContainer.appendChild(dot);
+      dot.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const rect = dot.getBoundingClientRect();
+        const lines = session.getDocument().getAllLines();
+        const lineContent = lines[row] ?? "";
+        onAddComment(lineNum, lineContent, {
+          top: rect.bottom + 4,
+          left: rect.left,
+        });
+      });
+    });
+  }, [editor, commentedLines, onAddComment]);
+
+  useEffect(() => {
+    updateGutterCommentIcons();
+  }, [updateGutterCommentIcons]);
+
+  // ── Gutter: + hover icon ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!editor || !onAddComment) return;
+
+    const editorContainer = editor.container as HTMLElement;
+    const gutter = editorContainer.querySelector(".ace_gutter") as HTMLElement;
+    if (!gutter) return;
+
+    // Append plusEl to the editor container (not the gutter) so it
+    // is not clipped by the gutter's overflow:hidden.
+    const plusEl = document.createElement("div");
+    plusEl.className = "ace-gutter-plus-btn";
+    plusEl.textContent = "+";
+    plusEl.style.cssText = `
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #0073c8;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 18px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.45);
+      transition: transform 0.1s;
+      user-select: none;
+      pointer-events: auto;
+    `;
+    editorContainer.style.position = "relative";
+    editorContainer.appendChild(plusEl);
+
+    let hoverRow: number | null = null;
+
+    const getGutterWidth = () => gutter.getBoundingClientRect().width;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const containerRect = editorContainer.getBoundingClientRect();
+      const gutterWidth = getGutterWidth();
+
+      // Only show + when the cursor is within the gutter column
+      const relX = e.clientX - containerRect.left;
+      if (relX < 0 || relX > gutterWidth) {
+        plusEl.style.display = "none";
+        hoverRow = null;
+        return;
+      }
+
+      const renderer = (editor as any).renderer;
+      const lineHeight: number = renderer.lineHeight || 16;
+      const scrollTop: number = editor.getSession().getScrollTop();
+
+      // relY from the top of the editor container, accounting for scroll
+      const relY = e.clientY - containerRect.top + scrollTop;
+      const row = Math.floor(relY / lineHeight);
+      const totalLines = editor.getSession().getLength();
+
+      if (row < 0 || row >= totalLines) {
+        plusEl.style.display = "none";
+        hoverRow = null;
+        return;
+      }
+
+      hoverRow = row;
+
+      // top relative to the editor container (not the gutter)
+      const topPx =
+        row * lineHeight - scrollTop + Math.floor(lineHeight / 2) - 9;
+      // horizontally centered in the gutter, with a small left margin
+      const leftPx = 3;
+
+      plusEl.style.top = `${topPx}px`;
+      plusEl.style.left = `${leftPx}px`;
+      plusEl.style.display = "block";
+    };
+
+    const onMouseLeave = (e: MouseEvent) => {
+      // Only hide if we actually left the editor container
+      // (not just moving to plusEl itself)
+      const related = e.relatedTarget as Node | null;
+      if (related && editorContainer.contains(related)) return;
+      plusEl.style.display = "none";
+      hoverRow = null;
+    };
+
+    const onPlusClick = (e: MouseEvent) => {
+      e.stopPropagation();
+      if (hoverRow === null) return;
+      const session = editor.getSession();
+      const lines = session.getDocument().getAllLines();
+      const lineContent = lines[hoverRow] ?? "";
+      const lineNumber = hoverRow + 1; // 1-based
+      const rect = plusEl.getBoundingClientRect();
+      onAddComment(lineNumber, lineContent, {
+        top: rect.bottom + 6,
+        left: rect.right + 8,
+      });
+      plusEl.style.display = "none";
+      hoverRow = null;
+    };
+
+    const onPlusMouseEnter = () => {
+      plusEl.style.transform = "scale(1.2)";
+    };
+    const onPlusMouseLeave = () => {
+      plusEl.style.transform = "scale(1)";
+    };
+
+    editorContainer.addEventListener("mousemove", onMouseMove);
+    editorContainer.addEventListener("mouseleave", onMouseLeave);
+    plusEl.addEventListener("click", onPlusClick);
+    plusEl.addEventListener("mouseenter", onPlusMouseEnter);
+    plusEl.addEventListener("mouseleave", onPlusMouseLeave);
+
+    // Re-render comment dots on scroll
+    const onScroll = () => updateGutterCommentIcons();
+    editor.getSession().on("changeScrollTop", onScroll);
+
+    const cleanupFns = [
+      () => editorContainer.removeEventListener("mousemove", onMouseMove),
+      () => editorContainer.removeEventListener("mouseleave", onMouseLeave),
+      () => plusEl.removeEventListener("click", onPlusClick),
+      () => plusEl.removeEventListener("mouseenter", onPlusMouseEnter),
+      () => plusEl.removeEventListener("mouseleave", onPlusMouseLeave),
+      () => editor.getSession().off("changeScrollTop", onScroll),
+      () => plusEl.remove(),
+    ];
+    gutterHoverRef.current.cleanupFns = cleanupFns;
+
+    return () => {
+      cleanupFns.forEach((fn) => fn());
+    };
+  }, [editor, onAddComment, updateGutterCommentIcons]);
+
   return (
     <div style={{ height: "inhert" }}>
       <AceEditor
@@ -645,7 +869,8 @@ const MadieAceEditor = ({
           onChange(value);
         }}
         onLoad={(aceEditor) => {
-          // On load we want to tell the ace editor that it's inside of a scrollabel page
+          // On load we want to tell the ace editor that it's inside of a scrollable page
+          aceEditor.container.style.position = "relative";
           setEditor(aceEditor);
         }}
         width="100%"

@@ -27,8 +27,9 @@ const lifecycles = singleSpaReact({
   },
 });
 
-export const MadieTerminologyEditor: FC<EditorPropsType> =
-  CqlEditorWithTerminology;
+export const MadieTerminologyEditor: FC<
+  EditorPropsType & { measureId?: string }
+> = CqlEditorWithTerminology as FC<EditorPropsType & { measureId?: string }>;
 export const MadieEditor: FC<EditorPropsType> = MadieAceEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 
