@@ -397,7 +397,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       if (textarea.selectionStart !== 0 && historyIndex === -1) return;
       e.preventDefault();
       const nextIndex =
-        historyIndex === -1 ? userMessages.length - 1 : Math.max(0, historyIndex - 1);
+        historyIndex === -1
+          ? userMessages.length - 1
+          : Math.max(0, historyIndex - 1);
       if (historyIndex === -1) setInputDraft(input);
       setHistoryIndex(nextIndex);
       setInput(userMessages[nextIndex]);
@@ -475,7 +477,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="chat-window__empty">
             <p>Hi, I'm Clara!</p>
             <p className="chat-window__hint">
-              Ask me questions about your CQL or Measure
+              Your AI powered Assistant. You can ask me questions about your
+              CQL, Measure or in general about measure authoring
             </p>
           </div>
         )}

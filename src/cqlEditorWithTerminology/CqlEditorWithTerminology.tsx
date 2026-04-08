@@ -84,6 +84,7 @@ const CqlEditorWithTerminology = ({
             <IconButton
               data-testid="editor-chat-button"
               aria-label="toggle chat"
+              title={chatOpen ? "Close Chat" : "Open Chat"}
               style={{
                 color: chatOpen ? "#005a9e" : "#0073c8",
               }}
