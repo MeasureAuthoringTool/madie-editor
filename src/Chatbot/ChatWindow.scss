@@ -350,6 +350,35 @@
     }
   }
 
+  &__message-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+
+  &__copy-btn {
+    color: #888 !important;
+    padding: 2px !important;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    .chat-window__message:hover & {
+      opacity: 1;
+    }
+
+    &:hover {
+      color: #0073c8 !important;
+    }
+
+    .chat-window--dark & {
+      color: #aaa !important;
+
+      &:hover {
+        color: #4da6ff !important;
+      }
+    }
+  }
+
   &__input-area {
     position: sticky;
     bottom: 0;

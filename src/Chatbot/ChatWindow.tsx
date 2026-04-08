@@ -5,6 +5,8 @@ import SendIcon from "@mui/icons-material/Send";
 import AddIcon from "@mui/icons-material/Add";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
 import {
   IconButton,
   Select,
@@ -125,6 +127,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [inputDraft, setInputDraft] = useState<string>("");
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const streamAbortRef = useRef<{ abort: () => void } | null>(null);
@@ -527,6 +530,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                   msg.content
                 )}
               </div>
+              {msg.role === "assistant" && msg.content && !msg.isError && (
+                <div className="chat-window__message-actions">
+                  <IconButton
+                    data-testid={`copy-message-${idx}`}
+                    aria-label="copy message"
+                    size="small"
+                    className="chat-window__copy-btn"
+                    onClick={(e) => {
+                      const messageEl = (e.currentTarget as HTMLElement)
+                        .closest(".chat-window__message")
+                        ?.querySelector(".chat-window__message-content");
+                      const text = messageEl?.textContent ?? msg.content;
+                      navigator.clipboard.writeText(text);
+                      setCopiedIdx(idx);
+                      setTimeout(() => setCopiedIdx(null), 2000);
+                    }}
+                  >
+                    {copiedIdx === idx ? (
+                      <CheckIcon sx={{ fontSize: 14 }} />
+                    ) : (
+                      <ContentCopyIcon sx={{ fontSize: 14 }} />
+                    )}
+                  </IconButton>
+                </div>
+              )}
             </div>
           )
         )}
