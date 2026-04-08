@@ -187,7 +187,10 @@ export class AIServiceApi {
   claraChatStream(
     request: ClaraChatRequest,
     onChunk: (content: string) => void,
-    onDone: () => void,
+    onDone: (usage?: {
+      prompt_tokens: number;
+      completion_tokens: number;
+    }) => void,
     onError: (error: Error) => void
   ): { abort: () => void } {
     const controller = new AbortController();
@@ -234,7 +237,7 @@ export class AIServiceApi {
                 if (currentEvent === "chunk" && data.content) {
                   onChunk(data.content);
                 } else if (currentEvent === "done") {
-                  onDone();
+                  onDone(data.usage);
                   return;
                 } else if (currentEvent === "error") {
                   throw new Error(data.error || "Stream error");
@@ -247,7 +250,7 @@ export class AIServiceApi {
           }
         }
         // Stream ended without a done event — treat as done
-        onDone();
+        onDone(undefined);
       } catch (err: any) {
         if (err.name === "AbortError") return;
         onError(err instanceof Error ? err : new Error(String(err)));
