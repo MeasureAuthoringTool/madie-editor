@@ -191,8 +191,6 @@ export class AIServiceApi {
     onError: (error: Error) => void
   ): { abort: () => void } {
     const controller = new AbortController();
-
-    console.log("Starting ClaraChat stream with request:", request);
     (async () => {
       try {
         const response = await fetch(`${BASE_URL}/ai/completions/stream`, {
