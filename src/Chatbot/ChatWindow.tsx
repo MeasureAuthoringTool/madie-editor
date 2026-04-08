@@ -219,6 +219,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     }, 0);
   };
 
+  const handleAbort = () => {
+    streamAbortRef.current?.abort();
+    setIsStreaming(false);
+  };
+
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
@@ -477,7 +482,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="chat-window__empty">
             <p>Hi, I'm Clara!</p>
             <p className="chat-window__hint">
-              Your AI‑powered assistant. I’m here to help you with CQL, measures, and everything related to measure authoring.
+              Your AI‑powered assistant. I’m here to help you with CQL,
+              measures, and everything related to measure authoring.
             </p>
           </div>
         )}
@@ -570,13 +576,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           />
           <IconButton
             data-testid="chat-send-button"
-            aria-label="send message"
+            aria-label={isStreaming ? "abort request" : "send message"}
             className="chat-window__send-btn"
-            onClick={handleSend}
-            disabled={!input.trim() || isStreaming}
+            onClick={isStreaming ? handleAbort : handleSend}
+            disabled={!isStreaming && !input.trim()}
             size="small"
           >
-            <SendIcon fontSize="small" />
+            {isStreaming ? (
+              <CloseIcon fontSize="small" />
+            ) : (
+              <SendIcon fontSize="small" />
+            )}
           </IconButton>
         </div>
         <div className="chat-window__input-controls">
