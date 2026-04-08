@@ -18,7 +18,13 @@ import ApiKeyDialog from "./ApiKeyDialog";
 import "./ChatWindow.scss";
 import { AIServiceApi, MeasureContext } from "../api/useAIService";
 import { useOktaTokens } from "@madie/madie-util";
-import { getSessionId, setSessionId, clearSessionId, getPreferredModel, setPreferredModel } from "./chatSessionStorage";
+import {
+  getSessionId,
+  setSessionId,
+  clearSessionId,
+  getPreferredModel,
+  setPreferredModel,
+} from "./chatSessionStorage";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -107,7 +113,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [sessionId, setActiveSessionId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [mode, setMode] = useState<Mode>("Ask");
   // provider → key_id returned by the ai-service (encrypted server-side)
   const [savedKeyIds, setSavedKeyIds] = useState<Record<string, string>>({});
@@ -238,25 +244,49 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           session_id: sessionId ?? undefined,
         };
 
-    setIsLoading(true);
-    aiService
-      .claraChat(chatRequest)
-      .then((resp) => {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: resp.content, tokens: resp.usage },
-        ]);
-      })
-      .catch((error) => {
+    setIsStreaming(true);
+
+    // Add a placeholder assistant message that we'll stream into
+    const assistantIdx = updatedMessages.length;
+    setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
+
+    aiService.claraChatStream(
+      chatRequest,
+      // onChunk — append streamed content to the assistant message
+      (content) => {
+        setIsStreaming(true);
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[assistantIdx] = {
+            ...updated[assistantIdx],
+            content: updated[assistantIdx].content + content,
+          };
+          return updated;
+        });
+      },
+      () => {
+        setIsStreaming(false);
+      },
+      (error) => {
         const { message, isAuthError } = parseErrorMessage(error);
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: message,
-            isError: true,
-          } as ChatMessage,
-        ]);
+        setMessages((prev) => {
+          const updated = [...prev];
+          // If nothing was streamed yet, replace the placeholder; otherwise append an error message
+          if (!updated[assistantIdx].content) {
+            updated[assistantIdx] = {
+              role: "assistant",
+              content: message,
+              isError: true,
+            };
+          } else {
+            updated.push({
+              role: "assistant",
+              content: message,
+              isError: true,
+            });
+          }
+          return updated;
+        });
         if (isAuthError) {
           const errorProvider = getProvider(model);
           setSavedKeyIds((prev) => {
@@ -271,16 +301,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           });
           setShowApiKeyDialog(true);
         }
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+        setIsStreaming(false);
+      }
+    );
   };
 
   const handleNewSession = async () => {
     if (!measureId) return;
     try {
-      const newSession = await aiService.createSession(measureId, measureContext);
+      const newSession = await aiService.createSession(
+        measureId,
+        measureContext
+      );
       setActiveSessionId(newSession.id);
       setSessionId(measureId, newSession.id);
       setMessages([]);
@@ -401,46 +433,50 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             </p>
           </div>
         )}
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`chat-window__message chat-window__message--${msg.role}${
-              msg.isError ? " chat-window__message--error" : ""
-            }`}
-          >
-            <div className="chat-window__message-label">
-              {msg.role === "user" ? "You" : "Clara"}
-              {msg.tokens && msg.role === "assistant" && (
-                <span
-                  className="chat-window__message-tokens"
-                  title={`Prompt: ${msg.tokens.prompt_tokens}, Completion: ${msg.tokens.completion_tokens}`}
-                >
-                  {msg.tokens.prompt_tokens + msg.tokens.completion_tokens}{" "}
-                  tokens
-                </span>
-              )}
+        {messages.map((msg, idx) =>
+          msg.role === "assistant" && !msg.content && !msg.isError ? null : (
+            <div
+              key={idx}
+              className={`chat-window__message chat-window__message--${
+                msg.role
+              }${msg.isError ? " chat-window__message--error" : ""}`}
+            >
+              <div className="chat-window__message-label">
+                {msg.role === "user" ? "You" : "Clara"}
+                {msg.tokens && msg.role === "assistant" && (
+                  <span
+                    className="chat-window__message-tokens"
+                    title={`Prompt: ${msg.tokens.prompt_tokens}, Completion: ${msg.tokens.completion_tokens}`}
+                  >
+                    {msg.tokens.prompt_tokens + msg.tokens.completion_tokens}{" "}
+                    tokens
+                  </span>
+                )}
+              </div>
+              <div className="chat-window__message-content">
+                {msg.role === "assistant" ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  msg.content
+                )}
+              </div>
             </div>
-            <div className="chat-window__message-content">
-              {msg.role === "assistant" ? (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {msg.content}
-                </ReactMarkdown>
-              ) : (
-                msg.content
-              )}
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="chat-window__message chat-window__message--assistant">
-            <div className="chat-window__message-label">Clara</div>
-            <div className="chat-window__typing-indicator">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
+          )
         )}
+        {isStreaming &&
+          messages.length > 0 &&
+          !messages[messages.length - 1].content && (
+            <div className="chat-window__message chat-window__message--assistant">
+              <div className="chat-window__message-label">Clara</div>
+              <div className="chat-window__typing-indicator">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+          )}
         {showApiKeyDialog && (
           <ApiKeyDialog
             model={model}
@@ -489,7 +525,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             aria-label="send message"
             className="chat-window__send-btn"
             onClick={handleSend}
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isStreaming}
             size="small"
           >
             <SendIcon fontSize="small" />

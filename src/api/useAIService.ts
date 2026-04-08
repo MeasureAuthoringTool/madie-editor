@@ -184,6 +184,80 @@ export class AIServiceApi {
       throw new Error(`Failed to delete session: ${response.status}`);
   }
 
+  claraChatStream(
+    request: ClaraChatRequest,
+    onChunk: (content: string) => void,
+    onDone: () => void,
+    onError: (error: Error) => void
+  ): { abort: () => void } {
+    const controller = new AbortController();
+
+    console.log("Starting ClaraChat stream with request:", request);
+    (async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/ai/completions/stream`, {
+          method: "POST",
+          headers: this.authHeaders(),
+          body: JSON.stringify(request),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `Stream request failed [${response.status} ${response.statusText}]: ${errorText}`
+          );
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error("No response body");
+
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+
+          let currentEvent = "";
+          for (const line of lines) {
+            if (line.startsWith("event:")) {
+              currentEvent = line.slice(6).trim();
+            } else if (line.startsWith("data:")) {
+              const dataStr = line.slice(5).trim();
+              if (!dataStr) continue;
+              try {
+                const data = JSON.parse(dataStr);
+                if (currentEvent === "chunk" && data.content) {
+                  onChunk(data.content);
+                } else if (currentEvent === "done") {
+                  onDone();
+                  return;
+                } else if (currentEvent === "error") {
+                  throw new Error(data.error || "Stream error");
+                }
+              } catch (parseErr) {
+                if (parseErr instanceof SyntaxError) continue;
+                throw parseErr;
+              }
+            }
+          }
+        }
+        // Stream ended without a done event — treat as done
+        onDone();
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
+        onError(err instanceof Error ? err : new Error(String(err)));
+      }
+    })();
+
+    return { abort: () => controller.abort() };
+  }
+
   async compactSession(
     sessionId: string,
     keyId: string,
