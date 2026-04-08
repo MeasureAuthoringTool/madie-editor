@@ -105,6 +105,65 @@ function getMeasureIdFromUrl(): string | null {
   return match ? match[1] : null;
 }
 
+const CodeBlock = ({
+  children,
+  className,
+  inline,
+  ...rest
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  inline?: boolean;
+  [key: string]: unknown;
+}) => {
+  const [copied, setCopied] = useState(false);
+  const childrenStr = String(children).replace(/\n$/, "");
+  const isInline =
+    inline ||
+    (!className && typeof children === "string" && !children.includes("\n"));
+
+  if (isInline) {
+    return (
+      <code className={className} {...rest}>
+        {children}
+      </code>
+    );
+  }
+
+  const language = className?.replace("language-", "") ?? "";
+
+  return (
+    <div className="chat-window__code-block">
+      <div className="chat-window__code-block-header">
+        {language && (
+          <span className="chat-window__code-block-lang">{language}</span>
+        )}
+        <button
+          className="chat-window__code-block-copy"
+          aria-label="copy code"
+          onClick={() => {
+            navigator.clipboard.writeText(childrenStr);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          }}
+        >
+          {copied ? (
+            <CheckIcon sx={{ fontSize: 14 }} />
+          ) : (
+            <ContentCopyIcon sx={{ fontSize: 14 }} />
+          )}
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <pre>
+        <code className={className} {...rest}>
+          {children}
+        </code>
+      </pre>
+    </div>
+  );
+};
+
 const ChatWindow: React.FC<ChatWindowProps> = ({
   onClose,
   theme = "light",
@@ -523,7 +582,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               </div>
               <div className="chat-window__message-content">
                 {msg.role === "assistant" ? (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      code: CodeBlock,
+                      pre: ({ children }) => <>{children}</>,
+                    }}
+                  >
                     {msg.content}
                   </ReactMarkdown>
                 ) : (
