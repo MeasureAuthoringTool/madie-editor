@@ -124,6 +124,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const streamAbortRef = useRef<{ abort: () => void } | null>(null);
   const { getAccessToken } = useOktaTokens();
   const getAccessTokenRef = useRef(getAccessToken);
   getAccessTokenRef.current = getAccessToken;
@@ -197,6 +198,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     inputRef.current?.focus();
   }, []);
 
+  // Abort any in-flight stream when the component unmounts
+  useEffect(() => {
+    return () => {
+      streamAbortRef.current?.abort();
+    };
+  }, []);
+
   const hasKeyForProvider = (provider: string) =>
     !!savedKeyIds[provider] || !!sessionKeys[provider];
 
@@ -244,13 +252,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           session_id: sessionId ?? undefined,
         };
 
+    // Abort any previous in-flight stream before starting a new one
+    streamAbortRef.current?.abort();
+
     setIsStreaming(true);
 
     // Add a placeholder assistant message that we'll stream into
     const assistantIdx = updatedMessages.length;
     setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
-    aiService.claraChatStream(
+    streamAbortRef.current = aiService.claraChatStream(
       chatRequest,
       // onChunk — append streamed content to the assistant message
       (content) => {
@@ -308,6 +319,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const handleNewSession = async () => {
     if (!measureId) return;
+    // Abort any in-flight stream when starting a new session
+    streamAbortRef.current?.abort();
+    setIsStreaming(false);
     try {
       const newSession = await aiService.createSession(
         measureId,
