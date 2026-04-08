@@ -122,6 +122,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [model, setModel] = useState(() => getPreferredModel("gpt-5.4"));
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [inputDraft, setInputDraft] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const streamAbortRef = useRef<{ abort: () => void } | null>(null);
@@ -233,6 +235,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     ];
     setMessages(updatedMessages);
     setInput("");
+    setHistoryIndex(-1);
+    setInputDraft("");
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
     }
@@ -380,6 +384,34 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+      return;
+    }
+
+    const userMessages = messages
+      .filter((m) => m.role === "user")
+      .map((m) => m.content);
+
+    if (e.key === "ArrowUp" && userMessages.length > 0) {
+      // Only intercept ArrowUp when cursor is at the start of the textarea
+      const textarea = e.currentTarget;
+      if (textarea.selectionStart !== 0 && historyIndex === -1) return;
+      e.preventDefault();
+      const nextIndex =
+        historyIndex === -1 ? userMessages.length - 1 : Math.max(0, historyIndex - 1);
+      if (historyIndex === -1) setInputDraft(input);
+      setHistoryIndex(nextIndex);
+      setInput(userMessages[nextIndex]);
+    } else if (e.key === "ArrowDown" && historyIndex !== -1) {
+      e.preventDefault();
+      if (historyIndex === userMessages.length - 1) {
+        // Back to the draft
+        setHistoryIndex(-1);
+        setInput(inputDraft);
+      } else {
+        const nextIndex = historyIndex + 1;
+        setHistoryIndex(nextIndex);
+        setInput(userMessages[nextIndex]);
+      }
     }
   };
 
