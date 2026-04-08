@@ -829,6 +829,18 @@ const MadieAceEditor = ({
     });
   };
 
+  // ── Keep baseline in sync with value when diff is inactive ───────────────
+  // The editor may mount before the measure CQL loads (value=""), so the
+  // initial baseline captured in onMount is empty. This effect updates the
+  // baseline to match the latest value whenever diff is off, so that when
+  // the user toggles diff on, it compares against the actual saved CQL
+  // rather than an empty string.
+  useEffect(() => {
+    if (!diffEnabled) {
+      diffBaselineRef.current = value ?? "";
+    }
+  }, [diffEnabled, value]);
+
   // ── Recompute diff whenever value or diffEnabled changes ─────────────────
   useEffect(() => {
     const editor = editorRef.current;
