@@ -397,7 +397,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="chat-window__empty">
             <p>Hi, I'm Clara!</p>
             <p className="chat-window__hint">
-              Ask me questions about your CQL code
+              Ask me questions about your CQL or Measure
             </p>
           </div>
         )}
@@ -548,8 +548,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 },
               }}
             >
-              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "600" }}>
-                OPENAI :
+              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "800" }}>
+                OPENAI
               </ListSubheader>
               {["gpt-5.4", "gpt-5.4mini", "gpt-5.3-codex"].map((m) => (
                 <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
@@ -557,8 +557,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 </MenuItem>
               ))}
               <Divider sx={{ margin: "4px 0" }} />
-              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "600" }}>
-                GOOGLE :
+              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "800" }}>
+                GOOGLE
               </ListSubheader>
               {[
                 "gemini-3.1-pro-preview",
