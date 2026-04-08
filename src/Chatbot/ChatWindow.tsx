@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
 import SendIcon from "@mui/icons-material/Send";
 import AddIcon from "@mui/icons-material/Add";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -583,7 +584,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             size="small"
           >
             {isStreaming ? (
-              <CloseIcon fontSize="small" />
+              <StopCircleIcon fontSize="small" color="error" />
             ) : (
               <SendIcon fontSize="small" />
             )}
