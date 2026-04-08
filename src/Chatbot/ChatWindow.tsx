@@ -477,8 +477,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="chat-window__empty">
             <p>Hi, I'm Clara!</p>
             <p className="chat-window__hint">
-              Your AI powered Assistant. You can ask me questions about your
-              CQL, Measure or in general about measure authoring
+              Your AI‑powered assistant. I’m here to help you with CQL, measures, and everything related to measure authoring.
             </p>
           </div>
         )}
