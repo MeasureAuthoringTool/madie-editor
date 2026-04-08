@@ -143,7 +143,6 @@
   color: #ff9f99;
 }
 
-
 .diff-toolbar {
   display: flex;
   align-items: center;
@@ -208,5 +207,3 @@
 .diff-toolbar__legend-deleted {
   color: #dc3545;
 }
-
-

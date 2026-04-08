@@ -471,63 +471,132 @@ export interface DiffHunk {
 }
 
 /**
- * Compute hunks by running Monaco's built-in line-level diff algorithm
- * on two temporary models, then dispose them immediately.
+ * Compute the longest common subsequence table for two string arrays.
+ * Returns a 2-D table where lcs[i][j] = length of LCS of a[0..i-1], b[0..j-1].
  */
-const computeHunks = (
-  origText: string,
-  newText: string
-): Promise<DiffHunk[]> => {
-  return new Promise((resolve) => {
-    const origModel = monaco.editor.createModel(origText, "plaintext");
-    const newModel = monaco.editor.createModel(newText, "plaintext");
+const buildLcsTable = (a: string[], b: string[]): number[][] => {
+  const m = a.length;
+  const n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    new Array(n + 1).fill(0)
+  );
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] =
+        a[i - 1] === b[j - 1]
+          ? dp[i - 1][j - 1] + 1
+          : Math.max(dp[i - 1][j], dp[i][j - 1]);
+    }
+  }
+  return dp;
+};
 
-    // createDiffEditor needs a DOM node – use a hidden off-screen div
-    const container = document.createElement("div");
-    container.style.cssText =
-      "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;";
-    document.body.appendChild(container);
+/**
+ * Compute diff hunks using a pure-JS LCS-based line diff.
+ * Avoids creating temporary Monaco diff editors (which corrupt the
+ * global InstantiationService when disposed).
+ */
+const computeHunks = (origText: string, newText: string): DiffHunk[] => {
+  const origLines = origText.split("\n");
+  const newLines = newText.split("\n");
+  const dp = buildLcsTable(origLines, newLines);
 
-    const diffEditor = monaco.editor.createDiffEditor(container, {
-      automaticLayout: false,
-      enableSplitViewResizing: false,
-      renderSideBySide: false,
+  // Back-track through the LCS table to produce edit operations
+  type Edit = {
+    type: "equal" | "delete" | "insert";
+    origIdx?: number;
+    newIdx?: number;
+  };
+  const edits: Edit[] = [];
+  let i = origLines.length;
+  let j = newLines.length;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && origLines[i - 1] === newLines[j - 1]) {
+      edits.push({ type: "equal", origIdx: i - 1, newIdx: j - 1 });
+      i--;
+      j--;
+    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+      edits.push({ type: "insert", newIdx: j - 1 });
+      j--;
+    } else {
+      edits.push({ type: "delete", origIdx: i - 1 });
+      i--;
+    }
+  }
+  edits.reverse();
+
+  // Group consecutive non-equal edits into hunks
+  const hunks: DiffHunk[] = [];
+  let idx = 0;
+  while (idx < edits.length) {
+    if (edits[idx].type === "equal") {
+      idx++;
+      continue;
+    }
+    // Collect a contiguous run of deletes + inserts
+    const deletedLines: string[] = [];
+    let oStart = -1;
+    let oEnd = -1;
+    let nStart = -1;
+    let nEnd = -1;
+
+    while (idx < edits.length && edits[idx].type !== "equal") {
+      const e = edits[idx];
+      if (e.type === "delete") {
+        const line1 = e.origIdx! + 1; // 1-based
+        if (oStart === -1) oStart = line1;
+        oEnd = line1;
+        deletedLines.push(origLines[e.origIdx!]);
+      } else {
+        const line1 = e.newIdx! + 1;
+        if (nStart === -1) nStart = line1;
+        nEnd = line1;
+      }
+      idx++;
+    }
+
+    // Determine anchor for pure-delete or pure-insert
+    // For pure deletion (nStart === -1), place anchor at the line after the last equal in new
+    if (nStart === -1) {
+      // pure deletion – figure out the new-side anchor
+      const anchorNew =
+        oStart - 1 <= 0
+          ? 1
+          : nEnd !== -1
+          ? nEnd
+          : hunks.length > 0
+          ? hunks[hunks.length - 1].newEndLine + 1
+          : 1;
+      // Walk back to find how many new lines precede this point
+      let newLinesBefore = 0;
+      for (let k = 0; k < edits.length; k++) {
+        const e = edits[k];
+        if (e.type === "delete" && e.origIdx! + 1 === oStart) break;
+        if (e.type !== "delete") newLinesBefore++;
+      }
+      nStart = newLinesBefore + 1;
+    }
+    if (oStart === -1) {
+      // pure insertion – figure out the orig-side anchor
+      let origLinesBefore = 0;
+      for (let k = 0; k < edits.length; k++) {
+        const e = edits[k];
+        if (e.type === "insert" && e.newIdx! + 1 === nStart) break;
+        if (e.type !== "insert") origLinesBefore++;
+      }
+      oStart = origLinesBefore + 1;
+    }
+
+    hunks.push({
+      newStartLine: nStart,
+      newEndLine: nEnd === -1 ? 0 : nEnd,
+      origStartLine: oStart,
+      origEndLine: oEnd === -1 ? 0 : oEnd,
+      origLines: deletedLines,
     });
+  }
 
-    diffEditor.setModel({ original: origModel, modified: newModel });
-
-    // Monaco fires onDidUpdateDiff when the diff worker finishes
-    const disposable = diffEditor.onDidUpdateDiff(() => {
-      disposable.dispose();
-      const lineChanges = diffEditor.getLineChanges() ?? [];
-      const origLines = origText.split("\n");
-
-      const hunks: DiffHunk[] = lineChanges.map((c) => {
-        const oStart = c.originalStartLineNumber; // 1-based
-        const oEnd = c.originalEndLineNumber; // 0 = pure insert
-        const nStart = c.modifiedStartLineNumber;
-        const nEnd = c.modifiedEndLineNumber; // 0 = pure delete
-
-        const hunkOrigLines = oEnd > 0 ? origLines.slice(oStart - 1, oEnd) : [];
-
-        return {
-          newStartLine: nStart,
-          newEndLine: nEnd,
-          origStartLine: oStart,
-          origEndLine: oEnd,
-          origLines: hunkOrigLines,
-        };
-      });
-
-      // Clean up
-      diffEditor.dispose();
-      origModel.dispose();
-      newModel.dispose();
-      document.body.removeChild(container);
-
-      resolve(hunks);
-    });
-  });
+  return hunks;
 };
 
 // ---------------------------------------------------------------------------
@@ -868,10 +937,9 @@ const MadieAceEditor = ({
       return;
     }
 
-    computeHunks(diffBaselineRef.current, value ?? "").then((hunks) => {
-      hunksRef.current = hunks;
-      redrawDiff(hunks);
-    });
+    const hunks = computeHunks(diffBaselineRef.current, value ?? "");
+    hunksRef.current = hunks;
+    redrawDiff(hunks);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [diffEnabled, value]);
 
@@ -978,11 +1046,6 @@ const MadieAceEditor = ({
     editorRef.current = editor;
     monacoRef.current = monacoInstance;
 
-    // Capture diff baseline on first mount
-    if (diffBaselineRef.current === null) {
-      diffBaselineRef.current = value ?? "";
-    }
-
     // Register CQL language if not already registered
     registerCqlLanguage();
 
@@ -1017,7 +1080,8 @@ const MadieAceEditor = ({
             diffEnabled ? " diff-toolbar__toggle--active" : ""
           }`}
           onClick={() => {
-            if (!diffEnabled && diffBaselineRef.current === null) {
+            if (!diffEnabled) {
+              // Freeze current value as baseline when enabling diff
               diffBaselineRef.current = value ?? "";
             }
             setDiffEnabled((prev) => !prev);
