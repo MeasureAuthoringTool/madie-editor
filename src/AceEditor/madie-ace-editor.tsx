@@ -1,18 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import AceEditor from "react-ace";
+import MonacoEditor, { Monaco } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
 import * as _ from "lodash";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
-import "ace-builds/src-noconflict/mode-sql";
-import "ace-builds/src-noconflict/theme-monokai";
-import "ace-builds/src-noconflict/ext-language_tools";
-import "ace-builds/src-noconflict/ext-searchbox";
-
-const ace = require("ace-builds/src-noconflict/ace");
-ace.config.set("basePath", require("ace-builds").config.basePath);
-import CqlMode from "./cql-mode";
-import { Ace, Range } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
+import { Ace } from "ace-builds";
 
 import "./madie-custom.css";
 import { ParsedCql, Statement } from "../model/ParsedCql";
@@ -25,10 +18,7 @@ import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuil
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
 import CqlVersion from "@madie/cql-antlr-parser/dist/src/dto/CqlVersion";
-import {
-  makeAceSearchElementsAccessible,
-  wireAceSearchNavigation,
-} from "./ace-utils";
+import { registerCqlLanguage, CQL_LANGUAGE_ID } from "./cql-monaco-language";
 
 export interface EditorPropsType {
   value: string;
@@ -68,9 +58,12 @@ export interface EditorPropsType {
   isCQLUnchanged?: boolean;
   resetCql?: () => void;
   getCqlDefinitionReturnTypes?: () => void;
-  // conditional props used to pass up annotations outside of the editor
   setOutboundAnnotations?: Function;
   hasCqlError?: boolean;
+  /** When true, decorates lines that differ from the last-saved baseline */
+  showDiff?: boolean;
+  /** Callback fired when the user resets the diff baseline to the current content */
+  onResetDiffBaseline?: () => void;
 }
 
 export interface UpdatedCqlObject {
@@ -377,6 +370,7 @@ export const isUsingStatementEmpty = (editorVal): boolean => {
   return parsedContents?.cql?.parsedCql?.usings?.length === 0;
 };
 
+// Kept for backward compatibility with tests and consumers using Ace types
 export const mapParserErrorsToAceAnnotations = (
   errors: CqlError[]
 ): Ace.Annotation[] => {
@@ -396,12 +390,16 @@ export const mapParserErrorsToAceMarkers = (errors: CqlError[]) => {
   let markers = [];
   if (errors) {
     markers = errors.map((error) => ({
-      range: new Range(
-        error.start?.line - 1,
-        error.start?.position,
-        error.stop?.line - 1,
-        error.stop?.position
-      ),
+      range: {
+        start: {
+          row: error.start?.line - 1,
+          column: error.start?.position,
+        },
+        end: {
+          row: error.stop?.line - 1,
+          column: error.stop?.position,
+        },
+      },
       clazz: "editor-error-underline",
       type: "text",
     }));
@@ -409,6 +407,7 @@ export const mapParserErrorsToAceMarkers = (errors: CqlError[]) => {
   return markers;
 };
 
+// Kept for backward compatibility
 let originalCommands;
 export const setCommandEnabled = (editor, name, enabled) => {
   const command = editor.commands.byName[name];
@@ -420,243 +419,666 @@ export const setCommandEnabled = (editor, name, enabled) => {
   editor.commands.addCommand(command);
 };
 
+/** Convert Ace-style annotations to Monaco markers */
+const aceAnnotationsToMonacoMarkers = (
+  annotations: Ace.Annotation[],
+  model: monaco.editor.ITextModel
+): monaco.editor.IMarkerData[] => {
+  if (!annotations) return [];
+  return annotations.map((ann) => ({
+    severity: monaco.MarkerSeverity.Error,
+    message: ann.text,
+    startLineNumber: (ann.row ?? 0) + 1,
+    startColumn: (ann.column ?? 0) + 1,
+    endLineNumber: (ann.row ?? 0) + 1,
+    endColumn: model.getLineMaxColumn((ann.row ?? 0) + 1),
+  }));
+};
+
+/** Convert CqlError[] directly to Monaco markers */
+const cqlErrorsToMonacoMarkers = (
+  errors: CqlError[]
+): monaco.editor.IMarkerData[] => {
+  if (!errors) return [];
+  return errors.map((error) => ({
+    severity: monaco.MarkerSeverity.Error,
+    message: `Parse: ${error.start?.position}:${error.stop?.position} | ${error.message}`,
+    startLineNumber: error.start?.line ?? 1,
+    startColumn: (error.start?.position ?? 0) + 1,
+    endLineNumber: error.stop?.line ?? 1,
+    endColumn: (error.stop?.position ?? 0) + 1,
+  }));
+};
+
+const MONACO_EDITOR_MODEL_URI = "cql-editor-model";
+
+// ---------------------------------------------------------------------------
+// VS Code-style inline diff with Accept / Reject per hunk
+// ---------------------------------------------------------------------------
+
+/** A single diff hunk produced by Monaco's diff worker */
+export interface DiffHunk {
+  /** 1-based, inclusive start line in the *new* (current) document */
+  newStartLine: number;
+  /** 1-based, inclusive end line in the *new* document (0 = pure deletion) */
+  newEndLine: number;
+  /** 1-based, inclusive start line in the *original* (baseline) document */
+  origStartLine: number;
+  /** 1-based, inclusive end line in the original document (0 = pure insertion) */
+  origEndLine: number;
+  /** The original lines that were replaced / deleted */
+  origLines: string[];
+}
+
+/**
+ * Compute hunks by running Monaco's built-in line-level diff algorithm
+ * on two temporary models, then dispose them immediately.
+ */
+const computeHunks = (
+  origText: string,
+  newText: string
+): Promise<DiffHunk[]> => {
+  return new Promise((resolve) => {
+    const origModel = monaco.editor.createModel(origText, "plaintext");
+    const newModel = monaco.editor.createModel(newText, "plaintext");
+
+    // createDiffEditor needs a DOM node – use a hidden off-screen div
+    const container = document.createElement("div");
+    container.style.cssText =
+      "position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;";
+    document.body.appendChild(container);
+
+    const diffEditor = monaco.editor.createDiffEditor(container, {
+      automaticLayout: false,
+      enableSplitViewResizing: false,
+      renderSideBySide: false,
+    });
+
+    diffEditor.setModel({ original: origModel, modified: newModel });
+
+    // Monaco fires onDidUpdateDiff when the diff worker finishes
+    const disposable = diffEditor.onDidUpdateDiff(() => {
+      disposable.dispose();
+      const lineChanges = diffEditor.getLineChanges() ?? [];
+      const origLines = origText.split("\n");
+
+      const hunks: DiffHunk[] = lineChanges.map((c) => {
+        const oStart = c.originalStartLineNumber; // 1-based
+        const oEnd = c.originalEndLineNumber; // 0 = pure insert
+        const nStart = c.modifiedStartLineNumber;
+        const nEnd = c.modifiedEndLineNumber; // 0 = pure delete
+
+        const hunkOrigLines = oEnd > 0 ? origLines.slice(oStart - 1, oEnd) : [];
+
+        return {
+          newStartLine: nStart,
+          newEndLine: nEnd,
+          origStartLine: oStart,
+          origEndLine: oEnd,
+          origLines: hunkOrigLines,
+        };
+      });
+
+      // Clean up
+      diffEditor.dispose();
+      origModel.dispose();
+      newModel.dispose();
+      document.body.removeChild(container);
+
+      resolve(hunks);
+    });
+  });
+};
+
+// ---------------------------------------------------------------------------
+// Decoration helpers
+// ---------------------------------------------------------------------------
+
+const applyHunkDecorations = (
+  editor: monaco.editor.IStandaloneCodeEditor,
+  hunks: DiffHunk[],
+  decorationsRef: React.MutableRefObject<string[]>
+) => {
+  const model = editor.getModel();
+  if (!model) return;
+
+  const newDecorations: monaco.editor.IModelDeltaDecoration[] = [];
+
+  for (const hunk of hunks) {
+    const hasInserted = hunk.newEndLine > 0;
+    const hasDeleted = hunk.origEndLine > 0;
+
+    // ── Inserted / modified lines – green background + left border ──
+    if (hasInserted) {
+      newDecorations.push({
+        range: new monaco.Range(
+          hunk.newStartLine,
+          1,
+          hunk.newEndLine,
+          model.getLineMaxColumn(hunk.newEndLine)
+        ),
+        options: {
+          isWholeLine: true,
+          className: "diff-inserted-line",
+          glyphMarginClassName: "diff-inserted-glyph",
+          overviewRuler: {
+            color: "#28a745",
+            position: monaco.editor.OverviewRulerLane.Left,
+          },
+        },
+      });
+    }
+
+    // ── Deleted lines – red stripe shown *above* the first modified/inserted
+    //    line using a `beforeContentClassName` on that anchor line ──
+    if (hasDeleted) {
+      const anchorLine = hasInserted ? hunk.newStartLine : hunk.newStartLine;
+      const safeLine = Math.max(1, anchorLine);
+      newDecorations.push({
+        range: new monaco.Range(safeLine, 1, safeLine, 1),
+        options: {
+          isWholeLine: false,
+          beforeContentClassName: "diff-deleted-block",
+          hoverMessage: {
+            value: "**Removed:**\n```\n" + hunk.origLines.join("\n") + "\n```",
+          },
+          stickiness:
+            monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+        },
+      });
+    }
+  }
+
+  decorationsRef.current = editor.deltaDecorations(
+    decorationsRef.current,
+    newDecorations
+  );
+};
+
+/** Apply glyph-margin and line-highlight decorations for all error markers */
+const applyErrorGutterDecorations = (
+  editor: monaco.editor.IStandaloneCodeEditor,
+  markers: monaco.editor.IMarkerData[],
+  decorationsRef: React.MutableRefObject<string[]>
+) => {
+  const errorLines = new Set(markers.map((m) => m.startLineNumber));
+  const newDecorations: monaco.editor.IModelDeltaDecoration[] = Array.from(
+    errorLines
+  ).map((line) => ({
+    range: new monaco.Range(line, 1, line, 1),
+    options: {
+      glyphMarginClassName: "cql-error-glyph",
+      glyphMarginHoverMessage: {
+        value:
+          "**CQL Error** on this line. Please see squiggly to view error description.",
+      },
+      isWholeLine: true,
+      className: "cql-error-line-highlight",
+      overviewRuler: {
+        color: "#ff0000",
+        position: monaco.editor.OverviewRulerLane.Left,
+      },
+    },
+  }));
+  decorationsRef.current = editor.deltaDecorations(
+    decorationsRef.current,
+    newDecorations
+  );
+};
+
 const MadieAceEditor = ({
   value,
   onChange,
   height,
   parseDebounceTime = 1500,
   inboundAnnotations,
-  inboundErrorMarkers,
+  inboundErrorMarkers: _inboundErrorMarkers,
   readOnly = false,
   validationsEnabled = true,
   setOutboundAnnotations,
+  showDiff = false,
+  onResetDiffBaseline,
 }: EditorPropsType) => {
-  const [editor, setEditor] = useState<Ace.Editor>();
-  const [editorAnnotations, setEditorAnnotations] = useState<Ace.Annotation[]>(
-    []
-  );
-  const [parserAnnotations, setParserAnnotations] = useState<Ace.Annotation[]>(
-    []
-  );
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<Monaco | null>(null);
+  const [, setParsing] = useState<boolean>(undefined);
+  const gutterDecorationsRef = useRef<string[]>([]);
 
-  const [parseErrorMarkers, setParseErrorMarkers] = useState<Ace.MarkerLike[]>(
-    []
-  );
-  const [isParsing, setParsing] = useState<boolean>(undefined);
-  const aceRef = useRef<AceEditor>(null);
-  aceRef?.current?.editor?.on("focus", function () {
-    setCommandEnabled(editor, "indent", true);
-    setCommandEnabled(editor, "outdent", true);
-  });
-  aceRef?.current?.editor?.on("blur", function () {
-    setCommandEnabled(editor, "indent", true);
-    setCommandEnabled(editor, "outdent", true);
-  });
+  // ── Inline diff state ────────────────────────────────────────────────────
+  const [diffEnabled, setDiffEnabled] = useState<boolean>(showDiff);
+  const diffBaselineRef = useRef<string | null>(null);
+  const diffDecorationsRef = useRef<string[]>([]);
+  // Keep track of hunks so Accept/Reject can reference them
+  const hunksRef = useRef<DiffHunk[]>([]);
+  // Overlay widget DOM nodes – we manage them manually so we can dispose them
+  const overlayWidgetsRef = useRef<
+    { widgetId: string; domNode: HTMLElement }[]
+  >([]);
 
-  // This command disables the normal tab behavior when focused in editor. Allowing a user to tab forward or shift tab back
-  aceRef?.current?.editor?.commands.addCommand({
-    name: "escape",
-    bindKey: { win: "Esc", mac: "Esc" },
-    exec: function () {
-      setCommandEnabled(editor, "indent", false);
-      setCommandEnabled(editor, "outdent", false);
-    },
-  });
+  // Keep prop → state in sync
+  useEffect(() => {
+    setDiffEnabled(showDiff);
+  }, [showDiff]);
 
-  const customSetAnnotations = (annotations, editor) => {
-    editor.getSession().setAnnotations(annotations);
-    // pass all the annotations we have out
-    if (setOutboundAnnotations) {
-      setOutboundAnnotations(annotations);
-    }
-    setEditorAnnotations(annotations);
+  // ── Overlay widget management ────────────────────────────────────────────
+
+  const removeAllOverlayWidgets = () => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    overlayWidgetsRef.current.forEach(({ widgetId }) => {
+      try {
+        editor.removeOverlayWidget({
+          getId: () => widgetId,
+          getDomNode: () => null,
+          getPosition: () => null,
+        });
+      } catch (_) {
+        // ignore if already removed
+      }
+    });
+    overlayWidgetsRef.current = [];
   };
 
-  const debouncedParse: any = useRef(
+  /**
+   * Accept a hunk: keep the new lines as-is (just clear highlights for it).
+   * We re-baseline only the accepted hunk's region so the rest of the diff
+   * stays visible. Easiest implementation: rebuild baseline by applying all
+   * *rejected* hunks' original lines back, then re-diff.
+   * For "accept" we just remove the hunk from the pending list and redraw.
+   */
+  const acceptHunk = (hunkIndex: number) => {
+    const newHunks = hunksRef.current.filter((_, i) => i !== hunkIndex);
+    hunksRef.current = newHunks;
+    redrawDiff(newHunks);
+  };
+
+  /**
+   * Reject a hunk: restore the original lines in the editor, then redraw.
+   */
+  const rejectHunk = (hunkIndex: number, currentValue: string) => {
+    const hunk = hunksRef.current[hunkIndex];
+    if (!hunk) return;
+
+    const lines = currentValue.split("\n");
+    const hasInserted = hunk.newEndLine > 0;
+    const hasDeleted = hunk.origEndLine > 0;
+
+    let newLines: string[];
+    if (hasInserted && hasDeleted) {
+      // Replace inserted lines with original lines
+      newLines = [
+        ...lines.slice(0, hunk.newStartLine - 1),
+        ...hunk.origLines,
+        ...lines.slice(hunk.newEndLine),
+      ];
+    } else if (hasInserted && !hasDeleted) {
+      // Pure insertion – remove the inserted lines
+      newLines = [
+        ...lines.slice(0, hunk.newStartLine - 1),
+        ...lines.slice(hunk.newEndLine),
+      ];
+    } else {
+      // Pure deletion – re-insert the original lines above anchor
+      newLines = [
+        ...lines.slice(0, hunk.newStartLine - 1),
+        ...hunk.origLines,
+        ...lines.slice(hunk.newStartLine - 1),
+      ];
+    }
+
+    const rejectedValue = newLines.join("\n");
+    if (onChange) onChange(rejectedValue);
+
+    // After rejection, this hunk is resolved – remove it
+    const newHunks = hunksRef.current.filter((_, i) => i !== hunkIndex);
+    hunksRef.current = newHunks;
+    // Decorations will update via the value useEffect
+  };
+
+  /** Accept all hunks at once */
+  const acceptAll = () => {
+    hunksRef.current = [];
+    // Update baseline to current value so future edits diff from here
+    diffBaselineRef.current = value ?? "";
+    redrawDiff([]);
+  };
+
+  /** Reject all hunks: restore baseline */
+  const rejectAll = () => {
+    if (diffBaselineRef.current === null) return;
+    if (onChange) onChange(diffBaselineRef.current);
+    hunksRef.current = [];
+  };
+
+  /** Re-render decorations + overlay widgets for the current hunk list */
+  const redrawDiff = (hunks: DiffHunk[]) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    removeAllOverlayWidgets();
+    applyHunkDecorations(editor, hunks, diffDecorationsRef);
+    addOverlayWidgets(editor, hunks);
+  };
+
+  /**
+   * For each hunk, create a small floating widget positioned at the top-right
+   * of its first line with Accept / Reject buttons.
+   */
+  const addOverlayWidgets = (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    hunks: DiffHunk[]
+  ) => {
+    hunks.forEach((hunk, idx) => {
+      const widgetId = `diff-hunk-widget-${idx}-${Date.now()}`;
+
+      const domNode = document.createElement("div");
+      domNode.className = "diff-hunk-widget";
+
+      // Accept button
+      const acceptBtn = document.createElement("button");
+      acceptBtn.className = "diff-hunk-btn diff-hunk-btn--accept";
+      acceptBtn.title = "Accept this change";
+      acceptBtn.innerHTML = "✓ Accept";
+      acceptBtn.onclick = (e) => {
+        e.stopPropagation();
+        acceptHunk(idx);
+      };
+
+      // Reject button
+      const rejectBtn = document.createElement("button");
+      rejectBtn.className = "diff-hunk-btn diff-hunk-btn--reject";
+      rejectBtn.title = "Reject this change (revert to original)";
+      rejectBtn.innerHTML = "✕ Reject";
+      rejectBtn.onclick = (e) => {
+        e.stopPropagation();
+        rejectHunk(idx, editor.getValue());
+      };
+
+      domNode.appendChild(acceptBtn);
+      domNode.appendChild(rejectBtn);
+
+      // Position the widget at the first line of the hunk
+      const anchorLine =
+        hunk.newEndLine > 0
+          ? hunk.newStartLine
+          : Math.max(1, hunk.newStartLine);
+      const lineTop = editor.getTopForLineNumber(anchorLine);
+      const scrollTop = editor.getScrollTop();
+      const editorDom = editor.getDomNode();
+      const editorWidth = editorDom ? editorDom.clientWidth : 600;
+
+      domNode.style.top = `${lineTop - scrollTop}px`;
+      domNode.style.left = `${editorWidth - 185}px`;
+
+      const widget: monaco.editor.IOverlayWidget = {
+        getId: () => widgetId,
+        getDomNode: () => domNode,
+        getPosition: () => null, // we position manually
+      };
+
+      editor.addOverlayWidget(widget);
+      overlayWidgetsRef.current.push({ widgetId, domNode });
+
+      // Keep widget pinned to its line as the user scrolls
+      editor.onDidScrollChange(() => {
+        const newLineTop = editor.getTopForLineNumber(anchorLine);
+        const newScrollTop = editor.getScrollTop();
+        domNode.style.top = `${newLineTop - newScrollTop}px`;
+        const newEditorWidth = editorDom ? editorDom.clientWidth : 600;
+        domNode.style.left = `${newEditorWidth - 185}px`;
+      });
+    });
+  };
+
+  // ── Recompute diff whenever value or diffEnabled changes ─────────────────
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    if (!diffEnabled) {
+      removeAllOverlayWidgets();
+      hunksRef.current = [];
+      diffDecorationsRef.current = editor.deltaDecorations(
+        diffDecorationsRef.current,
+        []
+      );
+      return;
+    }
+
+    if (diffBaselineRef.current === null) return;
+    if (diffBaselineRef.current === (value ?? "")) {
+      // No changes vs baseline
+      removeAllOverlayWidgets();
+      hunksRef.current = [];
+      diffDecorationsRef.current = editor.deltaDecorations(
+        diffDecorationsRef.current,
+        []
+      );
+      return;
+    }
+
+    computeHunks(diffBaselineRef.current, value ?? "").then((hunks) => {
+      hunksRef.current = hunks;
+      redrawDiff(hunks);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [diffEnabled, value]);
+
+  const handleResetBaseline = () => {
+    diffBaselineRef.current = value ?? "";
+    removeAllOverlayWidgets();
+    hunksRef.current = [];
+    if (editorRef.current) {
+      diffDecorationsRef.current = editorRef.current.deltaDecorations(
+        diffDecorationsRef.current,
+        []
+      );
+    }
+    if (onResetDiffBaseline) onResetDiffBaseline();
+  };
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const debouncedParse = useRef(
     _.debounce(async (nextValue: string) => {
       const errors = parseEditorContent(nextValue);
-      const annotations = mapParserErrorsToAceAnnotations(errors);
-      const aceMarkers = mapParserErrorsToAceMarkers(errors);
-      setParseErrorMarkers(aceMarkers);
-      setParserAnnotations(annotations);
+      if (editorRef.current && monacoRef.current) {
+        const model = editorRef.current.getModel();
+        if (model) {
+          const parseMarkers = cqlErrorsToMonacoMarkers(errors);
+          const inboundMarkers = inboundAnnotations
+            ? aceAnnotationsToMonacoMarkers(inboundAnnotations, model)
+            : [];
+          const allMarkers = [...inboundMarkers, ...parseMarkers];
+          monacoRef.current.editor.setModelMarkers(
+            model,
+            MONACO_EDITOR_MODEL_URI,
+            allMarkers
+          );
+          applyErrorGutterDecorations(
+            editorRef.current,
+            allMarkers,
+            gutterDecorationsRef
+          );
+          if (setOutboundAnnotations) {
+            setOutboundAnnotations(mapParserErrorsToAceAnnotations(errors));
+          }
+        }
+      }
       setParsing(false);
     }, parseDebounceTime)
   ).current;
 
-  const removeErrorMarkersFromEditor = (session) => {
-    let currMarkers = session.getMarkers(true);
-    for (const m in currMarkers) {
-      if (currMarkers[m].clazz === "editor-error-underline") {
-        session.removeMarker(currMarkers[m].id);
+  // Re-run parse when inbound annotations change
+  useEffect(() => {
+    if (validationsEnabled && editorRef.current && monacoRef.current) {
+      const model = editorRef.current.getModel();
+      if (model) {
+        const errors = parseEditorContent(value);
+        const parseMarkers = cqlErrorsToMonacoMarkers(errors);
+        const inboundMarkers = inboundAnnotations
+          ? aceAnnotationsToMonacoMarkers(inboundAnnotations, model)
+          : [];
+        const allMarkers = [...inboundMarkers, ...parseMarkers];
+        monacoRef.current.editor.setModelMarkers(
+          model,
+          MONACO_EDITOR_MODEL_URI,
+          allMarkers
+        );
+        applyErrorGutterDecorations(
+          editorRef.current,
+          allMarkers,
+          gutterDecorationsRef
+        );
+        if (setOutboundAnnotations) {
+          setOutboundAnnotations(mapParserErrorsToAceAnnotations(errors));
+        }
       }
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inboundAnnotations]);
 
   useEffect(() => {
-    if (validationsEnabled) {
-      const iann = inboundAnnotations || [];
-      const allAnnotations = [...iann, ...parserAnnotations];
-      if (editor) {
-        customSetAnnotations(allAnnotations, editor);
-      } else {
-        console.warn("Editor is not set! Cannot set annotations!", editor);
-      }
-    }
-  }, [parserAnnotations, inboundAnnotations, editor]);
-  const toggleSearchBox = () => {
-    // given the searchBox has not been instantiated we execCommand which also triggers show
-    //@ts-ignore
-    if (!editor?.searchBox) {
-      editor.execCommand("find");
-
-      // Cannot figure out a good way to gain access to searchBox logic, so just crawl the DOM and make elements tabbable
-      requestAnimationFrame(() => {
-        makeAceSearchElementsAccessible();
-        const searchButton =
-          document.querySelector<HTMLElement>(".ace_search_field");
-        const findPrevBtn = document.querySelector<HTMLElement>(
-          'span[action="findPrev"]'
-        );
-        const findNextBtn = document.querySelector<HTMLElement>(
-          'span[action="findNext"]'
-        );
-        const findAllBtn = document.querySelector<HTMLElement>(
-          'span[action="findAll"]'
-        );
-        const hideBtn = document.querySelector<HTMLElement>(
-          'span[action="hide"]'
-        );
-        const replaceSearchField = document.querySelector(
-          'input.ace_search_field[placeholder="Replace with"][role="button"]'
-        );
-        const replaceAndFindNextBtn = document.querySelector<HTMLElement>(
-          'span[action="replaceAndFindNext"]'
-        );
-        const replaceAllBtn = document.querySelector<HTMLElement>(
-          'span[action="replaceAll"]'
-        );
-        // Bottom row
-        const toggleReplaceBtn = document.querySelector<HTMLElement>(
-          'span[action="toggleReplace"]'
-        );
-        const toggleRegexModeBtn = document.querySelector<HTMLElement>(
-          'span[action="toggleRegexpMode"]'
-        );
-        const toggleCaseSensitiveBtn = document.querySelector<HTMLElement>(
-          'span[action="toggleCaseSensitive"]'
-        );
-
-        const toggleWholeWordsBtn = document.querySelector<HTMLElement>(
-          'span[action="toggleWholeWords"]'
-        );
-        const searchInSelectionBtn = document.querySelector<HTMLElement>(
-          'span[action="searchInSelection"]'
-        );
-        // Wire up tabbing and shift tabbing for all the elements in the search box
-        wireAceSearchNavigation(
-          searchButton,
-          findPrevBtn,
-          findNextBtn,
-          findAllBtn,
-          hideBtn,
-          // @ts-ignore
-          replaceSearchField,
-          replaceAndFindNextBtn,
-          toggleReplaceBtn,
-          replaceAllBtn,
-          toggleRegexModeBtn,
-          toggleCaseSensitiveBtn,
-          toggleWholeWordsBtn,
-          searchInSelectionBtn
-        );
-      });
-      //@ts-ignore
-    } else if (editor.searchBox.active) {
-      //@ts-ignore
-      editor.searchBox.hide();
-    } else {
-      //@ts-ignore
-      editor.searchBox.show();
-    }
-  };
-
-  useEffect(() => {
-    if (editor && validationsEnabled) {
-      let session = editor.getSession();
-      // Remove previous error markers to prevent duplicates
-      // (Ace renders each dup as a new element)
-      removeErrorMarkersFromEditor(editor.getSession());
-      // Set latest parseErrorMarkers
-      const inbound = inboundErrorMarkers || [];
-      const allErrorMarkers = [...inbound, ...parseErrorMarkers];
-      allErrorMarkers.forEach((marker) => {
-        let range = Range.fromPoints(marker.range.start, marker.range.end);
-        // Set inFront to true to display underline when line is selected
-        session.addMarker(range, "editor-error-underline", "text", true);
-      });
-      // tacking on an event listener for editor to toggle searchBox from parent component
-      window.addEventListener(
-        "toggleEditorSearchBox",
-        toggleSearchBox as EventListener
-      );
-    }
-    return () => {
-      window.removeEventListener(
-        "toggleEditorSearchBox",
-        toggleSearchBox as EventListener
-      );
-    };
-  }, [editor, parseErrorMarkers, inboundErrorMarkers]);
-
-  useEffect(() => {
-    const cqlMode = new CqlMode();
-    // @ts-ignore
-    aceRef?.current?.editor?.getSession()?.setMode(cqlMode);
-
-    return () => {
-      if (debouncedParse && validationsEnabled) {
-        debouncedParse.cancel();
-      }
-    };
-  }, [debouncedParse]);
-
-  useEffect(() => {
-    if (!_.isNil(value) && editor && validationsEnabled) {
+    if (validationsEnabled && !_.isNil(value)) {
       setParsing(true);
-      debouncedParse(value, editor);
+      debouncedParse(value);
     }
-  }, [value, editor, debouncedParse]);
+    return () => {
+      debouncedParse.cancel();
+    };
+  }, [value, debouncedParse, validationsEnabled]);
 
+  // Listen for toggleEditorSearchBox custom event
   useEffect(() => {
-    // This is to set aria-label on textarea for accessibility
-    aceRef.current.editor.container
-      .getElementsByClassName("ace_text-input")[0]
-      .setAttribute("aria-label", "Cql editor");
-  });
+    const handleToggleSearch = () => {
+      if (editorRef.current) {
+        editorRef.current.getAction("actions.find")?.run();
+      }
+    };
+    window.addEventListener("toggleEditorSearchBox", handleToggleSearch);
+    return () => {
+      window.removeEventListener("toggleEditorSearchBox", handleToggleSearch);
+    };
+  }, []);
+
+  const handleEditorDidMount = (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    monacoInstance: Monaco
+  ) => {
+    editorRef.current = editor;
+    monacoRef.current = monacoInstance;
+
+    // Capture diff baseline on first mount
+    if (diffBaselineRef.current === null) {
+      diffBaselineRef.current = value ?? "";
+    }
+
+    // Register CQL language if not already registered
+    registerCqlLanguage();
+
+    // Set aria-label for accessibility
+    editor.getDomNode()?.setAttribute("aria-label", "Cql editor");
+
+    // Add Escape key handling similar to Ace (blur the editor so Tab navigates away)
+    editor.addCommand(monacoInstance.KeyCode.Escape, () => {
+      (editor.getDomNode() as HTMLElement)?.blur();
+    });
+
+    if (validationsEnabled) {
+      setParsing(true);
+      debouncedParse(value ?? "");
+    }
+  };
 
   return (
-    <div style={{ height: "inhert" }}>
-      <AceEditor
-        mode="sql" // Temporary value of mode to prevent a dynamic search request.
-        ref={aceRef}
-        theme="monokai"
+    <div
+      id="monaco-editor-wrapper"
+      style={{
+        height: height ?? "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* Inline-diff toolbar */}
+      <div className="diff-toolbar">
+        <button
+          className={`diff-toolbar__toggle${
+            diffEnabled ? " diff-toolbar__toggle--active" : ""
+          }`}
+          onClick={() => {
+            if (!diffEnabled && diffBaselineRef.current === null) {
+              diffBaselineRef.current = value ?? "";
+            }
+            setDiffEnabled((prev) => !prev);
+          }}
+          title={
+            diffEnabled
+              ? "Hide inline diff"
+              : "Show inline diff against baseline"
+          }
+        >
+          {diffEnabled ? "Hide Diff" : "Show Diff"}
+        </button>
+        {diffEnabled && (
+          <button
+            className="diff-toolbar__reset"
+            onClick={handleResetBaseline}
+            title="Reset baseline to current content (clears all diff highlights)"
+          >
+            Reset Baseline
+          </button>
+        )}
+        {diffEnabled && hunksRef.current.length > 0 && (
+          <>
+            <button
+              className="diff-toolbar__accept-all"
+              onClick={acceptAll}
+              title="Accept all changes"
+            >
+              ✓ Accept All
+            </button>
+            <button
+              className="diff-toolbar__reject-all"
+              onClick={rejectAll}
+              title="Reject all changes and revert to baseline"
+            >
+              ✕ Reject All
+            </button>
+          </>
+        )}
+        {diffEnabled && (
+          <span className="diff-toolbar__legend">
+            <span className="diff-toolbar__legend-inserted">&#9632;</span> Added
+            &nbsp;
+            <span className="diff-toolbar__legend-deleted">&#9632;</span>{" "}
+            Removed
+          </span>
+        )}
+      </div>
+
+      <MonacoEditor
+        language={CQL_LANGUAGE_ID}
+        theme="vs-dark"
         value={value}
-        onChange={(value) => {
-          onChange(value);
+        height="100%"
+        options={{
+          readOnly,
+          wordWrap: "on",
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+          lineNumbers: "on",
+          glyphMargin: true,
+          folding: true,
+          scrollbar: {
+            vertical: "visible",
+            alwaysConsumeMouseWheel: false,
+          },
+          accessibilitySupport: "on",
         }}
-        onLoad={(aceEditor) => {
-          // On load we want to tell the ace editor that it's inside of a scrollabel page
-          setEditor(aceEditor);
+        onChange={(val) => {
+          if (onChange) onChange(val ?? "");
         }}
-        width="100%"
-        height={height}
-        wrapEnabled={true}
-        readOnly={readOnly}
-        name="ace-editor-wrapper"
-        enableBasicAutocompletion={true}
-        setOptions={{
-          vScrollBarAlwaysVisible: true,
-        }}
+        onMount={handleEditorDidMount}
       />
     </div>
   );
