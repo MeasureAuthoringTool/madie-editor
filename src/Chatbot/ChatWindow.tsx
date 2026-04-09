@@ -844,7 +844,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "800" }}>
                 OPENAI
               </ListSubheader>
-              {["gpt-5.4", "gpt-5.4mini", "gpt-5.3-codex"].map((m) => (
+              {["gpt-5.3-codex", "gpt-5.4", "gpt-5.4-mini"].map((m) => (
                 <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
                   {m}
                 </MenuItem>
