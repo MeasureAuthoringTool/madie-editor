@@ -866,6 +866,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </FormControl>
         </div>
       </div>
+
+      {/* AI Disclaimer */}
+      <div className="chat-window__disclaimer" data-testid="chat-disclaimer">
+        ⚠️ Disclaimer: AI is designed to assist—not replace—human judgment. Always review
+        and validate generated content.
+      </div>
     </div>
   );
 };

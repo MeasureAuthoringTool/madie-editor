@@ -110,6 +110,20 @@
     }
   }
 
+  &__disclaimer {
+    font-size: 0.68rem;
+    line-height: 1.4;
+    color: #888;
+    text-align: left;
+    padding: 4px 20px 8px;
+    flex-shrink: 0;
+    letter-spacing: 0.01em;
+
+    .chat-window--dark & {
+      color: #606060;
+    }
+  }
+
   &__empty {
     display: flex;
     flex-direction: column;

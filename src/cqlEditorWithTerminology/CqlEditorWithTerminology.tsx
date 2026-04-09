@@ -9,6 +9,7 @@ import { IconButton } from "@mui/material";
 import Search from "@mui/icons-material/Search";
 import ChatIcon from "@mui/icons-material/ChatOutlined";
 import ChatPanel from "../Chatbot/ChatPanel";
+import AssistantIcon from '@mui/icons-material/Assistant';
 
 function getMeasureIdFromUrl(): string | null {
   const match = window.location.pathname.match(/\/measures\/([^/]+)/);
@@ -94,7 +95,7 @@ const CqlEditorWithTerminology = ({
               }}
               onClick={() => setChatOpen((prev) => !prev)}
             >
-              <ChatIcon />
+              <AssistantIcon />
             </IconButton>
             {expanded && (
               <IconButton
