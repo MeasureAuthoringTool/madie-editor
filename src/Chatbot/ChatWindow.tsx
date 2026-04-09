@@ -207,6 +207,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [inputDraft, setInputDraft] = useState<string>("");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const streamAbortRef = useRef<{ abort: () => void } | null>(null);
   const { getAccessToken } = useOktaTokens();
@@ -275,8 +276,22 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   }, [measureId, aiService]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const container = messagesContainerRef.current;
+    const end = messagesEndRef.current;
+    if (!container || !end) return;
+    // Only auto-scroll when the user is near the bottom (within 120px).
+    // During streaming use "instant" to avoid repeated smooth-scroll fighting;
+    // use "smooth" for the final jump when streaming completes.
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    if (distanceFromBottom < 120) {
+      if (isStreaming) {
+        // Jump instantly during streaming — avoids competing smooth-scroll animations
+        container.scrollTop = container.scrollHeight;
+      } else {
+        end.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [messages, isStreaming]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -587,7 +602,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Messages */}
-      <div className="chat-window__messages" data-testid="chat-messages">
+      <div className="chat-window__messages" ref={messagesContainerRef} data-testid="chat-messages">
         {messages.length === 0 && (
           <div className="chat-window__empty">
             <p>Hi, I'm Clara!</p>
