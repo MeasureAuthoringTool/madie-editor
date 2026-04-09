@@ -57,6 +57,7 @@ const CqlEditorWithTerminology = ({
   const [chatOpen, setChatOpen] = useState(false);
   const [proposedCql, setProposedCql] = useState<string | null>(null);
   const [diffResolvedToken, setDiffResolvedToken] = useState(0);
+  const [cqlBuilderLookup, setCqlBuilderLookup] = useState<import("../model/CqlBuilderLookup").CqlBuilderLookup | undefined>(undefined);
   const editorHandle = useRef<MadieEditorHandle>(null);
 
   const measureId = getMeasureIdFromUrl();
@@ -136,6 +137,7 @@ const CqlEditorWithTerminology = ({
                 proposedValue={proposedCql}
                 onProposedValueHandled={() => setProposedCql(null)}
                 onDiffResolved={() => setDiffResolvedToken((t) => t + 1)}
+                cqlBuilderLookup={cqlBuilderLookup}
               />
             </div>
             {chatOpen && (
@@ -189,6 +191,7 @@ const CqlEditorWithTerminology = ({
               resetCql={resetCql}
               getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
               hasCqlError={hasCqlError}
+              onLookupsUpdated={(lookups) => setCqlBuilderLookup(lookups)}
             />
           </Allotment.Pane>
         )}

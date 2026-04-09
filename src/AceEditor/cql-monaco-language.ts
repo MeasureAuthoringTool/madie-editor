@@ -486,42 +486,6 @@ export function registerCqlLanguage() {
     ],
   });
 
-  monaco.languages.registerCompletionItemProvider(CQL_LANGUAGE_ID, {
-    provideCompletionItems: (model, position) => {
-      const word = model.getWordUntilPosition(position);
-      const range = {
-        startLineNumber: position.lineNumber,
-        endLineNumber: position.lineNumber,
-        startColumn: word.startColumn,
-        endColumn: word.endColumn,
-      };
-      const suggestions: monaco.languages.CompletionItem[] = [
-        ...keywords.map((kw) => ({
-          label: kw,
-          kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: kw,
-          range,
-        })),
-        ...timingKeywords.map((kw) => ({
-          label: kw,
-          kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: kw,
-          range,
-        })),
-        ...functionKeywords.map((fn) => ({
-          label: fn,
-          kind: monaco.languages.CompletionItemKind.Function,
-          insertText: fn,
-          range,
-        })),
-        ...builtinConstants.map((c) => ({
-          label: c,
-          kind: monaco.languages.CompletionItemKind.Constant,
-          insertText: c,
-          range,
-        })),
-      ];
-      return { suggestions };
-    },
-  });
+  // Completion, hover, and signature help are registered by registerCqlIntellisense()
+  // in src/AceEditor/intellisense/index.ts — called from madie-ace-editor.tsx onMount.
 }

@@ -19,6 +19,11 @@ import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDi
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
 import CqlVersion from "@madie/cql-antlr-parser/dist/src/dto/CqlVersion";
 import { registerCqlLanguage, CQL_LANGUAGE_ID } from "./cql-monaco-language";
+import {
+  registerCqlIntellisense,
+  updateFromParse,
+  updateFromLookups,
+} from "./intellisense";
 
 export interface EditorPropsType {
   value: string;
@@ -70,6 +75,8 @@ export interface EditorPropsType {
   onProposedValueHandled?: () => void;
   /** Callback fired when diff mode exits (all hunks accepted or rejected). */
   onDiffResolved?: () => void;
+  /** When provided, feeds the builder lookup data into the Intellisense cache. */
+  cqlBuilderLookup?: import("../model/CqlBuilderLookup").CqlBuilderLookup;
 }
 
 export interface UpdatedCqlObject {
@@ -720,6 +727,7 @@ const MadieAceEditor = forwardRef<MadieEditorHandle, EditorPropsType>(function M
   proposedValue,
   onProposedValueHandled,
   onDiffResolved,
+  cqlBuilderLookup,
 }, ref) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
@@ -956,6 +964,13 @@ const MadieAceEditor = forwardRef<MadieEditorHandle, EditorPropsType>(function M
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [diffEnabled]);
 
+  // ── Keep intellisense cache in sync with builder lookups ─────────────────
+  useEffect(() => {
+    if (cqlBuilderLookup) {
+      updateFromLookups(cqlBuilderLookup);
+    }
+  }, [cqlBuilderLookup]);
+
   // ── Recompute diff whenever value or diffEnabled changes ─────────────────
   useEffect(() => {
     const editor = editorRef.current;
@@ -994,6 +1009,17 @@ const MadieAceEditor = forwardRef<MadieEditorHandle, EditorPropsType>(function M
   const debouncedParse = useRef(
     _.debounce(async (nextValue: string) => {
       const errors = parseEditorContent(nextValue);
+
+      // Update intellisense cache with fresh parse results
+      if (nextValue) {
+        try {
+          const parsed = new CqlAntlr(nextValue).parse();
+          updateFromParse(parsed);
+        } catch {
+          // Silently ignore parse failures — markers handle error display
+        }
+      }
+
       if (editorRef.current && monacoRef.current) {
         const model = editorRef.current.getModel();
         if (model) {
@@ -1082,6 +1108,9 @@ const MadieAceEditor = forwardRef<MadieEditorHandle, EditorPropsType>(function M
 
     // Register CQL language if not already registered
     registerCqlLanguage();
+
+    // Register intellisense providers (completion, hover, signature help)
+    registerCqlIntellisense();
 
     // Set aria-label for accessibility
     editor.getDomNode()?.setAttribute("aria-label", "Cql editor");

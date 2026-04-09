@@ -64,6 +64,10 @@ export default function CqlBuilderPanel({
   getCqlDefinitionReturnTypes,
   makeExpanded,
   hasCqlError,
+  onLookupsUpdated,
+}: {
+  onLookupsUpdated?: (lookups: import("../model/CqlBuilderLookup").CqlBuilderLookup) => void;
+  [key: string]: any;
 }) {
   const featureFlags = useFeatureFlags();
   // we have multiple flags and need to select a starting value based off of what's available and canEdit.
@@ -128,6 +132,7 @@ export default function CqlBuilderPanel({
                 .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                   setErrors(null);
                   setCqlBuilderLookupsTypes(axiosResponse?.data);
+                  onLookupsUpdated?.(axiosResponse?.data);
                 })
                 .catch((error) => {
                   setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
@@ -157,10 +162,10 @@ export default function CqlBuilderPanel({
                 .getCqlBuilderLookups(measureStoreCql)
                 .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
                   setCqlBuilderLookupsTypes(axiosResponse?.data);
+                  onLookupsUpdated?.(axiosResponse?.data);
                 })
                 .catch((error) => {
                   setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-
                   setErrors(
                     "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
                   );
