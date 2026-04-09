@@ -100,6 +100,7 @@ interface ChatWindowProps {
   onToggleTheme?: () => void;
   measureId?: string;
   measureContext?: MeasureContext;
+  currentCql?: string;
   onApplyProposedCql?: (cql: string) => void;
   onAcceptAll?: () => void;
   onRejectAll?: () => void;
@@ -177,6 +178,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   onToggleTheme,
   measureId: measureIdProp,
   measureContext,
+  currentCql,
   onApplyProposedCql,
   onAcceptAll,
   onRejectAll,
@@ -333,6 +335,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           messages: [{ role: "user", content: trimmed }],
           session_id: sessionId ?? undefined,
           mode: mode.toLowerCase() as "ask" | "agent",
+          current_cql: currentCql,
         }
       : {
           api_key: sessionKeys[provider],
@@ -341,6 +344,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           messages: [{ role: "user", content: trimmed }],
           session_id: sessionId ?? undefined,
           mode: mode.toLowerCase() as "ask" | "agent",
+          current_cql: currentCql,
         };
 
     // Abort any previous in-flight stream before starting a new one

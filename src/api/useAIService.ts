@@ -14,6 +14,7 @@ export interface ClaraChatRequestSavedKey {
   context?: string;
   context_type?: string;
   mode?: "ask" | "agent";
+  current_cql?: string;
 }
 
 // Mode 2: pass the key per-call (never persisted server-side)
@@ -26,6 +27,7 @@ export interface ClaraChatRequestInlineKey {
   context?: string;
   context_type?: string;
   mode?: "ask" | "agent";
+  current_cql?: string;
 }
 
 export interface ProposedEdit {

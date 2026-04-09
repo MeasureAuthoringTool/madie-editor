@@ -7,6 +7,7 @@ interface ChatPanelProps {
   onChatToggle?: () => void;
   measureId?: string;
   measureContext?: MeasureContext;
+  currentCql?: string;
   onApplyProposedCql?: (cql: string) => void;
   onAcceptAll?: () => void;
   onRejectAll?: () => void;
@@ -19,6 +20,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   onChatToggle,
   measureId,
   measureContext,
+  currentCql,
   onApplyProposedCql,
   onAcceptAll,
   onRejectAll,
@@ -39,6 +41,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           onToggleTheme={toggleTheme}
           measureId={measureId}
           measureContext={measureContext}
+          currentCql={currentCql}
           onApplyProposedCql={onApplyProposedCql}
           onAcceptAll={onAcceptAll}
           onRejectAll={onRejectAll}

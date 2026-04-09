@@ -144,6 +144,7 @@ const CqlEditorWithTerminology = ({
                   onChatToggle={() => setChatOpen(false)}
                   measureId={measureId ?? undefined}
                   measureContext={measureContext}
+                  currentCql={value}
                   onApplyProposedCql={(cql) => setProposedCql(cql)}
                   onAcceptAll={() => editorHandle.current?.acceptAll()}
                   onRejectAll={() => editorHandle.current?.rejectAll()}
