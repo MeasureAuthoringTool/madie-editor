@@ -638,3 +638,91 @@
     opacity: 1;
   }
 }
+
+// ── Proposed edit card (Agent mode) ─────────────────────────────────────────
+.chat-window__proposed-edit {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #4a7fb5;
+  background-color: rgba(74, 127, 181, 0.1);
+
+  .chat-window--dark & {
+    border-color: #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+  }
+}
+
+.chat-window__proposed-edit-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1e3a5f;
+
+  .chat-window--dark & {
+    color: #93c5fd;
+  }
+}
+
+.chat-window__proposed-edit-summary {
+  font-weight: 400;
+  color: #444;
+
+  .chat-window--dark & {
+    color: #aaa;
+  }
+}
+
+.chat-window__proposed-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chat-window__proposed-edit-status {
+  font-size: 0.75rem;
+  color: #555;
+  font-style: italic;
+
+  .chat-window--dark & {
+    color: #999;
+  }
+}
+
+.chat-window__proposed-edit-btn {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &--apply {
+    background-color: #0073c8;
+    color: #fff;
+    border-color: #0073c8;
+
+    .chat-window--dark & {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+    }
+  }
+
+  &--accept {
+    background-color: #28a745;
+    color: #fff;
+    border-color: #28a745;
+  }
+
+  &--reject {
+    background-color: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
+  }
+}

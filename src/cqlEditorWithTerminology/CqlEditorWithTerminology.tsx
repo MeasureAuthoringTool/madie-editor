@@ -1,5 +1,5 @@
-import React, { MouseEvent, useMemo, useState } from "react";
-import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
+import React, { MouseEvent, useRef, useMemo, useState } from "react";
+import MadieAceEditor, { EditorPropsType, MadieEditorHandle } from "../AceEditor/madie-ace-editor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import "./CqlEditorWithTerminology.scss";
@@ -55,6 +55,9 @@ const CqlEditorWithTerminology = ({
     return !params.has("tab");
   });
   const [chatOpen, setChatOpen] = useState(false);
+  const [proposedCql, setProposedCql] = useState<string | null>(null);
+  const [diffResolvedToken, setDiffResolvedToken] = useState(0);
+  const editorHandle = useRef<MadieEditorHandle>(null);
 
   const measureId = getMeasureIdFromUrl();
   const measureContext = useMemo(
@@ -120,6 +123,7 @@ const CqlEditorWithTerminology = ({
               style={{ flex: chatOpen ? "1 1 50%" : "1 1 100%" }}
             >
               <MadieAceEditor
+                ref={editorHandle}
                 value={value}
                 onChange={onChange}
                 height={height}
@@ -129,6 +133,9 @@ const CqlEditorWithTerminology = ({
                 readOnly={readOnly}
                 validationsEnabled={validationsEnabled}
                 setOutboundAnnotations={setOutboundAnnotations}
+                proposedValue={proposedCql}
+                onProposedValueHandled={() => setProposedCql(null)}
+                onDiffResolved={() => setDiffResolvedToken((t) => t + 1)}
               />
             </div>
             {chatOpen && (
@@ -137,6 +144,10 @@ const CqlEditorWithTerminology = ({
                   onChatToggle={() => setChatOpen(false)}
                   measureId={measureId ?? undefined}
                   measureContext={measureContext}
+                  onApplyProposedCql={(cql) => setProposedCql(cql)}
+                  onAcceptAll={() => editorHandle.current?.acceptAll()}
+                  onRejectAll={() => editorHandle.current?.rejectAll()}
+                  diffResolvedToken={diffResolvedToken}
                 />
               </div>
             )}

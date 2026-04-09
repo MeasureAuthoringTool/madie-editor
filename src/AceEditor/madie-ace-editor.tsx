@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import MonacoEditor, { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import * as _ from "lodash";
@@ -60,10 +60,16 @@ export interface EditorPropsType {
   getCqlDefinitionReturnTypes?: () => void;
   setOutboundAnnotations?: Function;
   hasCqlError?: boolean;
-  /** When true, decorates lines that differ from the last-saved baseline */
-  showDiff?: boolean;
-  /** Callback fired when the user resets the diff baseline to the current content */
-  onResetDiffBaseline?: () => void;
+  /**
+   * When set, applies the proposed CQL to the editor and activates diff mode.
+   * Diff is system-controlled — only the Agent workflow activates it.
+   * The user resolves changes via per-hunk accept/reject or Accept All/Reject All in the chat.
+   */
+  proposedValue?: string | null;
+  /** Callback fired once the proposed value has been applied to clear the proposal. */
+  onProposedValueHandled?: () => void;
+  /** Callback fired when diff mode exits (all hunks accepted or rejected). */
+  onDiffResolved?: () => void;
 }
 
 export interface UpdatedCqlObject {
@@ -695,7 +701,13 @@ const applyErrorGutterDecorations = (
   );
 };
 
-const MadieAceEditor = ({
+/** Imperative handle exposed via ref for parent components (e.g. chat Accept All / Reject All). */
+export interface MadieEditorHandle {
+  acceptAll: () => void;
+  rejectAll: () => void;
+}
+
+const MadieAceEditor = forwardRef<MadieEditorHandle, EditorPropsType>(function MadieAceEditor({
   value,
   onChange,
   height,
@@ -705,16 +717,19 @@ const MadieAceEditor = ({
   readOnly = false,
   validationsEnabled = true,
   setOutboundAnnotations,
-  showDiff = false,
-  onResetDiffBaseline,
-}: EditorPropsType) => {
+  proposedValue,
+  onProposedValueHandled,
+  onDiffResolved,
+}, ref) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const [, setParsing] = useState<boolean>(undefined);
   const gutterDecorationsRef = useRef<string[]>([]);
 
   // ── Inline diff state ────────────────────────────────────────────────────
-  const [diffEnabled, setDiffEnabled] = useState<boolean>(showDiff);
+  // Diff is system-controlled — only activated by the Agent workflow via the
+  // proposedValue prop. Users cannot toggle it manually.
+  const [diffEnabled, setDiffEnabled] = useState<boolean>(false);
   const diffBaselineRef = useRef<string | null>(null);
   const diffDecorationsRef = useRef<string[]>([]);
   // Keep track of hunks so Accept/Reject can reference them
@@ -724,10 +739,22 @@ const MadieAceEditor = ({
     { widgetId: string; domNode: HTMLElement }[]
   >([]);
 
-  // Keep prop → state in sync
+  // ── Imperative handle for parent chat window ─────────────────────────────
+  useImperativeHandle(ref, () => ({ acceptAll, rejectAll }));
+
+  // ── Apply proposed value from agent ─────────────────────────────────────
   useEffect(() => {
-    setDiffEnabled(showDiff);
-  }, [showDiff]);
+    if (proposedValue == null) return;
+    // Snapshot current value as baseline before applying the proposal
+    diffBaselineRef.current = value ?? "";
+    // Push the proposed CQL into the editor
+    if (onChange) onChange(proposedValue);
+    // Activate diff mode so the user can review changes
+    setDiffEnabled(true);
+    // Signal to the parent that the proposal has been consumed
+    onProposedValueHandled?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposedValue]);
 
   // ── Overlay widget management ────────────────────────────────────────────
 
@@ -758,7 +785,14 @@ const MadieAceEditor = ({
   const acceptHunk = (hunkIndex: number) => {
     const newHunks = hunksRef.current.filter((_, i) => i !== hunkIndex);
     hunksRef.current = newHunks;
-    redrawDiff(newHunks);
+    if (newHunks.length === 0) {
+      // All hunks resolved — exit diff mode automatically
+      diffBaselineRef.current = value ?? "";
+      setDiffEnabled(false);
+      redrawDiff([]);
+    } else {
+      redrawDiff(newHunks);
+    }
   };
 
   /**
@@ -801,22 +835,27 @@ const MadieAceEditor = ({
     // After rejection, this hunk is resolved – remove it
     const newHunks = hunksRef.current.filter((_, i) => i !== hunkIndex);
     hunksRef.current = newHunks;
+    if (newHunks.length === 0) {
+      // All hunks resolved — exit diff mode automatically
+      setDiffEnabled(false);
+    }
     // Decorations will update via the value useEffect
   };
 
-  /** Accept all hunks at once */
+  /** Accept all hunks at once and exit diff mode */
   const acceptAll = () => {
     hunksRef.current = [];
-    // Update baseline to current value so future edits diff from here
     diffBaselineRef.current = value ?? "";
+    setDiffEnabled(false);
     redrawDiff([]);
   };
 
-  /** Reject all hunks: restore baseline */
+  /** Reject all hunks: restore baseline and exit diff mode */
   const rejectAll = () => {
     if (diffBaselineRef.current === null) return;
     if (onChange) onChange(diffBaselineRef.current);
     hunksRef.current = [];
+    setDiffEnabled(false);
   };
 
   /** Re-render decorations + overlay widgets for the current hunk list */
@@ -899,16 +938,23 @@ const MadieAceEditor = ({
   };
 
   // ── Keep baseline in sync with value when diff is inactive ───────────────
-  // The editor may mount before the measure CQL loads (value=""), so the
-  // initial baseline captured in onMount is empty. This effect updates the
-  // baseline to match the latest value whenever diff is off, so that when
-  // the user toggles diff on, it compares against the actual saved CQL
-  // rather than an empty string.
   useEffect(() => {
     if (!diffEnabled) {
       diffBaselineRef.current = value ?? "";
     }
   }, [diffEnabled, value]);
+
+  // ── Notify parent when diff transitions from enabled → disabled ───────────
+  const prevDiffEnabledRef = useRef<boolean>(false);
+  useEffect(() => {
+    const wasEnabled = prevDiffEnabledRef.current;
+    prevDiffEnabledRef.current = diffEnabled;
+    if (wasEnabled && !diffEnabled) {
+      onDiffResolved?.();
+    }
+    // onDiffResolved intentionally excluded — it's always () => setState(t+1), stable enough
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [diffEnabled]);
 
   // ── Recompute diff whenever value or diffEnabled changes ─────────────────
   useEffect(() => {
@@ -943,18 +989,6 @@ const MadieAceEditor = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [diffEnabled, value]);
 
-  const handleResetBaseline = () => {
-    diffBaselineRef.current = value ?? "";
-    removeAllOverlayWidgets();
-    hunksRef.current = [];
-    if (editorRef.current) {
-      diffDecorationsRef.current = editorRef.current.deltaDecorations(
-        diffDecorationsRef.current,
-        []
-      );
-    }
-    if (onResetDiffBaseline) onResetDiffBaseline();
-  };
   // ─────────────────────────────────────────────────────────────────────────
 
   const debouncedParse = useRef(
@@ -1073,64 +1107,6 @@ const MadieAceEditor = ({
         flexDirection: "column",
       }}
     >
-      {/* Inline-diff toolbar */}
-      <div className="diff-toolbar">
-        <button
-          className={`diff-toolbar__toggle${
-            diffEnabled ? " diff-toolbar__toggle--active" : ""
-          }`}
-          onClick={() => {
-            if (!diffEnabled) {
-              // Freeze current value as baseline when enabling diff
-              diffBaselineRef.current = value ?? "";
-            }
-            setDiffEnabled((prev) => !prev);
-          }}
-          title={
-            diffEnabled
-              ? "Hide inline diff"
-              : "Show inline diff against baseline"
-          }
-        >
-          {diffEnabled ? "Hide Diff" : "Show Diff"}
-        </button>
-        {diffEnabled && (
-          <button
-            className="diff-toolbar__reset"
-            onClick={handleResetBaseline}
-            title="Reset baseline to current content (clears all diff highlights)"
-          >
-            Reset Baseline
-          </button>
-        )}
-        {diffEnabled && hunksRef.current.length > 0 && (
-          <>
-            <button
-              className="diff-toolbar__accept-all"
-              onClick={acceptAll}
-              title="Accept all changes"
-            >
-              ✓ Accept All
-            </button>
-            <button
-              className="diff-toolbar__reject-all"
-              onClick={rejectAll}
-              title="Reject all changes and revert to baseline"
-            >
-              ✕ Reject All
-            </button>
-          </>
-        )}
-        {diffEnabled && (
-          <span className="diff-toolbar__legend">
-            <span className="diff-toolbar__legend-inserted">&#9632;</span> Added
-            &nbsp;
-            <span className="diff-toolbar__legend-deleted">&#9632;</span>{" "}
-            Removed
-          </span>
-        )}
-      </div>
-
       <MonacoEditor
         language={CQL_LANGUAGE_ID}
         theme="vs-dark"
@@ -1158,6 +1134,6 @@ const MadieAceEditor = ({
       />
     </div>
   );
-};
+});
 
 export default MadieAceEditor;

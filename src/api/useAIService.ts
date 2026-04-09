@@ -13,6 +13,7 @@ export interface ClaraChatRequestSavedKey {
   session_id?: string;
   context?: string;
   context_type?: string;
+  mode?: "ask" | "agent";
 }
 
 // Mode 2: pass the key per-call (never persisted server-side)
@@ -24,6 +25,12 @@ export interface ClaraChatRequestInlineKey {
   session_id?: string;
   context?: string;
   context_type?: string;
+  mode?: "ask" | "agent";
+}
+
+export interface ProposedEdit {
+  proposed_cql: string;
+  edit_summary: string;
 }
 
 export type ClaraChatRequest =
@@ -191,7 +198,8 @@ export class AIServiceApi {
       prompt_tokens: number;
       completion_tokens: number;
     }) => void,
-    onError: (error: Error) => void
+    onError: (error: Error) => void,
+    onProposedEdit?: (edit: ProposedEdit) => void
   ): { abort: () => void } {
     const controller = new AbortController();
     (async () => {
@@ -236,6 +244,8 @@ export class AIServiceApi {
                 const data = JSON.parse(dataStr);
                 if (currentEvent === "chunk" && data.content) {
                   onChunk(data.content);
+                } else if (currentEvent === "proposed_edit" && onProposedEdit) {
+                  onProposedEdit(data as ProposedEdit);
                 } else if (currentEvent === "done") {
                   onDone(data.usage);
                   return;

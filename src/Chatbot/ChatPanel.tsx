@@ -7,6 +7,10 @@ interface ChatPanelProps {
   onChatToggle?: () => void;
   measureId?: string;
   measureContext?: MeasureContext;
+  onApplyProposedCql?: (cql: string) => void;
+  onAcceptAll?: () => void;
+  onRejectAll?: () => void;
+  diffResolvedToken?: number;
 }
 
 type Theme = "light" | "dark";
@@ -15,6 +19,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   onChatToggle,
   measureId,
   measureContext,
+  onApplyProposedCql,
+  onAcceptAll,
+  onRejectAll,
+  diffResolvedToken,
 }) => {
   const [theme, setTheme] = useState<Theme>("light");
 
@@ -31,6 +39,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           onToggleTheme={toggleTheme}
           measureId={measureId}
           measureContext={measureContext}
+          onApplyProposedCql={onApplyProposedCql}
+          onAcceptAll={onAcceptAll}
+          onRejectAll={onRejectAll}
+          diffResolvedToken={diffResolvedToken}
         />
       </div>
     </div>

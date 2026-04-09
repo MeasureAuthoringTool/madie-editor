@@ -37,6 +37,8 @@ interface ChatMessage {
     prompt_tokens: number;
     completion_tokens: number;
   };
+  proposedCql?: string;
+  editSummary?: string;
 }
 
 const MODES = ["Ask", "Agent"] as const;
@@ -98,6 +100,11 @@ interface ChatWindowProps {
   onToggleTheme?: () => void;
   measureId?: string;
   measureContext?: MeasureContext;
+  onApplyProposedCql?: (cql: string) => void;
+  onAcceptAll?: () => void;
+  onRejectAll?: () => void;
+  /** Incremented each time the editor resolves all diff hunks — triggers clearing the accept/reject UI. */
+  diffResolvedToken?: number;
 }
 
 function getMeasureIdFromUrl(): string | null {
@@ -170,6 +177,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   onToggleTheme,
   measureId: measureIdProp,
   measureContext,
+  onApplyProposedCql,
+  onAcceptAll,
+  onRejectAll,
+  diffResolvedToken,
 }) => {
   const measureId = measureIdProp ?? getMeasureIdFromUrl();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -177,6 +188,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [mode, setMode] = useState<Mode>("Ask");
+  // Track which message index has been applied to the editor (for showing Accept/Reject All)
+  const [appliedMsgIdx, setAppliedMsgIdx] = useState<number | null>(null);
+  // When the editor resolves all hunks (per-hunk accept/reject), clear the accept/reject UI
+  useEffect(() => {
+    if (diffResolvedToken) setAppliedMsgIdx(null);
+  }, [diffResolvedToken]);
   // provider → key_id returned by the ai-service (encrypted server-side)
   const [savedKeyIds, setSavedKeyIds] = useState<Record<string, string>>({});
   // provider → raw api_key (in-memory only, per-call mode, not persisted)
@@ -315,6 +332,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           model,
           messages: [{ role: "user", content: trimmed }],
           session_id: sessionId ?? undefined,
+          mode: mode.toLowerCase() as "ask" | "agent",
         }
       : {
           api_key: sessionKeys[provider],
@@ -322,6 +340,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           model,
           messages: [{ role: "user", content: trimmed }],
           session_id: sessionId ?? undefined,
+          mode: mode.toLowerCase() as "ask" | "agent",
         };
 
     // Abort any previous in-flight stream before starting a new one
@@ -395,6 +414,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           setShowApiKeyDialog(true);
         }
         setIsStreaming(false);
+      },
+      // onProposedEdit — agent mode: auto-apply to editor immediately
+      (edit) => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[assistantIdx] = {
+            ...updated[assistantIdx],
+            proposedCql: edit.proposed_cql,
+            editSummary: edit.edit_summary,
+          };
+          return updated;
+        });
+        setAppliedMsgIdx(assistantIdx);
+        onApplyProposedCql?.(edit.proposed_cql);
       }
     );
   };
@@ -618,6 +651,49 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                       <ContentCopyIcon sx={{ fontSize: 14 }} />
                     )}
                   </IconButton>
+                </div>
+              )}
+              {msg.role === "assistant" && msg.proposedCql && !msg.isError && (
+                <div className="chat-window__proposed-edit">
+                  <div className="chat-window__proposed-edit-label">
+                    ✏️ Proposed CQL Edit
+                    {msg.editSummary && (
+                      <span className="chat-window__proposed-edit-summary">
+                        {" — "}{msg.editSummary}
+                      </span>
+                    )}
+                  </div>
+                  <div className="chat-window__proposed-edit-actions">
+                    {appliedMsgIdx === idx ? (
+                      <>
+                        <span className="chat-window__proposed-edit-status">
+                          Applied — review changes in editor
+                        </span>
+                        <button
+                          className="chat-window__proposed-edit-btn chat-window__proposed-edit-btn--accept"
+                          onClick={() => {
+                            onAcceptAll?.();
+                            setAppliedMsgIdx(null);
+                          }}
+                        >
+                          ✓ Accept All
+                        </button>
+                        <button
+                          className="chat-window__proposed-edit-btn chat-window__proposed-edit-btn--reject"
+                          onClick={() => {
+                            onRejectAll?.();
+                            setAppliedMsgIdx(null);
+                          }}
+                        >
+                          ✕ Reject All
+                        </button>
+                      </>
+                    ) : (
+                      <span className="chat-window__proposed-edit-status">
+                        ✓ Changes resolved
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
