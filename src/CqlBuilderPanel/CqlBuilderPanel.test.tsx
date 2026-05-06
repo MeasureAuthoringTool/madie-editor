@@ -161,11 +161,19 @@ describe("CqlBuilderPanel", () => {
     });
   });
 
-  it("Should load valueSets tab", async () => {
-    useFeatureFlags.mockImplementationOnce(() => ({
-      QDMValueSetSearch: true,
-    }));
+  it("Should default to includes tab for QDM measures", async () => {
     render(<CqlBuilderPanel {...props} />);
+    await waitFor(() => {
+      expect(getByTestId("includes-tab")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+  });
+
+  it("Should load valueSets tab when clicked", async () => {
+    render(<CqlBuilderPanel {...props} />);
+    userEvent.click(screen.getByRole("tab", { name: "Value Sets" }));
     await waitFor(() => {
       expect(getByTestId("valueSets-tab")).toHaveAttribute(
         "aria-selected",
@@ -875,7 +883,7 @@ describe("CqlBuilderPanel", () => {
     window.history.replaceState({}, "", "?tab=invalidTab");
     render(<CqlBuilderPanel {...{ ...props, measureModel: "QDM 5.6" }} />);
     await waitFor(() => {
-      expect(screen.getByRole("tab", { name: "Value Sets" })).toHaveAttribute(
+      expect(screen.getByRole("tab", { name: "Includes" })).toHaveAttribute(
         "aria-selected",
         "true"
       );
