@@ -4,7 +4,7 @@ import ValueSetsSection from "./ValueSets/ValueSets";
 import CodesSection from "./codesSection/CodesSection";
 import DefinitionsSection from "./definitionsSection/DefinitionsSection";
 import FunctionsSection from "./functionsSection/FunctionsSection";
-import { useFeatureFlags } from "@madie/madie-util";
+
 import IncludesTabSection from "./Includes/Includes";
 import Parameters from "./Parameters/Parameters";
 import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
@@ -65,17 +65,8 @@ export default function CqlBuilderPanel({
   makeExpanded,
   hasCqlError,
 }) {
-  const featureFlags = useFeatureFlags();
-  // we have multiple flags and need to select a starting value based off of what's available and canEdit.
-  const getStartingPage = (() => {
-    if (measureModel?.includes("QDM")) {
-      return "valueSets";
-    }
-    return "includes";
-  })();
-
   const [activeTab, setActiveTabState] = useState<string>(
-    getTabFromUrl() || getStartingPage
+    getTabFromUrl() || "includes"
   );
 
   const setActiveTab = useCallback(
