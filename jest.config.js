@@ -12,6 +12,9 @@ module.exports = {
     "single-spa-react/parcel": "single-spa-react/lib/cjs/parcel.cjs",
     "^react($|/.+)": "<rootDir>/node_modules/react$1", // makes sure all React imports are running off of the one in this package.
     "\\.(css|scss)$": "identity-obj-proxy",
+    "^@monaco-editor/react$":
+      "<rootDir>/src/__mocks__/@monaco-editor/react.tsx",
+    "^monaco-editor$": "<rootDir>/src/__mocks__/monaco-editor.ts",
   },
   setupFilesAfterEnv: ["@testing-library/jest-dom", "./jest.setup.js"],
   globals: {

@@ -3,6 +3,18 @@
   position: absolute;
 }
 
+/* Monaco gutter error glyph – red circle in the glyph margin */
+.cql-error-glyph {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%23f14c4c'/%3E%3Ctext x='8' y='12' text-anchor='middle' font-size='10' font-weight='bold' fill='white'%3E!%3C/text%3E%3C/svg%3E")
+    center center / 14px 14px no-repeat;
+  cursor: default;
+}
+
+/* Subtle red-tinted background on the full error line */
+.cql-error-line-highlight {
+  background: rgba(255, 0, 0, 0.08);
+}
+
 .ace_gutter-cell {
   color: #9c9c9c;
 }
@@ -21,4 +33,177 @@
 .ace_scrollbar {
   scrollbar-color: #9c9c9c #9c9c9c;
   opacity: 1;
+}
+
+/* -------------------------------------------------------------------------
+   Inline diff decorations
+   ------------------------------------------------------------------------- */
+
+/* Inserted (added) lines – soft green background + left border */
+.diff-inserted-line {
+  background: rgba(40, 167, 69, 0.15) !important;
+  border-left: 3px solid #28a745;
+}
+
+/* Green glyph indicator for added lines */
+.diff-inserted-glyph {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='7' width='10' height='2' rx='1' fill='%2328a745'/%3E%3Crect x='7' y='3' width='2' height='10' rx='1' fill='%2328a745'/%3E%3C/svg%3E")
+    center center / 12px 12px no-repeat;
+}
+
+/* Deleted-block pseudo-element – shown as a thin red stripe before the
+   line that follows the deletion.  Hover the stripe (or the glyph) to see
+   the deleted text in a hover tooltip. */
+.diff-deleted-block::before {
+  content: " ";
+  display: block;
+  height: 3px;
+  background: rgba(220, 53, 69, 0.55);
+  border-left: 3px solid #dc3545;
+  margin-bottom: 1px;
+  cursor: pointer;
+}
+
+.diff-toolbar__accept-all {
+  padding: 3px 10px;
+  border: 1px solid #28a745;
+  border-radius: 3px;
+  background: #1a3a1a;
+  color: #4caf50;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.15s;
+}
+
+.diff-toolbar__accept-all:hover {
+  background: #234d23;
+}
+
+.diff-toolbar__reject-all {
+  padding: 3px 10px;
+  border: 1px solid #dc3545;
+  border-radius: 3px;
+  background: #3a1a1a;
+  color: #f28b82;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.15s;
+}
+
+.diff-toolbar__reject-all:hover {
+  background: #4d2323;
+}
+
+/* ── Per-hunk overlay widget ─────────────────────────────────────────────── */
+
+.diff-hunk-widget {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* Make it float above the editor content */
+  position: absolute;
+  z-index: 100;
+  pointer-events: all;
+  /* Slight shadow so it reads over text */
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+}
+
+.diff-hunk-btn {
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+
+.diff-hunk-btn--accept {
+  background: #1a3a1a;
+  border-color: #28a745;
+  color: #4caf50;
+}
+
+.diff-hunk-btn--accept:hover {
+  background: #234d23;
+  border-color: #3dbb55;
+  color: #6fcf7f;
+}
+
+.diff-hunk-btn--reject {
+  background: #3a1a1a;
+  border-color: #dc3545;
+  color: #f28b82;
+}
+
+.diff-hunk-btn--reject:hover {
+  background: #4d2323;
+  border-color: #e85060;
+  color: #ff9f99;
+}
+
+.diff-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: #1e1e1e;
+  border-bottom: 1px solid #3c3c3c;
+  flex-shrink: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+}
+
+.diff-toolbar__toggle {
+  padding: 3px 10px;
+  border: 1px solid #555;
+  border-radius: 3px;
+  background: #2d2d2d;
+  color: #cccccc;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.diff-toolbar__toggle:hover {
+  background: #3a3a3a;
+  border-color: #888;
+}
+
+.diff-toolbar__toggle--active {
+  background: #1a3a1a;
+  border-color: #28a745;
+  color: #4caf50;
+}
+
+.diff-toolbar__reset {
+  padding: 3px 10px;
+  border: 1px solid #555;
+  border-radius: 3px;
+  background: #2d2d2d;
+  color: #cccccc;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.15s;
+}
+
+.diff-toolbar__reset:hover {
+  background: #3a2020;
+  border-color: #dc3545;
+  color: #f28b82;
+}
+
+.diff-toolbar__legend {
+  margin-left: auto;
+  color: #888;
+  font-size: 11px;
+}
+
+.diff-toolbar__legend-inserted {
+  color: #28a745;
+}
+
+.diff-toolbar__legend-deleted {
+  color: #dc3545;
 }

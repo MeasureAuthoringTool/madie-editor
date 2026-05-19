@@ -1,5 +1,5 @@
-import React, { MouseEvent, useState } from "react";
-import MadieAceEditor, { EditorPropsType } from "../AceEditor/madie-ace-editor";
+import React, { MouseEvent, useRef, useMemo, useState } from "react";
+import MadieAceEditor, { EditorPropsType, MadieEditorHandle } from "../AceEditor/madie-ace-editor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import "./CqlEditorWithTerminology.scss";
@@ -7,6 +7,14 @@ import CqlBuilderPanel from "../CqlBuilderPanel/CqlBuilderPanel";
 import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
 import { IconButton } from "@mui/material";
 import Search from "@mui/icons-material/Search";
+import ChatIcon from "@mui/icons-material/ChatOutlined";
+import ChatPanel from "../Chatbot/ChatPanel";
+import AssistantIcon from '@mui/icons-material/Assistant';
+
+function getMeasureIdFromUrl(): string | null {
+  const match = window.location.pathname.match(/\/measures\/([^/]+)/);
+  return match ? match[1] : null;
+}
 
 const CqlEditorWithTerminology = ({
   value,
@@ -47,6 +55,17 @@ const CqlEditorWithTerminology = ({
     const params = new URLSearchParams(window.location.search);
     return !params.has("tab");
   });
+  const [chatOpen, setChatOpen] = useState(false);
+  const [proposedCql, setProposedCql] = useState<string | null>(null);
+  const [diffResolvedToken, setDiffResolvedToken] = useState(0);
+  const [cqlBuilderLookup, setCqlBuilderLookup] = useState<import("../model/CqlBuilderLookup").CqlBuilderLookup | undefined>(undefined);
+  const editorHandle = useRef<MadieEditorHandle>(null);
+
+  const measureId = getMeasureIdFromUrl();
+  const measureContext = useMemo(
+    () => (measureModel ? { model: measureModel } : undefined),
+    [measureModel]
+  );
 
   const toggleSearch = () => {
     const event = new CustomEvent("toggleEditorSearchBox");
@@ -67,6 +86,17 @@ const CqlEditorWithTerminology = ({
             >
               <Search />
             </IconButton>
+            <IconButton
+              data-testid="editor-chat-button"
+              aria-label="toggle chat"
+              title={chatOpen ? "Close Chat" : "Open Chat"}
+              style={{
+                color: chatOpen ? "#005a9e" : "#0073c8",
+              }}
+              onClick={() => setChatOpen((prev) => !prev)}
+            >
+              <AssistantIcon />
+            </IconButton>
             {expanded && (
               <IconButton
                 data-testid="expanded-button"
@@ -86,10 +116,16 @@ const CqlEditorWithTerminology = ({
               </IconButton>
             )}
           </div>
-          <div className="left-panel">
-            <div className="panel-content">
-              {/* needs to be difference between parent and sibling */}
+          <div
+            className="left-panel"
+            style={{ display: "flex", flexDirection: "row" }}
+          >
+            <div
+              className="panel-content"
+              style={{ flex: chatOpen ? "1 1 50%" : "1 1 100%" }}
+            >
               <MadieAceEditor
+                ref={editorHandle}
                 value={value}
                 onChange={onChange}
                 height={height}
@@ -99,8 +135,26 @@ const CqlEditorWithTerminology = ({
                 readOnly={readOnly}
                 validationsEnabled={validationsEnabled}
                 setOutboundAnnotations={setOutboundAnnotations}
+                proposedValue={proposedCql}
+                onProposedValueHandled={() => setProposedCql(null)}
+                onDiffResolved={() => setDiffResolvedToken((t) => t + 1)}
+                cqlBuilderLookup={cqlBuilderLookup}
               />
             </div>
+            {chatOpen && (
+              <div className="chat-panel-wrapper">
+                <ChatPanel
+                  onChatToggle={() => setChatOpen(false)}
+                  measureId={measureId ?? undefined}
+                  measureContext={measureContext}
+                  currentCql={value}
+                  onApplyProposedCql={(cql) => setProposedCql(cql)}
+                  onAcceptAll={() => editorHandle.current?.acceptAll()}
+                  onRejectAll={() => editorHandle.current?.rejectAll()}
+                  diffResolvedToken={diffResolvedToken}
+                />
+              </div>
+            )}
           </div>
         </Allotment.Pane>
         {!expanded && (
@@ -138,6 +192,7 @@ const CqlEditorWithTerminology = ({
               resetCql={resetCql}
               getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
               hasCqlError={hasCqlError}
+              onLookupsUpdated={(lookups) => setCqlBuilderLookup(lookups)}
             />
           </Allotment.Pane>
         )}

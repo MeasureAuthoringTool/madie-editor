@@ -1,0 +1,1178 @@
+[
+  {
+    "name": "Patient",
+    "label": "Patient",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "identifier",
+        "type": "List<Identifier>"
+      },
+      {
+        "name": "name",
+        "type": "List<HumanName>"
+      },
+      {
+        "name": "birthDate",
+        "type": "date"
+      },
+      {
+        "name": "gender",
+        "type": "code"
+      },
+      {
+        "name": "deceased",
+        "type": "boolean"
+      },
+      {
+        "name": "address",
+        "type": "List<Address>"
+      },
+      {
+        "name": "communication",
+        "type": "List<BackboneElement>"
+      },
+      {
+        "name": "extension",
+        "type": "List<Extension>"
+      }
+    ]
+  },
+  {
+    "name": "Encounter",
+    "label": "Encounter",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "identifier",
+        "type": "List<Identifier>"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "class",
+        "type": "Coding"
+      },
+      {
+        "name": "type",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "participant",
+        "type": "List<BackboneElement>"
+      },
+      {
+        "name": "period",
+        "type": "Period"
+      },
+      {
+        "name": "reasonCode",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "diagnosis",
+        "type": "List<BackboneElement>"
+      },
+      {
+        "name": "hospitalization",
+        "type": "BackboneElement"
+      },
+      {
+        "name": "location",
+        "type": "List<BackboneElement>"
+      },
+      {
+        "name": "serviceProvider",
+        "type": "Reference"
+      },
+      {
+        "name": "priority",
+        "type": "CodeableConcept"
+      }
+    ]
+  },
+  {
+    "name": "Condition",
+    "label": "Condition",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "identifier",
+        "type": "List<Identifier>"
+      },
+      {
+        "name": "clinicalStatus",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "verificationStatus",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "category",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "severity",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "onset",
+        "type": "dateTime"
+      },
+      {
+        "name": "abatement",
+        "type": "dateTime"
+      },
+      {
+        "name": "recordedDate",
+        "type": "dateTime"
+      },
+      {
+        "name": "note",
+        "type": "List<Annotation>"
+      }
+    ]
+  },
+  {
+    "name": "Observation",
+    "label": "Observation",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "identifier",
+        "type": "List<Identifier>"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "category",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "effective",
+        "type": "dateTime"
+      },
+      {
+        "name": "issued",
+        "type": "instant"
+      },
+      {
+        "name": "value",
+        "type": "Quantity"
+      },
+      {
+        "name": "interpretation",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "component",
+        "type": "List<BackboneElement>"
+      },
+      {
+        "name": "note",
+        "type": "List<Annotation>"
+      }
+    ]
+  },
+  {
+    "name": "MedicationRequest",
+    "label": "MedicationRequest",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "identifier",
+        "type": "List<Identifier>"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "intent",
+        "type": "code"
+      },
+      {
+        "name": "medication",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "authoredOn",
+        "type": "dateTime"
+      },
+      {
+        "name": "requester",
+        "type": "Reference"
+      },
+      {
+        "name": "dosageInstruction",
+        "type": "List<Dosage>"
+      },
+      {
+        "name": "dispenseRequest",
+        "type": "BackboneElement"
+      },
+      {
+        "name": "reasonCode",
+        "type": "List<CodeableConcept>"
+      }
+    ]
+  },
+  {
+    "name": "MedicationAdministration",
+    "label": "MedicationAdministration",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "medication",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "effective",
+        "type": "dateTime"
+      },
+      {
+        "name": "dosage",
+        "type": "BackboneElement"
+      },
+      {
+        "name": "reasonCode",
+        "type": "List<CodeableConcept>"
+      }
+    ]
+  },
+  {
+    "name": "MedicationDispense",
+    "label": "MedicationDispense",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "medication",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "quantity",
+        "type": "Quantity"
+      },
+      {
+        "name": "daysSupply",
+        "type": "Quantity"
+      },
+      {
+        "name": "whenHandedOver",
+        "type": "dateTime"
+      },
+      {
+        "name": "dosageInstruction",
+        "type": "List<Dosage>"
+      }
+    ]
+  },
+  {
+    "name": "Procedure",
+    "label": "Procedure",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "identifier",
+        "type": "List<Identifier>"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "performed",
+        "type": "dateTime"
+      },
+      {
+        "name": "reasonCode",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "outcome",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "note",
+        "type": "List<Annotation>"
+      }
+    ]
+  },
+  {
+    "name": "DiagnosticReport",
+    "label": "DiagnosticReport",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "category",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "effective",
+        "type": "dateTime"
+      },
+      {
+        "name": "issued",
+        "type": "instant"
+      },
+      {
+        "name": "result",
+        "type": "List<Reference>"
+      },
+      {
+        "name": "conclusion",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "name": "AllergyIntolerance",
+    "label": "AllergyIntolerance",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "clinicalStatus",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "verificationStatus",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "type",
+        "type": "code"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "patient",
+        "type": "Reference"
+      },
+      {
+        "name": "onset",
+        "type": "dateTime"
+      },
+      {
+        "name": "reaction",
+        "type": "List<BackboneElement>"
+      }
+    ]
+  },
+  {
+    "name": "Immunization",
+    "label": "Immunization",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "vaccineCode",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "patient",
+        "type": "Reference"
+      },
+      {
+        "name": "occurrence",
+        "type": "dateTime"
+      },
+      {
+        "name": "primarySource",
+        "type": "boolean"
+      },
+      {
+        "name": "note",
+        "type": "List<Annotation>"
+      }
+    ]
+  },
+  {
+    "name": "ServiceRequest",
+    "label": "ServiceRequest",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "intent",
+        "type": "code"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "authoredOn",
+        "type": "dateTime"
+      },
+      {
+        "name": "occurrence",
+        "type": "dateTime"
+      },
+      {
+        "name": "reasonCode",
+        "type": "List<CodeableConcept>"
+      }
+    ]
+  },
+  {
+    "name": "Coverage",
+    "label": "Coverage",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "type",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "beneficiary",
+        "type": "Reference"
+      },
+      {
+        "name": "period",
+        "type": "Period"
+      },
+      {
+        "name": "payor",
+        "type": "List<Reference>"
+      },
+      {
+        "name": "class",
+        "type": "List<BackboneElement>"
+      }
+    ]
+  },
+  {
+    "name": "Claim",
+    "label": "Claim",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "type",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "patient",
+        "type": "Reference"
+      },
+      {
+        "name": "billablePeriod",
+        "type": "Period"
+      },
+      {
+        "name": "created",
+        "type": "dateTime"
+      },
+      {
+        "name": "diagnosis",
+        "type": "List<BackboneElement>"
+      },
+      {
+        "name": "procedure",
+        "type": "List<BackboneElement>"
+      }
+    ]
+  },
+  {
+    "name": "Location",
+    "label": "Location",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "type",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "address",
+        "type": "Address"
+      },
+      {
+        "name": "managingOrganization",
+        "type": "Reference"
+      }
+    ]
+  },
+  {
+    "name": "Organization",
+    "label": "Organization",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "active",
+        "type": "boolean"
+      },
+      {
+        "name": "type",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "name": "Practitioner",
+    "label": "Practitioner",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "identifier",
+        "type": "List<Identifier>"
+      },
+      {
+        "name": "active",
+        "type": "boolean"
+      },
+      {
+        "name": "name",
+        "type": "List<HumanName>"
+      },
+      {
+        "name": "qualification",
+        "type": "List<BackboneElement>"
+      }
+    ]
+  },
+  {
+    "name": "PractitionerRole",
+    "label": "PractitionerRole",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "practitioner",
+        "type": "Reference"
+      },
+      {
+        "name": "organization",
+        "type": "Reference"
+      },
+      {
+        "name": "code",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "specialty",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "location",
+        "type": "List<Reference>"
+      }
+    ]
+  },
+  {
+    "name": "RelatedPerson",
+    "label": "RelatedPerson",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "relationship",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "patient",
+        "type": "Reference"
+      },
+      {
+        "name": "period",
+        "type": "Period"
+      }
+    ]
+  },
+  {
+    "name": "CarePlan",
+    "label": "CarePlan",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "intent",
+        "type": "code"
+      },
+      {
+        "name": "category",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "period",
+        "type": "Period"
+      },
+      {
+        "name": "activity",
+        "type": "List<BackboneElement>"
+      }
+    ]
+  },
+  {
+    "name": "Goal",
+    "label": "Goal",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "lifecycleStatus",
+        "type": "code"
+      },
+      {
+        "name": "description",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "start",
+        "type": "date"
+      },
+      {
+        "name": "target",
+        "type": "List<BackboneElement>"
+      }
+    ]
+  },
+  {
+    "name": "Communication",
+    "label": "Communication",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "category",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "sent",
+        "type": "dateTime"
+      },
+      {
+        "name": "received",
+        "type": "dateTime"
+      },
+      {
+        "name": "payload",
+        "type": "List<BackboneElement>"
+      }
+    ]
+  },
+  {
+    "name": "Device",
+    "label": "Device",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "type",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "patient",
+        "type": "Reference"
+      },
+      {
+        "name": "note",
+        "type": "List<Annotation>"
+      }
+    ]
+  },
+  {
+    "name": "DeviceRequest",
+    "label": "DeviceRequest",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "intent",
+        "type": "code"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "authoredOn",
+        "type": "dateTime"
+      },
+      {
+        "name": "occurrence",
+        "type": "dateTime"
+      }
+    ]
+  },
+  {
+    "name": "Substance",
+    "label": "Substance",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "type": "code"
+      },
+      {
+        "name": "category",
+        "type": "List<CodeableConcept>"
+      },
+      {
+        "name": "code",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "description",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "name": "Specimen",
+    "label": "Specimen",
+    "baseType": "DomainResource",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "string"
+      },
+      {
+        "name": "type",
+        "type": "CodeableConcept"
+      },
+      {
+        "name": "subject",
+        "type": "Reference"
+      },
+      {
+        "name": "receivedTime",
+        "type": "dateTime"
+      },
+      {
+        "name": "collection",
+        "type": "BackboneElement"
+      }
+    ]
+  },
+  {
+    "name": "Period",
+    "label": "Period",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "start",
+        "type": "dateTime"
+      },
+      {
+        "name": "end",
+        "type": "dateTime"
+      }
+    ]
+  },
+  {
+    "name": "Quantity",
+    "label": "Quantity",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "value",
+        "type": "decimal"
+      },
+      {
+        "name": "unit",
+        "type": "string"
+      },
+      {
+        "name": "system",
+        "type": "uri"
+      },
+      {
+        "name": "code",
+        "type": "code"
+      }
+    ]
+  },
+  {
+    "name": "CodeableConcept",
+    "label": "CodeableConcept",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "coding",
+        "type": "List<Coding>"
+      },
+      {
+        "name": "text",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "name": "Coding",
+    "label": "Coding",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "system",
+        "type": "uri"
+      },
+      {
+        "name": "version",
+        "type": "string"
+      },
+      {
+        "name": "code",
+        "type": "code"
+      },
+      {
+        "name": "display",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "name": "Reference",
+    "label": "Reference",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "reference",
+        "type": "string"
+      },
+      {
+        "name": "type",
+        "type": "uri"
+      },
+      {
+        "name": "display",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "name": "Identifier",
+    "label": "Identifier",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "use",
+        "type": "code"
+      },
+      {
+        "name": "system",
+        "type": "uri"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "name": "period",
+        "type": "Period"
+      }
+    ]
+  },
+  {
+    "name": "HumanName",
+    "label": "HumanName",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "use",
+        "type": "code"
+      },
+      {
+        "name": "text",
+        "type": "string"
+      },
+      {
+        "name": "family",
+        "type": "string"
+      },
+      {
+        "name": "given",
+        "type": "List<string>"
+      }
+    ]
+  },
+  {
+    "name": "Address",
+    "label": "Address",
+    "baseType": "Element",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "use",
+        "type": "code"
+      },
+      {
+        "name": "type",
+        "type": "code"
+      },
+      {
+        "name": "text",
+        "type": "string"
+      },
+      {
+        "name": "city",
+        "type": "string"
+      },
+      {
+        "name": "state",
+        "type": "string"
+      },
+      {
+        "name": "postalCode",
+        "type": "string"
+      },
+      {
+        "name": "country",
+        "type": "string"
+      }
+    ]
+  }
+]

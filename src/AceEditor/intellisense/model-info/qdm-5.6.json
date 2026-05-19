@@ -1,0 +1,2257 @@
+[
+  {
+    "name": "Patient",
+    "label": "Patient",
+    "baseType": "Any",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "birthDatetime",
+        "type": "DateTime"
+      }
+    ]
+  },
+  {
+    "name": "Identifier",
+    "label": "Identifier",
+    "baseType": "Any",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "namingSystem",
+        "type": "String"
+      },
+      {
+        "name": "value",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "name": "Entity",
+    "label": "Entity",
+    "baseType": "Any",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "String"
+      },
+      {
+        "name": "identifier",
+        "type": "Identifier"
+      }
+    ]
+  },
+  {
+    "name": "PatientEntity",
+    "label": "PatientEntity",
+    "baseType": "Entity",
+    "retrievable": false,
+    "attributes": []
+  },
+  {
+    "name": "CarePartner",
+    "label": "CarePartner",
+    "baseType": "Entity",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "relationship",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "RelatedPerson",
+    "label": "Related Person",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "identifier",
+        "type": "Identifier"
+      },
+      {
+        "name": "linkedPatientId",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "name": "Practitioner",
+    "label": "Practitioner",
+    "baseType": "Entity",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "role",
+        "type": "Code"
+      },
+      {
+        "name": "specialty",
+        "type": "Code"
+      },
+      {
+        "name": "qualification",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "Organization",
+    "label": "Organization",
+    "baseType": "Entity",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "organizationType",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "Location",
+    "label": "Location",
+    "baseType": "Entity",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "locationType",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "PhysicalExamOrder",
+    "label": "PhysicalExamOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "anatomicalLocationSite",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "Participation",
+    "label": "Participation",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "participationPeriod",
+        "type": "interval<DateTime>"
+      }
+    ]
+  },
+  {
+    "name": "PatientCharacteristicSex",
+    "label": "Patient Characteristic Sex",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "CareGoal",
+    "label": "Care Goal",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "statusDate",
+        "type": "Date"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      },
+      {
+        "name": "targetOutcome",
+        "type": ""
+      },
+      {
+        "name": "performer",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "PatientCharacteristic",
+    "label": "Patient Characteristic",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      }
+    ]
+  },
+  {
+    "name": "PatientCharacteristicEthnicity",
+    "label": "Patient Characteristic Ethnicity",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PatientCharacteristicRace",
+    "label": "Patient Characteristic Race",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "LaboratoryTestPerformed",
+    "label": "LaboratoryTestPerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "status",
+        "type": "Code"
+      },
+      {
+        "name": "method",
+        "type": "Code"
+      },
+      {
+        "name": "result",
+        "type": ""
+      },
+      {
+        "name": "resultDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "referenceRange",
+        "type": "interval<Quantity>"
+      },
+      {
+        "name": "interpretation",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "components",
+        "type": "list<ResultComponent>"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "Symptom",
+    "label": "Symptom",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "prevalencePeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "severity",
+        "type": "Code"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "MedicationAdministered",
+    "label": "MedicationAdministered",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "ProcedureRecommended",
+    "label": "ProcedureRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "anatomicalLocationSite",
+        "type": "Code"
+      },
+      {
+        "name": "rank",
+        "type": "Integer"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "EncounterPerformed",
+    "label": "EncounterPerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "admissionSource",
+        "type": "Code"
+      },
+      {
+        "name": "class",
+        "type": "Code"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "dischargeDisposition",
+        "type": "Code"
+      },
+      {
+        "name": "facilityLocations",
+        "type": "list<FacilityLocation>"
+      },
+      {
+        "name": "diagnoses",
+        "type": "list<DiagnosisComponent>"
+      },
+      {
+        "name": "lengthOfStay",
+        "type": "Quantity"
+      },
+      {
+        "name": "priority",
+        "type": "Code"
+      },
+      {
+        "name": "participant",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "Diagnosis",
+    "label": "Diagnosis",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "prevalencePeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "anatomicalLocationSite",
+        "type": "Code"
+      },
+      {
+        "name": "severity",
+        "type": "Code"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "CommunicationPerformed",
+    "label": "CommunicationPerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "category",
+        "type": "Code"
+      },
+      {
+        "name": "medium",
+        "type": "Code"
+      },
+      {
+        "name": "sender",
+        "type": ""
+      },
+      {
+        "name": "recipient",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      },
+      {
+        "name": "sentDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "receivedDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "AssessmentPerformed",
+    "label": "AssessmentPerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "method",
+        "type": "Code"
+      },
+      {
+        "name": "result",
+        "type": ""
+      },
+      {
+        "name": "interpretation",
+        "type": "Code"
+      },
+      {
+        "name": "components",
+        "type": "list<Component>"
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "PatientCharacteristicClinicalTrialParticipant",
+    "label": "Patient Characteristic Clinical Trial Participant",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      }
+    ]
+  },
+  {
+    "name": "DeviceOrder",
+    "label": "DeviceOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "DiagnosticStudyPerformed",
+    "label": "DiagnosticStudyPerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "result",
+        "type": ""
+      },
+      {
+        "name": "resultDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "interpretation",
+        "type": "Code"
+      },
+      {
+        "name": "status",
+        "type": "Code"
+      },
+      {
+        "name": "method",
+        "type": "Code"
+      },
+      {
+        "name": "facilityLocation",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "components",
+        "type": "list<Component>"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "InterventionOrder",
+    "label": "InterventionOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "FamilyHistory",
+    "label": "Family History",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relationship",
+        "type": "Code"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "Component",
+    "label": "Component",
+    "baseType": "Any",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "code",
+        "type": "Code"
+      },
+      {
+        "name": "result",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "DiagnosisComponent",
+    "label": "DiagnosisComponent",
+    "baseType": "Any",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "code",
+        "type": "Code"
+      },
+      {
+        "name": "presentOnAdmissionIndicator",
+        "type": "Code"
+      },
+      {
+        "name": "rank",
+        "type": "Integer"
+      }
+    ]
+  },
+  {
+    "name": "ResultComponent",
+    "label": "ResultComponent",
+    "baseType": "Component",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "referenceRange",
+        "type": "interval<Quantity>"
+      }
+    ]
+  },
+  {
+    "name": "FacilityLocation",
+    "label": "FacilityLocation",
+    "baseType": "Any",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "code",
+        "type": "Code"
+      },
+      {
+        "name": "locationPeriod",
+        "type": "interval<DateTime>"
+      }
+    ]
+  },
+  {
+    "name": "MedicationActive",
+    "label": "Medication, Active",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "LaboratoryTestOrder",
+    "label": "LaboratoryTestOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "DiagnosticStudyOrder",
+    "label": "DiagnosticStudyOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "SubstanceOrder",
+    "label": "SubstanceOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "supply",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "refills",
+        "type": "Integer"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "PatientCharacteristicPayer",
+    "label": "Patient Characteristic Payer",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      }
+    ]
+  },
+  {
+    "name": "PatientCharacteristicExpired",
+    "label": "Patient Characteristic Expired",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "expiredDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "cause",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "AssessmentOrder",
+    "label": "AssessmentOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "AssessmentRecommended",
+    "label": "AssessmentRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "ImmunizationAdministered",
+    "label": "ImmunizationAdministered",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "SubstanceAdministered",
+    "label": "SubstanceAdministered",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "EncounterOrder",
+    "label": "EncounterOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "facilityLocation",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      },
+      {
+        "name": "priority",
+        "type": "Code"
+      }
+    ]
+  },
+  {
+    "name": "EncounterRecommended",
+    "label": "EncounterRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "facilityLocation",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "ProcedurePerformed",
+    "label": "ProcedurePerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "method",
+        "type": "Code"
+      },
+      {
+        "name": "result",
+        "type": ""
+      },
+      {
+        "name": "status",
+        "type": "Code"
+      },
+      {
+        "name": "anatomicalLocationSite",
+        "type": "Code"
+      },
+      {
+        "name": "rank",
+        "type": "Integer"
+      },
+      {
+        "name": "incisionDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "components",
+        "type": "list<Component>"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "AllergyIntolerance",
+    "label": "Allergy/Intolerance",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "prevalencePeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "type",
+        "type": "Code"
+      },
+      {
+        "name": "severity",
+        "type": "Code"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "PhysicalExamRecommended",
+    "label": "PhysicalExamRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "anatomicalLocationSite",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "PatientCharacteristicBirthdate",
+    "label": "Patient Characteristic Birthdate",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "birthDatetime",
+        "type": "DateTime"
+      }
+    ]
+  },
+  {
+    "name": "AdverseEvent",
+    "label": "Adverse Event",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "severity",
+        "type": "Code"
+      },
+      {
+        "name": "facilityLocation",
+        "type": "Code"
+      },
+      {
+        "name": "type",
+        "type": "Code"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "QDMBaseType",
+    "label": "QDMBaseType",
+    "baseType": "Any",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "id",
+        "type": "String"
+      },
+      {
+        "name": "code",
+        "type": "Code"
+      },
+      {
+        "name": "patientId",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "name": "DeviceRecommended",
+    "label": "DeviceRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "MedicationDischarge",
+    "label": "MedicationDischarge",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "refills",
+        "type": "Integer"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "supply",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "daysSupplied",
+        "type": "Integer"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "prescriber",
+        "type": ""
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "InterventionPerformed",
+    "label": "InterventionPerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "result",
+        "type": ""
+      },
+      {
+        "name": "status",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "LaboratoryTestRecommended",
+    "label": "LaboratoryTestRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "MedicationDispensed",
+    "label": "MedicationDispensed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "refills",
+        "type": "Integer"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "supply",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "daysSupplied",
+        "type": "Integer"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "prescriber",
+        "type": ""
+      },
+      {
+        "name": "dispenser",
+        "type": ""
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "DiagnosticStudyRecommended",
+    "label": "DiagnosticStudyRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "ImmunizationOrder",
+    "label": "ImmunizationOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "activeDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "supply",
+        "type": "Quantity"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "PatientCareExperience",
+    "label": "Patient Care Experience",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "ProviderCareExperience",
+    "label": "Provider Care Experience",
+    "baseType": "QDMBaseType",
+    "retrievable": true,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "recorder",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "ProcedureOrder",
+    "label": "ProcedureOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "anatomicalLocationSite",
+        "type": "Code"
+      },
+      {
+        "name": "rank",
+        "type": "Integer"
+      },
+      {
+        "name": "priority",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "MedicationOrder",
+    "label": "MedicationOrder",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "refills",
+        "type": "Integer"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "supply",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "daysSupplied",
+        "type": "Integer"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "setting",
+        "type": "Code"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "prescriber",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "SubstanceRecommended",
+    "label": "SubstanceRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "dosage",
+        "type": "Quantity"
+      },
+      {
+        "name": "frequency",
+        "type": "Code"
+      },
+      {
+        "name": "refills",
+        "type": "Integer"
+      },
+      {
+        "name": "route",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "InterventionRecommended",
+    "label": "InterventionRecommended",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "requester",
+        "type": ""
+      }
+    ]
+  },
+  {
+    "name": "PhysicalExamPerformed",
+    "label": "PhysicalExamPerformed",
+    "baseType": "QDMBaseType",
+    "retrievable": false,
+    "attributes": [
+      {
+        "name": "authorDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantDatetime",
+        "type": "DateTime"
+      },
+      {
+        "name": "relevantPeriod",
+        "type": "interval<DateTime>"
+      },
+      {
+        "name": "reason",
+        "type": "Code"
+      },
+      {
+        "name": "method",
+        "type": "Code"
+      },
+      {
+        "name": "result",
+        "type": ""
+      },
+      {
+        "name": "anatomicalLocationSite",
+        "type": "Code"
+      },
+      {
+        "name": "negationRationale",
+        "type": "Code"
+      },
+      {
+        "name": "components",
+        "type": "list<Component>"
+      },
+      {
+        "name": "performer",
+        "type": ""
+      },
+      {
+        "name": "relatedTo",
+        "type": "list<String>"
+      }
+    ]
+  },
+  {
+    "name": "PositiveAssessmentOrder",
+    "label": "Assessment, Order",
+    "baseType": "AssessmentOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeAssessmentOrder",
+    "label": "Assessment, Not Ordered",
+    "baseType": "AssessmentOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveAssessmentRecommended",
+    "label": "Assessment, Recommended",
+    "baseType": "AssessmentRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeAssessmentRecommended",
+    "label": "Assessment, Not Recommended",
+    "baseType": "AssessmentRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveAssessmentPerformed",
+    "label": "Assessment, Performed",
+    "baseType": "AssessmentPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeAssessmentPerformed",
+    "label": "Assessment, Not Performed",
+    "baseType": "AssessmentPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveCommunicationPerformed",
+    "label": "Communication, Performed",
+    "baseType": "CommunicationPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeCommunicationPerformed",
+    "label": "Communication, Not Performed",
+    "baseType": "CommunicationPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveDeviceOrder",
+    "label": "Device, Order",
+    "baseType": "DeviceOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeDeviceOrder",
+    "label": "Device, Not Ordered",
+    "baseType": "DeviceOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveDeviceRecommended",
+    "label": "Device, Recommended",
+    "baseType": "DeviceRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeDeviceRecommended",
+    "label": "Device, Not Recommended",
+    "baseType": "DeviceRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveDiagnosticStudyOrder",
+    "label": "Diagnostic Study, Order",
+    "baseType": "DiagnosticStudyOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeDiagnosticStudyOrder",
+    "label": "Diagnostic Study, Not Ordered",
+    "baseType": "DiagnosticStudyOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveDiagnosticStudyRecommended",
+    "label": "Diagnostic Study, Recommended",
+    "baseType": "DiagnosticStudyRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeDiagnosticStudyRecommended",
+    "label": "Diagnostic Study, Not Recommended",
+    "baseType": "DiagnosticStudyRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveDiagnosticStudyPerformed",
+    "label": "Diagnostic Study, Performed",
+    "baseType": "DiagnosticStudyPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeDiagnosticStudyPerformed",
+    "label": "Diagnostic Study, Not Performed",
+    "baseType": "DiagnosticStudyPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveEncounterOrder",
+    "label": "Encounter, Order",
+    "baseType": "EncounterOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeEncounterOrder",
+    "label": "Encounter, Not Ordered",
+    "baseType": "EncounterOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveEncounterRecommended",
+    "label": "Encounter, Recommended",
+    "baseType": "EncounterRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeEncounterRecommended",
+    "label": "Encounter, Not Recommended",
+    "baseType": "EncounterRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveEncounterPerformed",
+    "label": "Encounter, Performed",
+    "baseType": "EncounterPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveInterventionOrder",
+    "label": "Intervention, Order",
+    "baseType": "InterventionOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeInterventionOrder",
+    "label": "Intervention, Not Ordered",
+    "baseType": "InterventionOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveInterventionRecommended",
+    "label": "Intervention, Recommended",
+    "baseType": "InterventionRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeInterventionRecommended",
+    "label": "Intervention, Not Recommended",
+    "baseType": "InterventionRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveInterventionPerformed",
+    "label": "Intervention, Performed",
+    "baseType": "InterventionPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeInterventionPerformed",
+    "label": "Intervention, Not Performed",
+    "baseType": "InterventionPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveImmunizationOrder",
+    "label": "Immunization, Order",
+    "baseType": "ImmunizationOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeImmunizationOrder",
+    "label": "Immunization, Not Ordered",
+    "baseType": "ImmunizationOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveImmunizationAdministered",
+    "label": "Immunization, Administered",
+    "baseType": "ImmunizationAdministered",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeImmunizationAdministered",
+    "label": "Immunization, Not Administered",
+    "baseType": "ImmunizationAdministered",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveMedicationAdministered",
+    "label": "Medication, Administered",
+    "baseType": "MedicationAdministered",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeMedicationAdministered",
+    "label": "Medication, Not Administered",
+    "baseType": "MedicationAdministered",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveMedicationDispensed",
+    "label": "Medication, Dispensed",
+    "baseType": "MedicationDispensed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeMedicationDispensed",
+    "label": "Medication, Not Dispensed",
+    "baseType": "MedicationDispensed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveMedicationDischarge",
+    "label": "Medication, Discharge",
+    "baseType": "MedicationDischarge",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeMedicationDischarge",
+    "label": "Medication, Not Discharged",
+    "baseType": "MedicationDischarge",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveMedicationOrder",
+    "label": "Medication, Order",
+    "baseType": "MedicationOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeMedicationOrder",
+    "label": "Medication, Not Ordered",
+    "baseType": "MedicationOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositivePhysicalExamOrder",
+    "label": "Physical Exam, Order",
+    "baseType": "PhysicalExamOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativePhysicalExamOrder",
+    "label": "Physical Exam, Not Ordered",
+    "baseType": "PhysicalExamOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositivePhysicalExamRecommended",
+    "label": "Physical Exam, Recommended",
+    "baseType": "PhysicalExamRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativePhysicalExamRecommended",
+    "label": "Physical Exam, Not Recommended",
+    "baseType": "PhysicalExamRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositivePhysicalExamPerformed",
+    "label": "Physical Exam, Performed",
+    "baseType": "PhysicalExamPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativePhysicalExamPerformed",
+    "label": "Physical Exam, Not Performed",
+    "baseType": "PhysicalExamPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveProcedureOrder",
+    "label": "Procedure, Order",
+    "baseType": "ProcedureOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeProcedureOrder",
+    "label": "Procedure, Not Ordered",
+    "baseType": "ProcedureOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveProcedureRecommended",
+    "label": "Procedure, Recommended",
+    "baseType": "ProcedureRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeProcedureRecommended",
+    "label": "Procedure, Not Recommended",
+    "baseType": "ProcedureRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveProcedurePerformed",
+    "label": "Procedure, Performed",
+    "baseType": "ProcedurePerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeProcedurePerformed",
+    "label": "Procedure, Not Performed",
+    "baseType": "ProcedurePerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveSubstanceOrder",
+    "label": "Substance, Order",
+    "baseType": "SubstanceOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeSubstanceOrder",
+    "label": "Substance, Not Ordered",
+    "baseType": "SubstanceOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveSubstanceRecommended",
+    "label": "Substance, Recommended",
+    "baseType": "SubstanceRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeSubstanceRecommended",
+    "label": "Substance, Not Recommended",
+    "baseType": "SubstanceRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveSubstanceAdministered",
+    "label": "Substance, Administered",
+    "baseType": "SubstanceAdministered",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeSubstanceAdministered",
+    "label": "Substance, Not Administered",
+    "baseType": "SubstanceAdministered",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveLaboratoryTestOrder",
+    "label": "Laboratory Test, Order",
+    "baseType": "LaboratoryTestOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeLaboratoryTestOrder",
+    "label": "Laboratory Test, Not Ordered",
+    "baseType": "LaboratoryTestOrder",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveLaboratoryTestRecommended",
+    "label": "Laboratory Test, Recommended",
+    "baseType": "LaboratoryTestRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeLaboratoryTestRecommended",
+    "label": "Laboratory Test, Not Recommended",
+    "baseType": "LaboratoryTestRecommended",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "PositiveLaboratoryTestPerformed",
+    "label": "Laboratory Test, Performed",
+    "baseType": "LaboratoryTestPerformed",
+    "retrievable": true,
+    "attributes": []
+  },
+  {
+    "name": "NegativeLaboratoryTestPerformed",
+    "label": "Laboratory Test, Not Performed",
+    "baseType": "LaboratoryTestPerformed",
+    "retrievable": true,
+    "attributes": []
+  }
+]
