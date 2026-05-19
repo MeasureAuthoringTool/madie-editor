@@ -90,6 +90,10 @@ const MODEL_PROVIDER: Record<string, string> = {
   "gemini-3.1-pro-preview": "GOOGLE",
   "gemini-2.5-flash": "GOOGLE",
   "gemini-2.5-pro": "GOOGLE",
+  "claude-opus-4.7": "ANTHROPIC",
+  "claude-opus-4.6": "ANTHROPIC",
+  "claude-sonnet-4.6": "ANTHROPIC",
+  "claude-haiku-4.5": "ANTHROPIC",
 };
 
 const getProvider = (model: string): string => MODEL_PROVIDER[model] ?? model;
@@ -857,6 +861,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 "gemini-3.1-pro-preview",
                 "gemini-2.5-flash",
                 "gemini-2.5-pro",
+              ].map((m) => (
+                <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
+                  {m}
+                </MenuItem>
+              ))}
+              <Divider sx={{ margin: "4px 0" }} />
+              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "800" }}>
+                ANTHROPIC
+              </ListSubheader>
+              {[
+                "claude-opus-4.7",
+                "claude-opus-4.6",
+                "claude-sonnet-4.6",
+                "claude-haiku-4.5",
               ].map((m) => (
                 <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
                   {m}
