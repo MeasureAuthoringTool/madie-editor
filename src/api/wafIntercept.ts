@@ -9,10 +9,10 @@ const wafIntercept = (error) => {
       .includes("text/html") &&
     (JSON.stringify(error.response.data)
       .toLocaleLowerCase()
-      .includes("soc@hcqis.org") ||
+      .includes("soc@hcqis.org") || // gitleaks:allow
       JSON.stringify(error.response.data)
         .toLowerCase()
-        .includes("qnet_soc@cms.hhs.gov"))
+        .includes("qnet_soc@cms.hhs.gov")) // gitleaks:allow
   ) {
     // eslint-disable-next-line no-console
     console.log("WAF Interceptor Triggered");

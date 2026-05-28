@@ -14,14 +14,12 @@ module.exports = (env, argv) => ({
     clean: true,
   },
 
-
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
 
     fallback: {
       fs: false,
     },
-
   },
 
   module: {
@@ -29,7 +27,7 @@ module.exports = (env, argv) => ({
       {
         test: /\.m?js/,
         // for Ace dynamic require
-        type: "javascript/auto", 
+        type: "javascript/auto",
       },
       {
         test: /\.tsx?$/,

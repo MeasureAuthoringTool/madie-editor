@@ -40,4 +40,3 @@ export const isUsingEmpty: (editorVal: string) => boolean =
   isUsingStatementEmpty;
 
 export type { EditorPropsType as MadieEditorPropsType };
-
