@@ -1,7 +1,16 @@
 import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
-import { getOidFromString } from "@madie/madie-util";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
+
+export const getOidFromString = (
+  oidString: string,
+  dataModel: string
+): string => {
+  if (dataModel === "QDM") {
+    return oidString?.split("urn:oid:")[1];
+  }
+  return oidString?.split("ValueSet/")[1];
+};
 
 const GetValueSetErrors = async (
   valuesetsArray: CqlValueSet[],

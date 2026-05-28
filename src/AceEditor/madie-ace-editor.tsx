@@ -7,9 +7,14 @@ import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/ext-searchbox";
+import ace from "ace-builds/src-noconflict/ace";
 
-const ace = require("ace-builds/src-noconflict/ace");
-ace.config.set("basePath", require("ace-builds").config.basePath);
+// IMPORTANT: set basePath manually
+ace.config.set(
+  "basePath",
+  "https://cdn.jsdelivr.net/npm/ace-builds@latest/src-min-noconflict/"
+);
+
 import CqlMode from "./cql-mode";
 import { Ace, Range } from "ace-builds";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";

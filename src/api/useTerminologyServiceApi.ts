@@ -1,7 +1,7 @@
 import axios from "./axios-instance";
 import { AxiosResponse } from "axios";
 import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
-import { useOktaTokens } from "@madie/madie-util";
+import useOktaTokens from "./useOktaTokens";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 
 // customCqlCode contains validation result from VSAC

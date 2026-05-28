@@ -1,93 +1,75 @@
-const { mergeWithRules } = require("webpack-merge");
-const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const path = require("path");
 
-const orgName = "madie";
+module.exports = (env, argv) => ({
+  mode: argv.mode || "production",
 
-const merge = mergeWithRules({
-  module: {
-    rules: {
-      test: "match",
-      use: "replace",
+  entry: path.resolve(__dirname, "src/index.ts"),
+
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "index.es.js",
+    library: {
+      type: "commonjs2",
     },
+    clean: true,
   },
-  plugins: "append",
-});
 
-module.exports = (webpackConfigEnv, argv) => {
-  const defaultConfig = singleSpaDefaults({
-    orgName,
-    projectName: "madie-editor",
-    webpackConfigEnv,
-    argv,
-    disableHtmlGeneration: true,
-    orgPackagesAsExternal: false,
-  });
 
-  // This must be updated for any single-spa applications or utilities,
-  // or any other package to be loaded externally
-  const externalsConfig = {
-    externals: [
-      "@madie/madie-util",
-      // Shared singleton libraries — loaded once via import map
-      "@emotion/react",
-      "@emotion/styled",
-      "styled-components",
-    ],
-  };
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
 
-  const newCssRule = {
-    module: {
-      rules: [
-        { test: /\.m?js/, type: "javascript/auto" },
-        {
-          test: /\.css$/i,
-          include: [/node_modules/, /src/],
-          use: [
-            "style-loader",
-            "css-loader", // uses modules: true, which I think we want. Parent does not
-            "postcss-loader",
-          ],
-        },
-        {
-          test: /\.scss$/,
-          resolve: {
-            extensions: [".scss", ".sass"],
-          },
-          use: [
-            {
-              loader: "style-loader",
-            },
-            {
-              loader: "css-loader",
-              options: { sourceMap: true, importLoaders: 2 },
-            },
-            {
-              loader: "postcss-loader",
-              options: {
-                sourceMap: true,
-              },
-            },
-            {
-              loader: "sass-loader",
-            },
-          ],
-          exclude: /node_modules/,
-        },
-        { test: /\.json$/, type: "json" },
-      ],
+    fallback: {
+      fs: false,
     },
-  };
 
-  // node polyfills
-  const polyfillConfig = {
-    resolve: {
-      fallback: {
-        fs: false,
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.m?js/,
+        // for Ace dynamic require
+        type: "javascript/auto", 
       },
-    },
-    plugins: [new NodePolyfillPlugin()],
-  };
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: "babel-loader",
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader", "postcss-loader"],
+      },
+      {
+        test: /\.scss$/,
+        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
+      },
+    ],
+    exprContextCritical: false,
+  },
 
-  return merge(defaultConfig, polyfillConfig, newCssRule, externalsConfig);
-};
+  externals: {
+    react: "react",
+    "react-dom": "react-dom",
+    "react-ace": "react-ace",
+    "ace-builds": "ace-builds",
+
+    "@emotion/react": "@emotion/react",
+    "@emotion/styled": "@emotion/styled",
+    "styled-components": "styled-components",
+
+    "@mui/material": "@mui/material",
+    "@mui/icons-material": "@mui/icons-material",
+    "@mui/lab": "@mui/lab",
+    "@mui/styles": "@mui/styles",
+
+    "@madie/madie-design-system": "@madie/madie-design-system",
+  },
+
+  // supresss
+  // ignoreWarnings: [
+  //   /Critical dependency: the request of a dependency is an expression/,
+  // ],
+
+  devtool: "source-map",
+});
