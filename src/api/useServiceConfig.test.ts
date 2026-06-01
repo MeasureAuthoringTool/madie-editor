@@ -27,7 +27,7 @@ describe("Test Service Config", () => {
     };
     mockedAxios.get.mockResolvedValue(resp);
     try {
-      await useServiceConfig();
+      useServiceConfig();
     } catch (err) {
       expect(err.message).toBe("Invalid QDM ELM Translation Service Config");
     }
@@ -45,7 +45,7 @@ describe("Test Service Config", () => {
     };
     mockedAxios.get.mockResolvedValue(resp);
     try {
-      await useServiceConfig();
+      useServiceConfig();
     } catch (err) {
       expect(err.message).toBe("Invalid FHIR ELM Translation Service Config");
     }
@@ -63,7 +63,7 @@ describe("Test Service Config", () => {
     };
     mockedAxios.get.mockResolvedValue(resp);
     try {
-      await useServiceConfig();
+      useServiceConfig();
     } catch (err) {
       expect(err.message).toBe("Invalid Terminology Service Config");
     }

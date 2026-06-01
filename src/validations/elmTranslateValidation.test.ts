@@ -63,7 +63,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("ELM Translation validation", () => {
   it("should retrieve the service url", async () => {
-    const actual = await useServiceConfig();
+    const actual = useServiceConfig();
     expect(actual).toBe(mockServiceConfig);
   });
 

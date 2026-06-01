@@ -13,6 +13,7 @@ import {
   ValidationResult,
   useGetAllErrors,
 } from "../src/validations/editorValidation";
+import { TerminologyServiceApi } from "./api/useTerminologyServiceApi";
 
 export const MadieTerminologyEditor: FC<EditorPropsType> =
   CqlEditorWithTerminology;
@@ -22,7 +23,8 @@ export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 export type { ElmTranslationError };
 export const validateContent: (
   content: string,
-  checkContext: boolean
+  checkContext: boolean,
+  terminologyServiceApi: TerminologyServiceApi
 ) => Promise<ValidationResult> = useGetAllErrors;
 
 export const synchingEditorCqlContent: (

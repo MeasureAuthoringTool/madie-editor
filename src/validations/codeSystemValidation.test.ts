@@ -151,7 +151,7 @@ describe("Code System validation", () => {
     jest.clearAllMocks();
   });
   it("should retrieve the service url", async () => {
-    const actual = await useServiceConfig();
+    const actual = useServiceConfig();
     expect(actual).toBe(mockServiceConfig);
   });
 

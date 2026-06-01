@@ -1,4 +1,6 @@
-import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
+import useTerminologyServiceApi, {
+  TerminologyServiceApi,
+} from "../api/useTerminologyServiceApi";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
 
@@ -15,9 +17,9 @@ export const getOidFromString = (
 const GetValueSetErrors = async (
   valuesetsArray: CqlValueSet[],
   loggedInUMLS: boolean,
-  model: string
+  model: string,
+  terminologyServiceApi: TerminologyServiceApi
 ): Promise<ElmTranslationError[]> => {
-  const terminologyServiceApi = await useTerminologyServiceApi();
   const valuesetsErrorArray: ElmTranslationError[] = [];
   if (valuesetsArray) {
     await Promise.allSettled(

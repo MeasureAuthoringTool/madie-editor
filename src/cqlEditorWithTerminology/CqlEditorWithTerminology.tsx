@@ -7,8 +7,10 @@ import CqlBuilderPanel from "../CqlBuilderPanel/CqlBuilderPanel";
 import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
 import { IconButton } from "@mui/material";
 import Search from "@mui/icons-material/Search";
+import ServiceContext from "../api/ServiceContext";
 
 const CqlEditorWithTerminology = ({
+  serviceConfig,
   value,
   onChange,
   handleCodeDelete,
@@ -53,96 +55,98 @@ const CqlEditorWithTerminology = ({
     window.dispatchEvent(event);
   };
   return (
-    <div className="allotment-wrapper" id="cql-editor-with-terminology">
-      <Allotment defaultSizes={[175, 125]} vertical={false}>
-        <Allotment.Pane>
-          <div id="header-editor-row">
-            <IconButton
-              data-testid="editor-search-button"
-              aria-label="search button"
-              style={{
-                color: "#0073c8",
-              }}
-              onClick={toggleSearch}
-            >
-              <Search />
-            </IconButton>
-            {expanded && (
+    <ServiceContext.Provider value={serviceConfig}>
+      <div className="allotment-wrapper" id="cql-editor-with-terminology">
+        <Allotment defaultSizes={[175, 125]} vertical={false}>
+          <Allotment.Pane>
+            <div id="header-editor-row">
               <IconButton
-                data-testid="expanded-button"
-                aria-label="editor-expanded"
+                data-testid="editor-search-button"
+                aria-label="search button"
                 style={{
                   color: "#0073c8",
                 }}
-                onClick={() => {
-                  setExpanded(false);
-                }}
+                onClick={toggleSearch}
               >
-                <ExpansionIcon
-                  style={{
-                    transform: "rotate(180deg)",
-                  }}
-                />
+                <Search />
               </IconButton>
-            )}
-          </div>
-          <div className="left-panel">
-            <div className="panel-content">
-              {/* needs to be difference between parent and sibling */}
-              <MadieAceEditor
-                value={value}
-                onChange={onChange}
-                height={height}
-                parseDebounceTime={parseDebounceTime}
-                inboundAnnotations={inboundAnnotations}
-                inboundErrorMarkers={inboundErrorMarkers}
-                readOnly={readOnly}
-                validationsEnabled={validationsEnabled}
-                setOutboundAnnotations={setOutboundAnnotations}
-              />
+              {expanded && (
+                <IconButton
+                  data-testid="expanded-button"
+                  aria-label="editor-expanded"
+                  style={{
+                    color: "#0073c8",
+                  }}
+                  onClick={() => {
+                    setExpanded(false);
+                  }}
+                >
+                  <ExpansionIcon
+                    style={{
+                      transform: "rotate(180deg)",
+                    }}
+                  />
+                </IconButton>
+              )}
             </div>
-          </div>
-        </Allotment.Pane>
-        {!expanded && (
-          <Allotment.Pane>
-            <CqlBuilderPanel
-              makeExpanded={() => {
-                setExpanded(true);
-                const url = new URL(window.location.href);
-                url.searchParams.delete("tab");
-                window.history.replaceState({}, "", url.toString());
-              }}
-              canEdit={!readOnly}
-              measureStoreCql={measureStoreCql}
-              cqlMetaData={cqlMetaData}
-              measureModel={measureModel}
-              handleCodeDelete={handleCodeDelete}
-              setEditorVal={setEditorVal}
-              setIsCQLUnchanged={setIsCQLUnchanged}
-              isCQLUnchanged={isCQLUnchanged}
-              editorVal={value}
-              handleApplyCode={handleApplyCode}
-              handleApplyParameter={handleApplyParameter}
-              handleParameterEdit={handleParameterEdit}
-              handleParameterDelete={handleParameterDelete}
-              handleApplyValueSet={handleApplyValueSet}
-              handleApplyDefinition={handleApplyDefinition}
-              handleDefinitionEdit={handleDefinitionEdit}
-              handleDefinitionDelete={handleDefinitionDelete}
-              handleApplyLibrary={handleApplyLibrary}
-              handleEditLibrary={handleEditLibrary}
-              handleDeleteLibrary={handleDeleteLibrary}
-              handleApplyFunction={handleApplyFunction}
-              handleFunctionDelete={handleFunctionDelete}
-              handleFunctionEdit={handleFunctionEdit}
-              resetCql={resetCql}
-              getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
-              hasCqlError={hasCqlError}
-            />
+            <div className="left-panel">
+              <div className="panel-content">
+                {/* needs to be difference between parent and sibling */}
+                <MadieAceEditor
+                  value={value}
+                  onChange={onChange}
+                  height={height}
+                  parseDebounceTime={parseDebounceTime}
+                  inboundAnnotations={inboundAnnotations}
+                  inboundErrorMarkers={inboundErrorMarkers}
+                  readOnly={readOnly}
+                  validationsEnabled={validationsEnabled}
+                  setOutboundAnnotations={setOutboundAnnotations}
+                />
+              </div>
+            </div>
           </Allotment.Pane>
-        )}
-      </Allotment>
-    </div>
+          {!expanded && (
+            <Allotment.Pane>
+              <CqlBuilderPanel
+                makeExpanded={() => {
+                  setExpanded(true);
+                  const url = new URL(window.location.href);
+                  url.searchParams.delete("tab");
+                  window.history.replaceState({}, "", url.toString());
+                }}
+                canEdit={!readOnly}
+                measureStoreCql={measureStoreCql}
+                cqlMetaData={cqlMetaData}
+                measureModel={measureModel}
+                handleCodeDelete={handleCodeDelete}
+                setEditorVal={setEditorVal}
+                setIsCQLUnchanged={setIsCQLUnchanged}
+                isCQLUnchanged={isCQLUnchanged}
+                editorVal={value}
+                handleApplyCode={handleApplyCode}
+                handleApplyParameter={handleApplyParameter}
+                handleParameterEdit={handleParameterEdit}
+                handleParameterDelete={handleParameterDelete}
+                handleApplyValueSet={handleApplyValueSet}
+                handleApplyDefinition={handleApplyDefinition}
+                handleDefinitionEdit={handleDefinitionEdit}
+                handleDefinitionDelete={handleDefinitionDelete}
+                handleApplyLibrary={handleApplyLibrary}
+                handleEditLibrary={handleEditLibrary}
+                handleDeleteLibrary={handleDeleteLibrary}
+                handleApplyFunction={handleApplyFunction}
+                handleFunctionDelete={handleFunctionDelete}
+                handleFunctionEdit={handleFunctionEdit}
+                resetCql={resetCql}
+                getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
+                hasCqlError={hasCqlError}
+              />
+            </Allotment.Pane>
+          )}
+        </Allotment>
+      </div>
+    </ServiceContext.Provider>
   );
 };
 

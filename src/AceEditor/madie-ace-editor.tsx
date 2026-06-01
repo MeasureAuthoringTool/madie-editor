@@ -36,6 +36,7 @@ import {
 } from "./ace-utils";
 
 export interface EditorPropsType {
+  serviceConfig: any;
   value: string;
   onChange?: (value: string) => void;
   handleApplyCode?: (code: string) => void;

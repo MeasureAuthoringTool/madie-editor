@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import CodeSection from "./CodeSection";
 import ResultsSection from "./ResultsSection";
 import useTerminologyServiceApi, {
@@ -33,11 +33,11 @@ export default function CodeSubSection({
     setToastOpen(false);
   };
 
+  const terminologyService = useRef(useTerminologyServiceApi());
   const handleFormSubmit = async (values) => {
     // eslint-disable-next-line
-    const terminologyService = await useTerminologyServiceApi();
     if (values && values.code && values.title && values.version) {
-      terminologyService
+      terminologyService.current
         .getCodeDetails(values.code, values.title, values.version)
         .then((response) => {
           setCode(response.data);

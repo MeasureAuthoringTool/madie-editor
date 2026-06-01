@@ -99,7 +99,6 @@ export default function CqlBuilderPanel({
     useState<CqlBuilderLookup>();
   const [errors, setErrors] = useState<string>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
   const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
   const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
 
@@ -113,61 +112,37 @@ export default function CqlBuilderPanel({
       } else {
         if (measureModel?.includes("QDM")) {
           qdmElmTranslationServiceApi
-            .then((qdmElmTranslationServiceApi) => {
-              qdmElmTranslationServiceApi
-                .getCqlBuilderLookups(measureStoreCql)
-                .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                  setErrors(null);
-                  setCqlBuilderLookupsTypes(axiosResponse?.data);
-                })
-                .catch((error) => {
-                  setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-
-                  setErrors(
-                    "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
-                  );
-                  console.error(error);
-                })
-                .finally(() => {
-                  setLoading(false);
-                });
+            .getCqlBuilderLookups(measureStoreCql)
+            .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+              setErrors(null);
+              setCqlBuilderLookupsTypes(axiosResponse?.data);
             })
             .catch((error) => {
               setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
 
               setErrors(
-                "Unable to retrieve Service Config, Please try again or contact Helpdesk"
+                "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
               );
               console.error(error);
+            })
+            .finally(() => {
               setLoading(false);
             });
         } else {
           fhirElmTranslationServiceApi
-            .then((fhirElmTranslationServiceApi) => {
-              fhirElmTranslationServiceApi
-                .getCqlBuilderLookups(measureStoreCql)
-                .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
-                  setCqlBuilderLookupsTypes(axiosResponse?.data);
-                })
-                .catch((error) => {
-                  setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
-
-                  setErrors(
-                    "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
-                  );
-                  console.error(error);
-                })
-                .finally(() => {
-                  setLoading(false);
-                });
+            .getCqlBuilderLookups(measureStoreCql)
+            .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+              setCqlBuilderLookupsTypes(axiosResponse?.data);
             })
             .catch((error) => {
               setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
 
               setErrors(
-                "Unable to retrieve Service Config, Please try again or contact Helpdesk"
+                "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
               );
               console.error(error);
+            })
+            .finally(() => {
               setLoading(false);
             });
         }

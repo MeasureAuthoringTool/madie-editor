@@ -1,4 +1,7 @@
-import { CustomCqlCode } from "../api/useTerminologyServiceApi";
+import {
+  CustomCqlCode,
+  TerminologyServiceApi,
+} from "../api/useTerminologyServiceApi";
 import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import ValidateCustomCqlCodes, {
@@ -23,7 +26,8 @@ export interface ValidationResult {
 
 export const useGetAllErrors = async (
   cql: string,
-  checkContext: boolean
+  checkContext: boolean,
+  terminologyServiceApi: TerminologyServiceApi
 ): Promise<ValidationResult> => {
   if (cql && cql.trim().length > 0) {
     const cqlResult: CqlResult = new CqlAntlr(cql).parse();
@@ -34,14 +38,16 @@ export const useGetAllErrors = async (
         ValidateCustomCqlCodes(
           customCqlCodes,
           isLoggedInUMLS.valueOf(),
-          cqlResult?.usings[0]?.name
+          cqlResult?.usings[0]?.name,
+          terminologyServiceApi
         ),
 
         TranslateCql(cql, cqlResult?.usings[0]?.name, checkContext),
         GetValueSetErrors(
           cqlResult.valueSets,
           isLoggedInUMLS.valueOf(),
-          cqlResult?.usings[0]?.name
+          cqlResult?.usings[0]?.name,
+          terminologyServiceApi
         ),
       ]);
     const codeSystemCqlErrors =
