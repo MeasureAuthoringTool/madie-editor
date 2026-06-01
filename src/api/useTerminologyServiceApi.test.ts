@@ -24,6 +24,14 @@ const mockCode: Code = {
   svsVersion: "2.40",
 };
 
+jest.mock("./useServiceConfig", () => ({
+  useServiceConfig: () => ({
+    terminologyService: {
+      baseUrl: "http://mock-base-url",
+    },
+  }),
+}));
+
 describe("TerminologyServiceApi test", () => {
   it("should return an instance of TerminologyServiceApi", async () => {
     mockedAxios.get.mockImplementation((url) => {
@@ -31,36 +39,11 @@ describe("TerminologyServiceApi test", () => {
         return Promise.resolve({ data: mockServiceConfig });
       }
     });
-    const service: TerminologyServiceApi = await useTerminologyServiceApi();
+    const service: TerminologyServiceApi = useTerminologyServiceApi();
     expect(service).not.toBeNull();
   });
 
   describe("Code Search tests", () => {
-    it("should return a code object for given code and code system", async () => {
-      mockedAxios.get.mockImplementation((url) => {
-        if (url === "/env-config/serviceConfig.json") {
-          return Promise.resolve({ data: mockServiceConfig });
-        }
-        if (
-          url ===
-          `${mockServiceConfig.terminologyService.baseUrl}/terminology/code`
-        ) {
-          return Promise.resolve({ data: mockCode });
-        }
-      });
-      const service: TerminologyServiceApi = await useTerminologyServiceApi();
-      service
-        .getCodeDetails(mockCode.name, mockCode.codeSystem, mockCode.svsVersion)
-        .then((response) => {
-          expect(response.data.name).toEqual(mockCode.name);
-          expect(response.data.display).toEqual(mockCode.display);
-          expect(response.data.codeSystem).toEqual(mockCode.codeSystem);
-          expect(response.data.svsVersion).toEqual(mockCode.svsVersion);
-        });
-    });
-  });
-
-  describe("Saved Codes", () => {
     it("should return a code object for given code and code system", async () => {
       const mockCodeList = [
         {
@@ -93,25 +76,38 @@ describe("TerminologyServiceApi test", () => {
           status: "ACTIVE",
         },
       ];
-      mockedAxios.get.mockImplementation((url) => {
-        if (url === "/env-config/serviceConfig.json") {
-          return Promise.resolve({ data: mockServiceConfig });
-        }
-      });
-      mockedAxios.post.mockImplementation((url) => {
-        if (
-          url ===
-          `${mockServiceConfig.terminologyService.baseUrl}/terminology/codes`
-        ) {
-          return Promise.resolve({ data: mockeCodeDetailsList });
-        }
-      });
 
-      const service: TerminologyServiceApi = await useTerminologyServiceApi();
-      service.getCodesAndCodeSystems(mockCodeList).then((response) => {
-        expect(response.data).toEqual(mockeCodeDetailsList);
-        expect(response.data).toHaveLength(2);
-      });
+      mockedAxios.post.mockResolvedValue({
+        data: mockeCodeDetailsList,
+      } as any);
+
+      const service: TerminologyServiceApi = useTerminologyServiceApi();
+
+      const response = await service.getCodesAndCodeSystems(mockCodeList);
+
+      expect(response.data).toEqual(mockeCodeDetailsList);
+      expect(response.data).toHaveLength(2);
+    });
+  });
+
+  describe("Saved Codes", () => {
+    it("should return a code object for given code and code system", async () => {
+      mockedAxios.get.mockResolvedValue({
+        data: mockCode,
+      } as any);
+
+      const service: TerminologyServiceApi = useTerminologyServiceApi();
+
+      const response = await service.getCodeDetails(
+        mockCode.name,
+        mockCode.codeSystem,
+        mockCode.svsVersion
+      );
+
+      expect(response.data.name).toEqual(mockCode.name);
+      expect(response.data.display).toEqual(mockCode.display);
+      expect(response.data.codeSystem).toEqual(mockCode.codeSystem);
+      expect(response.data.svsVersion).toEqual(mockCode.svsVersion);
     });
   });
 });

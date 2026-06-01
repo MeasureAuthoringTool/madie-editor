@@ -2,11 +2,12 @@ import * as React from "react";
 import CodeSubSection from "./CodeSubSection";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
-import { ServiceConfig } from "../../../../api/useServiceConfig";
+import { ServiceConfig } from "../../../../api/ServiceContext";
 import axios from "../../../../api/axios-instance";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/dom";
+import { ApiContextProvider } from "../../../../api/ServiceContext";
 
 jest.mock("../../useCodeSystems");
 jest.mock("../../../../api/axios-instance");
@@ -50,7 +51,9 @@ const componentProps = {
 describe("CodeSub Section component", () => {
   it("should display Codes(s) and Results sections when navigated to code tab", async () => {
     const { findByTestId } = render(
-      <CodeSubSection {...componentProps} canEdit={false} />
+      <ApiContextProvider value={mockConfig}>
+        <CodeSubSection {...componentProps} canEdit={false} />
+      </ApiContextProvider>
     );
 
     const codeSubTabHeading = await findByTestId(
@@ -65,7 +68,11 @@ describe("CodeSub Section component", () => {
   });
 
   it("should display code details for selected code, system, version filters", async () => {
-    const { getByTestId } = render(<CodeSubSection {...componentProps} />);
+    const { getByTestId } = render(
+      <ApiContextProvider value={mockConfig}>
+        <CodeSubSection {...componentProps} />
+      </ApiContextProvider>
+    );
     // Selecting a Code System
     const codeSystemSelect = screen.getByTestId(
       "code-system-selector-dropdown"
@@ -98,7 +105,11 @@ describe("CodeSub Section component", () => {
         return Promise.resolve({ data: mockCode });
       }
     });
-    const { findByTestId } = render(<CodeSubSection {...componentProps} />);
+    const { findByTestId } = render(
+      <ApiContextProvider value={mockConfig}>
+        <CodeSubSection {...componentProps} />
+      </ApiContextProvider>
+    );
 
     const searchButton = screen.getByRole("button", { name: "Search" });
     const clearButton = screen.getByRole("button", { name: "Clear" });
@@ -172,7 +183,9 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByRole } = render(
-      <CodeSubSection {...componentProps} />
+      <ApiContextProvider value={mockConfig}>
+        <CodeSubSection {...componentProps} />
+      </ApiContextProvider>
     );
 
     const searchButton = screen.getByRole("button", { name: "Search" });
@@ -237,7 +250,9 @@ describe("CodeSub Section component", () => {
       }
     });
     const { getByTestId, findByTestId, getByRole } = render(
-      <CodeSubSection {...componentProps} />
+      <ApiContextProvider value={mockConfig}>
+        <CodeSubSection {...componentProps} />
+      </ApiContextProvider>
     );
     const codeSystemSelectButton = getByRole("button", {
       name: "Open",
@@ -296,7 +311,11 @@ describe("CodeSub Section component", () => {
   });
 
   it("clear button should be disabled until a change is made in one of the search criteria", () => {
-    const { getByTestId } = render(<CodeSubSection {...componentProps} />);
+    const { getByTestId } = render(
+      <ApiContextProvider value={mockConfig}>
+        <CodeSubSection {...componentProps} />
+      </ApiContextProvider>
+    );
 
     const clearButton = getByTestId("clear-codes-btn");
     expect(clearButton).toBeDisabled();

@@ -6,7 +6,8 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { within } from "@testing-library/dom";
 import axios from "../api/axios-instance";
-import { ServiceConfig } from "../api/useServiceConfig";
+import { ServiceConfig } from "../api/ServiceContext";
+import { ApiContextProvider } from "../api/ServiceContext";
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -141,10 +142,17 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.get.mockResolvedValue({
       data: { ...mockConfig },
     });
+    mockedAxios.put.mockResolvedValue({
+      data: mockCqlBuilderLookUpData,
+    });
   });
 
   it("Should load includes tab", async () => {
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Includes" }));
     await waitFor(() => {
       expect(getByTestId("includes-tab")).toHaveAttribute(
@@ -162,7 +170,11 @@ describe("CqlBuilderPanel", () => {
   });
 
   it("Should default to includes tab for QDM measures", async () => {
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     await waitFor(() => {
       expect(getByTestId("includes-tab")).toHaveAttribute(
         "aria-selected",
@@ -172,7 +184,11 @@ describe("CqlBuilderPanel", () => {
   });
 
   it("Should load valueSets tab when clicked", async () => {
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Value Sets" }));
     await waitFor(() => {
       expect(getByTestId("valueSets-tab")).toHaveAttribute(
@@ -187,7 +203,11 @@ describe("CqlBuilderPanel", () => {
       QDMValueSetSearch: true,
       qdmCodeSearch: true,
     }));
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
         "aria-selected",
@@ -211,7 +231,11 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
     });
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -259,7 +283,11 @@ describe("CqlBuilderPanel", () => {
         message: "Unable to parse CQL",
       },
     });
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -284,7 +312,11 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     props.measureModel = "QiCore 4.1.1";
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -333,7 +365,11 @@ describe("CqlBuilderPanel", () => {
       },
     });
     props.measureModel = "QiCore 4.1.1";
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -357,7 +393,11 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
     });
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -402,7 +442,11 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     props.measureModel = "QiCore 4.1.1";
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -446,7 +490,11 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
     });
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -493,7 +541,11 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     props.measureModel = "QiCore 4.1.1";
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -539,7 +591,11 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
     });
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -584,7 +640,11 @@ describe("CqlBuilderPanel", () => {
       data: mockCqlBuilderLookUpData,
     });
     props.measureModel = "QiCore 4.1.1";
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Definitions" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Definitions" })).toHaveAttribute(
@@ -629,7 +689,11 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
     });
-    render(<CqlBuilderPanel {...newProps} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...newProps} />
+      </ApiContextProvider>
+    );
     const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     expect(parameterTab).toBeEnabled();
@@ -643,7 +707,11 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
     });
-    let result = render(<CqlBuilderPanel {...props} />);
+    let result = render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
@@ -708,7 +776,11 @@ describe("CqlBuilderPanel", () => {
     const applyParameter = jest.fn();
     applyParameter.mockReturnValue("success");
     const copiedProps = { ...props, handleApplyParameter: applyParameter };
-    let result = render(<CqlBuilderPanel {...copiedProps} />);
+    let result = render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...copiedProps} />
+      </ApiContextProvider>
+    );
     const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
@@ -777,7 +849,11 @@ describe("CqlBuilderPanel", () => {
     const applyParameter = jest.fn();
     applyParameter.mockReturnValue("failure");
     const copiedProps = { ...props, handleApplyParameter: applyParameter };
-    let result = render(<CqlBuilderPanel {...copiedProps} />);
+    let result = render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...copiedProps} />
+      </ApiContextProvider>
+    );
     const parameterTab = screen.queryByText("Parameters");
     expect(parameterTab).toBeInTheDocument();
     userEvent.click(screen.getByRole("tab", { name: "Parameters" }));
@@ -843,7 +919,11 @@ describe("CqlBuilderPanel", () => {
     mockedAxios.put.mockResolvedValue({
       data: mockCqlBuilderLookUpData,
     });
-    render(<CqlBuilderPanel {...newProps} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...newProps} />
+      </ApiContextProvider>
+    );
     const parameterTab = screen.queryByText("Functions");
     expect(parameterTab).toBeInTheDocument();
     expect(parameterTab).toBeEnabled();
@@ -851,7 +931,11 @@ describe("CqlBuilderPanel", () => {
 
   it("Should display error text when CQL has errors", async () => {
     const newProps = { ...props, hasCqlError: true };
-    render(<CqlBuilderPanel {...newProps} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...newProps} />
+      </ApiContextProvider>
+    );
     const errorMessage = await screen.findByRole("alert");
     expect(errorMessage).toHaveTextContent(
       "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
@@ -860,7 +944,11 @@ describe("CqlBuilderPanel", () => {
 
   it("Should initialize active tab from URL param and update URL on tab change", async () => {
     window.history.replaceState({}, "", "?tab=codes");
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Codes" })).toHaveAttribute(
         "aria-selected",
@@ -881,7 +969,11 @@ describe("CqlBuilderPanel", () => {
 
   it("Should fall back to default tab when URL has invalid tab param", async () => {
     window.history.replaceState({}, "", "?tab=invalidTab");
-    render(<CqlBuilderPanel {...{ ...props, measureModel: "QDM 5.6" }} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...{ ...props, measureModel: "QDM 5.6" }} />
+      </ApiContextProvider>
+    );
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Includes" })).toHaveAttribute(
         "aria-selected",
@@ -891,7 +983,11 @@ describe("CqlBuilderPanel", () => {
   });
 
   it("Should sync tab state when browser back/forward is used", async () => {
-    render(<CqlBuilderPanel {...props} />);
+    render(
+      <ApiContextProvider value={mockConfig}>
+        <CqlBuilderPanel {...props} />
+      </ApiContextProvider>
+    );
     userEvent.click(screen.getByRole("tab", { name: "Codes" }));
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: "Codes" })).toHaveAttribute(

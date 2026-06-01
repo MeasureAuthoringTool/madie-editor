@@ -10,11 +10,9 @@ import userEvent from "@testing-library/user-event";
 jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-jest.mock("../../../api/useServiceConfig", () => {
-  return {
-    useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
-  };
-});
+jest.mock("../../../api/useServiceConfig", () => ({
+  useServiceConfig: jest.fn(() => mockServiceConfig),
+}));
 
 jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({ getAccessToken: () => "test.jwt" }),
