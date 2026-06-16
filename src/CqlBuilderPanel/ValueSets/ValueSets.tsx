@@ -40,7 +40,6 @@ export default function ValueSets(props: ValueSetsProps) {
         nonEmptyValues[value] = values[value].toString().trim();
       }
     });
-    // eslint-disable-next-line
     terminologyService.current
       .searchValueSets(nonEmptyValues)
       .then((data) => {

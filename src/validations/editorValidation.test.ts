@@ -1,12 +1,10 @@
 import { ValidationResult, useGetAllErrors } from "./editorValidation";
 import axios from "../api/axios-instance";
 import { ServiceConfig } from "../api/ServiceContext";
-import { ValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
-// @ts-ignore
 import useTerminologyServiceApi, {
-  TerminologyServiceApi,
+  ValueSet,
+  CustomCqlCode,
 } from "../api/useTerminologyServiceApi";
-
 // @ts-ignore
 import { ElmTranslationExternalError } from "@madie/madie-editor";
 import {

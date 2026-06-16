@@ -6,8 +6,7 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { within } from "@testing-library/dom";
 import axios from "../api/axios-instance";
-import { ServiceConfig } from "../api/ServiceContext";
-import { ApiContextProvider } from "../api/ServiceContext";
+import { ApiContextProvider, ServiceConfig } from "../api/ServiceContext";
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;

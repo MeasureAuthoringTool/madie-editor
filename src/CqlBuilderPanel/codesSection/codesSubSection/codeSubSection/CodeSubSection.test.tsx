@@ -2,12 +2,14 @@ import * as React from "react";
 import CodeSubSection from "./CodeSubSection";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { mockedCodeSystems } from "../../../mockedCodeSystems";
-import { ServiceConfig } from "../../../../api/ServiceContext";
+import {
+  ServiceConfig,
+  ApiContextProvider,
+} from "../../../../api/ServiceContext";
 import axios from "../../../../api/axios-instance";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/dom";
-import { ApiContextProvider } from "../../../../api/ServiceContext";
 
 jest.mock("../../useCodeSystems");
 jest.mock("../../../../api/axios-instance");

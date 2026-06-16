@@ -35,7 +35,6 @@ export default function CodeSubSection({
 
   const terminologyService = useRef(useTerminologyServiceApi());
   const handleFormSubmit = async (values) => {
-    // eslint-disable-next-line
     if (values && values.code && values.title && values.version) {
       terminologyService.current
         .getCodeDetails(values.code, values.title, values.version)

@@ -4,7 +4,6 @@ import useTerminologyServiceApi, {
 } from "../../api/useTerminologyServiceApi";
 
 export function useCodeSystems() {
-  console.log("callingUseCodeSystem");
   const [codeSystems, setCodeSystems] = useState<CodeSystem[]>([]);
   // const [loading, setLoading] = useState(true); maybe add later since this call is slow
 
@@ -12,8 +11,6 @@ export function useCodeSystems() {
 
   useEffect(() => {
     const fetchCodeSystems = async () => {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
       const fetchedCodeSystems =
         await terminologyService.current.getAllCodeSystems();
       setCodeSystems(fetchedCodeSystems);
