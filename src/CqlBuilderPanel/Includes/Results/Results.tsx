@@ -46,7 +46,7 @@ type RowDef = {
   name: string;
   version: string;
   alias: string;
-  owner: string;
+  ownerDisplayName: string;
   librarySetId: string;
 };
 
@@ -146,7 +146,7 @@ const Results = ({
       name: library.cqlLibraryName,
       version: library.version,
       alias: library.alias,
-      owner: library.owner,
+      ownerDisplayName: library.ownerDisplayName,
     };
   });
 
@@ -156,7 +156,8 @@ const Results = ({
   const updateLibrarySelection = async (
     version: string,
     setId: string,
-    alias: string
+    alias: string,
+    ownerDisplayName: string
   ) => {
     try {
       const librarySet = await memoizedLibrarySetFetch(setId);
@@ -173,7 +174,7 @@ const Results = ({
           id: library.id,
           name: library.cqlLibraryName,
           alias: alias,
-          owner: librarySet.librarySet.owner,
+          ownerDisplayName: ownerDisplayName,
           librarySetId: setId,
           version: version,
           cql: library.cql,
@@ -199,7 +200,8 @@ const Results = ({
       await updateLibrarySelection(
         rowModal.version,
         rowModal.librarySetId,
-        rowModal.alias
+        rowModal.alias,
+        rowModal.ownerDisplayName
       );
     } else {
       setDiscardDialogOpen(true);
@@ -228,7 +230,8 @@ const Results = ({
       await updateLibrarySelection(
         rowModal.version,
         rowModal.librarySetId,
-        rowModal.alias
+        rowModal.alias,
+        rowModal.ownerDisplayName
       );
     } else {
       setDeleteDialogOpen(true);
@@ -248,7 +251,7 @@ const Results = ({
       },
       {
         header: "owner",
-        accessorKey: "owner",
+        accessorKey: "ownerDisplayName",
       },
       {
         header: "Action",
