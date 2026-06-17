@@ -1,6 +1,8 @@
-import { ServiceConfig } from "../api/useServiceConfig";
-
+import { ServiceConfig } from "../api/ServiceContext";
 export const mockServiceConfig: ServiceConfig = {
+  measureService: {
+    baseUrl: "measure-service.com",
+  },
   qdmElmTranslationService: {
     baseUrl: "qdm-elm-translator.com",
   },
@@ -12,5 +14,11 @@ export const mockServiceConfig: ServiceConfig = {
   },
   cqlLibraryService: {
     baseUrl: "library-service.com",
+  },
+  fhirService: {
+    baseUrl: "fhir-service.com",
+  },
+  excelExportService: {
+    baseUrl: "exportService.com",
   },
 };

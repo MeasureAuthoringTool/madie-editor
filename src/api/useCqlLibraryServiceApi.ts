@@ -1,6 +1,7 @@
 import axios from "./axios-instance";
-import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
-import { useOktaTokens } from "@madie/madie-util";
+import { useServiceConfig } from "./useServiceConfig";
+import { ServiceConfig } from "./ServiceContext";
+import useOktaTokens from "./useOktaTokens";
 import { AxiosResponse } from "axios";
 
 interface LibrarySet {
@@ -91,8 +92,8 @@ export class CqlLibraryServiceApi {
   }
 }
 
-export default async function useCqlLibraryServiceApi(): Promise<CqlLibraryServiceApi> {
-  const config: ServiceConfig = await useServiceConfig();
+export default function useCqlLibraryServiceApi(): CqlLibraryServiceApi {
+  const config: ServiceConfig = useServiceConfig();
   const serviceUrl: string = config?.cqlLibraryService?.baseUrl;
   const { getAccessToken } = useOktaTokens();
   return new CqlLibraryServiceApi(serviceUrl, getAccessToken);

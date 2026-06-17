@@ -1,5 +1,6 @@
 import axios from "../api/axios-instance";
-import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
+import { ServiceConfig } from "../api/ServiceContext";
+import { useServiceConfig } from "../api/useServiceConfig";
 import TranslateCql from "./elmTranslateValidation";
 import { ElmTranslation } from "../api/TranslatedElmModels";
 
@@ -52,18 +53,16 @@ const mockServiceConfig: ServiceConfig = {
     baseUrl: "terminology-service.com",
   },
 };
-jest.mock("../api/useServiceConfig", () => {
-  return {
-    useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
-  };
-});
+jest.mock("../api/useServiceConfig", () => ({
+  useServiceConfig: jest.fn(() => mockServiceConfig),
+}));
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("ELM Translation validation", () => {
   it("should retrieve the service url", async () => {
-    const actual = await useServiceConfig();
+    const actual = useServiceConfig();
     expect(actual).toBe(mockServiceConfig);
   });
 

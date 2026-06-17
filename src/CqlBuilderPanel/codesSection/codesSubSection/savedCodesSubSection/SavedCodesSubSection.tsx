@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ColumnDef,
   flexRender,
@@ -256,9 +262,9 @@ export default function SavedCodesSubSection({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const terminologyService = useRef(useTerminologyServiceApi());
   const RetrieveCodeDetailsList = async (codesList) => {
-    const terminologyService = await useTerminologyServiceApi();
-    terminologyService
+    terminologyService.current
       .getCodesAndCodeSystems(codesList)
       .then((response) => {
         setCodes(

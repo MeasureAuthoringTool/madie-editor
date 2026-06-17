@@ -7,7 +7,7 @@ import {
   Button,
 } from "@madie/madie-design-system/dist/react";
 import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import InputAdornment from "@mui/material/InputAdornment";
 import ExpandingSection from "../../../../common/ExpandingSection";
 import { useFormik } from "formik";
 import { CodeSubSectionSchemaValidator } from "../../../../validations/CodeSubSectionSchemaValidator";

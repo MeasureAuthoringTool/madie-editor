@@ -1,16 +1,22 @@
 {
-  "extends": "ts-config-single-spa",
   "compilerOptions": {
-    "declaration": true,
-    "declarationDir": "dist",
-    "declarationMap": true,
+    "target": "ESNext",
+    "module": "ESNext",
     "jsx": "react-jsx",
-    "target": "es6",
-    "sourceMap": true,
-    "skipLibCheck": true
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "declarationMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noEmit": false,
+    "isolatedModules": true
   },
-  "files": ["src/madie-madie-editor.tsx"],
-  "types": ["node", "jest", "@testing-library/jest-dom"],
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.test*"]
+  "rootDir": "src",
+  "include": ["src"],
+  "exclude": ["src/**/*.test*", "node_modules", "dist"]
 }

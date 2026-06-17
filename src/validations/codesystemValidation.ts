@@ -1,5 +1,7 @@
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
-import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
+import useTerminologyServiceApi, {
+  TerminologyServiceApi,
+} from "../api/useTerminologyServiceApi";
 import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
 
@@ -104,10 +106,9 @@ export const getCustomCqlCodes = (
 const ValidateCustomCqlCodes = async (
   customCqlCodes: CustomCqlCode[],
   loggedInUMLS: boolean,
-  model: string
+  model: string,
+  terminologyServiceApi: TerminologyServiceApi
 ): Promise<CustomCqlCode[]> => {
-  const terminologyServiceApi = await useTerminologyServiceApi();
-
   return terminologyServiceApi.validateCodes(
     customCqlCodes,
     loggedInUMLS,

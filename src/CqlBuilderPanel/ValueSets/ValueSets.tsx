@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import ExpandingSection from "../../common/ExpandingSection";
 import Filter, { FILTER_CATEGORIES } from "./Filter/Filter";
 import Search, { SEARCH_CATEGORIES } from "./Search/Search";
@@ -28,6 +28,7 @@ export default function ValueSets(props: ValueSetsProps) {
   // on clear can be implemented after to reset
   const [resultsOpen, setResultsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const terminologyService = useRef(useTerminologyServiceApi());
 
   const handleSearch = async (values) => {
     setLoading(true);
@@ -39,9 +40,7 @@ export default function ValueSets(props: ValueSetsProps) {
         nonEmptyValues[value] = values[value].toString().trim();
       }
     });
-    // eslint-disable-next-line
-    const terminologyService = await useTerminologyServiceApi();
-    terminologyService
+    terminologyService.current
       .searchValueSets(nonEmptyValues)
       .then((data) => {
         setResultValuesSets(data.valueSets);

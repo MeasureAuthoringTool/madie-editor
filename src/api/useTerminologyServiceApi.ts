@@ -1,7 +1,8 @@
 import axios from "./axios-instance";
 import { AxiosResponse } from "axios";
-import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
-import { useOktaTokens } from "@madie/madie-util";
+import { useServiceConfig } from "./useServiceConfig";
+import { ServiceConfig } from "./ServiceContext";
+import useOktaTokens from "./useOktaTokens";
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
 
 // customCqlCode contains validation result from VSAC
@@ -285,8 +286,8 @@ const processCodeSystemErrors = (
   });
 };
 
-export default async function useTerminologyServiceApi(): Promise<TerminologyServiceApi> {
-  const config: ServiceConfig = await useServiceConfig();
+export default function useTerminologyServiceApi(): TerminologyServiceApi {
+  const config: ServiceConfig = useServiceConfig();
   const serviceUrl: string = config?.terminologyService?.baseUrl;
   const { getAccessToken } = useOktaTokens();
   return new TerminologyServiceApi(serviceUrl, getAccessToken);

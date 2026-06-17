@@ -1,6 +1,7 @@
 import axios from "./axios-instance";
-import { ServiceConfig, useServiceConfig } from "./useServiceConfig";
-import { useOktaTokens } from "@madie/madie-util";
+import { useServiceConfig } from "./useServiceConfig";
+import { ServiceConfig } from "./ServiceContext";
+import useOktaTokens from "./useOktaTokens";
 import { ElmTranslation } from "./TranslatedElmModels";
 import { AxiosResponse } from "axios";
 
@@ -62,8 +63,8 @@ export class FhirElmTranslationServiceApi {
   }
 }
 
-export default async function useFhirElmTranslationServiceApi(): Promise<FhirElmTranslationServiceApi> {
-  const config: ServiceConfig = await useServiceConfig();
+export default function useFhirElmTranslationServiceApi(): FhirElmTranslationServiceApi {
+  const config: ServiceConfig = useServiceConfig();
   const serviceUrl: string = config?.fhirElmTranslationService?.baseUrl;
   const { getAccessToken } = useOktaTokens();
   return new FhirElmTranslationServiceApi(serviceUrl, getAccessToken);

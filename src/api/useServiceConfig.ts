@@ -1,50 +1,14 @@
-import axios from "./axios-instance";
+import { useContext } from "react";
+import ServiceContext, { ServiceConfig } from "./ServiceContext";
 
-export interface ServiceConfig {
-  qdmElmTranslationService: {
-    baseUrl: string;
-  };
-  fhirElmTranslationService: {
-    baseUrl: string;
-  };
-  terminologyService: {
-    baseUrl: string;
-  };
-  cqlLibraryService: {
-    baseUrl: string;
-  };
-}
+export const useServiceConfig = (): ServiceConfig => {
+  const context = useContext(ServiceContext);
 
-export async function useServiceConfig(): Promise<ServiceConfig> {
-  const serviceConfig: ServiceConfig = (
-    await axios.get<ServiceConfig>("/env-config/serviceConfig.json")
-  ).data;
-
-  if (
-    !(
-      serviceConfig?.qdmElmTranslationService &&
-      serviceConfig.qdmElmTranslationService.baseUrl
-    )
-  ) {
-    throw new Error("Invalid QDM ELM Translation Service Config");
+  if (!context) {
+    throw new Error(
+      "useServiceConfig must be used within an ApiContextProvider"
+    );
   }
 
-  if (
-    !(
-      serviceConfig?.fhirElmTranslationService &&
-      serviceConfig.fhirElmTranslationService.baseUrl
-    )
-  ) {
-    throw new Error("Invalid FHIR ELM Translation Service Config");
-  }
-
-  if (
-    !(
-      serviceConfig?.terminologyService &&
-      serviceConfig.terminologyService.baseUrl
-    )
-  ) {
-    throw new Error("Invalid Terminology Service Config");
-  }
-  return serviceConfig;
-}
+  return context;
+};

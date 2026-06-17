@@ -17,7 +17,6 @@ import {
 } from "@tanstack/react-table";
 import { Code, CodeStatus } from "../../../../api/useTerminologyServiceApi";
 import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";

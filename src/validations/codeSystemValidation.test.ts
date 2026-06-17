@@ -1,11 +1,14 @@
 import axios from "../api/axios-instance";
-import { ServiceConfig, useServiceConfig } from "../api/useServiceConfig";
+import { useServiceConfig } from "../api/useServiceConfig";
+import { ServiceConfig } from "../api/ServiceContext";
 import ValidateCustomCqlCodes, {
   validateAccessModifierErrors,
   getCustomCqlCodes,
   mapCodeSystemErrorsToTranslationErrors,
 } from "./codesystemValidation";
-import { CustomCqlCode } from "../api/useTerminologyServiceApi";
+import useTerminologyServiceApi, {
+  CustomCqlCode,
+} from "../api/useTerminologyServiceApi";
 import {
   CqlResult,
   CqlInclude,
@@ -137,21 +140,34 @@ const mockServiceConfig: ServiceConfig = {
   },
 };
 
-jest.mock("../api/useServiceConfig", () => {
-  return {
-    useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
-  };
-});
+jest.mock("../api/useServiceConfig", () => ({
+  useServiceConfig: jest.fn(() => mockServiceConfig),
+}));
+
+const mockTerminologyApi = {
+  validateCodes: jest.fn().mockResolvedValue(customCqlCodes),
+};
+
+jest.mock("../api/useTerminologyServiceApi", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
 
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("Code System validation", () => {
+  beforeEach(() => {
+    (
+      require("../api/useTerminologyServiceApi").default as jest.Mock
+    ).mockReturnValue(mockTerminologyApi);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
   it("should retrieve the service url", async () => {
-    const actual = await useServiceConfig();
+    const actual = useServiceConfig();
     expect(actual).toBe(mockServiceConfig);
   });
 
@@ -170,7 +186,9 @@ describe("Code System validation", () => {
 
     const codesystemValidations: CustomCqlCode[] = await ValidateCustomCqlCodes(
       customCqlCodes,
-      true
+      true,
+      "",
+      useTerminologyServiceApi()
     );
     codesystemValidations.forEach((codesystem) => {
       expect(codesystem.valid).toBeTruthy();
@@ -192,7 +210,9 @@ describe("Code System validation", () => {
 
     const codesystemErrors: CustomCqlCode[] = await ValidateCustomCqlCodes(
       customCqlCodes,
-      true
+      true,
+      "",
+      useTerminologyServiceApi()
     );
     expect(codesystemErrors.length).toBe(1);
   });
@@ -212,15 +232,27 @@ describe("Code System validation", () => {
 
     const codesystemErrors: CustomCqlCode[] = await ValidateCustomCqlCodes(
       customCqlCodes,
-      true
+      true,
+      "",
+      useTerminologyServiceApi()
     );
     expect(codesystemErrors.length).toBe(1);
   });
 
   it("Code System validation when user is not logged in to UMLS", async () => {
+    mockTerminologyApi.validateCodes.mockResolvedValueOnce([
+      {
+        ...customCqlCodes[0],
+        valid: false,
+        errorMessage: "Please Login to UMLS",
+      },
+    ]);
+
     const codesystemErrors: CustomCqlCode[] = await ValidateCustomCqlCodes(
       customCqlCodes,
-      false
+      false,
+      "",
+      useTerminologyServiceApi()
     );
     expect(
       JSON.stringify(codesystemErrors).includes("Please Login to UMLS")

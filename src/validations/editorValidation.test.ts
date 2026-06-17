@@ -1,12 +1,10 @@
 import { ValidationResult, useGetAllErrors } from "./editorValidation";
 import axios from "../api/axios-instance";
-import { ServiceConfig } from "../api/useServiceConfig";
-import { ValueSet, CustomCqlCode } from "../api/useTerminologyServiceApi";
-// @ts-ignore
-import {
-  useTerminologyServiceApi,
-  TerminologyServiceApi,
-} from "@madie/madie-util";
+import { ServiceConfig } from "../api/ServiceContext";
+import useTerminologyServiceApi, {
+  ValueSet,
+  CustomCqlCode,
+} from "../api/useTerminologyServiceApi";
 // @ts-ignore
 import { ElmTranslationExternalError } from "@madie/madie-editor";
 import {
@@ -28,17 +26,22 @@ const mockServiceConfig: ServiceConfig = {
     baseUrl: "terminology-service.com",
   },
 };
-jest.mock("../api/useServiceConfig", () => {
-  return {
-    useServiceConfig: jest.fn(() => Promise.resolve(mockServiceConfig)),
-  };
-});
-jest.mock("@madie/madie-util", () => ({
-  useTerminologyServiceApi: jest.fn(),
-  useOktaTokens: () => ({
+
+jest.mock("../api/useServiceConfig", () => ({
+  useServiceConfig: jest.fn(() => mockServiceConfig),
+}));
+
+jest.mock("../api/useTerminologyServiceApi", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+jest.mock("../api/useOktaTokens", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
     getAccessToken: () => "test.jwt",
-  }),
-  getOidFromString: () => "oid",
+    getOidFromString: () => "oid",
+  })),
 }));
 
 const fhirValueset: ValueSet = {
@@ -146,21 +149,58 @@ const cqlToElmExternalErrors: ElmTranslationExternalError[] = [
 ];
 
 describe("Editor Validation Test", () => {
+  const mockTerminologyApi = {
+    checkLogin: jest.fn().mockRejectedValue({ status: 404, data: false }),
+    validateCodes: jest.fn().mockResolvedValue(customCqlCodesValid),
+  };
+
   beforeEach(() => {
-    (useTerminologyServiceApi as jest.Mock).mockImplementation(() => {
-      return {
-        checkLogin: jest
-          .fn()
-          .mockRejectedValueOnce({ status: 404, data: false }),
-      } as unknown as TerminologyServiceApi;
-    });
+    (useTerminologyServiceApi as jest.Mock).mockReturnValue(mockTerminologyApi);
   });
+
+  // beforeEach(() => {
+  //   (useTerminologyServiceApi as jest.Mock).mockImplementation(() => {
+  //     return {
+  //       checkLogin: jest
+  //         .fn()
+  //         .mockRejectedValueOnce({ status: 404, data: false }),
+  //       validateCodes: jest.fn()
+  //     } as unknown as TerminologyServiceApi;
+  //   });
+  // });
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  const customCqlCodesInvalid: CustomCqlCode[] = [
+    {
+      ...customCqlCodesValid[0],
+      valid: false,
+      errorMessage: "Invalid code",
+    },
+    {
+      ...customCqlCodesValid[0],
+      codeId: "'X'",
+      valid: false,
+      errorMessage: "Invalid code 2",
+    },
+    {
+      ...customCqlCodesValid[0],
+      codeId: "'Y'",
+      codeSystem: {
+        ...customCqlCodesValid[0].codeSystem,
+        valid: false,
+        errorMessage: "Invalid code system",
+      },
+    },
+  ];
+
   it("validate cql null input", async () => {
-    const errorsResult: ValidationResult = await useGetAllErrors("", false);
+    const errorsResult: ValidationResult = await useGetAllErrors(
+      "",
+      false,
+      useTerminologyServiceApi()
+    );
     expect(errorsResult).toBeNull();
   });
 
@@ -203,12 +243,17 @@ describe("Editor Validation Test", () => {
     });
     const errorsResult: ValidationResult = await useGetAllErrors(
       editorContent,
-      true
+      true,
+      useTerminologyServiceApi()
     );
     expect(errorsResult?.errors.length).toBe(0);
   });
 
   it("validate cql has validation errors", async () => {
+    mockTerminologyApi.validateCodes.mockResolvedValueOnce(
+      customCqlCodesInvalid
+    );
+
     const editorContent: string =
       "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000' \n" +
       "using QICore version '4.1.0' \n" +
@@ -257,11 +302,19 @@ describe("Editor Validation Test", () => {
         });
       }
     });
-    const errorsResult = await useGetAllErrors(editorContent, true);
+    const errorsResult = await useGetAllErrors(
+      editorContent,
+      true,
+      useTerminologyServiceApi()
+    );
     expect(errorsResult.errors.length).toBe(4);
   });
 
   it("Translation result has null error exception", async () => {
+    mockTerminologyApi.validateCodes.mockResolvedValueOnce(
+      customCqlCodesInvalid
+    );
+
     const editorContent: string =
       "library AdvancedIllnessandFrailtyExclusion_QICore4 version '5.0.000' \n" +
       "using QICore version '4.1.0' \n" +
@@ -311,7 +364,11 @@ describe("Editor Validation Test", () => {
       }
     });
 
-    const errorsResult = await useGetAllErrors(editorContent, true);
+    const errorsResult = await useGetAllErrors(
+      editorContent,
+      true,
+      useTerminologyServiceApi()
+    );
     expect(errorsResult.errors.length).toBe(3);
   });
 
@@ -336,12 +393,17 @@ describe("Editor Validation Test", () => {
     });
     const errorsResult = await useGetAllErrors(
       "Library FHIR version 1.0.000",
-      false
+      false,
+      useTerminologyServiceApi()
     );
     expect(errorsResult.externalErrors.length).toBe(1);
   });
 
   it("Should show updated message when the include library lines doesn't have the version info", async () => {
+    mockTerminologyApi.validateCodes.mockResolvedValueOnce(
+      customCqlCodesInvalid
+    );
+
     const elmTranslationWithExternalErrors: ElmTranslation = {
       externalErrors: [],
       errorExceptions: [
@@ -394,7 +456,11 @@ describe("Editor Validation Test", () => {
       "code \"preop\": 'p' from \"ActPriority:HL7V3.0_2021-03\" display 'preop' \n" +
       'valueset "ONC Administrative Sex": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1" "url": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.\' \n';
 
-    const errorsResult = await useGetAllErrors(editorContent, false);
+    const errorsResult = await useGetAllErrors(
+      editorContent,
+      false,
+      useTerminologyServiceApi()
+    );
     expect(errorsResult.errors.length).toBe(5);
     expect(errorsResult.errors[0].message).toEqual(
       "include FHIRHelpers statement is missing version. Please add a version to the include."
@@ -441,7 +507,8 @@ describe("Editor Validation Test", () => {
     });
     const errorsResult: ValidationResult = await useGetAllErrors(
       editorContent,
-      true
+      true,
+      useTerminologyServiceApi()
     );
 
     expect(errorsResult?.errors.length).toBe(1);

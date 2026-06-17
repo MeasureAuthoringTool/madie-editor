@@ -1,14 +1,25 @@
-import useTerminologyServiceApi from "../api/useTerminologyServiceApi";
+import useTerminologyServiceApi, {
+  TerminologyServiceApi,
+} from "../api/useTerminologyServiceApi";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
-import { getOidFromString } from "@madie/madie-util";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
+
+export const getOidFromString = (
+  oidString: string,
+  dataModel: string
+): string => {
+  if (dataModel === "QDM") {
+    return oidString?.split("urn:oid:")[1];
+  }
+  return oidString?.split("ValueSet/")[1];
+};
 
 const GetValueSetErrors = async (
   valuesetsArray: CqlValueSet[],
   loggedInUMLS: boolean,
-  model: string
+  model: string,
+  terminologyServiceApi: TerminologyServiceApi
 ): Promise<ElmTranslationError[]> => {
-  const terminologyServiceApi = await useTerminologyServiceApi();
   const valuesetsErrorArray: ElmTranslationError[] = [];
   if (valuesetsArray) {
     await Promise.allSettled(
