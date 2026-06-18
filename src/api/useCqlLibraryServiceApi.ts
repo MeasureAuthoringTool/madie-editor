@@ -16,7 +16,7 @@ export interface CqlLibrary {
   draft: boolean;
   alias?: string;
   librarySetId: string;
-  owner: string;
+  ownerDisplayName: string;
 }
 
 export interface LibrarySetDto {

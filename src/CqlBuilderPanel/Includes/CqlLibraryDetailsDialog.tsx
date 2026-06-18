@@ -16,7 +16,7 @@ export interface SelectedLibrary {
   name: string;
   version: string;
   librarySetId?: string;
-  owner?: string;
+  ownerDisplayName?: string;
   otherVersions?: string[];
   cql?: string;
   alias?: string;
@@ -199,7 +199,7 @@ const CqlLibraryDetailsDialog = ({
           {getLibraryVersionView()}
         </div>
         <div tw="flex-1 ml-5" data-testid="library-owner-container">
-          <ReadOnlyLabelValue label="Owner" value={library?.owner} />
+          <ReadOnlyLabelValue label="Owner" value={library?.ownerDisplayName} />
         </div>
       </div>
       <br />

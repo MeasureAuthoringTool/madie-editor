@@ -84,7 +84,7 @@ const SavedLibraryIncludes = ({
                 librarySet: lib.librarySet,
                 draft: false,
                 librarySetId: lib.librarySetId,
-                owner: lib.librarySet?.owner,
+                ownerDisplayName: lib.ownerDisplayName,
               } as CqlLibrary;
             });
             setLibraries(cqlLibraries);
