@@ -8,7 +8,7 @@ export const mockCqlLibraries = [
     alias: "Test",
     cql: "Test cql 12",
     librarySetId: "10-12",
-    owner: "John",
+    ownerDisplayName: "John Doe",
   },
   {
     id: "11",
@@ -18,7 +18,7 @@ export const mockCqlLibraries = [
     draft: false,
     cql: "Test cql 11",
     librarySetId: "10-12",
-    owner: "Jane",
+    ownerDisplayName: "Jane Doe",
   },
   {
     id: "10",
@@ -28,7 +28,7 @@ export const mockCqlLibraries = [
     draft: false,
     cql: "Test cql 10",
     librarySetId: "10-12",
-    owner: "Jane",
+    ownerDisplayName: "Jane Doe",
   },
   {
     id: "9",
@@ -37,7 +37,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "John", librarySetId: "8-9" },
     draft: false,
     librarySetId: "8-9",
-    owner: "John",
+    ownerDisplayName: "John Doe",
   },
   {
     id: "8",
@@ -46,7 +46,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "John", librarySetId: "8-9" },
     draft: false,
     librarySetId: "8-9",
-    owner: "John",
+    ownerDisplayName: "John Doe",
   },
   {
     id: "7",
@@ -55,7 +55,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "Paul", librarySetId: "7" },
     draft: false,
     librarySetId: "7",
-    owner: "Paul",
+    ownerDisplayName: "Paul Doe",
   },
   {
     id: "6",
@@ -64,7 +64,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "Paul", librarySetId: "6" },
     draft: false,
     librarySetId: "6",
-    owner: "Paul",
+    ownerDisplayName: "Paul Doe",
   },
   {
     id: "5",
@@ -73,7 +73,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "Paul", librarySetId: "5" },
     draft: false,
     librarySetId: "5",
-    owner: "Paul",
+    ownerDisplayName: "Paul Doe",
   },
   {
     id: "4",
@@ -82,7 +82,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "Paul", librarySetId: "4" },
     draft: false,
     librarySetId: "4",
-    owner: "Paul",
+    ownerDisplayName: "Paul Doe",
   },
   {
     id: "3",
@@ -91,7 +91,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "Paul", librarySetId: "3" },
     draft: false,
     librarySetId: "3",
-    owner: "Paul",
+    ownerDisplayName: "Paul Doe",
   },
   {
     id: "2",
@@ -100,7 +100,7 @@ export const mockCqlLibraries = [
     librarySet: { owner: "Paul", librarySetId: "2" },
     draft: false,
     librarySetId: "2",
-    owner: "Paul",
+    ownerDisplayName: "Paul Doe",
   },
   {
     id: "1",
@@ -109,6 +109,6 @@ export const mockCqlLibraries = [
     librarySet: { owner: "Paul", librarySetId: "1" },
     draft: false,
     librarySetId: "1",
-    owner: "Paul",
+    ownerDisplayName: "Paul Doe",
   },
 ];
