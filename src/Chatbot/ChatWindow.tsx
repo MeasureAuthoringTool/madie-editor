@@ -84,16 +84,16 @@ function parseErrorMessage(error: Error): {
 }
 
 const MODEL_PROVIDER: Record<string, string> = {
-  "gpt-5.4": "OPENAI",
-  "gpt-5.4mini": "OPENAI",
-  "gpt-5.3-codex": "OPENAI",
-  "gemini-3.1-pro-preview": "GOOGLE",
-  "gemini-2.5-flash": "GOOGLE",
-  "gemini-2.5-pro": "GOOGLE",
   "claude-opus-4.7": "ANTHROPIC",
   "claude-opus-4.6": "ANTHROPIC",
   "claude-sonnet-4.6": "ANTHROPIC",
   "claude-haiku-4.5": "ANTHROPIC",
+  "gpt-5.4": "OPENAI",
+  "gpt-5.4mini": "OPENAI",
+  "gpt-5.3-codex": "OPENAI",
+  "gemini-3.1-pro-preview": "GOOGLE",
+  "gemini-3.5-flash": "GOOGLE",
+  "gemini-3.1-flash-lite": "GOOGLE",
 };
 
 const getProvider = (model: string): string => MODEL_PROVIDER[model] ?? model;
@@ -846,6 +846,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               }}
             >
               <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "800" }}>
+                ANTHROPIC
+              </ListSubheader>
+              {[
+                "claude-sonnet-4.6",
+                "claude-opus-4.6",
+                "claude-opus-4.7",
+                "claude-haiku-4.5",
+              ].map((m) => (
+                <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
+                  {m}
+                </MenuItem>
+              ))}
+              <Divider sx={{ margin: "4px 0" }} />
+              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "800" }}>
                 OPENAI
               </ListSubheader>
               {["gpt-5.3-codex", "gpt-5.4", "gpt-5.4-mini"].map((m) => (
@@ -859,22 +873,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               </ListSubheader>
               {[
                 "gemini-3.1-pro-preview",
-                "gemini-2.5-flash",
-                "gemini-2.5-pro",
-              ].map((m) => (
-                <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
-                  {m}
-                </MenuItem>
-              ))}
-              <Divider sx={{ margin: "4px 0" }} />
-              <ListSubheader sx={{ fontSize: "0.75rem", fontWeight: "800" }}>
-                ANTHROPIC
-              </ListSubheader>
-              {[
-                "claude-opus-4.7",
-                "claude-opus-4.6",
-                "claude-sonnet-4.6",
-                "claude-haiku-4.5",
+                "gemini-3.5-flash",
+                "gemini-3.1-flash-lite",
               ].map((m) => (
                 <MenuItem key={m} value={m} sx={{ fontSize: "0.75rem" }}>
                   {m}
