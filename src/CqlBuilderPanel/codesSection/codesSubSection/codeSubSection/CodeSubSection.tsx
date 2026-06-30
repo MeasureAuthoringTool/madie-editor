@@ -11,7 +11,7 @@ import { Toast } from "@madie/madie-design-system/dist/react";
 interface CodeSectionProps {
   canEdit: boolean;
   allCodeSystems: CodeSystem[];
-  handleApplyCode: (code: string) => void;
+  handleApplyCode: (code: Code) => void;
   measureModel: string;
   editorVal: string;
 }

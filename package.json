@@ -1,14 +1,17 @@
 {
   "name": "@madie/madie-editor",
   "version": "0.0.7",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
   "scripts": {
     "start": "webpack serve --port 8501",
     "build": "concurrently npm:build:*",
-    "build:webpack": "webpack --mode=production",
-    "analyze": "webpack --mode=production --env analyze",
+    "build:lib": "webpack --config webpack.lib.config.js --mode production && tsc --project tsconfig.lib.json",
+    "build:webpack": "webpack",
+    "analyze": "webpack --env analyze",
     "lint": "eslint src --ext js,ts,tsx",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
@@ -96,7 +99,6 @@
     "twin.macro": "^3.4.0",
     "yup": "^1.4.0"
   },
-  "types": "dist/madie-madie-editor.d.ts",
   "browserslist": [
     "defaults",
     "not IE 11"

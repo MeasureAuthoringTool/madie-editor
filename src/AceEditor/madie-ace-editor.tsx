@@ -11,9 +11,11 @@ import "./madie-custom.css";
 import { ParsedCql, Statement } from "../model/ParsedCql";
 import {
   CqlMetaData,
+  Code,
   Parameter,
   ValueSetForSearch,
 } from "../api/useTerminologyServiceApi";
+import { EditorAnnotation, EditorErrorMarker } from "../types";
 import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuilder/DefinitionBuilder";
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
@@ -28,7 +30,7 @@ import {
 export interface EditorPropsType {
   value: string;
   onChange?: (value: string) => void;
-  handleApplyCode?: (code: string) => void;
+  handleApplyCode?: (code: Code) => void;
   handleApplyParameter?: (parameter: Parameter) => void;
   handleParameterEdit?: (
     parameter: Parameter,
@@ -48,8 +50,8 @@ export interface EditorPropsType {
   handleFunctionDelete?: (funct: any) => void;
   handleFunctionEdit?: (funct: any, newFunct: string) => void;
   parseDebounceTime?: number;
-  inboundAnnotations?: Ace.Annotation[];
-  inboundErrorMarkers?: Ace.MarkerLike[];
+  inboundAnnotations?: EditorAnnotation[];
+  inboundErrorMarkers?: EditorErrorMarker[];
   height?: string;
   readOnly?: boolean;
   validationsEnabled?: boolean;
@@ -1025,7 +1027,7 @@ const MadieAceEditor = forwardRef<MadieEditorHandle, EditorPropsType>(function M
         if (model) {
           const parseMarkers = cqlErrorsToMonacoMarkers(errors);
           const inboundMarkers = inboundAnnotations
-            ? aceAnnotationsToMonacoMarkers(inboundAnnotations, model)
+            ? aceAnnotationsToMonacoMarkers(inboundAnnotations as Ace.Annotation[], model)
             : [];
           const allMarkers = [...inboundMarkers, ...parseMarkers];
           monacoRef.current.editor.setModelMarkers(
@@ -1055,7 +1057,7 @@ const MadieAceEditor = forwardRef<MadieEditorHandle, EditorPropsType>(function M
         const errors = parseEditorContent(value);
         const parseMarkers = cqlErrorsToMonacoMarkers(errors);
         const inboundMarkers = inboundAnnotations
-          ? aceAnnotationsToMonacoMarkers(inboundAnnotations, model)
+          ? aceAnnotationsToMonacoMarkers(inboundAnnotations as Ace.Annotation[], model)
           : [];
         const allMarkers = [...inboundMarkers, ...parseMarkers];
         monacoRef.current.editor.setModelMarkers(
