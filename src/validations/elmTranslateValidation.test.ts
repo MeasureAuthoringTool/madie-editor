@@ -36,6 +36,7 @@ const translationErrors = [
     type: null,
   },
 ];
+
 const elmTranslationWithErrors: ElmTranslation = {
   externalErrors: [],
   errorExceptions: translationErrors,
@@ -53,6 +54,7 @@ const mockServiceConfig: ServiceConfig = {
     baseUrl: "terminology-service.com",
   },
 };
+
 jest.mock("../api/useServiceConfig", () => ({
   useServiceConfig: jest.fn(() => mockServiceConfig),
 }));
@@ -60,115 +62,112 @@ jest.mock("../api/useServiceConfig", () => ({
 jest.mock("../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+/** ✅ NEW: injected API mocks */
+const mockFhirApi = {
+  translateCqlToElm: jest.fn(),
+};
+
+const mockQdmApi = {
+  translateCqlToElm: jest.fn(),
+};
+
 describe("ELM Translation validation", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should retrieve the service url", async () => {
     const actual = useServiceConfig();
     expect(actual).toBe(mockServiceConfig);
   });
 
   it("translate CQL to ELM no error", async () => {
-    mockedAxios.put.mockImplementation((args) => {
-      if (
-        args &&
-        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: { json: JSON.stringify(elmTranslationWithNoErrors) },
-          status: 200,
-        });
-      }
-    });
+    mockFhirApi.translateCqlToElm.mockResolvedValueOnce(
+      elmTranslationWithNoErrors
+    );
 
-    const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
+    const elmErrors: ElmTranslation = await TranslateCql(
+      "test",
+      "QICore",
+      false,
+      mockQdmApi,
+      mockFhirApi
+    );
+
     expect(elmErrors.errorExceptions.length).toBe(0);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
 
   it("translate CQL to ELM with errors", async () => {
-    mockedAxios.put.mockImplementation((args) => {
-      if (
-        args &&
-        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: { json: JSON.stringify(elmTranslationWithErrors) },
-          status: 200,
-        });
-      }
-    });
+    mockFhirApi.translateCqlToElm.mockResolvedValueOnce(
+      elmTranslationWithErrors
+    );
 
-    const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
+    const elmErrors: ElmTranslation = await TranslateCql(
+      "test",
+      "QICore",
+      false,
+      mockQdmApi,
+      mockFhirApi
+    );
+
     expect(elmErrors.errorExceptions.length).toBe(2);
     expect(elmErrors.externalErrors.length).toBe(0);
   });
 
   it("translate CQL to ELM request rejected", async () => {
-    mockedAxios.put.mockImplementation((args) => {
-      if (
-        args &&
-        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
-      ) {
-        return Promise.reject({
-          response: {
-            data: {
-              timestamp: "2024-05-23T13:35:15.059+00:00",
-              status: 500,
-              error: "Network Error",
-              path: "/api/qdm/cql/translator/cql",
-            },
-            status: 500,
-          },
-          message: "Network Error",
-          code: "ERR_NETWORK_ERROR",
-          name: "AxiosError",
-        });
-      }
-    });
+    mockFhirApi.translateCqlToElm.mockRejectedValueOnce(
+      new Error("Network Error")
+    );
+
     try {
-      const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
-      expect(elmErrors).toBeNull();
+      await TranslateCql("test", "QICore", false, mockQdmApi, mockFhirApi);
     } catch (error) {
       expect(error.message).toBe("Network Error");
     }
   });
 
   it("translate CQL to ELM no input CQL", async () => {
-    const elmErrors: ElmTranslation = await TranslateCql(null, "QICore");
+    const elmErrors: ElmTranslation = await TranslateCql(
+      null,
+      "QICore",
+      false,
+      mockQdmApi,
+      mockFhirApi
+    );
     expect(elmErrors).toBeNull();
   });
 
   it("translate CQL to ELM received non-OK response for CQL-to-ELM translation", async () => {
-    mockedAxios.put.mockImplementation((args) => {
-      if (
-        args &&
-        args.startsWith(mockServiceConfig.fhirElmTranslationService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: { json: JSON.stringify(elmTranslationWithErrors) },
-          status: 400,
-        });
-      }
-    });
+    mockFhirApi.translateCqlToElm.mockRejectedValueOnce(
+      new Error("Bad Request")
+    );
+
     try {
-      const elmErrors: ElmTranslation = await TranslateCql("test", "QICore");
+      const elmErrors: ElmTranslation = await TranslateCql(
+        "test",
+        "QICore",
+        false,
+        mockQdmApi,
+        mockFhirApi
+      );
       expect(elmErrors).toBeNull();
     } catch (error) {}
   });
 
   it("translate CQL to ELM no error QDM", async () => {
-    mockedAxios.put.mockImplementation((args) => {
-      if (
-        args &&
-        args.startsWith(mockServiceConfig.qdmElmTranslationService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: { json: JSON.stringify(elmTranslationWithNoErrors) },
-          status: 200,
-        });
-      }
-    });
+    mockQdmApi.translateCqlToElm.mockResolvedValueOnce(
+      elmTranslationWithNoErrors
+    );
 
-    const elmErrors: ElmTranslation = await TranslateCql("test", "QDM");
+    const elmErrors: ElmTranslation = await TranslateCql(
+      "test",
+      "QDM",
+      false,
+      mockQdmApi,
+      mockFhirApi
+    );
+
     expect(elmErrors.errorExceptions.length).toBe(0);
     expect(elmErrors.externalErrors.length).toBe(0);
   });

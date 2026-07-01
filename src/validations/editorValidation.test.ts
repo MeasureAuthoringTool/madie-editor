@@ -1,10 +1,15 @@
-import { ValidationResult, useGetAllErrors } from "./editorValidation";
+import {
+  ValidationResult,
+  getAllErrors as useGetAllErrors,
+} from "./editorValidation";
 import axios from "../api/axios-instance";
 import { ServiceConfig } from "../api/ServiceContext";
 import useTerminologyServiceApi, {
   ValueSet,
   CustomCqlCode,
 } from "../api/useTerminologyServiceApi";
+import { FhirElmTranslationServiceApi } from "../api/useFhirElmTranslationServiceApi";
+import { QdmElmTranslationServiceApi } from "../api/useQdmElmTranslationServiceApi";
 // @ts-ignore
 import { ElmTranslationExternalError } from "@madie/madie-editor";
 import {
@@ -35,7 +40,6 @@ jest.mock("../api/useTerminologyServiceApi", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
-
 jest.mock("../api/useOktaTokens", () => ({
   __esModule: true,
   default: jest.fn(() => ({
@@ -150,24 +154,20 @@ const cqlToElmExternalErrors: ElmTranslationExternalError[] = [
 
 describe("Editor Validation Test", () => {
   const mockTerminologyApi = {
-    checkLogin: jest.fn().mockRejectedValue({ status: 404, data: false }),
+    checkLogin: jest.fn().mockResolvedValue(true),
     validateCodes: jest.fn().mockResolvedValue(customCqlCodesValid),
-  };
+  } as unknown as TerminologyServiceApi;
 
-  beforeEach(() => {
-    (useTerminologyServiceApi as jest.Mock).mockReturnValue(mockTerminologyApi);
-  });
+  const mockFhirApi = {
+    translateCqlToElm: jest.fn().mockResolvedValue(elmTranslationWithNoErrors),
+  } as unknown as FhirElmTranslationServiceApi;
 
-  // beforeEach(() => {
-  //   (useTerminologyServiceApi as jest.Mock).mockImplementation(() => {
-  //     return {
-  //       checkLogin: jest
-  //         .fn()
-  //         .mockRejectedValueOnce({ status: 404, data: false }),
-  //       validateCodes: jest.fn()
-  //     } as unknown as TerminologyServiceApi;
-  //   });
-  // });
+  const mockQdmApi = {
+    translateCqlToElm: jest.fn(),
+  } as unknown as QdmElmTranslationServiceApi;
+
+  beforeEach(() => {});
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -199,7 +199,9 @@ describe("Editor Validation Test", () => {
     const errorsResult: ValidationResult = await useGetAllErrors(
       "",
       false,
-      useTerminologyServiceApi()
+      mockTerminologyApi,
+      mockQdmApi,
+      mockFhirApi
     );
     expect(errorsResult).toBeNull();
   });
@@ -244,7 +246,9 @@ describe("Editor Validation Test", () => {
     const errorsResult: ValidationResult = await useGetAllErrors(
       editorContent,
       true,
-      useTerminologyServiceApi()
+      mockTerminologyApi,
+      mockQdmApi,
+      mockFhirApi
     );
     expect(errorsResult?.errors.length).toBe(0);
   });
@@ -267,7 +271,9 @@ describe("Editor Validation Test", () => {
       errorExceptions: elmTransaltionErrors,
       library: elmTranslationLibraryWithValueSets,
     };
-
+    mockFhirApi.translateCqlToElm.mockResolvedValueOnce(
+      elmTranslationWithValuesetError
+    );
     mockedAxios.get.mockImplementation((args) => {
       if (
         args &&
@@ -302,10 +308,13 @@ describe("Editor Validation Test", () => {
         });
       }
     });
+
     const errorsResult = await useGetAllErrors(
       editorContent,
       true,
-      useTerminologyServiceApi()
+      mockTerminologyApi,
+      mockQdmApi,
+      mockFhirApi
     );
     expect(errorsResult.errors.length).toBe(4);
   });
@@ -367,7 +376,9 @@ describe("Editor Validation Test", () => {
     const errorsResult = await useGetAllErrors(
       editorContent,
       true,
-      useTerminologyServiceApi()
+      mockTerminologyApi,
+      mockQdmApi,
+      mockFhirApi
     );
     expect(errorsResult.errors.length).toBe(3);
   });
@@ -378,6 +389,13 @@ describe("Editor Validation Test", () => {
       errorExceptions: [],
       library: elmTranslationLibraryWithValueSets,
     };
+
+    mockFhirApi.translateCqlToElm.mockResolvedValueOnce({
+      externalErrors: cqlToElmExternalErrors,
+      errorExceptions: [],
+      library: elmTranslationLibraryWithValueSets,
+    });
+
     mockedAxios.put.mockImplementation((args) => {
       if (
         args &&
@@ -394,7 +412,9 @@ describe("Editor Validation Test", () => {
     const errorsResult = await useGetAllErrors(
       "Library FHIR version 1.0.000",
       false,
-      useTerminologyServiceApi()
+      mockTerminologyApi,
+      mockQdmApi,
+      mockFhirApi
     );
     expect(errorsResult.externalErrors.length).toBe(1);
   });
@@ -435,6 +455,9 @@ describe("Editor Validation Test", () => {
       ],
       library: elmTranslationLibraryWithValueSets,
     };
+    mockFhirApi.translateCqlToElm.mockResolvedValueOnce(
+      elmTranslationWithExternalErrors
+    );
     mockedAxios.put.mockImplementation((args) => {
       if (
         args &&
@@ -459,7 +482,9 @@ describe("Editor Validation Test", () => {
     const errorsResult = await useGetAllErrors(
       editorContent,
       false,
-      useTerminologyServiceApi()
+      mockTerminologyApi,
+      mockQdmApi,
+      mockFhirApi
     );
     expect(errorsResult.errors.length).toBe(5);
     expect(errorsResult.errors[0].message).toEqual(
@@ -508,7 +533,9 @@ describe("Editor Validation Test", () => {
     const errorsResult: ValidationResult = await useGetAllErrors(
       editorContent,
       true,
-      useTerminologyServiceApi()
+      mockTerminologyApi,
+      mockQdmApi,
+      mockFhirApi
     );
 
     expect(errorsResult?.errors.length).toBe(1);

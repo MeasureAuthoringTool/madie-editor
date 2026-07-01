@@ -11,9 +11,11 @@ import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/TranslatedElmModels";
 import {
   ValidationResult,
-  useGetAllErrors,
+  getAllErrors,
 } from "../src/validations/editorValidation";
 import { TerminologyServiceApi } from "./api/useTerminologyServiceApi";
+import { QdmElmTranslationServiceApi } from "./api/useQdmElmTranslationServiceApi";
+import { FhirElmTranslationServiceApi } from "./api/useFhirElmTranslationServiceApi";
 
 export const MadieTerminologyEditor: FC<EditorPropsType> =
   CqlEditorWithTerminology;
@@ -24,8 +26,10 @@ export type { ElmTranslationError };
 export const validateContent: (
   content: string,
   checkContext: boolean,
-  terminologyServiceApi: TerminologyServiceApi
-) => Promise<ValidationResult> = useGetAllErrors;
+  terminologyServiceApi: TerminologyServiceApi,
+  qdmApi: QdmElmTranslationServiceApi,
+  fhirApi: FhirElmTranslationServiceApi
+) => Promise<ValidationResult> = getAllErrors;
 
 export const synchingEditorCqlContent: (
   editorVal: string,

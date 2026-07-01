@@ -14,8 +14,11 @@ import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/TranslatedElmModels";
 import {
   ValidationResult,
-  useGetAllErrors,
+  getAllErrors,
 } from "../src/validations/editorValidation";
+import { FhirElmTranslationServiceApi } from "./api/useFhirElmTranslationServiceApi";
+import { QdmElmTranslationServiceApi } from "./api/useQdmElmTranslationServiceApi";
+import { TerminologyServiceApi } from "./api/useTerminologyServiceApi";
 
 const lifecycles = singleSpaReact({
   React,
@@ -35,8 +38,11 @@ export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 export type { ElmTranslationError };
 export const validateContent: (
   content: string,
-  checkContext: boolean
-) => Promise<ValidationResult> = useGetAllErrors;
+  checkContext: boolean,
+  terminologyServiceApi: TerminologyServiceApi,
+  qdmApi: QdmElmTranslationServiceApi,
+  fhirApi: FhirElmTranslationServiceApi
+) => Promise<ValidationResult> = getAllErrors;
 
 export const synchingEditorCqlContent: (
   editorVal: string,
