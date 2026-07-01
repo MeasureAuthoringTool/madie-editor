@@ -10,13 +10,14 @@ import ValidateCustomCqlCodes, {
   mapCodeSystemErrorsToTranslationErrors,
 } from "../validations/codesystemValidation";
 import TranslateCql from "../validations/elmTranslateValidation";
-import CheckLogin from "../validations/umlsLogin";
 import GetValueSetErrors from "../validations/valuesetValidation";
 import {
   ElmTranslation,
   ElmTranslationError,
   ElmTranslationExternalError,
 } from "../api/TranslatedElmModels";
+import { FhirElmTranslationServiceApi } from "../api/useFhirElmTranslationServiceApi";
+import { QdmElmTranslationServiceApi } from "../api/useQdmElmTranslationServiceApi";
 
 export interface ValidationResult {
   translation: ElmTranslation;
@@ -24,15 +25,17 @@ export interface ValidationResult {
   externalErrors: ElmTranslationExternalError[];
 }
 
-export const useGetAllErrors = async (
+export const getAllErrors = async (
   cql: string,
   checkContext: boolean,
-  terminologyServiceApi: TerminologyServiceApi
+  terminologyServiceApi: TerminologyServiceApi,
+  qdmApi: QdmElmTranslationServiceApi,
+  fhirApi: FhirElmTranslationServiceApi
 ): Promise<ValidationResult> => {
   if (cql && cql.trim().length > 0) {
     const cqlResult: CqlResult = new CqlAntlr(cql).parse();
     const customCqlCodes: CustomCqlCode[] = getCustomCqlCodes(cql, cqlResult);
-    const isLoggedInUMLS = await Promise.resolve(CheckLogin());
+    const isLoggedInUMLS = await terminologyServiceApi.checkLogin();
     const [validatedCodes, translationResults, valuesetsErrors] =
       await Promise.all([
         ValidateCustomCqlCodes(
@@ -42,7 +45,13 @@ export const useGetAllErrors = async (
           terminologyServiceApi
         ),
 
-        TranslateCql(cql, cqlResult?.usings[0]?.name, checkContext),
+        TranslateCql(
+          cql,
+          cqlResult?.usings[0]?.name,
+          checkContext,
+          qdmApi,
+          fhirApi
+        ),
         GetValueSetErrors(
           cqlResult.valueSets,
           isLoggedInUMLS.valueOf(),
@@ -83,6 +92,7 @@ export const useGetAllErrors = async (
   }
   return null;
 };
+
 const updateErrorTypeForTranslationErrors = (
   translationResults: ElmTranslation
 ): ElmTranslationError[] => {

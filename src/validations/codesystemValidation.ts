@@ -1,7 +1,5 @@
 import { CqlCode, CqlCodeSystem } from "@madie/cql-antlr-parser/dist/src";
-import useTerminologyServiceApi, {
-  TerminologyServiceApi,
-} from "../api/useTerminologyServiceApi";
+import { TerminologyServiceApi } from "../api/useTerminologyServiceApi";
 import CqlResult from "@madie/cql-antlr-parser/dist/src/dto/CqlResult";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
 
