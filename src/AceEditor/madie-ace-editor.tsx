@@ -100,12 +100,13 @@ export const updateUsingStatements = (
 ) => {
   const usingStatements: CqlVersion[] = parsedEditorCql.parsedCql.usings;
   const measureModel = usedModel.replace("-", "");
+  const cleanedMeasureModel = measureModel.replace(/\s+/g, "");
   const parsedEditorCqlCopy = { ...parsedEditorCql };
   let isCqlUpdated = false;
   if (usingStatements?.length === 1) {
     const { name, version, start } = usingStatements[0];
     const cleanedVersion = version.replace(/["']/g, "");
-    if (measureModel !== name || modelVersion !== cleanedVersion) {
+    if (cleanedMeasureModel !== name || modelVersion !== cleanedVersion) {
       // keep FHIR if that's the only using model present for QICore but update version if it was incorrect.
       if (measureModel === "QICore" && name === "FHIR") {
         if (cleanedVersion !== "4.0.1") {
@@ -117,7 +118,7 @@ export const updateUsingStatements = (
       } else {
         parsedEditorCqlCopy.cqlArrayToBeFiltered[
           start.line - 1
-        ] = `using ${measureModel} version '${modelVersion}'`;
+        ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
         isCqlUpdated = true;
       }
     }
@@ -144,13 +145,13 @@ export const updateUsingStatements = (
             } else if (name === "QICore" && cleanVersion !== modelVersion) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
               models.add(name);
               isCqlUpdated = true;
             } else if (name === "QDM" && !models.has(measureModel)) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
               models.add(measureModel);
               isCqlUpdated = true;
             } else if (name === "QDM") {
@@ -165,7 +166,7 @@ export const updateUsingStatements = (
             if (name === "QDM" && cleanVersion !== modelVersion) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
               models.add(name);
               isCqlUpdated = true;
             } else if (
@@ -174,7 +175,7 @@ export const updateUsingStatements = (
             ) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
               models.add(measureModel);
               isCqlUpdated = true;
             } else {
