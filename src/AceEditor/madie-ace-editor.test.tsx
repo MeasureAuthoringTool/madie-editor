@@ -671,6 +671,22 @@ describe("updateUsingStatements", () => {
     expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
   });
 
+  it("should not update using statement when model is US Quality Core and using is USQualityCore", async () => {
+    const cql =
+      "library SimpleEncounterMeasure version '0.0.000'\n" +
+      "using USQualityCore version '0.5.0'";
+    const measureModel = "US Quality Core";
+    const measureModelVersion = "0.5.0";
+    const parsedCql = new CqlAntlr(cql)?.parse();
+    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
+      { parsedCql, cqlArrayToBeFiltered: cql.split("\n") },
+      measureModel,
+      measureModelVersion
+    );
+    expect(isCqlUpdated).toEqual(false);
+    expect(cql).toEqual(updatedCqlArray.join("\n"));
+  });
+
   it("should retain only one valid using statement if multiple using statement of same or different model found", async () => {
     const editorCql =
       "library SimpleEncounterMeasure version '0.0.000'\n" +
