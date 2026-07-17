@@ -100,14 +100,15 @@ export const updateUsingStatements = (
 ) => {
   const usingStatements: CqlVersion[] = parsedEditorCql.parsedCql.usings;
   const measureModel = usedModel.replace("-", "");
+  const cleanedMeasureModel = measureModel.replace(/\s+/g, "");
   const parsedEditorCqlCopy = { ...parsedEditorCql };
   let isCqlUpdated = false;
   if (usingStatements?.length === 1) {
     const { name, version, start } = usingStatements[0];
     const cleanedVersion = version.replace(/["']/g, "");
-    if (measureModel !== name || modelVersion !== cleanedVersion) {
+    if (cleanedMeasureModel !== name || modelVersion !== cleanedVersion) {
       // keep FHIR if that's the only using model present for QICore but update version if it was incorrect.
-      if (measureModel === "QICore" && name === "FHIR") {
+      if (cleanedMeasureModel === "QICore" && name === "FHIR") {
         if (cleanedVersion !== "4.0.1") {
           parsedEditorCqlCopy.cqlArrayToBeFiltered[
             start.line - 1
@@ -117,7 +118,7 @@ export const updateUsingStatements = (
       } else {
         parsedEditorCqlCopy.cqlArrayToBeFiltered[
           start.line - 1
-        ] = `using ${measureModel} version '${modelVersion}'`;
+        ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
         isCqlUpdated = true;
       }
     }
@@ -132,9 +133,9 @@ export const updateUsingStatements = (
       const cleanVersion = version.replace(/["']/g, "");
 
       if (!models.has(name)) {
-        if (measureModel !== name || modelVersion !== cleanVersion) {
+        if (cleanedMeasureModel !== name || modelVersion !== cleanVersion) {
           // if measure model is QICore
-          if (measureModel === "QICore") {
+          if (cleanedMeasureModel === "QICore") {
             if (name === "FHIR" && cleanVersion !== "4.0.1") {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
@@ -144,14 +145,14 @@ export const updateUsingStatements = (
             } else if (name === "QICore" && cleanVersion !== modelVersion) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
               models.add(name);
               isCqlUpdated = true;
-            } else if (name === "QDM" && !models.has(measureModel)) {
+            } else if (name === "QDM" && !models.has(cleanedMeasureModel)) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
-              models.add(measureModel);
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
+              models.add(cleanedMeasureModel);
               isCqlUpdated = true;
             } else if (name === "QDM") {
               parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
@@ -161,11 +162,11 @@ export const updateUsingStatements = (
               models.add(name);
             }
             // if measure model is QDM
-          } else if (measureModel === "QDM") {
+          } else if (cleanedMeasureModel === "QDM") {
             if (name === "QDM" && cleanVersion !== modelVersion) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
               models.add(name);
               isCqlUpdated = true;
             } else if (
@@ -174,8 +175,8 @@ export const updateUsingStatements = (
             ) {
               parsedEditorCqlCopy.cqlArrayToBeFiltered[
                 lineIndex
-              ] = `using ${measureModel} version '${modelVersion}'`;
-              models.add(measureModel);
+              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
+              models.add(cleanedMeasureModel);
               isCqlUpdated = true;
             } else {
               parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
