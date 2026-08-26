@@ -29,7 +29,6 @@ import {
 import { Definition } from "../CqlBuilderPanel/definitionsSection/definitionBuilder/DefinitionBuilder";
 import { SelectedLibrary } from "../CqlBuilderPanel/Includes/CqlLibraryDetailsDialog";
 import { Funct } from "../CqlBuilderPanel/functionsSection/functionBuilder/FunctionBuilder";
-import CqlVersion from "@madie/cql-antlr-parser/dist/src/dto/CqlVersion";
 import {
   makeAceSearchElementsAccessible,
   wireAceSearchNavigation,
@@ -82,7 +81,6 @@ export interface EditorPropsType {
 export interface UpdatedCqlObject {
   cql: string;
   isLibraryStatementChanged?: boolean;
-  isUsingStatementChanged?: boolean;
   isValueSetChanged?: boolean;
   isFhirHelpersAliasChanged?: boolean;
   isConceptRemoved?: boolean;
@@ -92,113 +90,6 @@ export interface ParsedCqlObject {
   cql: ParsedCql;
   isConceptRemoved?: boolean;
 }
-
-export const updateUsingStatements = (
-  parsedEditorCql: ParsedCql,
-  usedModel: string,
-  modelVersion: string
-) => {
-  const usingStatements: CqlVersion[] = parsedEditorCql.parsedCql.usings;
-  const measureModel = usedModel.replace("-", "");
-  const cleanedMeasureModel = measureModel.replace(/\s+/g, "");
-  const parsedEditorCqlCopy = { ...parsedEditorCql };
-  let isCqlUpdated = false;
-  if (usingStatements?.length === 1) {
-    const { name, version, start } = usingStatements[0];
-    const cleanedVersion = version.replace(/["']/g, "");
-    if (cleanedMeasureModel !== name || modelVersion !== cleanedVersion) {
-      // keep FHIR if that's the only using model present for QICore but update version if it was incorrect.
-      if (cleanedMeasureModel === "QICore" && name === "FHIR") {
-        if (cleanedVersion !== "4.0.1") {
-          parsedEditorCqlCopy.cqlArrayToBeFiltered[
-            start.line - 1
-          ] = `using FHIR version '4.0.1'`;
-          isCqlUpdated = true;
-        }
-      } else {
-        parsedEditorCqlCopy.cqlArrayToBeFiltered[
-          start.line - 1
-        ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
-        isCqlUpdated = true;
-      }
-    }
-  } else if (usingStatements?.length > 1) {
-    // to track if the usings statement was verified or not
-    const models = new Set();
-    let deletedLineCount = 0;
-
-    usingStatements.forEach((using) => {
-      const { name, version, start } = using;
-      const lineIndex = start.line - (deletedLineCount + 1);
-      const cleanVersion = version.replace(/["']/g, "");
-
-      if (!models.has(name)) {
-        if (cleanedMeasureModel !== name || modelVersion !== cleanVersion) {
-          // if measure model is QICore
-          if (cleanedMeasureModel === "QICore") {
-            if (name === "FHIR" && cleanVersion !== "4.0.1") {
-              parsedEditorCqlCopy.cqlArrayToBeFiltered[
-                lineIndex
-              ] = `using FHIR version '4.0.1'`;
-              models.add(name);
-              isCqlUpdated = true;
-            } else if (name === "QICore" && cleanVersion !== modelVersion) {
-              parsedEditorCqlCopy.cqlArrayToBeFiltered[
-                lineIndex
-              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
-              models.add(name);
-              isCqlUpdated = true;
-            } else if (name === "QDM" && !models.has(cleanedMeasureModel)) {
-              parsedEditorCqlCopy.cqlArrayToBeFiltered[
-                lineIndex
-              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
-              models.add(cleanedMeasureModel);
-              isCqlUpdated = true;
-            } else if (name === "QDM") {
-              parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
-              deletedLineCount++;
-              isCqlUpdated = true;
-            } else {
-              models.add(name);
-            }
-            // if measure model is QDM
-          } else if (cleanedMeasureModel === "QDM") {
-            if (name === "QDM" && cleanVersion !== modelVersion) {
-              parsedEditorCqlCopy.cqlArrayToBeFiltered[
-                lineIndex
-              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
-              models.add(name);
-              isCqlUpdated = true;
-            } else if (
-              !models.has("QDM") &&
-              (name === "QICore" || name === "FHIR")
-            ) {
-              parsedEditorCqlCopy.cqlArrayToBeFiltered[
-                lineIndex
-              ] = `using ${cleanedMeasureModel} version '${modelVersion}'`;
-              models.add(cleanedMeasureModel);
-              isCqlUpdated = true;
-            } else {
-              parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
-              deletedLineCount++;
-              isCqlUpdated = true;
-            }
-          }
-        } else {
-          models.add(name);
-        }
-      } else {
-        parsedEditorCqlCopy.cqlArrayToBeFiltered.splice(lineIndex, 1);
-        deletedLineCount++;
-        isCqlUpdated = true;
-      }
-    });
-  }
-  return {
-    isCqlUpdated,
-    updatedCqlArray: parsedEditorCqlCopy.cqlArrayToBeFiltered,
-  };
-};
 
 export const parseEditorContent = (content): CqlError[] => {
   let errors: CqlError[] = [];
@@ -255,8 +146,7 @@ const parsingLibrary = (parsedCql, cqlArrayToBeFiltered): Statement => {
 /**
  * User is not allowed to update following things in CQL:
  * 1. library version
- * 2. using statement
- * 3. value set can not have version
+ * 2. value set can not have version
  * If any of the above change encountered, it will be reverted
  * @param parsedEditorCql
  * @param libraryName
@@ -275,7 +165,6 @@ const updateCql = (
   const cqlUpdates = {
     cql: "",
     isLibraryStatementChanged: false,
-    isUsingStatementChanged: false,
     isValueSetChanged: false,
     isConceptRemoved: false,
   } as UpdatedCqlObject;
@@ -309,14 +198,6 @@ const updateCql = (
         cqlUpdates.isFhirHelpersAliasChanged = true;
       }
     });
-    // update using statements if they are incorrect
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      parsedEditorCql,
-      usedModel,
-      modelVersion
-    );
-    cqlUpdates.isUsingStatementChanged = isCqlUpdated;
-    parsedEditorCql.cqlArrayToBeFiltered = updatedCqlArray;
 
     // value set with version are not allowed at this moment, remove version
     if (parsedEditorCql.parsedCql?.valueSets) {

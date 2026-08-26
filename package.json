@@ -1,6 +1,6 @@
 {
   "name": "@madie/madie-editor",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "module": "dist/index.es.js",
   "main": "./dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -8,7 +8,6 @@
     "dist/**/*"
   ],
   "scripts": {
-    "start": "webpack serve --port 8501",
     "build": "webpack --mode=production",
     "build:dev": "webpack --mode=development",
     "build:local": "npm run build && npm pack",

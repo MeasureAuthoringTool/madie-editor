@@ -5,7 +5,6 @@ import MadieAceEditor, {
   mapParserErrorsToAceMarkers,
   updateEditorContent,
   setCommandEnabled,
-  updateUsingStatements,
   parseEditorContent,
 } from "./madie-ace-editor";
 
@@ -13,7 +12,6 @@ import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/theme-monokai";
 import userEvent from "@testing-library/user-event";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
-import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 
 describe("MadieAceEditor component", () => {
   it("should create madie editor", async () => {
@@ -304,7 +302,6 @@ describe("synching the cql", () => {
     );
     expect(updatedContent.cql).toEqual(expectValue);
     expect(updatedContent.isLibraryStatementChanged).toEqual(true);
-    expect(updatedContent.isUsingStatementChanged).toEqual(false);
     expect(updatedContent.isValueSetChanged).toEqual(false);
   });
 
@@ -376,41 +373,10 @@ describe("synching the cql", () => {
     expect(updatedContent.isFhirHelpersAliasChanged).toEqual(true);
   });
 
-  test("replacing the error containing using content line to actual using content", async () => {
-    const expectValue = "using QICore version '4.1.1'";
-    const updatedContent = await updateEditorContent(
-      "using QIasdf version '4.1.1'",
-      "",
-      "Test",
-      "",
-      "0.0.000",
-      "QI-Core",
-      "4.1.1",
-      "measureEditor"
-    );
-    expect(updatedContent.cql).toEqual(expectValue);
-    expect(updatedContent.isUsingStatementChanged).toEqual(true);
-  });
-
   test("Not to replace the using FHIR statement for QICore measure if it is the only using statement with correct version", async () => {
     const expectValue = "using FHIR version '4.0.1'";
     const updatedContent = await updateEditorContent(
       "using FHIR version '4.0.1'",
-      "",
-      "Test",
-      "",
-      "0.0.000",
-      "QI-Core",
-      "4.1.1",
-      "measureEditor"
-    );
-    expect(updatedContent.cql).toEqual(expectValue);
-  });
-
-  test("Correct the using FHIR model version for QICore measure if it is the only using statement but incorrect version", async () => {
-    const expectValue = "using FHIR version '4.0.1'";
-    const updatedContent = await updateEditorContent(
-      "using FHIR version '4.1.1'", //incorrect FHIR version
       "",
       "Test",
       "",
@@ -594,224 +560,6 @@ describe("isUsingStatementEmpty", () => {
     );
 
     expect(updatedContents.cql).toEqual(expectValue);
-  });
-});
-
-describe("updateUsingStatements", () => {
-  it("should not update using statement if there is only one using statement and it matches with measure model", async () => {
-    const cql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'";
-    const measureModel = "QICore";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(cql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: cql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(false);
-    expect(cql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should correct using statement if using model does not match with measure model", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QDM version '4.1.1'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'";
-    const measureModel = "QICore";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should correct using statement if using model version does not match with measure model", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '5.6'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'";
-    const measureModel = "QICore";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should keep FHIR and fix FHIR version for QI Core measure when there is one using statement", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using FHIR version '4.1.1'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using FHIR version '4.0.1'";
-    const measureModel = "QI Core";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should not update using statement when model is US Quality Core and using is USQualityCore", async () => {
-    const cql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using USQualityCore version '0.5.0'";
-    const measureModel = "US Quality Core";
-    const measureModelVersion = "0.5.0";
-    const parsedCql = new CqlAntlr(cql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: cql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(false);
-    expect(cql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should retain only one valid using statement if multiple using statement of same or different model found", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'\n" +
-      "using QICore version '4.1.1'\n" +
-      "using QDM version '5.6'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'";
-    const measureModel = "QICore";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should correct QICore and FHIR valid using statement if multiple using statement of QICore and FHIR models found", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.0.1'\n" +
-      "using FHIR version '4.1.1'\n" +
-      "using FHIR version '4.1.1'\n" +
-      "using QICore version '5.6'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'\n" +
-      "using FHIR version '4.0.1'";
-    const measureModel = "QICore";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should correct QICore using statement if QDM is declared first followed by QICore for QICore measure", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QDM version '4.0.1'\n" +
-      "using QICore version '4.1.1'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'";
-    const measureModel = "QICore";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should normalize QI Core measure model and remove QDM when multiple using statements are present", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QDM version '5.6'\n" +
-      "using FHIR version '4.0.1'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'\n" +
-      "using FHIR version '4.0.1'";
-    const measureModel = "QI Core";
-    const measureModelVersion = "4.1.1";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should correct QDM using statement for QDM measure and remove QICore and FHIR using statement if found", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.1.1'\n" +
-      "using FHIR version '4.0.1'\n" +
-      "using FHIR version '4..1'\n" +
-      "using QICore version '5.6'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QDM version '5.6'";
-    const measureModel = "QDM";
-    const measureModelVersion = "5.6";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
-  });
-
-  it("should correct QDM using statement if QICore using is declared first followed by QDM for QDM measure", async () => {
-    const editorCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QICore version '4.0.1'\n" +
-      "using QDM version '4.1.1'";
-    const correctedCql =
-      "library SimpleEncounterMeasure version '0.0.000'\n" +
-      "using QDM version '5.6'";
-    const measureModel = "QDM";
-    const measureModelVersion = "5.6";
-    const parsedCql = new CqlAntlr(editorCql)?.parse();
-    const { isCqlUpdated, updatedCqlArray } = updateUsingStatements(
-      { parsedCql, cqlArrayToBeFiltered: editorCql.split("\n") },
-      measureModel,
-      measureModelVersion
-    );
-    expect(isCqlUpdated).toEqual(true);
-    expect(correctedCql).toEqual(updatedCqlArray.join("\n"));
   });
 });
 
