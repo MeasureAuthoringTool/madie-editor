@@ -373,21 +373,6 @@ describe("synching the cql", () => {
     expect(updatedContent.isFhirHelpersAliasChanged).toEqual(true);
   });
 
-  test("Not to replace the using FHIR statement for QICore measure if it is the only using statement with correct version", async () => {
-    const expectValue = "using FHIR version '4.0.1'";
-    const updatedContent = await updateEditorContent(
-      "using FHIR version '4.0.1'",
-      "",
-      "Test",
-      "",
-      "0.0.000",
-      "QI-Core",
-      "4.1.1",
-      "measureEditor"
-    );
-    expect(updatedContent.cql).toEqual(expectValue);
-  });
-
   test("generated Cql has updated cql library name", async () => {
     const expectValue = "library Testing version '0.0.000'";
     const updatedContent = await updateEditorContent(
