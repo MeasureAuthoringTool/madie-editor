@@ -105,7 +105,7 @@ describe("MadieAceEditor component", () => {
       );
       userEvent.paste(aceEditor, typedValue);
       jest.advanceTimersByTime(600);
-      expect(handleValueChanges).toBeCalledWith(typedValue);
+      expect(handleValueChanges).toHaveBeenCalledWith(typedValue);
     });
   });
 
