@@ -340,7 +340,7 @@ describe("SavedParameters Component tests", () => {
     userEvent.click(cancelBtn);
 
     expect(screen.getByTestId("parameters-row-0")).toBeInTheDocument();
-    expect(handleParameterDelete).not.toBeCalled();
+    expect(handleParameterDelete).not.toHaveBeenCalled();
   });
 
   it("test continue delete parameter when CQL is unchanged", async () => {
@@ -376,7 +376,7 @@ describe("SavedParameters Component tests", () => {
     userEvent.click(continueDeleteBtn);
 
     expect(screen.getByTestId("parameters-row-0")).toBeInTheDocument();
-    expect(handleParameterDelete).toBeCalled();
+    expect(handleParameterDelete).toHaveBeenCalled();
   });
 
   it("test delete parameter discard changes when cql has changes", async () => {

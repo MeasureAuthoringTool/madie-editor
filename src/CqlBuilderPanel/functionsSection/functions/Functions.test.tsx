@@ -331,7 +331,7 @@ describe("Saved Functions Component tests", () => {
     expect(deleteContinueBtn).toBeInTheDocument();
 
     userEvent.click(deleteCancelBtn);
-    expect(handleFunctionDelete).not.toBeCalled();
+    expect(handleFunctionDelete).not.toHaveBeenCalled();
   });
 
   it("Should delete function", async () => {
@@ -376,7 +376,7 @@ describe("Saved Functions Component tests", () => {
     expect(deleteContinueBtn).toBeInTheDocument();
 
     userEvent.click(deleteContinueBtn);
-    expect(handleFunctionDelete).toBeCalled();
+    expect(handleFunctionDelete).toHaveBeenCalled();
   });
 
   it("Should bring up discard dialog when clicked delete button", async () => {
