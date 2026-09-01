@@ -1,0 +1,89 @@
+{
+  "name": "madie-editor",
+  "version": "1.0.0",
+  "description": "This is a single-spa Application responsible for the MADiE application's editor",
+  "longDescription": "The MADiE (Measure Authoring Development Integrated Environment) Editor is a single-spa frontend application that provides the core editing functionality for the MADiE platform.",
+  "status": "Production",
+  "permissions": {
+    "licenses": [
+      {
+        "name": "CC0-1.0",
+        "URL": "https://github.com/MeasureAuthoringTool/madie-editor/blob/main/LICENSE"
+      }
+    ],
+    "usageType": [
+      "openSource"
+    ],
+    "exemptionText": ""
+  },
+  "organization": "Centers for Medicare & Medicaid Services",
+  "repositoryURL": "https://github.com/MeasureAuthoringTool/madie-editor",
+  "repositoryHost": "github.com",
+  "repositoryVisibility": "public",
+  "homepageURL": "",
+  "downloadURL": "",
+  "disclaimerURL": "",
+  "disclaimerText": "",
+  "vcs": "git",
+  "laborHours": 8576,
+  "reuseFrequency": {
+    "forks": 2,
+    "clones": 0
+  },
+  "platforms": [
+    "web"
+  ],
+  "categories": [
+    "design",
+    "application-development"
+  ],
+  "softwareType": "standalone/web",
+  "languages": [
+    "TypeScript",
+    "SCSS",
+    "JavaScript",
+    "CSS",
+    "Shell"
+  ],
+  "maintenance": "internal",
+  "contractNumber": [],
+  "SBOM": "https://github.com/MeasureAuthoringTool/madie-editor/network/dependencies",
+  "relatedCode": [],
+  "reusedCode": [],
+  "partners": [],
+  "date": {
+    "created": "2021-08-31T22:30:47Z",
+    "lastModified": "2026-08-28T14:21:18Z",
+    "metadataLastUpdated": "2026-09-01T04:20:52.849Z"
+  },
+  "tags": [
+    "madie",
+    "measure-authoring",
+    "ecqm",
+    "quality-measures",
+    "healthcare",
+    "single-spa"
+  ],
+  "contact": {
+    "email": "semanticbits-madie-help@icf.com",
+    "name": "MADiE Support Team"
+  },
+  "feedbackMechanism": "https://github.com/MeasureAuthoringTool/madie-editor/issues",
+  "AIUseCaseID": "0",
+  "localisation": false,
+  "repositoryType": "application",
+  "userInput": true,
+  "fismaLevel": "low",
+  "group": "CCSQ",
+  "projects": [
+    "MADiE"
+  ],
+  "systems": [],
+  "subsetInHealthcare": [
+    "operational"
+  ],
+  "userType": [
+    "government"
+  ],
+  "maturityModelTier": 2
+}
