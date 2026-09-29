@@ -267,6 +267,35 @@ describe("CQL sync and parser behavior", () => {
     expect(result.cql).toContain("called FHIRHelpers");
   });
 
+  it("removes valueset version declarations and flags the change", async () => {
+    const cql =
+      "library Test version '0.0.000'\n" +
+      "using QDM version '5.6'\n" +
+      "valueset \"Test VS\":  'urn:oid:2.16.840.1.113762.1.4.1260.162' version 'urn:hl7:version:20240307'\n" +
+      "context Patient";
+
+    const result = await updateEditorContent(
+      cql,
+      "",
+      "Test",
+      "",
+      "0.0.000",
+      "QDM",
+      "5.6",
+      "measureEditor"
+    );
+
+    const valueSetLine = result.cql
+      .split("\n")
+      .find((line) => line.startsWith('valueset "Test VS":'));
+
+    expect(result.isValueSetChanged).toEqual(true);
+    expect(valueSetLine).toBe(
+      "valueset \"Test VS\": 'urn:oid:2.16.840.1.113762.1.4.1260.162'"
+    );
+    expect(valueSetLine).not.toContain("version");
+  });
+
   it("handles CQL without a library statement", async () => {
     const cql = "using QICore version '4.1.1'\ncontext Patient";
 
