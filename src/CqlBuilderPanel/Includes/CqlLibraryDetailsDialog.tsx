@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import { MenuItem } from "@mui/material";
@@ -7,7 +7,7 @@ import {
   TextField,
   Select,
 } from "@madie/madie-design-system/dist/react";
-import AceEditor from "react-ace";
+import Editor from "@monaco-editor/react";
 import { useFormik } from "formik";
 import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";
 
@@ -57,8 +57,6 @@ const CqlLibraryDetailsDialog = ({
   onEdit,
   operation,
 }: PropTypes) => {
-  const aceRef = useRef<AceEditor>(null);
-
   const formik = useFormik({
     initialValues: {
       libraryAlias: library?.alias || "",
@@ -204,15 +202,17 @@ const CqlLibraryDetailsDialog = ({
       </div>
       <br />
       <div>
-        <AceEditor
-          mode="sql"
-          ref={aceRef}
-          theme="monokai"
-          value={library?.cql}
-          width="100%"
-          wrapEnabled={true}
-          readOnly={true}
-          name="cql-editor-dialog-wrapper"
+        <Editor
+          language="sql"
+          value={library?.cql || ""}
+          height="220px"
+          theme="vs-dark"
+          options={{
+            minimap: { enabled: false },
+            wordWrap: "on",
+            scrollBeyondLastLine: false,
+            readOnly: true,
+          }}
         />
       </div>
     </MadieDialog>

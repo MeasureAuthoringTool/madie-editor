@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import ExpandingSection from "../../common/ExpandingSection";
 import { TextField, Button } from "@madie/madie-design-system/dist/react";
-import AceEditor from "react-ace";
+import Editor from "@monaco-editor/react";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object({
@@ -19,11 +19,11 @@ interface ParameterPaneProps {
   handleApplyParameter: Function;
   canEdit: boolean;
 }
+
 export default function ParameterPane({
   handleApplyParameter,
   canEdit,
 }: ParameterPaneProps) {
-  const textAreaRef = useRef(null);
   const [editorHeight, setEditorHeight] = useState("100px");
   const [showEditor, setShowEditor] = useState(false);
   const formik = useFormik({
@@ -40,15 +40,16 @@ export default function ParameterPane({
       }
     },
   });
+
   const { resetForm } = formik;
+
   // adjusting the height of the editor based on the inserted text
   useEffect(() => {
-    if (textAreaRef.current) {
-      const lineCount = textAreaRef.current.editor.session.getLength();
-      const newHeight = Math.max(lineCount * 20, 100) + "px";
-      setEditorHeight(newHeight);
-    }
+    const lineCount = (formik.values.expression || "").split("\n").length;
+    const newHeight = Math.max(lineCount * 20, 100) + "px";
+    setEditorHeight(newHeight);
   }, [formik.values.expression]);
+
   return (
     <>
       <div className="row">
@@ -74,25 +75,24 @@ export default function ParameterPane({
         title="Expression Editor"
         showHeaderContent={showEditor}
       >
-        <AceEditor
-          mode="sql"
-          ref={textAreaRef}
-          theme="monokai"
-          value={formik.values.expression}
-          onChange={(value) => {
-            formik.setFieldValue("expression", value);
-          }}
-          onLoad={(aceEditor) => {
-            // On load we want to tell the ace editor that it's inside of a scrollabel page
-            aceEditor.setOption("autoScrollEditorIntoView", true);
-          }}
-          width="100%"
-          height={editorHeight}
-          wrapEnabled={true}
-          readOnly={!canEdit}
-          name="ace-editor-wrapper"
-          enableBasicAutocompletion={true}
-        />
+        <div id="monaco-editor-wrapper">
+          <Editor
+            language="sql"
+            value={formik.values.expression}
+            height={editorHeight}
+            theme="vs-dark"
+            options={{
+              minimap: { enabled: false },
+              wordWrap: "on",
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              readOnly: !canEdit,
+            }}
+            onChange={(value: string | undefined) => {
+              formik.setFieldValue("expression", value || "");
+            }}
+          />
+        </div>
       </ExpandingSection>
       <div className="form-actions">
         <Button

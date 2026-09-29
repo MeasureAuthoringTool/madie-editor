@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import { Button, TextField } from "@madie/madie-design-system/dist/react";
 import "./Parameters.scss";
 import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValidator";
-import AceEditor from "react-ace";
+import Editor from "@monaco-editor/react";
 
 export interface Parameter {
   parameterName?: string;
@@ -27,8 +27,7 @@ export default function ParameterBuilder({
   parameter,
   setOpenParameterDialog,
 }: ParameterProps) {
-  const [editorHeight, setEditorHeight] = useState("180px");
-  const textAreaRef = useRef(null);
+  const [editorHeight] = useState("180px");
 
   const formik = useFormik({
     initialValues: {
@@ -67,26 +66,24 @@ export default function ParameterBuilder({
         <br />
 
         <FormikProvider value={formik}>
-          <AceEditor
-            mode="sql"
-            ref={textAreaRef}
-            theme="monokai"
-            value={formik.values.expression}
-            onChange={(value) => {
-              formik.setFieldValue("expression", value);
-            }}
-            onLoad={(aceEditor) => {
-              // On load we want to tell the ace editor that it's inside of a scrollabel page
-              aceEditor.setOption("autoScrollEditorIntoView", true);
-            }}
-            width="100%"
-            height={editorHeight}
-            wrapEnabled={true}
-            readOnly={false}
-            name="ace-editor-wrapper"
-            enableBasicAutocompletion={true}
-            //@ts-ignore
-          />
+          <div id="monaco-editor-wrapper">
+            <Editor
+              language="sql"
+              value={formik.values.expression}
+              height={editorHeight}
+              theme="vs-dark"
+              options={{
+                minimap: { enabled: false },
+                wordWrap: "on",
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                readOnly: !canEdit,
+              }}
+              onChange={(value: string | undefined) => {
+                formik.setFieldValue("expression", value || "");
+              }}
+            />
+          </div>
         </FormikProvider>
         <div style={{ marginTop: "24px" }}>
           <div className="form-actions">
@@ -111,7 +108,6 @@ export default function ParameterBuilder({
                   expression: formik.values.expression,
                 };
                 resetForm();
-                // call handleParameterEdit
                 handleParameterEdit(parameter, parameterToApply);
                 onClose();
               }}

@@ -1,9 +1,9 @@
 import {
-  makeAceSearchElementsAccessible,
-  wireAceSearchNavigation,
-} from "./ace-utils";
+  makeMonacoSearchElementsAccessible,
+  wireMonacoSearchNavigation,
+} from "./monaco-utils";
 
-describe("makeAceSearchElementsAccessible", () => {
+describe("makeMonacoSearchElementsAccessible", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });
@@ -18,7 +18,7 @@ describe("makeAceSearchElementsAccessible", () => {
     const clickMock = jest.fn();
     el.click = clickMock;
 
-    makeAceSearchElementsAccessible();
+    makeMonacoSearchElementsAccessible();
 
     expect(el.tabIndex).toBe(0); //we got listeners
     expect(el.getAttribute("role")).toBe("button");
@@ -40,18 +40,18 @@ describe("makeAceSearchElementsAccessible", () => {
     const clickMock = jest.fn();
     el.click = clickMock;
 
-    makeAceSearchElementsAccessible();
+    makeMonacoSearchElementsAccessible();
 
     el.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true }));
     expect(clickMock).toHaveBeenCalled();
   });
 
   it("does not throw when no matching elements exist", () => {
-    expect(() => makeAceSearchElementsAccessible()).not.toThrow();
+    expect(() => makeMonacoSearchElementsAccessible()).not.toThrow();
   });
 });
 
-describe("wireAceSearchNavigation", () => {
+describe("wireMonacoSearchNavigation", () => {
   let elements: Record<string, HTMLElement>;
 
   beforeEach(() => {
@@ -77,7 +77,7 @@ describe("wireAceSearchNavigation", () => {
     // Append to document to allow focus
     Object.values(elements).forEach((el) => document.body.appendChild(el));
 
-    wireAceSearchNavigation(
+    wireMonacoSearchNavigation(
       elements.searchButton,
       elements.findPrevBtn,
       elements.findNextBtn,

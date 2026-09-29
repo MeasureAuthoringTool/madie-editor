@@ -1,11 +1,5 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from "react";
-import AceEditor from "react-ace";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Editor from "@monaco-editor/react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import {
@@ -136,7 +130,6 @@ export default function Results(props: ResultsProps) {
   }, [filteredValueSets, currentPage, currentLimit]);
 
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
-  const aceRef = useRef<AceEditor>(null);
   const [actions, setActions] = useState<ActionItemDef[]>([
     {
       name: "View",
@@ -435,17 +428,21 @@ export default function Results(props: ResultsProps) {
           </AppBar>
           <Divider sx={{ borderColor: "#8c8c8c" }} />
           <div style={{ padding: "32px" }}>
-            <AceEditor
-              mode="sql"
-              ref={aceRef}
-              theme="monokai"
-              value={vsJson}
-              width="100%"
-              wrapEnabled={true}
-              readOnly={true}
-              name="ace-editor-wrapper"
-              enableBasicAutocompletion={true}
-            />
+            <div id="monaco-editor-wrapper">
+              <Editor
+                language="json"
+                value={vsJson}
+                height="420px"
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: false },
+                  wordWrap: "on",
+                  scrollBeyondLastLine: false,
+                  readOnly: true,
+                  automaticLayout: true,
+                }}
+              />
+            </div>
           </div>
         </Dialog>
 

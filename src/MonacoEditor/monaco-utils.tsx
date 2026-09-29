@@ -1,4 +1,4 @@
-export function makeAceSearchElementsAccessible() {
+export function makeMonacoSearchElementsAccessible() {
   document
     .querySelectorAll<HTMLElement>(
       ".ace_search input, .ace_search [action], .ace_searchbtn_close"
@@ -17,7 +17,7 @@ export function makeAceSearchElementsAccessible() {
 }
 
 // Could not find a meaningful way to override Ace Editor's tab order, so we're manually wiring the searchBox behavior
-export function wireAceSearchNavigation(
+export function wireMonacoSearchNavigation(
   searchButton?: HTMLElement | null,
   findPrevBtn?: HTMLElement | null,
   findNextBtn?: HTMLElement | null,

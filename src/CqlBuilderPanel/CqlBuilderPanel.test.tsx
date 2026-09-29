@@ -747,19 +747,19 @@ describe("CqlBuilderPanel", () => {
 
     //paste into editor, check it's there
     const editorValue = "Some more Text";
-    let aceEditor: any = await result.container.querySelector(
-      "#ace-editor-wrapper textarea"
+    let monacoEditor: any = await result.container.querySelector(
+      "#monaco-editor-wrapper textarea"
     );
-    userEvent.paste(aceEditor, editorValue);
-    aceEditor = await result.container.querySelector(
-      "#ace-editor-wrapper textarea"
+    userEvent.paste(monacoEditor, editorValue);
+    monacoEditor = await result.container.querySelector(
+      "#monaco-editor-wrapper textarea"
     );
-    expect(aceEditor.value).toContain(editorValue);
+    expect(monacoEditor.value).toContain(editorValue);
     // check that clear does anything
     userEvent.click(getByTestId("clear-parameter-btn"));
     await waitFor(() => {
       expect(parameterInput.value).toBe("");
-      expect(aceEditor.value).toContain("");
+      expect(monacoEditor.value).toContain("");
     });
   });
 
@@ -816,14 +816,14 @@ describe("CqlBuilderPanel", () => {
 
     //paste into editor, check it's there
     const editorValue = "Some more Text";
-    let aceEditor: any = await result.container.querySelector(
-      "#ace-editor-wrapper textarea"
+    let monacoEditor: any = await result.container.querySelector(
+      "#monaco-editor-wrapper textarea"
     );
-    userEvent.paste(aceEditor, editorValue);
-    aceEditor = await result.container.querySelector(
-      "#ace-editor-wrapper textarea"
+    userEvent.paste(monacoEditor, editorValue);
+    monacoEditor = await result.container.querySelector(
+      "#monaco-editor-wrapper textarea"
     );
-    expect(aceEditor.value).toContain(editorValue);
+    expect(monacoEditor.value).toContain(editorValue);
     // check that clear does anything
     userEvent.click(getByTestId("apply-parameter-btn"));
     await waitFor(() => {
@@ -832,7 +832,7 @@ describe("CqlBuilderPanel", () => {
         parameterName: "SomeText",
       });
       expect(parameterInput.value).toBe("");
-      expect(aceEditor.value).toContain("");
+      expect(monacoEditor.value).toContain("");
     });
   });
 
@@ -889,14 +889,14 @@ describe("CqlBuilderPanel", () => {
 
     //paste into editor, check it's there
     const editorValue = "Some more Text";
-    let aceEditor: any = await result.container.querySelector(
-      "#ace-editor-wrapper textarea"
+    let monacoEditor: any = await result.container.querySelector(
+      "#monaco-editor-wrapper textarea"
     );
-    userEvent.paste(aceEditor, editorValue);
-    aceEditor = await result.container.querySelector(
-      "#ace-editor-wrapper textarea"
+    userEvent.paste(monacoEditor, editorValue);
+    monacoEditor = await result.container.querySelector(
+      "#monaco-editor-wrapper textarea"
     );
-    expect(aceEditor.value).toContain(editorValue);
+    expect(monacoEditor.value).toContain(editorValue);
     // check that clear does anything
     userEvent.click(getByTestId("apply-parameter-btn"));
     await waitFor(() => {
@@ -905,7 +905,7 @@ describe("CqlBuilderPanel", () => {
         parameterName: "SomeText",
       });
       expect(parameterInput.value).toContain("SomeText");
-      expect(aceEditor.value).toContain("Some more Text");
+      expect(monacoEditor.value).toContain("Some more Text");
     });
   });
 
