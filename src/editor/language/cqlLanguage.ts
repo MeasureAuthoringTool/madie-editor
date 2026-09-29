@@ -89,5 +89,13 @@ export const registerCqlLanguage = () => {
     ],
   });
 
+  // TODO: Enable other providers as needed
+  // monaco.languages.registerHoverProvider(...)
+  // monaco.languages.registerCompletionItemProvider(...)
+  // monaco.languages.registerDocumentSemanticTokensProvider(...)
+  // monaco.languages.registerFoldingRangeProvider(...)
+  // monaco.languages.registerCodeActionProvider(...)
+  // monaco.languages.registerDocumentFormattingEditProvider(...)
+
   languageRegistered = true;
 };
