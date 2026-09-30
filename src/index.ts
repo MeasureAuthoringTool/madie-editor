@@ -7,6 +7,9 @@ import MadieMonacoEditor, {
   UpdatedCqlObject,
 } from "./MonacoEditor/madie-monaco-editor";
 import CqlEditorWithTerminology from "./cqlEditorWithTerminology/CqlEditorWithTerminology";
+import JsonMonacoEditor, {
+  JsonMonacoEditorProps,
+} from "./editor/JsonMonacoEditor";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import { ElmTranslationError } from "./api/TranslatedElmModels";
 import { ValidationResult, getAllErrors } from "./validations/editorValidation";
@@ -21,6 +24,7 @@ import {
 export const MadieTerminologyEditor: FC<EditorPropsType> =
   CqlEditorWithTerminology;
 export const MadieEditor: FC<EditorPropsType> = MadieMonacoEditor;
+export const MadieJsonEditor: FC<JsonMonacoEditorProps> = JsonMonacoEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 
 export type { ElmTranslationError };
@@ -47,4 +51,5 @@ export const isUsingEmpty: (editorVal: string) => boolean =
   isUsingStatementEmpty;
 
 export type { EditorPropsType as MadieEditorPropsType };
+export type { JsonMonacoEditorProps };
 export type { EditorAnnotation, EditorErrorMarker };

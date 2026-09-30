@@ -30,6 +30,7 @@ jest.mock(
       KeyCode: { Escape: 9 },
       Range,
       languages: {
+        getLanguages: jest.fn(() => []),
         register: jest.fn(),
         setMonarchTokensProvider: jest.fn(),
         setLanguageConfiguration: jest.fn(),
@@ -50,39 +51,47 @@ jest.mock(
     const React = require("react");
     const monaco = require("monaco-editor");
 
+    const MockMonacoEditor = ({
+      value,
+      onChange,
+      onMount,
+      beforeMount,
+      options,
+    }) => {
+      React.useEffect(() => {
+        if (beforeMount) {
+          beforeMount(monaco);
+        }
+
+        const fakeEditor = {
+          getModel: () => ({ id: "model" }),
+          createDecorationsCollection: () => ({ set: jest.fn() }),
+          onDidFocusEditorText: jest.fn(),
+          onKeyDown: jest.fn(),
+          updateOptions: jest.fn(),
+          getAction: () => ({ run: jest.fn() }),
+        };
+
+        if (onMount) {
+          onMount(fakeEditor, monaco);
+        }
+      }, [onMount, beforeMount]);
+
+      return React.createElement("textarea", {
+        "aria-label": "Cql editor",
+        value: value || "",
+        readOnly: Boolean(options?.readOnly),
+        onChange: (event) => onChange?.(event.target.value),
+      });
+    };
+
     return {
       __esModule: true,
       loader: {
         config: jest.fn(),
         init: jest.fn(() => Promise.resolve(monaco)),
       },
-      default: ({ value, onChange, onMount, beforeMount, options }) => {
-        React.useEffect(() => {
-          if (beforeMount) {
-            beforeMount(monaco);
-          }
-
-          const fakeEditor = {
-            getModel: () => ({ id: "model" }),
-            createDecorationsCollection: () => ({ set: jest.fn() }),
-            onDidFocusEditorText: jest.fn(),
-            onKeyDown: jest.fn(),
-            updateOptions: jest.fn(),
-            getAction: () => ({ run: jest.fn() }),
-          };
-
-          if (onMount) {
-            onMount(fakeEditor, monaco);
-          }
-        }, [onMount, beforeMount]);
-
-        return React.createElement("textarea", {
-          "aria-label": "Cql editor",
-          value: value || "",
-          readOnly: Boolean(options?.readOnly),
-          onChange: (event) => onChange?.(event.target.value),
-        });
-      },
+      default: MockMonacoEditor,
     };
   },
   { virtual: true }
