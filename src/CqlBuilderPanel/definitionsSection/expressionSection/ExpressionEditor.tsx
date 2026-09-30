@@ -102,7 +102,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       return;
     }
 
-    // Preserve the legacy ref contract used by Definition/Function builders.
+    // Preserve the ref contract used by Definition/Function builders.
     textAreaRef.current = {
       editor: {
         session: {
