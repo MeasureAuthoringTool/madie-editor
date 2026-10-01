@@ -5,7 +5,9 @@ import { useFormik, FormikProvider } from "formik";
 import { Button, TextField } from "@madie/madie-design-system/dist/react";
 import "./Parameters.scss";
 import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValidator";
-import Editor from "@monaco-editor/react";
+import MonacoCqlEditor, {
+  MonacoParseResult,
+} from "../../editor/MonacoCqlEditor";
 
 export interface Parameter {
   parameterName?: string;
@@ -19,6 +21,8 @@ export interface ParameterProps {
   onClose?: Function;
   setOpenParameterDialog?: Function;
 }
+
+const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
 
 export default function ParameterBuilder({
   canEdit,
@@ -66,22 +70,15 @@ export default function ParameterBuilder({
         <br />
 
         <FormikProvider value={formik}>
-          <div id="monaco-editor-wrapper">
-            <Editor
-              language="sql"
+          <div id="parameter-editor-wrapper">
+            <MonacoCqlEditor
               value={formik.values.expression}
               height={editorHeight}
-              theme="vs-dark"
-              options={{
-                minimap: { enabled: false },
-                wordWrap: "on",
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                readOnly: !canEdit,
-              }}
+              readOnly={!canEdit}
               onChange={(value: string | undefined) => {
                 formik.setFieldValue("expression", value || "");
               }}
+              parseValue={() => emptyParseResult}
             />
           </div>
         </FormikProvider>

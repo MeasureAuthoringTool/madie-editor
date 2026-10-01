@@ -439,7 +439,7 @@ export default function Results(props: ResultsProps) {
           </AppBar>
           <Divider sx={{ borderColor: "#8c8c8c" }} />
           <div style={{ padding: "32px" }}>
-            <div id="monaco-editor-wrapper">
+            <div id="valueset-editor-wrapper">
               <JsonMonacoEditor
                 value={vsJson}
                 height="420px"
