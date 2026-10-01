@@ -748,11 +748,11 @@ describe("CqlBuilderPanel", () => {
     //paste into editor, check it's there
     const editorValue = "Some more Text";
     let monacoEditor: any = await result.container.querySelector(
-      "#monaco-editor-wrapper textarea"
+      "#parameter-editor-wrapper textarea"
     );
     userEvent.paste(monacoEditor, editorValue);
     monacoEditor = await result.container.querySelector(
-      "#monaco-editor-wrapper textarea"
+      "#parameter-editor-wrapper textarea"
     );
     expect(monacoEditor.value).toContain(editorValue);
     // check that clear does anything
@@ -817,11 +817,11 @@ describe("CqlBuilderPanel", () => {
     //paste into editor, check it's there
     const editorValue = "Some more Text";
     let monacoEditor: any = await result.container.querySelector(
-      "#monaco-editor-wrapper textarea"
+      "#parameter-editor-wrapper textarea"
     );
     userEvent.paste(monacoEditor, editorValue);
     monacoEditor = await result.container.querySelector(
-      "#monaco-editor-wrapper textarea"
+      "#parameter-editor-wrapper textarea"
     );
     expect(monacoEditor.value).toContain(editorValue);
     // check that clear does anything
@@ -890,11 +890,11 @@ describe("CqlBuilderPanel", () => {
     //paste into editor, check it's there
     const editorValue = "Some more Text";
     let monacoEditor: any = await result.container.querySelector(
-      "#monaco-editor-wrapper textarea"
+      "#parameter-editor-wrapper textarea"
     );
     userEvent.paste(monacoEditor, editorValue);
     monacoEditor = await result.container.querySelector(
-      "#monaco-editor-wrapper textarea"
+      "#parameter-editor-wrapper textarea"
     );
     expect(monacoEditor.value).toContain(editorValue);
     // check that clear does anything

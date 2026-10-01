@@ -78,7 +78,7 @@ export default function ParameterPane({
         title="Expression Editor"
         showHeaderContent={showEditor}
       >
-        <div id="monaco-editor-wrapper">
+        <div id="parameter-editor-wrapper">
           <MonacoCqlEditor
             value={formik.values.expression}
             height={editorHeight}
