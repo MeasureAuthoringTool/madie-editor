@@ -22,13 +22,18 @@ import "./monaco-custom.css";
 // `monaco` (used for themes, language registration and markers) is a
 // DIFFERENT instance than the one the <Editor /> renders, so none of that
 // configuration (including the theme) takes effect.
-loader.config({ monaco });
+loader?.config?.({ monaco });
 
 type MonacoApi = typeof monaco;
 
 export interface MonacoParseResult {
   annotations: EditorAnnotation[];
   markers: EditorErrorMarker[];
+}
+
+export interface MonacoEditorCursorPosition {
+  row: number;
+  column: number;
 }
 
 interface MonacoCqlEditorProps {
@@ -41,6 +46,8 @@ interface MonacoCqlEditorProps {
   readOnly?: boolean;
   validationsEnabled?: boolean;
   setOutboundAnnotations?: Function;
+  onMountEditor?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
+  onCursorPositionChange?: (position: MonacoEditorCursorPosition) => void;
   parseValue: (nextValue: string) => MonacoParseResult;
 }
 
@@ -54,6 +61,8 @@ const MonacoCqlEditor = ({
   readOnly = false,
   validationsEnabled = true,
   setOutboundAnnotations,
+  onMountEditor,
+  onCursorPositionChange,
   parseValue,
 }: MonacoCqlEditorProps) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -156,15 +165,24 @@ const MonacoCqlEditor = ({
         modelMonaco: MonacoApi
       ) => {
         editorRef.current = editor;
-        modelRef.current = editor.getModel();
-        decorationsRef.current = editor.createDecorationsCollection([]);
+        modelRef.current = editor.getModel?.() ?? null;
+        decorationsRef.current =
+          editor.createDecorationsCollection?.([]) ?? null;
+        onMountEditor?.(editor);
 
-        editor.onDidFocusEditorText(() => {
+        editor.onDidFocusEditorText?.(() => {
           editor.updateOptions({ tabFocusMode: false });
         });
 
+        editor.onDidChangeCursorPosition?.((event) => {
+          onCursorPositionChange?.({
+            row: event.position.lineNumber - 1,
+            column: event.position.column - 1,
+          });
+        });
+
         // Press Esc to return tab behavior to page navigation.
-        editor.onKeyDown((event: monaco.IKeyboardEvent) => {
+        editor.onKeyDown?.((event: monaco.IKeyboardEvent) => {
           if (event.keyCode === modelMonaco.KeyCode.Escape) {
             editor.updateOptions({ tabFocusMode: true });
           }

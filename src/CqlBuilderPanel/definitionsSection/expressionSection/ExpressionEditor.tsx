@@ -18,7 +18,9 @@ import Skeleton from "@mui/material/Skeleton";
 
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 
-import Editor from "@monaco-editor/react";
+import MonacoCqlEditor, {
+  MonacoParseResult,
+} from "../../../editor/MonacoCqlEditor";
 import { useFormikContext } from "formik";
 
 interface ExpressionsProps {
@@ -57,6 +59,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   const monacoEditorRef = useRef<any>(null);
   const editorValueRef = useRef(expressionEditorValue || "");
   const formik: any = useFormikContext();
+  const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
 
   const renderMenuItems = (options: string[]) => {
     return cqlBuilderLookupsTypes
@@ -257,32 +260,21 @@ export default function ExpressionEditor(props: ExpressionsProps) {
             </div>
             <div style={{ marginBottom: "72px" }} />
             <div
-              data-testid="expression-monaco-editor"
-              id="monaco-editor-wrapper"
+              data-testid="expression-editor-wrapper"
+              id="expression-editor-wrapper"
             >
-              <Editor
-                language="sql"
+              <MonacoCqlEditor
                 value={expressionEditorValue}
                 height={editorHeight}
-                theme="vs-dark"
-                options={{
-                  minimap: { enabled: false },
-                  wordWrap: "on",
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
+                validationsEnabled={false}
+                onChange={(value: string) => {
+                  handleContentChange(value);
                 }}
-                onChange={(value: string | undefined) => {
-                  handleContentChange(value || "");
-                }}
-                onMount={(editor) => {
+                onMountEditor={(editor) => {
                   monacoEditorRef.current = editor;
-                  editor.onDidChangeCursorPosition?.((event) => {
-                    handleCursorChange({
-                      row: event.position.lineNumber - 1,
-                      column: event.position.column - 1,
-                    });
-                  });
                 }}
+                onCursorPositionChange={handleCursorChange}
+                parseValue={() => emptyParseResult}
               />
             </div>
           </>
