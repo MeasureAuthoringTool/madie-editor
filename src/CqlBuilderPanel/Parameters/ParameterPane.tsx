@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import ExpandingSection from "../../common/ExpandingSection";
 import { TextField, Button } from "@madie/madie-design-system/dist/react";
-import Editor from "@monaco-editor/react";
 import * as Yup from "yup";
+import MonacoCqlEditor, {
+  MonacoParseResult,
+} from "../../editor/MonacoCqlEditor";
 
 const validationSchema = Yup.object({
   parameterName: Yup.string()
@@ -42,6 +44,7 @@ export default function ParameterPane({
   });
 
   const { resetForm } = formik;
+  const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
 
   // adjusting the height of the editor based on the inserted text
   useEffect(() => {
@@ -76,21 +79,14 @@ export default function ParameterPane({
         showHeaderContent={showEditor}
       >
         <div id="monaco-editor-wrapper">
-          <Editor
-            language="sql"
+          <MonacoCqlEditor
             value={formik.values.expression}
             height={editorHeight}
-            theme="vs-dark"
-            options={{
-              minimap: { enabled: false },
-              wordWrap: "on",
-              scrollBeyondLastLine: false,
-              automaticLayout: true,
-              readOnly: !canEdit,
+            readOnly={!canEdit}
+            onChange={(value: string) => {
+              formik.setFieldValue("expression", value);
             }}
-            onChange={(value: string | undefined) => {
-              formik.setFieldValue("expression", value || "");
-            }}
+            parseValue={() => emptyParseResult}
           />
         </div>
       </ExpandingSection>
