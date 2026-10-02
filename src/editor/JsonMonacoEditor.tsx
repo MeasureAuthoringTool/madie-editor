@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import MonacoEditor from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import type * as monaco from "monaco-editor";
 import {
   JSON_BASIC_LANGUAGE_ID,
@@ -90,7 +90,7 @@ const JsonMonacoEditor = ({
 
   return (
     <div data-testid={testId} style={{ width, height }}>
-      <MonacoEditor
+      <Editor
         language={JSON_BASIC_LANGUAGE_ID}
         theme={theme}
         value={value ?? ""}
