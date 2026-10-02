@@ -48,7 +48,7 @@
     "ace-builds": "^1.35.4",
     "autoprefixer": "^10.4.2",
     "babel-jest": "^30.4.1",
-    "concurrently": "^7.1.0",
+    "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "eslint": "^8.11.0",
     "eslint-config-prettier": "^8.5.0",
