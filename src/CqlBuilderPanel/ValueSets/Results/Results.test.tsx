@@ -7,7 +7,6 @@ import {
   ValueSetForSearch,
   TerminologyServiceApi,
 } from "../../../api/useTerminologyServiceApi";
-import { find } from "styled-components/test-utils";
 
 const mockTerminologyServiceApi = {
   getValueSet: jest.fn().mockResolvedValue({}),

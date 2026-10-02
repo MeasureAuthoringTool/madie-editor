@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import {
@@ -18,8 +18,9 @@ import Skeleton from "@mui/material/Skeleton";
 
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 
-import AceEditor from "react-ace";
-import { Ace } from "ace-builds";
+import MonacoCqlEditor, {
+  MonacoParseResult,
+} from "../../../editor/MonacoCqlEditor";
 import { useFormikContext } from "formik";
 
 interface ExpressionsProps {
@@ -55,7 +56,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   } = props;
   const [namesOptions, setNamesOptions] = useState([]);
   const [editorHeight, setEditorHeight] = useState("100px");
+  const monacoEditorRef = useRef<any>(null);
+  const editorValueRef = useRef(expressionEditorValue || "");
   const formik: any = useFormikContext();
+  const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
 
   const renderMenuItems = (options: string[]) => {
     return cqlBuilderLookupsTypes
@@ -92,20 +96,62 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       : lookupTypeName;
   };
 
+  useEffect(() => {
+    editorValueRef.current = expressionEditorValue || "";
+  }, [expressionEditorValue]);
+
+  useEffect(() => {
+    if (!textAreaRef) {
+      return;
+    }
+
+    // Preserve the ref contract used by Definition/Function builders.
+    textAreaRef.current = {
+      editor: {
+        session: {
+          getLength: () => editorValueRef.current.split("\n").length,
+        },
+        setValue: (nextValue: string) => {
+          editorValueRef.current = nextValue || "";
+          monacoEditorRef.current?.setValue?.(nextValue || "");
+        },
+        moveCursorTo: (row: number, column: number) => {
+          monacoEditorRef.current?.setPosition?.({
+            lineNumber: row + 1,
+            column: column + 1,
+          });
+        },
+        clearSelection: () => {
+          const position = monacoEditorRef.current?.getPosition?.();
+          if (position) {
+            monacoEditorRef.current?.setSelection?.({
+              startLineNumber: position.lineNumber,
+              startColumn: position.column,
+              endLineNumber: position.lineNumber,
+              endColumn: position.column,
+            });
+          }
+        },
+      },
+    };
+
+    return () => {
+      textAreaRef.current = null;
+    };
+  }, [textAreaRef]);
+
   // adjusting the height of the editor based on the inserted text
   useEffect(() => {
-    if (textAreaRef.current) {
-      const lineCount = textAreaRef.current.editor.session.getLength();
-      // newNeight should not exceed 180
-      /*
-      Text entry control (with line numbers, but only starting with 1 line, expandable as more text is added to it, max height is 11 lines and then it scrolls)
-      https://jira.cms.gov/browse/MAT-7792
-      */
-      const maxHeight = 180;
-      const proposedNewHeight = Math.max(lineCount * 20, 100);
-      const newHeight = Math.min(maxHeight, proposedNewHeight) + "px";
-      setEditorHeight(newHeight);
-    }
+    const lineCount = (expressionEditorValue || "").split("\n").length;
+    // newHeight should not exceed 180
+    /*
+    Text entry control (with line numbers, but only starting with 1 line, expandable as more text is added to it, max height is 11 lines and then it scrolls)
+    https://jira.cms.gov/browse/MAT-7792
+    */
+    const maxHeight = 180;
+    const proposedNewHeight = Math.max(lineCount * 20, 100);
+    const newHeight = Math.min(maxHeight, proposedNewHeight) + "px";
+    setEditorHeight(newHeight);
   }, [expressionEditorValue]);
 
   useEffect(() => {
@@ -213,28 +259,22 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </Button>
             </div>
             <div style={{ marginBottom: "72px" }} />
-            <div data-testId="expression-ace-editor">
-              <AceEditor
-                mode="sql"
-                ref={textAreaRef}
-                theme="monokai"
+            <div
+              data-testid="expression-editor-wrapper"
+              id="expression-editor-wrapper"
+            >
+              <MonacoCqlEditor
                 value={expressionEditorValue}
-                onChange={(value) => {
+                height={editorHeight}
+                validationsEnabled={false}
+                onChange={(value: string) => {
                   handleContentChange(value);
                 }}
-                onLoad={(aceEditor) => {
-                  // On load we want to tell the ace editor that it's inside of a scrollabel page
-                  aceEditor.setOption("autoScrollEditorIntoView", true);
+                onMountEditor={(editor) => {
+                  monacoEditorRef.current = editor;
                 }}
-                onCursorChange={(selection) =>
-                  handleCursorChange(selection.getCursor())
-                }
-                width="100%"
-                height={editorHeight}
-                wrapEnabled={true}
-                readOnly={false}
-                name="ace-editor-wrapper"
-                enableBasicAutocompletion={true}
+                onCursorPositionChange={handleCursorChange}
+                parseValue={() => emptyParseResult}
               />
             </div>
           </>

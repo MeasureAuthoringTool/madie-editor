@@ -1,0 +1,26 @@
+.madie-cql-glyph-error {
+  background: #ff4d4f;
+  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.madie-cql-glyph-warning {
+  background: #faad14;
+  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.madie-cql-glyph-info {
+  background: #1677ff;
+  border-radius: 50%;
+  width: 8px !important;
+  height: 8px !important;
+  margin-left: 5px;
+  margin-top: 5px;
+}

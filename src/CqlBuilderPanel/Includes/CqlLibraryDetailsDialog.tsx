@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import { MenuItem } from "@mui/material";
@@ -7,8 +7,10 @@ import {
   TextField,
   Select,
 } from "@madie/madie-design-system/dist/react";
-import AceEditor from "react-ace";
 import { useFormik } from "formik";
+import MonacoCqlEditor, {
+  MonacoParseResult,
+} from "../../editor/MonacoCqlEditor";
 import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";
 
 export interface SelectedLibrary {
@@ -21,6 +23,7 @@ export interface SelectedLibrary {
   cql?: string;
   alias?: string;
 }
+
 interface PropTypes {
   library: SelectedLibrary;
   open: boolean;
@@ -47,6 +50,8 @@ const ReadOnlyLabelValue = ({
   );
 };
 
+const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
+
 const CqlLibraryDetailsDialog = ({
   library,
   open,
@@ -57,8 +62,6 @@ const CqlLibraryDetailsDialog = ({
   onEdit,
   operation,
 }: PropTypes) => {
-  const aceRef = useRef<AceEditor>(null);
-
   const formik = useFormik({
     initialValues: {
       libraryAlias: library?.alias || "",
@@ -66,7 +69,7 @@ const CqlLibraryDetailsDialog = ({
     },
     validationSchema: EditLibraryDetailsSchemaValidator,
     onSubmit: ({ version, libraryAlias }) => {
-      if (operation === "edit") {
+      if (operation === "edit" && onEdit) {
         onEdit(library, {
           name: library.name,
           version: version,
@@ -125,6 +128,7 @@ const CqlLibraryDetailsDialog = ({
       return <ReadOnlyLabelValue label="Alias" value={library?.alias} />;
     }
   };
+
   const getLibraryVersionView = () => {
     if (canEdit) {
       return (
@@ -203,16 +207,16 @@ const CqlLibraryDetailsDialog = ({
         </div>
       </div>
       <br />
-      <div>
-        <AceEditor
-          mode="sql"
-          ref={aceRef}
-          theme="monokai"
-          value={library?.cql}
-          width="100%"
-          wrapEnabled={true}
+      <div
+        data-testid="include-library-editor-wrapper"
+        id="include-library-editor-wrapper"
+      >
+        <MonacoCqlEditor
+          value={library?.cql || ""}
+          height="220px"
           readOnly={true}
-          name="cql-editor-dialog-wrapper"
+          validationsEnabled={false}
+          parseValue={() => emptyParseResult}
         />
       </div>
     </MadieDialog>

@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = (env, argv) => ({
   mode: argv.mode || "production",
@@ -26,7 +27,6 @@ module.exports = (env, argv) => ({
     rules: [
       {
         test: /\.m?js/,
-        // for Ace dynamic require
         type: "javascript/auto",
       },
       {
@@ -46,11 +46,17 @@ module.exports = (env, argv) => ({
     exprContextCritical: false,
   },
 
+  // Keep lazy imports in a single bundle so the library does not emit async
+  // chunks. Consumer micro-frontends only serve the main bundle, so extra chunk
+  // requests would 404 at runtime.
+  plugins: [
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
+    }),
+  ],
   externals: {
     react: "react",
     "react-dom": "react-dom",
-    "react-ace": "react-ace",
-    "ace-builds": "ace-builds",
 
     "@emotion/react": "@emotion/react",
     "@emotion/styled": "@emotion/styled",
