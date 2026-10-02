@@ -1,7 +1,7 @@
 import {
   makeMonacoSearchElementsAccessible,
   wireMonacoSearchNavigation,
-} from "./monaco-utils";
+} from "./MonacoUtils";
 
 describe("makeMonacoSearchElementsAccessible", () => {
   beforeEach(() => {

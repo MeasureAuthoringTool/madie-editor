@@ -1,28 +1,24 @@
 import * as React from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
-import MadieMonacoEditor, {
+import MadieCqlEditor, {
   isUsingStatementEmpty,
   mapParserErrorsToMonacoAnnotations,
   mapParserErrorsToMonacoMarkers,
   parseEditorContent,
   setCommandEnabled,
   updateEditorContent,
-} from "./madie-monaco-editor";
+} from "./MadieCqlEditor";
 
-describe("MadieMonacoEditor rendering", () => {
+describe("MadieCqlEditor rendering", () => {
   it("renders editor textbox", () => {
-    render(
-      <MadieMonacoEditor serviceConfig={{}} value="" onChange={jest.fn()} />
-    );
+    render(<MadieCqlEditor serviceConfig={{}} value="" onChange={jest.fn()} />);
     expect(screen.getByLabelText("Cql editor")).toBeInTheDocument();
   });
 
   it("calls onChange when text updates", () => {
     const onChange = jest.fn();
-    render(
-      <MadieMonacoEditor serviceConfig={{}} value="" onChange={onChange} />
-    );
+    render(<MadieCqlEditor serviceConfig={{}} value="" onChange={onChange} />);
 
     fireEvent.change(screen.getByLabelText("Cql editor"), {
       target: { value: 'define "A": true' },
@@ -33,7 +29,7 @@ describe("MadieMonacoEditor rendering", () => {
 
   it("applies readonly mode", () => {
     render(
-      <MadieMonacoEditor
+      <MadieCqlEditor
         serviceConfig={{}}
         value=""
         onChange={jest.fn()}
@@ -49,7 +45,7 @@ describe("MadieMonacoEditor rendering", () => {
       const invalidCql =
         "library Test version '0.0.000'\nusing QICore version '4.1.1'";
       render(
-        <MadieMonacoEditor
+        <MadieCqlEditor
           serviceConfig={{}}
           value={invalidCql}
           onChange={jest.fn()}

@@ -314,7 +314,7 @@ export const setCommandEnabled = (
   editor.commands.addCommand(command);
 };
 
-const MadieMonacoEditor = ({
+const MadieCqlEditor = ({
   value,
   onChange,
   height,
@@ -349,4 +349,4 @@ const MadieMonacoEditor = ({
   );
 };
 
-export default MadieMonacoEditor;
+export default MadieCqlEditor;

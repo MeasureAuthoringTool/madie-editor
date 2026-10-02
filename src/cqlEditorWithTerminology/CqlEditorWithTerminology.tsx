@@ -1,7 +1,7 @@
 import React, { MouseEvent, useState } from "react";
-import MadieMonacoEditor, {
+import MadieCqlEditor, {
   EditorPropsType,
-} from "../MonacoEditor/madie-monaco-editor";
+} from "../madieCqlEditor/MadieCqlEditor";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import "./CqlEditorWithTerminology.scss";
@@ -94,7 +94,7 @@ const CqlEditorWithTerminology = ({
             <div className="left-panel">
               <div className="panel-content">
                 {/* needs to be difference between parent and sibling */}
-                <MadieMonacoEditor
+                <MadieCqlEditor
                   value={value}
                   onChange={onChange}
                   height={height}

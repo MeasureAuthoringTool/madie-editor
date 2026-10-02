@@ -1,11 +1,11 @@
 import { FC } from "react";
-import MadieMonacoEditor, {
+import MadieCqlEditor, {
   EditorPropsType,
   parseEditorContent,
   isUsingStatementEmpty,
   updateEditorContent,
   UpdatedCqlObject,
-} from "./MonacoEditor/madie-monaco-editor";
+} from "./madieCqlEditor/MadieCqlEditor";
 import CqlEditorWithTerminology from "./cqlEditorWithTerminology/CqlEditorWithTerminology";
 import JsonMonacoEditor, {
   JsonMonacoEditorProps,
@@ -23,7 +23,7 @@ import {
 
 export const MadieTerminologyEditor: FC<EditorPropsType> =
   CqlEditorWithTerminology;
-export const MadieEditor: FC<EditorPropsType> = MadieMonacoEditor;
+export { MadieCqlEditor };
 export const MadieJsonEditor: FC<JsonMonacoEditorProps> = JsonMonacoEditor;
 export const parseContent: (content: string) => CqlError[] = parseEditorContent;
 
