@@ -80,7 +80,7 @@
   },
   "dependencies": {
     "@madie/cql-antlr-parser": "^1.0.12",
-    "@madie/madie-design-system": "^1.2.88",
+    "@madie/madie-design-system": "^1.2.96",
     "@mui/icons-material": "^5.5.1",
     "@mui/lab": "^5.0.0-alpha.73",
     "@mui/material": "^5.2.6",
@@ -93,7 +93,7 @@
     "css-loader": "^7.1.4",
     "formik": "^2.4.5",
     "lodash": "^4.18.1",
-    "moment": "^2.30.1",
+    "moment": "^2.31.0",
     "sass-loader": "^12.6.0",
     "style-loader": "^4.0.0",
     "styled-components": "^5.3.7",
