@@ -1,0 +1,24 @@
+#function-argument-tbl {
+  .arrow-container {
+    display: flex;
+    flex-direction: column;
+
+    > button {
+      display: flex;
+      align-self: center;
+
+      &:hover > svg {
+        color: #197b9e;
+      }
+
+      // prevent hover from showing on disabled
+      &:disabled > svg {
+        color: #717171 !important;
+      }
+    }
+    > button > svg {
+      color: #000;
+      display: flex;
+    }
+  }
+}

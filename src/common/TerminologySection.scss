@@ -1,0 +1,39 @@
+.terminology-section-tab-heading {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+
+  > .heading-row {
+    display: flex;
+    border-bottom: solid 1px #8c8c8c;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+
+    > .header {
+      color: #125496;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: normal;
+    }
+
+    > .chevron-display {
+      color: #0073c8;
+      transition: all 0.2s ease;
+
+      &.open {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  > .growing-div {
+    flex-direction: column;
+
+    &.open {
+      padding-top: 24px;
+    }
+  }
+}

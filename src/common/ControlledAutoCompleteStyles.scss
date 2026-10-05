@@ -1,0 +1,70 @@
+$pointerWidth: 16px;
+
+#madie-editor-search {
+  .paper-root {
+    overflow: visible;
+  }
+
+  .madie-tooltip-container {
+    position: relative;
+    overflow: visible;
+    pointer-events: all;
+    cursor: default; // need to override clickable display
+    /*
+    When disabled, opacity is added to list item. This is passed to all children. 
+    We don't want this making it to the tooltip so we instead use opacity argument for individual properties
+    */
+    opacity: 1;
+    background: rgb(255, 255, 255, 0.38);
+    color: rgba(0, 0, 0, 0.38);
+
+    &:hover {
+      > span {
+        pointer-events: none;
+      }
+
+      > .madie-tooltip {
+        visibility: visible;
+      }
+    }
+
+    > span {
+      color: rgba(0, 0, 0, 0.38);
+    }
+
+    > .madie-tooltip {
+      visibility: hidden;
+      z-index: 1;
+      border-radius: 4px;
+      color: #fff;
+      background: #333;
+      padding: 8px 16px;
+      position: absolute;
+      bottom: -28px;
+      width: 245px;
+      left: 0;
+      overflow: visible;
+      opacity: 1 !important;
+
+      > p {
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        margin: 0;
+      }
+
+      &:after {
+        content: "";
+        z-index: -1;
+        position: absolute;
+        top: -8px;
+        height: 16px;
+        width: $pointerWidth;
+        background-color: #333;
+        rotate: 45deg;
+        // given x dimension is 16px, we want to offset by half the x to hit center.
+        left: calc(50% - calc($pointerWidth / 2));
+      }
+    }
+  }
+}

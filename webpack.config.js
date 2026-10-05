@@ -1,103 +1,79 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { mergeWithRules } = require("webpack-merge");
-const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
 const path = require("path");
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const webpack = require("webpack");
 
-const orgName = "madie";
+module.exports = (env, argv) => ({
+  mode: argv.mode || "production",
 
-module.exports = (webpackConfigEnv, argv) => {
-  const defaultConfig = singleSpaDefaults({
-    orgName,
-    projectName: "madie-editor",
-    webpackConfigEnv,
-    argv,
-    disableHtmlGeneration: true,
-    orgPackagesAsExternal: false,
-  });
+  entry: path.resolve(__dirname, "src/index.ts"),
 
-  // This must be updated for any single-spa applications or utilities,
-  // or any other package to be loaded externally
-  const externalsConfig = {
-    externals: [
-      "@madie/root-config",
-      "@madie/madie-layout",
-      "@madie/madie-auth",
-    ],
-  };
-
-  // We need to override the css loading rule from the parent configuration
-  // so that we can add postcss-loader to the chain
-  const newCssRule = {
-    module: {
-      rules: [
-        {
-          test: /\.css$/i,
-          include: [/node_modules/, /src/],
-          use: [
-            "style-loader",
-            "css-loader", // uses modules: true, which I think we want. Parent does not
-            "postcss-loader",
-          ],
-        },
-      ],
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "index.es.js",
+    library: {
+      type: "commonjs2",
     },
-    devServer: {
-      static: [
-        {
-          directory: path.join(__dirname, "local-dev-env"),
-          publicPath: "/importmap",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-root/dist/"
-          ),
-          publicPath: "/",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-layout/dist/"
-          ),
-          publicPath: "/madie-layout",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-auth/dist/"
-          ),
-          publicPath: "/madie-auth",
-        },
-      ],
-    },
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: path.join(
-          __dirname,
-          "node_modules/@madie/madie-root/dist/index.html"
-        ),
-      }),
-    ],
-  };
+    clean: true,
+  },
 
-  // node polyfills
-  const polyfillConfig = {
-    resolve: {
-      fallback: {
-        fs: false,
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
+
+    fallback: {
+      fs: false,
+    },
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.m?js/,
+        type: "javascript/auto",
       },
-    },
-    plugins: [new NodePolyfillPlugin()],
-  };
-
-  return mergeWithRules({
-    module: {
-      rules: {
-        test: "match",
-        use: "replace",
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: "babel-loader",
       },
-    },
-    plugins: "append",
-  })(defaultConfig, newCssRule, polyfillConfig, externalsConfig);
-};
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader", "postcss-loader"],
+      },
+      {
+        test: /\.scss$/,
+        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
+      },
+    ],
+    exprContextCritical: false,
+  },
+
+  // Keep lazy imports in a single bundle so the library does not emit async
+  // chunks. Consumer micro-frontends only serve the main bundle, so extra chunk
+  // requests would 404 at runtime.
+  plugins: [
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
+    }),
+  ],
+  externals: {
+    react: "react",
+    "react-dom": "react-dom",
+
+    "@emotion/react": "@emotion/react",
+    "@emotion/styled": "@emotion/styled",
+    "styled-components": "styled-components",
+
+    "@mui/material": "@mui/material",
+    "@mui/icons-material": "@mui/icons-material",
+    "@mui/lab": "@mui/lab",
+    "@mui/styles": "@mui/styles",
+
+    "@madie/madie-design-system": "@madie/madie-design-system",
+  },
+
+  // supresss
+  // ignoreWarnings: [
+  //   /Critical dependency: the request of a dependency is an expression/,
+  // ],
+
+  devtool: "source-map",
+});

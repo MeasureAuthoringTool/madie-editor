@@ -1,0 +1,283 @@
+import React, { useCallback, useEffect, useState } from "react";
+import CqlBuilderSectionPanelNavTabs from "./CqlBuilderSectionPanelNavTabs";
+import ValueSetsSection from "./ValueSets/ValueSets";
+import CodesSection from "./codesSection/CodesSection";
+import DefinitionsSection from "./definitionsSection/DefinitionsSection";
+import FunctionsSection from "./functionsSection/FunctionsSection";
+
+import IncludesTabSection from "./Includes/Includes";
+import Parameters from "./Parameters/Parameters";
+import useQdmElmTranslationServiceApi from "../api/useQdmElmTranslationServiceApi";
+import useFhirElmTranslationServiceApi from "../api/useFhirElmTranslationServiceApi";
+import { CqlBuilderLookup } from "../model/CqlBuilderLookup";
+import { AxiosResponse } from "axios";
+import { MadieAlert } from "@madie/madie-design-system/dist/react";
+import { IconButton } from "@mui/material";
+import ExpansionIcon from "@mui/icons-material/KeyboardTabOutlined";
+
+const VALID_TABS = [
+  "includes",
+  "valueSets",
+  "codes",
+  "parameters",
+  "definitions",
+  "functions",
+];
+
+function getTabFromUrl(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get("tab");
+  return tab && VALID_TABS.includes(tab) ? tab : null;
+}
+
+function setTabInUrl(tab: string) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("tab", tab);
+  window.history.pushState({}, "", url.toString());
+}
+
+export default function CqlBuilderPanel({
+  canEdit,
+  measureStoreCql,
+  cqlMetaData,
+  measureModel,
+  handleCodeDelete,
+  editorVal,
+  setEditorVal,
+  setIsCQLUnchanged,
+  isCQLUnchanged,
+  handleApplyLibrary,
+  handleDeleteLibrary,
+  handleEditLibrary,
+  handleApplyCode,
+  handleApplyParameter,
+  handleParameterEdit,
+  handleParameterDelete,
+  handleApplyValueSet,
+  handleApplyDefinition,
+  handleDefinitionEdit,
+  handleDefinitionDelete,
+  handleApplyFunction,
+  handleFunctionDelete,
+  handleFunctionEdit,
+  resetCql,
+  getCqlDefinitionReturnTypes,
+  makeExpanded,
+  hasCqlError,
+}) {
+  const [activeTab, setActiveTabState] = useState<string>(
+    getTabFromUrl() || "includes"
+  );
+
+  const setActiveTab = useCallback(
+    (tab: string) => {
+      setActiveTabState(tab);
+      setTabInUrl(tab);
+    },
+    [setActiveTabState]
+  );
+
+  // Sync tab state with browser back/forward and set initial URL
+  useEffect(() => {
+    if (!getTabFromUrl()) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", activeTab);
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    const onPopState = () => {
+      const tab = getTabFromUrl();
+      if (tab) {
+        setActiveTabState(tab);
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  const [cqlBuilderLookupsTypes, setCqlBuilderLookupsTypes] =
+    useState<CqlBuilderLookup>();
+  const [errors, setErrors] = useState<string>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const fhirElmTranslationServiceApi = useFhirElmTranslationServiceApi();
+  const qdmElmTranslationServiceApi = useQdmElmTranslationServiceApi();
+
+  useEffect(() => {
+    if (measureStoreCql && measureStoreCql.trim().length > 0) {
+      if (hasCqlError) {
+        setErrors(
+          "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+        );
+        setLoading(false);
+      } else {
+        if (measureModel?.includes("QDM")) {
+          qdmElmTranslationServiceApi
+            .getCqlBuilderLookups(measureStoreCql)
+            .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+              setErrors(null);
+              setCqlBuilderLookupsTypes(axiosResponse?.data);
+            })
+            .catch((error) => {
+              setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
+              setErrors(
+                "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+              );
+              console.error(error);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        } else {
+          fhirElmTranslationServiceApi
+            .getCqlBuilderLookups(measureStoreCql)
+            .then((axiosResponse: AxiosResponse<CqlBuilderLookup>) => {
+              setCqlBuilderLookupsTypes(axiosResponse?.data);
+            })
+            .catch((error) => {
+              setCqlBuilderLookupsTypes({} as unknown as CqlBuilderLookup);
+
+              setErrors(
+                "Unable to retrieve CQL builder lookups. Please verify CQL has no errors. If CQL is valid, please contact the help desk."
+              );
+              console.error(error);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        }
+      }
+    } else {
+      setLoading(false);
+    }
+  }, [measureModel, measureStoreCql]);
+
+  return (
+    <div className="right-panel">
+      <div className="tab-container">
+        <CqlBuilderSectionPanelNavTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+        <div
+          style={{
+            display: "flex",
+            flexGrow: 1,
+          }}
+        />
+        <IconButton
+          data-testid="collapsed-button"
+          aria-label="editor-collapsed"
+          style={{
+            color: "#0073c8",
+          }}
+          onClick={makeExpanded}
+        >
+          <ExpansionIcon />
+        </IconButton>
+      </div>
+
+      <div style={{ height: "calc(100% - 48px)", overflowY: "auto" }}>
+        {errors && (
+          <div className="panel-alert">
+            <MadieAlert
+              type="error"
+              content={
+                <div
+                  aria-live="polite"
+                  role="alert"
+                  data-testid={"cql-builder-errors"}
+                >
+                  {errors}
+                </div>
+              }
+              canClose={false}
+              minimizeAlerts={false}
+            />
+          </div>
+        )}
+
+        <div className="panel-content">
+          {activeTab === "includes" && (
+            <IncludesTabSection
+              canEdit={canEdit}
+              cql={measureStoreCql}
+              measureModel={measureModel}
+              isCQLUnchanged={isCQLUnchanged}
+              setIsCQLUnchanged={setIsCQLUnchanged}
+              setEditorValue={setEditorVal}
+              handleApplyLibrary={handleApplyLibrary}
+              handleEditLibrary={handleEditLibrary}
+              handleDeleteLibrary={handleDeleteLibrary}
+              hasCqlError={hasCqlError}
+            />
+          )}
+          {activeTab === "valueSets" && (
+            <ValueSetsSection
+              canEdit={canEdit}
+              handleApplyValueSet={handleApplyValueSet}
+            />
+          )}
+          {activeTab === "codes" && (
+            <CodesSection
+              canEdit={canEdit}
+              measureStoreCql={measureStoreCql}
+              measureModel={measureModel}
+              handleCodeDelete={handleCodeDelete}
+              editorVal={editorVal}
+              setEditorVal={setEditorVal}
+              setIsCQLUnchanged={setIsCQLUnchanged}
+              isCQLUnchanged={isCQLUnchanged}
+              handleApplyCode={handleApplyCode}
+              hasCqlError={hasCqlError}
+            />
+          )}
+          {activeTab === "parameters" && (
+            <Parameters
+              canEdit={canEdit}
+              handleApplyParameter={handleApplyParameter}
+              handleParameterEdit={handleParameterEdit}
+              handleParameterDelete={handleParameterDelete}
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+              isCQLUnchanged={isCQLUnchanged}
+              cql={measureStoreCql}
+              setEditorValue={setEditorVal}
+              resetCql={resetCql}
+              loading={loading}
+            />
+          )}
+
+          {activeTab === "definitions" && (
+            <DefinitionsSection
+              canEdit={canEdit}
+              handleApplyDefinition={handleApplyDefinition}
+              handleDefinitionDelete={handleDefinitionDelete}
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+              isCQLUnchanged={isCQLUnchanged}
+              cql={measureStoreCql}
+              setEditorVal={setEditorVal}
+              resetCql={resetCql}
+              getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
+              handleDefinitionEdit={handleDefinitionEdit}
+              loading={loading}
+            />
+          )}
+
+          {activeTab === "functions" && (
+            <FunctionsSection
+              cqlBuilderLookupsTypes={cqlBuilderLookupsTypes}
+              canEdit={canEdit}
+              handleApplyFunction={handleApplyFunction}
+              handleFunctionDelete={handleFunctionDelete}
+              handleFunctionEdit={handleFunctionEdit}
+              loading={loading}
+              cql={measureStoreCql}
+              isCQLUnchanged={isCQLUnchanged}
+              resetCql={resetCql}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
