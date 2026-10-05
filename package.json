@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "@madie/cql-antlr-parser": "^1.0.12",
-    "@madie/madie-design-system": "^1.2.100",
+    "@madie/madie-design-system": "^1.2.102",
     "@monaco-editor/react": "^4.7.0",
     "@mui/icons-material": "^5.5.1",
     "@mui/lab": "^5.0.0-alpha.73",
