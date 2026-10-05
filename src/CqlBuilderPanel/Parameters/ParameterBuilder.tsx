@@ -1,11 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import { Button, TextField } from "@madie/madie-design-system/dist/react";
 import "./Parameters.scss";
 import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValidator";
-import AceEditor from "react-ace";
+import MonacoCqlEditor, {
+  MonacoParseResult,
+} from "../../editor/MonacoCqlEditor";
 
 export interface Parameter {
   parameterName?: string;
@@ -20,6 +22,8 @@ export interface ParameterProps {
   setOpenParameterDialog?: Function;
 }
 
+const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
+
 export default function ParameterBuilder({
   canEdit,
   handleParameterEdit,
@@ -27,8 +31,7 @@ export default function ParameterBuilder({
   parameter,
   setOpenParameterDialog,
 }: ParameterProps) {
-  const [editorHeight, setEditorHeight] = useState("180px");
-  const textAreaRef = useRef(null);
+  const [editorHeight] = useState("180px");
 
   const formik = useFormik({
     initialValues: {
@@ -67,26 +70,17 @@ export default function ParameterBuilder({
         <br />
 
         <FormikProvider value={formik}>
-          <AceEditor
-            mode="sql"
-            ref={textAreaRef}
-            theme="monokai"
-            value={formik.values.expression}
-            onChange={(value) => {
-              formik.setFieldValue("expression", value);
-            }}
-            onLoad={(aceEditor) => {
-              // On load we want to tell the ace editor that it's inside of a scrollabel page
-              aceEditor.setOption("autoScrollEditorIntoView", true);
-            }}
-            width="100%"
-            height={editorHeight}
-            wrapEnabled={true}
-            readOnly={false}
-            name="ace-editor-wrapper"
-            enableBasicAutocompletion={true}
-            //@ts-ignore
-          />
+          <div id="parameter-editor-wrapper">
+            <MonacoCqlEditor
+              value={formik.values.expression}
+              height={editorHeight}
+              readOnly={!canEdit}
+              onChange={(value: string | undefined) => {
+                formik.setFieldValue("expression", value || "");
+              }}
+              parseValue={() => emptyParseResult}
+            />
+          </div>
         </FormikProvider>
         <div style={{ marginTop: "24px" }}>
           <div className="form-actions">
@@ -111,7 +105,6 @@ export default function ParameterBuilder({
                   expression: formik.values.expression,
                 };
                 resetForm();
-                // call handleParameterEdit
                 handleParameterEdit(parameter, parameterToApply);
                 onClose();
               }}

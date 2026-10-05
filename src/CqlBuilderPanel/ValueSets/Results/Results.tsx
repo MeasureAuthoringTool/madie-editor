@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from "react";
-import AceEditor from "react-ace";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import {
@@ -21,7 +14,6 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import * as _ from "lodash";
 
 import "./Results.scss";
 import { useFormik } from "formik";
@@ -38,14 +30,14 @@ import {
   Toolbar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { ValueSet } from "fhir/r4";
+import { BundleEntry, ValueSet } from "fhir/r4";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import ActionCenter, { ActionItemDef } from "../../common/ActionCenter";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import { Box } from "@mui/system";
 import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import JsonMonacoEditor from "../../../editor/JsonMonacoEditor";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -136,7 +128,6 @@ export default function Results(props: ResultsProps) {
   }, [filteredValueSets, currentPage, currentLimit]);
 
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
-  const aceRef = useRef<AceEditor>(null);
   const [actions, setActions] = useState<ActionItemDef[]>([
     {
       name: "View",
@@ -276,16 +267,29 @@ export default function Results(props: ResultsProps) {
   });
   const { resetForm } = formik;
 
-  const getValueSetEntryFromBundle = (oid: string): ValueSet => {
-    return JSON.parse(props?.resultBundle)?.entry?.find((entry) => {
-      const valueSet: ValueSet = entry.resource as ValueSet;
-      return valueSet.identifier[0].value === oid;
-    }).resource as ValueSet;
+  const getParsedResultBundle = () => {
+    if (!props?.resultBundle?.trim()) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(props.resultBundle);
+    } catch (error) {
+      console.error("Unable to parse result bundle JSON", error);
+      return null;
+    }
   };
 
-  const handleDetailsClick = async (selectedReferenceId?) => {
+  const getValueSetEntryFromBundle = (oid: string | undefined): ValueSet => {
+    const parsedBundle = getParsedResultBundle();
+    return parsedBundle?.entry?.find((entry: BundleEntry) => {
+      const valueSet: ValueSet = entry.resource as ValueSet;
+      return valueSet?.identifier?.[0]?.value === oid;
+    })?.resource as ValueSet;
+  };
+
+  const handleDetailsClick = async (selectedReferenceId?: string) => {
     setOpenPopoverOptions(false);
-    console.error("findMe:" + props.resultBundle);
     const bundleEntry = getValueSetEntryFromBundle(selectedReferenceId);
     bundleEntry && setVsJson(JSON.stringify(bundleEntry, null, 2));
     setDetailsOpen(true);
@@ -372,7 +376,7 @@ export default function Results(props: ResultsProps) {
                 label: "Details",
                 dataTestId: `details-valueset-${selectedReferenceId}`,
                 toImplementFunction: () => {
-                  handleDetailsClick();
+                  handleDetailsClick(selectedValueSetDetails?.oid);
                 },
               },
             ]}
@@ -435,17 +439,14 @@ export default function Results(props: ResultsProps) {
           </AppBar>
           <Divider sx={{ borderColor: "#8c8c8c" }} />
           <div style={{ padding: "32px" }}>
-            <AceEditor
-              mode="sql"
-              ref={aceRef}
-              theme="monokai"
-              value={vsJson}
-              width="100%"
-              wrapEnabled={true}
-              readOnly={true}
-              name="ace-editor-wrapper"
-              enableBasicAutocompletion={true}
-            />
+            <div id="valueset-editor-wrapper">
+              <JsonMonacoEditor
+                value={vsJson}
+                height="420px"
+                readOnly={true}
+                theme="vs-dark"
+              />
+            </div>
           </div>
         </Dialog>
 
