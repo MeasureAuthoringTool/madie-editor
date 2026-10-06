@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as monaco from "monaco-editor";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import JsonMonacoEditor from "./JsonMonacoEditor";
+import MonacoJsonEditor from "./MonacoJsonEditor";
 import { registerJsonBasicLanguage } from "./language/jsonBasicLanguage";
 
 const mockEditorState: {
@@ -81,7 +81,7 @@ jest.mock("@monaco-editor/react", () => {
   };
 });
 
-describe("JsonMonacoEditor", () => {
+describe("MonacoJsonEditor", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockEditorState.runFindAction.mockClear();
@@ -95,7 +95,7 @@ describe("JsonMonacoEditor", () => {
   it("calls onChange when editor value changes", () => {
     const onChange = jest.fn();
 
-    render(<JsonMonacoEditor value="" onChange={onChange} />);
+    render(<MonacoJsonEditor value="" onChange={onChange} />);
 
     fireEvent.change(screen.getByLabelText("JSON editor"), {
       target: { value: '{"a": 1}' },
@@ -108,7 +108,7 @@ describe("JsonMonacoEditor", () => {
     const onChange = jest.fn();
     mockEditorState.emitUndefinedOnChange = true;
 
-    render(<JsonMonacoEditor value="" onChange={onChange} />);
+    render(<MonacoJsonEditor value="" onChange={onChange} />);
 
     fireEvent.change(screen.getByLabelText("JSON editor"), {
       target: { value: "ignored" },
@@ -118,13 +118,13 @@ describe("JsonMonacoEditor", () => {
   });
 
   it("applies readonly mode", () => {
-    render(<JsonMonacoEditor value="{}" readOnly onChange={jest.fn()} />);
+    render(<MonacoJsonEditor value="{}" readOnly onChange={jest.fn()} />);
 
     expect(screen.getByLabelText("JSON editor")).toHaveAttribute("readonly");
   });
 
   it("ignores change events when onChange is not provided", () => {
-    render(<JsonMonacoEditor value="{}" />);
+    render(<MonacoJsonEditor value="{}" />);
 
     expect(() => {
       fireEvent.change(screen.getByLabelText("JSON editor"), {
@@ -135,7 +135,7 @@ describe("JsonMonacoEditor", () => {
 
   it("falls back to an empty value when value is undefined", () => {
     render(
-      <JsonMonacoEditor
+      <MonacoJsonEditor
         value={undefined as unknown as string}
         onChange={jest.fn()}
       />
@@ -148,7 +148,7 @@ describe("JsonMonacoEditor", () => {
     const onEditorMount = jest.fn();
 
     render(
-      <JsonMonacoEditor
+      <MonacoJsonEditor
         value="{}"
         ariaLabel="JSON editor input"
         inputTestId="json-editor-input"
@@ -172,7 +172,7 @@ describe("JsonMonacoEditor", () => {
   it("skips input attribute updates when editor input node is unavailable", () => {
     mockEditorState.shouldReturnInputNode = false;
 
-    render(<JsonMonacoEditor value="{}" ariaLabel="Custom JSON label" />);
+    render(<MonacoJsonEditor value="{}" ariaLabel="Custom JSON label" />);
 
     expect(
       screen.queryByLabelText("Custom JSON label")
@@ -181,7 +181,7 @@ describe("JsonMonacoEditor", () => {
   });
 
   it("updates tab focus behavior on focus and escape key", () => {
-    render(<JsonMonacoEditor value="{}" />);
+    render(<MonacoJsonEditor value="{}" />);
 
     act(() => {
       mockEditorState.focusHandler?.();
@@ -206,7 +206,7 @@ describe("JsonMonacoEditor", () => {
     const removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
 
     const { unmount } = render(
-      <JsonMonacoEditor value="{}" enableToggleSearchEvent />
+      <MonacoJsonEditor value="{}" enableToggleSearchEvent={true} />
     );
 
     expect(addEventListenerSpy).toHaveBeenCalledWith(
@@ -226,35 +226,12 @@ describe("JsonMonacoEditor", () => {
   });
 
   it("registers custom search toggle event and runs find action", () => {
-    const addEventListenerSpy = jest.spyOn(window, "addEventListener");
-    const removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
-
-    const { unmount } = render(
-      <JsonMonacoEditor
-        value="{}"
-        enableToggleSearchEvent={{ eventName: "customEditorSearch" }}
-      />
-    );
-
-    expect(addEventListenerSpy).toHaveBeenCalledWith(
-      "customEditorSearch",
-      expect.any(Function)
-    );
+    render(<MonacoJsonEditor value="{}" enableToggleSearchEvent={true} />);
 
     act(() => {
-      window.dispatchEvent(new Event("customEditorSearch"));
+      window.dispatchEvent(new Event("toggleEditorSearchBox"));
     });
 
     expect(mockEditorState.runFindAction).toHaveBeenCalledTimes(1);
-
-    unmount();
-
-    expect(removeEventListenerSpy).toHaveBeenCalledWith(
-      "customEditorSearch",
-      expect.any(Function)
-    );
-
-    addEventListenerSpy.mockRestore();
-    removeEventListenerSpy.mockRestore();
   });
 });

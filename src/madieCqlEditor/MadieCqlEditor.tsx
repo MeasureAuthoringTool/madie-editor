@@ -45,6 +45,7 @@ export interface EditorPropsType {
   height?: string;
   readOnly?: boolean;
   validationsEnabled?: boolean;
+  enableToggleSearchEvent?: boolean;
   measureStoreCql?: string;
   cqlMetaData?: CqlMetaData;
   measureModel?: string;
@@ -323,6 +324,7 @@ const MadieCqlEditor = ({
   inboundErrorMarkers,
   readOnly = false,
   validationsEnabled = true,
+  enableToggleSearchEvent = true,
   setOutboundAnnotations,
 }: EditorPropsType) => {
   return (
@@ -333,6 +335,7 @@ const MadieCqlEditor = ({
         height={height}
         readOnly={readOnly}
         validationsEnabled={validationsEnabled}
+        enableToggleSearchEvent={enableToggleSearchEvent}
         parseDebounceTime={parseDebounceTime}
         inboundAnnotations={inboundAnnotations || []}
         inboundErrorMarkers={inboundErrorMarkers || []}

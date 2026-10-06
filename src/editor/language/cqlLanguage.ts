@@ -1,4 +1,4 @@
-import * as monaco from "monaco-editor";
+import type * as monaco from "monaco-editor";
 import { CQL_EDITOR_LANGUAGE_ID } from "../MonacoEditorConfig";
 import {
   cqlBuiltinConstants,
@@ -7,16 +7,18 @@ import {
   cqlTimingKeywords,
 } from "./cqlTokens";
 
-let languageRegistered = false;
+type MonacoApi = typeof monaco;
 
-export const registerCqlLanguage = () => {
-  if (languageRegistered) {
+const registeredMonacoInstances = new WeakSet<MonacoApi>();
+
+export const registerCqlLanguage = (monacoInstance: MonacoApi) => {
+  if (registeredMonacoInstances.has(monacoInstance)) {
     return;
   }
 
-  monaco.languages.register({ id: CQL_EDITOR_LANGUAGE_ID });
+  monacoInstance.languages.register({ id: CQL_EDITOR_LANGUAGE_ID });
 
-  monaco.languages.setMonarchTokensProvider(CQL_EDITOR_LANGUAGE_ID, {
+  monacoInstance.languages.setMonarchTokensProvider(CQL_EDITOR_LANGUAGE_ID, {
     defaultToken: "",
     ignoreCase: true,
     keywords: cqlKeywords,
@@ -75,7 +77,7 @@ export const registerCqlLanguage = () => {
     },
   });
 
-  monaco.languages.setLanguageConfiguration(CQL_EDITOR_LANGUAGE_ID, {
+  monacoInstance.languages.setLanguageConfiguration(CQL_EDITOR_LANGUAGE_ID, {
     comments: {
       lineComment: "//",
       blockComment: ["/*", "*/"],
@@ -97,5 +99,5 @@ export const registerCqlLanguage = () => {
   // monaco.languages.registerCodeActionProvider(...)
   // monaco.languages.registerDocumentFormattingEditProvider(...)
 
-  languageRegistered = true;
+  registeredMonacoInstances.add(monacoInstance);
 };
