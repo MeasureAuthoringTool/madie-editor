@@ -42,6 +42,15 @@ module.exports = (env, argv) => ({
         test: /\.scss$/,
         use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
       },
+      {
+        // Inline fonts (e.g. Monaco's codicon.ttf used for the find/replace,
+        // folding collapse/expand chevrons, close icons, etc.) as base64 data
+        // URIs. This library is consumed as a micro-frontend, so a runtime
+        // publicPath cannot be relied on to locate a separately-emitted font
+        // file. Inlining guarantees the codicon glyphs always render.
+        test: /\.(ttf|woff2?|eot)$/,
+        type: "asset/inline",
+      },
     ],
     exprContextCritical: false,
   },

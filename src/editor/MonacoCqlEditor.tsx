@@ -16,6 +16,7 @@ import {
 } from "./markers/markerMapper";
 import { buildDecorations } from "./decorations/decorationManager";
 import "./monaco-custom.css";
+import { getSearchToggleEventName } from "./EditorUtils";
 
 // Make @monaco-editor/react use the bundled monaco instance instead of
 // lazy-loading a separate copy from a CDN. Without this, the imported
@@ -45,6 +46,7 @@ interface MonacoCqlEditorProps {
   inboundErrorMarkers?: EditorErrorMarker[];
   readOnly?: boolean;
   validationsEnabled?: boolean;
+  enableToggleSearchEvent?: boolean;
   setOutboundAnnotations?: Function;
   onMountEditor?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   onCursorPositionChange?: (position: MonacoEditorCursorPosition) => void;
@@ -60,6 +62,7 @@ const MonacoCqlEditor = ({
   inboundErrorMarkers = [],
   readOnly = false,
   validationsEnabled = true,
+  enableToggleSearchEvent = false,
   setOutboundAnnotations,
   onMountEditor,
   onCursorPositionChange,
@@ -69,6 +72,11 @@ const MonacoCqlEditor = ({
   const modelRef = useRef<monaco.editor.ITextModel | null>(null);
   const decorationsRef =
     useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
+
+  const searchToggleEventName = useMemo(
+    () => getSearchToggleEventName(enableToggleSearchEvent),
+    [enableToggleSearchEvent]
+  );
 
   const [parserAnnotations, setParserAnnotations] = useState<
     EditorAnnotation[]
@@ -135,15 +143,19 @@ const MonacoCqlEditor = ({
   ]);
 
   useEffect(() => {
+    if (!searchToggleEventName) {
+      return;
+    }
+
     const toggleSearchBox = () => {
       editorRef.current?.getAction("actions.find")?.run();
     };
 
-    window.addEventListener("toggleEditorSearchBox", toggleSearchBox);
+    window.addEventListener(searchToggleEventName, toggleSearchBox);
     return () => {
-      window.removeEventListener("toggleEditorSearchBox", toggleSearchBox);
+      window.removeEventListener(searchToggleEventName, toggleSearchBox);
     };
-  }, []);
+  }, [searchToggleEventName]);
 
   return (
     <Editor
