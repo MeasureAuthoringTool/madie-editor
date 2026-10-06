@@ -37,7 +37,7 @@ import ActionCenter, { ActionItemDef } from "../../common/ActionCenter";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import { Box } from "@mui/system";
 import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
-import JsonMonacoEditor from "../../../editor/JsonMonacoEditor";
+import MonacoJsonEditor from "../../../editor/MonacoJsonEditor";
 
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -440,7 +440,7 @@ export default function Results(props: ResultsProps) {
           <Divider sx={{ borderColor: "#8c8c8c" }} />
           <div style={{ padding: "32px" }}>
             <div id="valueset-editor-wrapper">
-              <JsonMonacoEditor
+              <MonacoJsonEditor
                 value={vsJson}
                 height="420px"
                 readOnly={true}
@@ -503,7 +503,6 @@ export default function Results(props: ResultsProps) {
                     },
                   },
                 }}
-                onChange={formik.handleChange}
                 {...formik.getFieldProps("suffix")}
                 data-testid="suffix-max-length-text-field"
                 size="small"

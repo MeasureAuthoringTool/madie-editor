@@ -1,16 +1,17 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import Editor from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import Editor, { loader } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
 import {
   JSON_BASIC_LANGUAGE_ID,
   registerJsonBasicLanguage,
 } from "./language/jsonBasicLanguage";
+import { getSearchToggleEventName } from "./EditorUtils";
+
+loader?.config?.({ monaco });
 
 type MonacoApi = typeof monaco;
 
-type ToggleSearchEventConfig = false | true | { eventName: string };
-
-export interface JsonMonacoEditorProps {
+export interface MonacoJsonEditorProps {
   value: string;
   onChange?: (value: string) => void;
   height?: string | number;
@@ -20,7 +21,7 @@ export interface JsonMonacoEditorProps {
   ariaLabel?: string;
   testId?: string;
   inputTestId?: string;
-  enableToggleSearchEvent?: ToggleSearchEventConfig;
+  enableToggleSearchEvent?: boolean;
   options?: monaco.editor.IStandaloneEditorConstructionOptions;
   onEditorMount?: (
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -38,21 +39,7 @@ const DEFAULT_EDITOR_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions
     wordWrap: "on",
   };
 
-const getSearchToggleEventName = (
-  enableToggleSearchEvent: ToggleSearchEventConfig | undefined
-): string | undefined => {
-  if (!enableToggleSearchEvent) {
-    return undefined;
-  }
-
-  if (enableToggleSearchEvent === true) {
-    return "toggleEditorSearchBox";
-  }
-
-  return enableToggleSearchEvent.eventName;
-};
-
-const JsonMonacoEditor = ({
+const MonacoJsonEditor = ({
   value,
   onChange,
   height = "100%",
@@ -65,7 +52,7 @@ const JsonMonacoEditor = ({
   enableToggleSearchEvent = false,
   options,
   onEditorMount,
-}: JsonMonacoEditorProps) => {
+}: MonacoJsonEditorProps) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   const searchToggleEventName = useMemo(
@@ -138,4 +125,4 @@ const JsonMonacoEditor = ({
   );
 };
 
-export default JsonMonacoEditor;
+export default MonacoJsonEditor;

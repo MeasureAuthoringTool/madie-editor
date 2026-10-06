@@ -1,6 +1,6 @@
 {
   "name": "@madie/madie-editor",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "module": "dist/index.es.js",
   "main": "./dist/index.es.js",
   "types": "dist/index.d.ts",
