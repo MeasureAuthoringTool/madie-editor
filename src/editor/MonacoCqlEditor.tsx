@@ -166,7 +166,7 @@ const MonacoCqlEditor = ({
       height={height}
       onChange={(nextValue: string | undefined) => onChange?.(nextValue ?? "")}
       beforeMount={(monacoInstance: MonacoApi) => {
-        registerCqlLanguage();
+        registerCqlLanguage(monacoInstance);
         monacoInstance.editor.defineTheme(
           CQL_EDITOR_THEME_ID,
           CQL_EDITOR_THEME

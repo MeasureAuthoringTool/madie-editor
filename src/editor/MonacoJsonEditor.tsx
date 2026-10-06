@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import Editor from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import Editor, { loader } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
 import {
   JSON_BASIC_LANGUAGE_ID,
   registerJsonBasicLanguage,
 } from "./language/jsonBasicLanguage";
 import { getSearchToggleEventName } from "./EditorUtils";
+
+loader?.config?.({ monaco });
 
 type MonacoApi = typeof monaco;
 
