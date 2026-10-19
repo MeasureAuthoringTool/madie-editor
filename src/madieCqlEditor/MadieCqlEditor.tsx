@@ -188,19 +188,33 @@ const updateCql = (
     }
   });
 
-  (parsedEditorCql.parsedCql?.valueSets || [])
-    .filter((valueSet: any) => valueSet.version)
-    .forEach((valueSet: any) => {
-      const lineNumber = (valueSet.start?.line || 1) - 1;
-      if (parsedEditorCql.cqlArrayToBeFiltered) {
-        parsedEditorCql.cqlArrayToBeFiltered[
-          lineNumber
-        ] = `valueset ${valueSet.name}: ${valueSet.url}`;
-      }
-      cqlUpdates.isValueSetChanged = true;
-    });
-
   cqlUpdates.cql = parsedEditorCql.cqlArrayToBeFiltered.join("\n");
+  parsedEditorCql.parsedCql.valueSets.forEach((valueSet) => {
+    if (!valueSet.text) {
+      return;
+    }
+    const parser = new CqlAntlr(valueSet.text).buildParser();
+    const declaration = parser.valuesetDefinition();
+    const version = declaration.versionSpecifier();
+    const versionKeyword = declaration.children?.find(
+      (child) => child.text === "version"
+    );
+    if (versionKeyword && version?.stop) {
+      const versionStart = parser.inputStream.get(
+        versionKeyword.sourceInterval.a
+      ).startIndex;
+      const characters = Array.from(valueSet.text);
+      const updatedDeclaration = characters
+        .slice(0, versionStart)
+        .concat(characters.slice(version.stop.stopIndex + 1))
+        .join("");
+      cqlUpdates.cql = cqlUpdates.cql.replace(
+        valueSet.text,
+        () => updatedDeclaration
+      );
+      cqlUpdates.isValueSetChanged = true;
+    }
+  });
   cqlUpdates.isConceptRemoved = conceptRemoved;
   return cqlUpdates;
 };
