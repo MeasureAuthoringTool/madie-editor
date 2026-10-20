@@ -16,6 +16,11 @@ import {
 } from "./markers/markerMapper";
 import { buildDecorations } from "./decorations/decorationManager";
 import "./monaco-custom.css";
+import {
+  getSearchToggleEventName,
+  useEditorSearchToggle,
+  registerEditorKeybindings,
+} from "./EditorUtils";
 
 // Make @monaco-editor/react use the bundled monaco instance instead of
 // lazy-loading a separate copy from a CDN. Without this, the imported
@@ -45,6 +50,7 @@ interface MonacoCqlEditorProps {
   inboundErrorMarkers?: EditorErrorMarker[];
   readOnly?: boolean;
   validationsEnabled?: boolean;
+  enableToggleSearchEvent?: boolean;
   setOutboundAnnotations?: Function;
   onMountEditor?: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   onCursorPositionChange?: (position: MonacoEditorCursorPosition) => void;
@@ -60,6 +66,7 @@ const MonacoCqlEditor = ({
   inboundErrorMarkers = [],
   readOnly = false,
   validationsEnabled = true,
+  enableToggleSearchEvent = false,
   setOutboundAnnotations,
   onMountEditor,
   onCursorPositionChange,
@@ -69,6 +76,11 @@ const MonacoCqlEditor = ({
   const modelRef = useRef<monaco.editor.ITextModel | null>(null);
   const decorationsRef =
     useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
+
+  const searchToggleEventName = useMemo(
+    () => getSearchToggleEventName(enableToggleSearchEvent),
+    [enableToggleSearchEvent]
+  );
 
   const [parserAnnotations, setParserAnnotations] = useState<
     EditorAnnotation[]
@@ -134,16 +146,7 @@ const MonacoCqlEditor = ({
     setOutboundAnnotations,
   ]);
 
-  useEffect(() => {
-    const toggleSearchBox = () => {
-      editorRef.current?.getAction("actions.find")?.run();
-    };
-
-    window.addEventListener("toggleEditorSearchBox", toggleSearchBox);
-    return () => {
-      window.removeEventListener("toggleEditorSearchBox", toggleSearchBox);
-    };
-  }, []);
+  useEditorSearchToggle(searchToggleEventName, editorRef);
 
   return (
     <Editor
@@ -154,7 +157,7 @@ const MonacoCqlEditor = ({
       height={height}
       onChange={(nextValue: string | undefined) => onChange?.(nextValue ?? "")}
       beforeMount={(monacoInstance: MonacoApi) => {
-        registerCqlLanguage();
+        registerCqlLanguage(monacoInstance);
         monacoInstance.editor.defineTheme(
           CQL_EDITOR_THEME_ID,
           CQL_EDITOR_THEME
@@ -181,11 +184,9 @@ const MonacoCqlEditor = ({
           });
         });
 
-        // Press Esc to return tab behavior to page navigation.
-        editor.onKeyDown?.((event: monaco.IKeyboardEvent) => {
-          if (event.keyCode === modelMonaco.KeyCode.Escape) {
-            editor.updateOptions({ tabFocusMode: true });
-          }
+        // Custom key bindings (copy, cut, paste, select all, undo/redo, Esc).
+        registerEditorKeybindings(editor, modelMonaco, {
+          idPrefix: "madie-cql",
         });
       }}
     />

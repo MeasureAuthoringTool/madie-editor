@@ -1,16 +1,21 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import Editor from "@monaco-editor/react";
-import type * as monaco from "monaco-editor";
+import React, { useMemo, useRef } from "react";
+import Editor, { loader } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
 import {
   JSON_BASIC_LANGUAGE_ID,
   registerJsonBasicLanguage,
 } from "./language/jsonBasicLanguage";
+import {
+  getSearchToggleEventName,
+  useEditorSearchToggle,
+  registerEditorKeybindings,
+} from "./EditorUtils";
+
+loader?.config?.({ monaco });
 
 type MonacoApi = typeof monaco;
 
-type ToggleSearchEventConfig = false | true | { eventName: string };
-
-export interface JsonMonacoEditorProps {
+export interface MonacoJsonEditorProps {
   value: string;
   onChange?: (value: string) => void;
   height?: string | number;
@@ -20,7 +25,7 @@ export interface JsonMonacoEditorProps {
   ariaLabel?: string;
   testId?: string;
   inputTestId?: string;
-  enableToggleSearchEvent?: ToggleSearchEventConfig;
+  enableToggleSearchEvent?: boolean;
   options?: monaco.editor.IStandaloneEditorConstructionOptions;
   onEditorMount?: (
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -32,27 +37,16 @@ const DEFAULT_EDITOR_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions
   {
     minimap: { enabled: false },
     lineNumbers: "on",
+    fontSize: 14,
+    glyphMargin: true,
     scrollBeyondLastLine: false,
     tabSize: 2,
     automaticLayout: true,
     wordWrap: "on",
+    fixedOverflowWidgets: true,
   };
 
-const getSearchToggleEventName = (
-  enableToggleSearchEvent: ToggleSearchEventConfig | undefined
-): string | undefined => {
-  if (!enableToggleSearchEvent) {
-    return undefined;
-  }
-
-  if (enableToggleSearchEvent === true) {
-    return "toggleEditorSearchBox";
-  }
-
-  return enableToggleSearchEvent.eventName;
-};
-
-const JsonMonacoEditor = ({
+const MonacoJsonEditor = ({
   value,
   onChange,
   height = "100%",
@@ -65,7 +59,7 @@ const JsonMonacoEditor = ({
   enableToggleSearchEvent = false,
   options,
   onEditorMount,
-}: JsonMonacoEditorProps) => {
+}: MonacoJsonEditorProps) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   const searchToggleEventName = useMemo(
@@ -73,20 +67,7 @@ const JsonMonacoEditor = ({
     [enableToggleSearchEvent]
   );
 
-  useEffect(() => {
-    if (!searchToggleEventName) {
-      return;
-    }
-
-    const toggleSearchBox = () => {
-      editorRef.current?.getAction("actions.find")?.run();
-    };
-
-    window.addEventListener(searchToggleEventName, toggleSearchBox);
-    return () => {
-      window.removeEventListener(searchToggleEventName, toggleSearchBox);
-    };
-  }, [searchToggleEventName]);
+  useEditorSearchToggle(searchToggleEventName, editorRef);
 
   return (
     <div data-testid={testId} style={{ width, height }}>
@@ -124,11 +105,9 @@ const JsonMonacoEditor = ({
             editor.updateOptions?.({ tabFocusMode: false });
           });
 
-          // Press Esc to return tab behavior to page navigation.
-          editor.onKeyDown?.((event: monaco.IKeyboardEvent) => {
-            if (event.keyCode === monacoInstance.KeyCode.Escape) {
-              editor.updateOptions?.({ tabFocusMode: true });
-            }
+          // Custom key bindings (copy, cut, paste, select all, undo/redo, Esc).
+          registerEditorKeybindings(editor, monacoInstance, {
+            idPrefix: "madie-json",
           });
 
           onEditorMount?.(editor, monacoInstance);
@@ -138,4 +117,4 @@ const JsonMonacoEditor = ({
   );
 };
 
-export default JsonMonacoEditor;
+export default MonacoJsonEditor;

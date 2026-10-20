@@ -68,20 +68,23 @@ describe("CqlEditorWithTerminology component", () => {
   it("should emit toggleEditorSearchBox event on search button click", async () => {
     const eventListenerSpy = jest.fn();
     window.addEventListener("toggleEditorSearchBox", eventListenerSpy);
-    const props = {
-      value: "",
-      onChange: jest.fn(),
-      handleClick: true,
-      handleApplyValueSet: jest.fn(),
-      handleApplyLibrary: jest.fn(),
-      handleDeleteLibrary: jest.fn(),
-      measureModel: "QDM 5.6",
-    };
-    render(<CqlEditorWithTerminology {...props} />);
-    const searchButton = screen.getByTestId("editor-search-button");
-    userEvent.click(searchButton);
-    expect(eventListenerSpy).toHaveBeenCalledTimes(1);
-    window.removeEventListener("toggleEditorSearchBox", eventListenerSpy);
+    try {
+      const props = {
+        value: "",
+        onChange: jest.fn(),
+        handleClick: true,
+        handleApplyValueSet: jest.fn(),
+        handleApplyLibrary: jest.fn(),
+        handleDeleteLibrary: jest.fn(),
+        measureModel: "QDM 5.6",
+      };
+      render(<CqlEditorWithTerminology {...props} />);
+      const searchButton = screen.getByTestId("editor-search-button");
+      await userEvent.click(searchButton);
+      expect(eventListenerSpy).toHaveBeenCalledTimes(1);
+    } finally {
+      window.removeEventListener("toggleEditorSearchBox", eventListenerSpy);
+    }
   });
 
   it("should have madie editor and CQL Builder panel after clicking expanded icon", async () => {
