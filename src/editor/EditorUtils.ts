@@ -60,14 +60,9 @@ export interface EditorKeybindingOptions {
 
 // Registers custom Cmd/Ctrl key bindings (copy, cut, paste, select all,
 // undo/redo) plus Esc-to-restore-tab-navigation on a Monaco editor instance.
-//
 // These are handled via onKeyDown with preventDefault/stopPropagation so they
 // reliably override Monaco's built-in core commands (which can take precedence
-// over addAction keybindings, as seen with Cmd+A / Cmd+Z on Mac).
-//
-// The handler is attached per editor instance and only acts on the focused
-// editor and its own model, so it is safe to use with multiple editors
-// rendered side by side. Returns the disposable so callers can clean it up.
+// over addAction keybindings).
 export const registerEditorKeybindings = (
   editor: monaco.editor.IStandaloneCodeEditor,
   monacoInstance: typeof monaco,
