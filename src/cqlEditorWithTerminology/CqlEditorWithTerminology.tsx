@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from "react";
+import React, { useState } from "react";
 import MadieCqlEditor, {
   EditorPropsType,
 } from "../madieCqlEditor/MadieCqlEditor";
@@ -53,8 +53,8 @@ const CqlEditorWithTerminology = ({
   });
 
   const toggleSearch = () => {
-    const event = new CustomEvent("toggleEditorSearchBox");
-    window.dispatchEvent(event);
+    // Fire the event that MonacoCqlEditor listens for to open the find widget.
+    window.dispatchEvent(new Event("toggleEditorSearchBox"));
   };
   return (
     <ServiceContext.Provider value={serviceConfig}>

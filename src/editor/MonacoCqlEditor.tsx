@@ -16,7 +16,11 @@ import {
 } from "./markers/markerMapper";
 import { buildDecorations } from "./decorations/decorationManager";
 import "./monaco-custom.css";
-import { getSearchToggleEventName } from "./EditorUtils";
+import {
+  getSearchToggleEventName,
+  useEditorSearchToggle,
+  registerEditorKeybindings,
+} from "./EditorUtils";
 
 // Make @monaco-editor/react use the bundled monaco instance instead of
 // lazy-loading a separate copy from a CDN. Without this, the imported
@@ -142,20 +146,7 @@ const MonacoCqlEditor = ({
     setOutboundAnnotations,
   ]);
 
-  useEffect(() => {
-    if (!searchToggleEventName) {
-      return;
-    }
-
-    const toggleSearchBox = () => {
-      editorRef.current?.getAction("actions.find")?.run();
-    };
-
-    window.addEventListener(searchToggleEventName, toggleSearchBox);
-    return () => {
-      window.removeEventListener(searchToggleEventName, toggleSearchBox);
-    };
-  }, [searchToggleEventName]);
+  useEditorSearchToggle(searchToggleEventName, editorRef);
 
   return (
     <Editor
@@ -193,11 +184,9 @@ const MonacoCqlEditor = ({
           });
         });
 
-        // Press Esc to return tab behavior to page navigation.
-        editor.onKeyDown?.((event: monaco.IKeyboardEvent) => {
-          if (event.keyCode === modelMonaco.KeyCode.Escape) {
-            editor.updateOptions({ tabFocusMode: true });
-          }
+        // Custom key bindings (copy, cut, paste, select all, undo/redo, Esc).
+        registerEditorKeybindings(editor, modelMonaco, {
+          idPrefix: "madie-cql",
         });
       }}
     />
