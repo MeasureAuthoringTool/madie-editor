@@ -22,6 +22,55 @@ import moment from "moment";
 import { MenuItem, Tooltip } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
 import ControlledAutoComplete from "../../../../common/ControlledAutoComplete";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "CodeSection___StyledDiv",
+  componentId: "sc-1iniqlj-0",
+})({
+  display: "flex",
+  "@media (min-width: 768px)": {
+    flexWrap: "wrap",
+  },
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "CodeSection___StyledDiv2",
+  componentId: "sc-1iniqlj-1",
+})({
+  width: "33.333333%",
+});
+const _StyledDiv3 = _styled3("div").withConfig({
+  displayName: "CodeSection___StyledDiv3",
+  componentId: "sc-1iniqlj-2",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+const _StyledDiv4 = _styled4("div").withConfig({
+  displayName: "CodeSection___StyledDiv4",
+  componentId: "sc-1iniqlj-3",
+})({
+  marginTop: "0.5rem",
+  width: "50%",
+});
+const _StyledTextField = _styled5(TextField).withConfig({
+  displayName: "CodeSection___StyledTextField",
+  componentId: "sc-1iniqlj-4",
+})({
+  width: "100%",
+});
+const _StyledDiv5 = _styled6("div").withConfig({
+  displayName: "CodeSection___StyledDiv5",
+  componentId: "sc-1iniqlj-5",
+})({
+  float: "right",
+});
+const _StyledButton = _styled7(Button).withConfig({
+  displayName: "CodeSection___StyledButton",
+  componentId: "sc-1iniqlj-6",
+})({
+  marginRight: "1rem",
+});
+
 interface CodeSectionProps {
   handleFormSubmit: Function;
   canEdit: boolean;
@@ -262,50 +311,3 @@ export default function CodeSection({
     </div>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "CodeSection___StyledDiv",
-  componentId: "sc-1iniqlj-0",
-})({
-  display: "flex",
-  "@media (min-width: 768px)": {
-    flexWrap: "wrap",
-  },
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "CodeSection___StyledDiv2",
-  componentId: "sc-1iniqlj-1",
-})({
-  width: "33.333333%",
-});
-var _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "CodeSection___StyledDiv3",
-  componentId: "sc-1iniqlj-2",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-var _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "CodeSection___StyledDiv4",
-  componentId: "sc-1iniqlj-3",
-})({
-  marginTop: "0.5rem",
-  width: "50%",
-});
-var _StyledTextField = _styled5(TextField).withConfig({
-  displayName: "CodeSection___StyledTextField",
-  componentId: "sc-1iniqlj-4",
-})({
-  width: "100%",
-});
-var _StyledDiv5 = _styled6("div").withConfig({
-  displayName: "CodeSection___StyledDiv5",
-  componentId: "sc-1iniqlj-5",
-})({
-  float: "right",
-});
-var _StyledButton = _styled7(Button).withConfig({
-  displayName: "CodeSection___StyledButton",
-  componentId: "sc-1iniqlj-6",
-})({
-  marginRight: "1rem",
-});

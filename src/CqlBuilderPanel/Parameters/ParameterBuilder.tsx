@@ -11,6 +11,37 @@ import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValid
 import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "ParameterBuilder___StyledDiv",
+  componentId: "sc-dc3gsp-0",
+})({
+  display: "flex",
+  "> :not([hidden]) ~ :not([hidden])": {
+    "--tw-space-x-reverse": "0",
+    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
+    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
+  },
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "ParameterBuilder___StyledDiv2",
+  componentId: "sc-dc3gsp-1",
+})({
+  width: "50%",
+});
+const _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "ParameterBuilder___StyledTextField",
+  componentId: "sc-dc3gsp-2",
+})({
+  width: "100%",
+});
+const _StyledButton = _styled4(Button).withConfig({
+  displayName: "ParameterBuilder___StyledButton",
+  componentId: "sc-dc3gsp-3",
+})({
+  marginRight: "1rem",
+});
+
 export interface Parameter {
   parameterName?: string;
   expression?: string;
@@ -119,32 +150,3 @@ export default function ParameterBuilder({
     </div>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "ParameterBuilder___StyledDiv",
-  componentId: "sc-dc3gsp-0",
-})({
-  display: "flex",
-  "> :not([hidden]) ~ :not([hidden])": {
-    "--tw-space-x-reverse": "0",
-    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
-    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
-  },
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "ParameterBuilder___StyledDiv2",
-  componentId: "sc-dc3gsp-1",
-})({
-  width: "50%",
-});
-var _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "ParameterBuilder___StyledTextField",
-  componentId: "sc-dc3gsp-2",
-})({
-  width: "100%",
-});
-var _StyledButton = _styled4(Button).withConfig({
-  displayName: "ParameterBuilder___StyledButton",
-  componentId: "sc-dc3gsp-3",
-})({
-  marginRight: "1rem",
-});

@@ -10,6 +10,14 @@ import SavedCodesSubSection, {
 import { useCodeSystems } from "./useCodeSystems";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import _ from "lodash";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "CodesSection___StyledDiv",
+  componentId: "sc-1rldvun-0",
+})({
+  marginTop: "1rem",
+});
+
 interface CodesSectionProps {
   canEdit: boolean;
   measureStoreCql: string;
@@ -105,9 +113,3 @@ export default function CodesSection({
     </>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "CodesSection___StyledDiv",
-  componentId: "sc-1rldvun-0",
-})({
-  marginTop: "1rem",
-});

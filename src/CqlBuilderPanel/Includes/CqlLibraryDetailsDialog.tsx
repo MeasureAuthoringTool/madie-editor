@@ -16,6 +16,46 @@ import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
 import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv",
+  componentId: "sc-121c3b6-0",
+})({
+  display: "flex",
+  flexDirection: "row",
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv2",
+  componentId: "sc-121c3b6-1",
+})({
+  marginTop: "-0.25rem",
+  marginBottom: "-0.25rem",
+  flexBasis: "25%",
+});
+const _StyledDiv3 = _styled3("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv3",
+  componentId: "sc-121c3b6-2",
+})({
+  marginLeft: "1.25rem",
+  flex: "1 1 0%",
+});
+const _StyledDiv4 = _styled4("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv4",
+  componentId: "sc-121c3b6-3",
+})({
+  marginTop: "-0.25rem",
+  marginBottom: "-0.25rem",
+  marginLeft: "1.25rem",
+  flex: "1 1 0%",
+});
+const _StyledDiv5 = _styled5("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv5",
+  componentId: "sc-121c3b6-4",
+})({
+  marginLeft: "1.25rem",
+  flex: "1 1 0%",
+});
+
 export interface SelectedLibrary {
   id: string;
   name: string;
@@ -226,41 +266,3 @@ const CqlLibraryDetailsDialog = ({
   );
 };
 export default CqlLibraryDetailsDialog;
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv",
-  componentId: "sc-121c3b6-0",
-})({
-  display: "flex",
-  flexDirection: "row",
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv2",
-  componentId: "sc-121c3b6-1",
-})({
-  marginTop: "-0.25rem",
-  marginBottom: "-0.25rem",
-  flexBasis: "25%",
-});
-var _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv3",
-  componentId: "sc-121c3b6-2",
-})({
-  marginLeft: "1.25rem",
-  flex: "1 1 0%",
-});
-var _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv4",
-  componentId: "sc-121c3b6-3",
-})({
-  marginTop: "-0.25rem",
-  marginBottom: "-0.25rem",
-  marginLeft: "1.25rem",
-  flex: "1 1 0%",
-});
-var _StyledDiv5 = _styled5("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv5",
-  componentId: "sc-121c3b6-4",
-})({
-  marginLeft: "1.25rem",
-  flex: "1 1 0%",
-});

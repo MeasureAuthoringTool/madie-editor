@@ -22,6 +22,34 @@ import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../../editor/MonacoCqlEditor";
 import { useFormikContext } from "formik";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv",
+  componentId: "sc-1ydk52f-0",
+})({
+  display: "flex",
+  flexWrap: "wrap",
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv2",
+  componentId: "sc-1ydk52f-1",
+})({
+  width: "50%",
+});
+const _StyledDiv3 = _styled3("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv3",
+  componentId: "sc-1ydk52f-2",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+const _StyledDiv4 = _styled4("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv4",
+  componentId: "sc-1ydk52f-3",
+})({
+  float: "right",
+});
+
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;
@@ -278,29 +306,3 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     </div>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv",
-  componentId: "sc-1ydk52f-0",
-})({
-  display: "flex",
-  flexWrap: "wrap",
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv2",
-  componentId: "sc-1ydk52f-1",
-})({
-  width: "50%",
-});
-var _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv3",
-  componentId: "sc-1ydk52f-2",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-var _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv4",
-  componentId: "sc-1ydk52f-3",
-})({
-  float: "right",
-});

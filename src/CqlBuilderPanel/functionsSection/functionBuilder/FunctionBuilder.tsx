@@ -23,6 +23,43 @@ import ExpressionEditor from "../../definitionsSection/expressionSection/Express
 import { getNewExpressionsAndLines } from "../../common/utils";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import UseToast from "../../../common/UseToast";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "FunctionBuilder___StyledDiv",
+  componentId: "sc-d6izr0-0",
+})({
+  display: "flex",
+  "> :not([hidden]) ~ :not([hidden])": {
+    "--tw-space-x-reverse": "0",
+    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
+    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
+  },
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "FunctionBuilder___StyledDiv2",
+  componentId: "sc-d6izr0-1",
+})({
+  width: "50%",
+});
+const _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "FunctionBuilder___StyledTextField",
+  componentId: "sc-d6izr0-2",
+})({
+  width: "100%",
+});
+const _StyledTextArea = _styled4(TextArea).withConfig({
+  displayName: "FunctionBuilder___StyledTextArea",
+  componentId: "sc-d6izr0-3",
+})({
+  width: "100%",
+});
+const _StyledButton = _styled5(Button).withConfig({
+  displayName: "FunctionBuilder___StyledButton",
+  componentId: "sc-d6izr0-4",
+})({
+  marginRight: "1rem",
+});
+
 export interface Funct {
   name?: string;
   fluentFunction?: boolean;
@@ -370,38 +407,3 @@ export default function FunctionBuilder({
     </div>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "FunctionBuilder___StyledDiv",
-  componentId: "sc-d6izr0-0",
-})({
-  display: "flex",
-  "> :not([hidden]) ~ :not([hidden])": {
-    "--tw-space-x-reverse": "0",
-    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
-    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
-  },
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "FunctionBuilder___StyledDiv2",
-  componentId: "sc-d6izr0-1",
-})({
-  width: "50%",
-});
-var _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "FunctionBuilder___StyledTextField",
-  componentId: "sc-d6izr0-2",
-})({
-  width: "100%",
-});
-var _StyledTextArea = _styled4(TextArea).withConfig({
-  displayName: "FunctionBuilder___StyledTextArea",
-  componentId: "sc-d6izr0-3",
-})({
-  width: "100%",
-});
-var _StyledButton = _styled5(Button).withConfig({
-  displayName: "FunctionBuilder___StyledButton",
-  componentId: "sc-d6izr0-4",
-})({
-  marginRight: "1rem",
-});

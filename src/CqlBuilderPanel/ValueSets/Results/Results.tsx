@@ -34,6 +34,39 @@ import { Box } from "@mui/system";
 import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
 import MonacoJsonEditor from "../../../editor/MonacoJsonEditor";
 
+const _StyledTable = _styled("table").withConfig({
+  displayName: "Results___StyledTable",
+  componentId: "sc-61l5j5-1",
+})({
+  minWidth: "100%",
+});
+const _StyledThead = _styled("thead").withConfig({
+  displayName: "Results___StyledThead",
+  componentId: "sc-61l5j5-2",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+const _StyledTd = _styled("td").withConfig({
+  displayName: "Results___StyledTd",
+  componentId: "sc-61l5j5-3",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+const _StyledTd2 = _styled("td").withConfig({
+  displayName: "Results___StyledTd2",
+  componentId: "sc-61l5j5-4",
+})({
+  padding: "0.5rem",
+});
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "Results___StyledDiv",
+  componentId: "sc-61l5j5-5",
+})({
+  width: "50%",
+});
+
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
 // convert to: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
@@ -537,35 +570,3 @@ export default function Results(props: ResultsProps) {
     </div>
   );
 }
-var _StyledTable = _styled("table").withConfig({
-  displayName: "Results___StyledTable",
-  componentId: "sc-61l5j5-1",
-})({
-  minWidth: "100%",
-});
-var _StyledThead = _styled("thead").withConfig({
-  displayName: "Results___StyledThead",
-  componentId: "sc-61l5j5-2",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-var _StyledTd = _styled("td").withConfig({
-  displayName: "Results___StyledTd",
-  componentId: "sc-61l5j5-3",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-var _StyledTd2 = _styled("td").withConfig({
-  displayName: "Results___StyledTd2",
-  componentId: "sc-61l5j5-4",
-})({
-  padding: "0.5rem",
-});
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "Results___StyledDiv",
-  componentId: "sc-61l5j5-5",
-})({
-  width: "50%",
-});

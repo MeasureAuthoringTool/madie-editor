@@ -18,6 +18,34 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
+
+const _StyledTable = _styled("table").withConfig({
+  displayName: "ResultsSection___StyledTable",
+  componentId: "sc-hhov3i-1",
+})({
+  minWidth: "100%",
+});
+const _StyledThead = _styled("thead").withConfig({
+  displayName: "ResultsSection___StyledThead",
+  componentId: "sc-hhov3i-2",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+const _StyledTd = _styled("td").withConfig({
+  displayName: "ResultsSection___StyledTd",
+  componentId: "sc-hhov3i-3",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+const _StyledTd2 = _styled("td").withConfig({
+  displayName: "ResultsSection___StyledTd2",
+  componentId: "sc-hhov3i-4",
+})({
+  padding: "0.5rem",
+});
+
 type ResultSectionProps = {
   showResultsTable: boolean;
   setShowResultsTable: any;
@@ -242,29 +270,3 @@ export default function ResultsSection({
     </div>
   );
 }
-var _StyledTable = _styled("table").withConfig({
-  displayName: "ResultsSection___StyledTable",
-  componentId: "sc-hhov3i-1",
-})({
-  minWidth: "100%",
-});
-var _StyledThead = _styled("thead").withConfig({
-  displayName: "ResultsSection___StyledThead",
-  componentId: "sc-hhov3i-2",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-var _StyledTd = _styled("td").withConfig({
-  displayName: "ResultsSection___StyledTd",
-  componentId: "sc-hhov3i-3",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-var _StyledTd2 = _styled("td").withConfig({
-  displayName: "ResultsSection___StyledTd2",
-  componentId: "sc-hhov3i-4",
-})({
-  padding: "0.5rem",
-});

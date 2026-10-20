@@ -25,6 +25,28 @@ import { Stack } from "@mui/material";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import "./Arguments.scss";
 import toastReducer from "../../../common/ToastReducer";
+
+const _StyledTable = _styled("table").withConfig({
+  displayName: "Arguments___StyledTable",
+  componentId: "sc-1q4xf5b-1",
+})({
+  minWidth: "100%",
+});
+const _StyledThead = _styled("thead").withConfig({
+  displayName: "Arguments___StyledThead",
+  componentId: "sc-1q4xf5b-2",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+const _StyledTd = _styled("td").withConfig({
+  displayName: "Arguments___StyledTd",
+  componentId: "sc-1q4xf5b-3",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
   handleDeleteArgument?: Function;
@@ -331,23 +353,3 @@ const Arguments = ({
   );
 };
 export default Arguments;
-var _StyledTable = _styled("table").withConfig({
-  displayName: "Arguments___StyledTable",
-  componentId: "sc-1q4xf5b-1",
-})({
-  minWidth: "100%",
-});
-var _StyledThead = _styled("thead").withConfig({
-  displayName: "Arguments___StyledThead",
-  componentId: "sc-1q4xf5b-2",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-var _StyledTd = _styled("td").withConfig({
-  displayName: "Arguments___StyledTd",
-  componentId: "sc-1q4xf5b-3",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});

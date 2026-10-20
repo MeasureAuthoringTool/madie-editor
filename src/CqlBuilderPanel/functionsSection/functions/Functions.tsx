@@ -20,6 +20,28 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import EditFunctionDialog from "../EditFunctionDialog";
 import Tooltip from "@mui/material/Tooltip";
+
+const _StyledTable = _styled("table").withConfig({
+  displayName: "Functions___StyledTable",
+  componentId: "sc-z5k5r-2",
+})({
+  minWidth: "100%",
+});
+const _StyledThead = _styled("thead").withConfig({
+  displayName: "Functions___StyledThead",
+  componentId: "sc-z5k5r-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+const _StyledTd = _styled("td").withConfig({
+  displayName: "Functions___StyledTd",
+  componentId: "sc-z5k5r-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+
 const TH = _styled.th.withConfig({
   displayName: "Functions__TH",
   componentId: "sc-z5k5r-0",
@@ -385,23 +407,3 @@ const Functions = ({
   );
 };
 export default Functions;
-var _StyledTable = _styled("table").withConfig({
-  displayName: "Functions___StyledTable",
-  componentId: "sc-z5k5r-2",
-})({
-  minWidth: "100%",
-});
-var _StyledThead = _styled("thead").withConfig({
-  displayName: "Functions___StyledThead",
-  componentId: "sc-z5k5r-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-var _StyledTd = _styled("td").withConfig({
-  displayName: "Functions___StyledTd",
-  componentId: "sc-z5k5r-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});

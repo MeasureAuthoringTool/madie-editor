@@ -16,6 +16,82 @@ import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../../validations/SuffixSchemaValidator";
 import _ from "lodash";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv",
+  componentId: "sc-nlvak4-0",
+})({
+  display: "flex",
+  flexDirection: "column",
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv2",
+  componentId: "sc-nlvak4-1",
+})({
+  marginTop: "1rem",
+  display: "flex",
+});
+const _StyledDiv3 = _styled3("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv3",
+  componentId: "sc-nlvak4-2",
+})({
+  width: "33.333333%",
+});
+const _StyledDiv4 = _styled4("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv4",
+  componentId: "sc-nlvak4-3",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+const _StyledDiv5 = _styled5("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv5",
+  componentId: "sc-nlvak4-4",
+})({
+  marginTop: "1rem",
+  display: "flex",
+  "@media (min-width: 768px)": {
+    flexWrap: "wrap",
+  },
+});
+const _StyledDiv6 = _styled6("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv6",
+  componentId: "sc-nlvak4-5",
+})({
+  width: "33.333333%",
+});
+const _StyledDiv7 = _styled7("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv7",
+  componentId: "sc-nlvak4-6",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+const _StyledDiv8 = _styled8("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv8",
+  componentId: "sc-nlvak4-7",
+})({
+  marginTop: "1rem",
+  display: "flex",
+  "@media (min-width: 768px)": {
+    flexWrap: "wrap",
+  },
+});
+const _StyledDiv9 = _styled9("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv9",
+  componentId: "sc-nlvak4-8",
+})({
+  width: "12rem",
+});
+const _StyledDiv0 = _styled0("div").withConfig({
+  displayName: "EditCodeDetailsDialog___StyledDiv0",
+  componentId: "sc-nlvak4-9",
+})({
+  marginTop: "0.5rem",
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+
 export default function EditCodeDetailsDialog({
   measureModel,
   selectedCodeDetails,
@@ -140,77 +216,3 @@ export default function EditCodeDetailsDialog({
     </MadieDialog>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv",
-  componentId: "sc-nlvak4-0",
-})({
-  display: "flex",
-  flexDirection: "column",
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv2",
-  componentId: "sc-nlvak4-1",
-})({
-  marginTop: "1rem",
-  display: "flex",
-});
-var _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv3",
-  componentId: "sc-nlvak4-2",
-})({
-  width: "33.333333%",
-});
-var _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv4",
-  componentId: "sc-nlvak4-3",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-var _StyledDiv5 = _styled5("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv5",
-  componentId: "sc-nlvak4-4",
-})({
-  marginTop: "1rem",
-  display: "flex",
-  "@media (min-width: 768px)": {
-    flexWrap: "wrap",
-  },
-});
-var _StyledDiv6 = _styled6("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv6",
-  componentId: "sc-nlvak4-5",
-})({
-  width: "33.333333%",
-});
-var _StyledDiv7 = _styled7("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv7",
-  componentId: "sc-nlvak4-6",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-var _StyledDiv8 = _styled8("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv8",
-  componentId: "sc-nlvak4-7",
-})({
-  marginTop: "1rem",
-  display: "flex",
-  "@media (min-width: 768px)": {
-    flexWrap: "wrap",
-  },
-});
-var _StyledDiv9 = _styled9("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv9",
-  componentId: "sc-nlvak4-8",
-})({
-  width: "12rem",
-});
-var _StyledDiv0 = _styled0("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv0",
-  componentId: "sc-nlvak4-9",
-})({
-  marginTop: "0.5rem",
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});

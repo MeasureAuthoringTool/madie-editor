@@ -21,6 +21,28 @@ import { Stack } from "@mui/material";
 import { ParametersProps } from "./Parameters";
 import EditParameterDialog from "./EditParameterDialog";
 import { Parameter } from "./ParameterBuilder";
+
+const _StyledTable = _styled("table").withConfig({
+  displayName: "SavedParameters___StyledTable",
+  componentId: "sc-j0j2pa-2",
+})({
+  minWidth: "100%",
+});
+const _StyledThead = _styled("thead").withConfig({
+  displayName: "SavedParameters___StyledThead",
+  componentId: "sc-j0j2pa-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+const _StyledTd = _styled("td").withConfig({
+  displayName: "SavedParameters___StyledTd",
+  componentId: "sc-j0j2pa-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+
 const TH = _styled.th.withConfig({
   displayName: "SavedParameters__TH",
   componentId: "sc-j0j2pa-0",
@@ -318,23 +340,3 @@ const SavedParameters = ({
   );
 };
 export default SavedParameters;
-var _StyledTable = _styled("table").withConfig({
-  displayName: "SavedParameters___StyledTable",
-  componentId: "sc-j0j2pa-2",
-})({
-  minWidth: "100%",
-});
-var _StyledThead = _styled("thead").withConfig({
-  displayName: "SavedParameters___StyledThead",
-  componentId: "sc-j0j2pa-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-var _StyledTd = _styled("td").withConfig({
-  displayName: "SavedParameters___StyledTd",
-  componentId: "sc-j0j2pa-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});

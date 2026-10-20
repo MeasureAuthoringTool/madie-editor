@@ -18,6 +18,58 @@ import { DefinitionSectionSchemaValidator } from "../../../validations/Definitio
 import ExpressionEditor from "../expressionSection/ExpressionEditor";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import { getNewExpressionsAndLines } from "../../common/utils";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "DefinitionBuilder___StyledDiv",
+  componentId: "sc-15v127g-0",
+})({
+  display: "flex",
+  "> :not([hidden]) ~ :not([hidden])": {
+    "--tw-space-x-reverse": "0",
+    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
+    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
+  },
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "DefinitionBuilder___StyledDiv2",
+  componentId: "sc-15v127g-1",
+})({
+  width: "50%",
+});
+const _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "DefinitionBuilder___StyledTextField",
+  componentId: "sc-15v127g-2",
+})({
+  width: "100%",
+});
+const _StyledDiv3 = _styled4("div").withConfig({
+  displayName: "DefinitionBuilder___StyledDiv3",
+  componentId: "sc-15v127g-3",
+})({
+  marginTop: "0.5rem",
+  marginBottom: "0.5rem",
+  marginLeft: "2.5rem",
+  width: "50%",
+});
+const _StyledTextArea = _styled5(TextArea).withConfig({
+  displayName: "DefinitionBuilder___StyledTextArea",
+  componentId: "sc-15v127g-4",
+})({
+  width: "100%",
+});
+const _StyledButton = _styled6(Button).withConfig({
+  displayName: "DefinitionBuilder___StyledButton",
+  componentId: "sc-15v127g-5",
+})({
+  marginRight: "1rem",
+});
+const _StyledButton2 = _styled7(Button).withConfig({
+  displayName: "DefinitionBuilder___StyledButton2",
+  componentId: "sc-15v127g-6",
+})({
+  marginRight: "1rem",
+});
+
 export interface Definition {
   definitionName?: string;
   comment?: string;
@@ -226,53 +278,3 @@ export default function DefinitionBuilder({
     </div>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "DefinitionBuilder___StyledDiv",
-  componentId: "sc-15v127g-0",
-})({
-  display: "flex",
-  "> :not([hidden]) ~ :not([hidden])": {
-    "--tw-space-x-reverse": "0",
-    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
-    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
-  },
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "DefinitionBuilder___StyledDiv2",
-  componentId: "sc-15v127g-1",
-})({
-  width: "50%",
-});
-var _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "DefinitionBuilder___StyledTextField",
-  componentId: "sc-15v127g-2",
-})({
-  width: "100%",
-});
-var _StyledDiv3 = _styled4("div").withConfig({
-  displayName: "DefinitionBuilder___StyledDiv3",
-  componentId: "sc-15v127g-3",
-})({
-  marginTop: "0.5rem",
-  marginBottom: "0.5rem",
-  marginLeft: "2.5rem",
-  width: "50%",
-});
-var _StyledTextArea = _styled5(TextArea).withConfig({
-  displayName: "DefinitionBuilder___StyledTextArea",
-  componentId: "sc-15v127g-4",
-})({
-  width: "100%",
-});
-var _StyledButton = _styled6(Button).withConfig({
-  displayName: "DefinitionBuilder___StyledButton",
-  componentId: "sc-15v127g-5",
-})({
-  marginRight: "1rem",
-});
-var _StyledButton2 = _styled7(Button).withConfig({
-  displayName: "DefinitionBuilder___StyledButton2",
-  componentId: "sc-15v127g-6",
-})({
-  marginRight: "1rem",
-});

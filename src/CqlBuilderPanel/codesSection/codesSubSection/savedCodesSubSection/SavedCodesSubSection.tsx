@@ -32,6 +32,40 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "SavedCodesSubSection___StyledDiv",
+  componentId: "sc-obv2i0-1",
+})({
+  fontWeight: "500",
+});
+const _StyledTable = _styled("table").withConfig({
+  displayName: "SavedCodesSubSection___StyledTable",
+  componentId: "sc-obv2i0-2",
+})({
+  minWidth: "100%",
+});
+const _StyledThead = _styled("thead").withConfig({
+  displayName: "SavedCodesSubSection___StyledThead",
+  componentId: "sc-obv2i0-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+const _StyledTd = _styled("td").withConfig({
+  displayName: "SavedCodesSubSection___StyledTd",
+  componentId: "sc-obv2i0-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+const _StyledTd2 = _styled("td").withConfig({
+  displayName: "SavedCodesSubSection___StyledTd2",
+  componentId: "sc-obv2i0-5",
+})({
+  padding: "0.5rem",
+});
+
 type SavedCodesColumnRow = {
   name: string;
   display: string;
@@ -473,35 +507,3 @@ export default function SavedCodesSubSection({
     </div>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "SavedCodesSubSection___StyledDiv",
-  componentId: "sc-obv2i0-1",
-})({
-  fontWeight: "500",
-});
-var _StyledTable = _styled("table").withConfig({
-  displayName: "SavedCodesSubSection___StyledTable",
-  componentId: "sc-obv2i0-2",
-})({
-  minWidth: "100%",
-});
-var _StyledThead = _styled("thead").withConfig({
-  displayName: "SavedCodesSubSection___StyledThead",
-  componentId: "sc-obv2i0-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-var _StyledTd = _styled("td").withConfig({
-  displayName: "SavedCodesSubSection___StyledTd",
-  componentId: "sc-obv2i0-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-var _StyledTd2 = _styled("td").withConfig({
-  displayName: "SavedCodesSubSection___StyledTd2",
-  componentId: "sc-obv2i0-5",
-})({
-  padding: "0.5rem",
-});

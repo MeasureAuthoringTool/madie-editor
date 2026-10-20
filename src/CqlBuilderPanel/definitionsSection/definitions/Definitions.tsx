@@ -21,6 +21,28 @@ import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
 import { Stack } from "@mui/material";
+
+const _StyledTable = _styled("table").withConfig({
+  displayName: "Definitions___StyledTable",
+  componentId: "sc-cj02bv-2",
+})({
+  minWidth: "100%",
+});
+const _StyledThead = _styled("thead").withConfig({
+  displayName: "Definitions___StyledThead",
+  componentId: "sc-cj02bv-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+const _StyledTd = _styled("td").withConfig({
+  displayName: "Definitions___StyledTd",
+  componentId: "sc-cj02bv-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+
 const TH = _styled.th.withConfig({
   displayName: "Definitions__TH",
   componentId: "sc-cj02bv-0",
@@ -360,23 +382,3 @@ const Definitions = ({
   );
 };
 export default Definitions;
-var _StyledTable = _styled("table").withConfig({
-  displayName: "Definitions___StyledTable",
-  componentId: "sc-cj02bv-2",
-})({
-  minWidth: "100%",
-});
-var _StyledThead = _styled("thead").withConfig({
-  displayName: "Definitions___StyledThead",
-  componentId: "sc-cj02bv-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-var _StyledTd = _styled("td").withConfig({
-  displayName: "Definitions___StyledTd",
-  componentId: "sc-cj02bv-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});

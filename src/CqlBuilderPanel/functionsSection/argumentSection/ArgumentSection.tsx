@@ -23,6 +23,60 @@ import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { FunctionArgumentSchemaValidator } from "../../../validations/FunctionArgumentSchemaValidator";
 import "./ArguementsSection.scss";
+
+const _StyledDiv = _styled("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv",
+  componentId: "sc-1jx03lg-0",
+})({
+  display: "flex",
+  flexWrap: "wrap",
+});
+const _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv2",
+  componentId: "sc-1jx03lg-1",
+})({
+  width: "50%",
+});
+const _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "ArgumentSection___StyledTextField",
+  componentId: "sc-1jx03lg-2",
+})({
+  width: "100%",
+});
+const _StyledDiv3 = _styled4("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv3",
+  componentId: "sc-1jx03lg-3",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+const _StyledDiv4 = _styled5("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv4",
+  componentId: "sc-1jx03lg-4",
+})({
+  display: "flex",
+  flexWrap: "wrap",
+});
+const _StyledDiv5 = _styled6("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv5",
+  componentId: "sc-1jx03lg-5",
+})({
+  width: "50%",
+  paddingTop: "1.5rem",
+});
+const _StyledTextField2 = _styled7(TextField).withConfig({
+  displayName: "ArgumentSection___StyledTextField2",
+  componentId: "sc-1jx03lg-6",
+})({
+  width: "100%",
+});
+const _StyledButton = _styled8(Button).withConfig({
+  displayName: "ArgumentSection___StyledButton",
+  componentId: "sc-1jx03lg-7",
+})({
+  marginRight: "1rem",
+});
+
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
   canEdit: boolean;
@@ -213,55 +267,3 @@ export default function ArgumentSection(props: ArgumentsProps) {
     </>
   );
 }
-var _StyledDiv = _styled("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv",
-  componentId: "sc-1jx03lg-0",
-})({
-  display: "flex",
-  flexWrap: "wrap",
-});
-var _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv2",
-  componentId: "sc-1jx03lg-1",
-})({
-  width: "50%",
-});
-var _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "ArgumentSection___StyledTextField",
-  componentId: "sc-1jx03lg-2",
-})({
-  width: "100%",
-});
-var _StyledDiv3 = _styled4("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv3",
-  componentId: "sc-1jx03lg-3",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-var _StyledDiv4 = _styled5("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv4",
-  componentId: "sc-1jx03lg-4",
-})({
-  display: "flex",
-  flexWrap: "wrap",
-});
-var _StyledDiv5 = _styled6("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv5",
-  componentId: "sc-1jx03lg-5",
-})({
-  width: "50%",
-  paddingTop: "1.5rem",
-});
-var _StyledTextField2 = _styled7(TextField).withConfig({
-  displayName: "ArgumentSection___StyledTextField2",
-  componentId: "sc-1jx03lg-6",
-})({
-  width: "100%",
-});
-var _StyledButton = _styled8(Button).withConfig({
-  displayName: "ArgumentSection___StyledButton",
-  componentId: "sc-1jx03lg-7",
-})({
-  marginRight: "1rem",
-});
