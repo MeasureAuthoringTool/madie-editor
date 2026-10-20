@@ -1,11 +1,15 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import {
   JSON_BASIC_LANGUAGE_ID,
   registerJsonBasicLanguage,
 } from "./language/jsonBasicLanguage";
-import { getSearchToggleEventName } from "./EditorUtils";
+import {
+  getSearchToggleEventName,
+  useEditorSearchToggle,
+  registerEditorKeybindings,
+} from "./EditorUtils";
 
 loader?.config?.({ monaco });
 
@@ -33,10 +37,13 @@ const DEFAULT_EDITOR_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions
   {
     minimap: { enabled: false },
     lineNumbers: "on",
+    fontSize: 14,
+    glyphMargin: true,
     scrollBeyondLastLine: false,
     tabSize: 2,
     automaticLayout: true,
     wordWrap: "on",
+    fixedOverflowWidgets: true,
   };
 
 const MonacoJsonEditor = ({
@@ -60,20 +67,7 @@ const MonacoJsonEditor = ({
     [enableToggleSearchEvent]
   );
 
-  useEffect(() => {
-    if (!searchToggleEventName) {
-      return;
-    }
-
-    const toggleSearchBox = () => {
-      editorRef.current?.getAction("actions.find")?.run();
-    };
-
-    window.addEventListener(searchToggleEventName, toggleSearchBox);
-    return () => {
-      window.removeEventListener(searchToggleEventName, toggleSearchBox);
-    };
-  }, [searchToggleEventName]);
+  useEditorSearchToggle(searchToggleEventName, editorRef);
 
   return (
     <div data-testid={testId} style={{ width, height }}>
@@ -111,11 +105,9 @@ const MonacoJsonEditor = ({
             editor.updateOptions?.({ tabFocusMode: false });
           });
 
-          // Press Esc to return tab behavior to page navigation.
-          editor.onKeyDown?.((event: monaco.IKeyboardEvent) => {
-            if (event.keyCode === monacoInstance.KeyCode.Escape) {
-              editor.updateOptions?.({ tabFocusMode: true });
-            }
+          // Custom key bindings (copy, cut, paste, select all, undo/redo, Esc).
+          registerEditorKeybindings(editor, monacoInstance, {
+            idPrefix: "madie-json",
           });
 
           onEditorMount?.(editor, monacoInstance);

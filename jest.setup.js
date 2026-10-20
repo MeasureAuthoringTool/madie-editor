@@ -27,7 +27,14 @@ jest.mock(
 
     return {
       MarkerSeverity: { Hint: 1, Info: 2, Warning: 4, Error: 8 },
-      KeyCode: { Escape: 9 },
+      KeyCode: {
+        Escape: 9,
+        KeyA: 31,
+        KeyC: 33,
+        KeyV: 52,
+        KeyX: 54,
+        KeyZ: 56,
+      },
       Range,
       languages: {
         getLanguages: jest.fn(() => []),
