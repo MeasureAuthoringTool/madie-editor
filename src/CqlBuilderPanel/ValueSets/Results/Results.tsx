@@ -1,26 +1,21 @@
+import _styled from "styled-components";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import tw from "twin.macro";
-import "styled-components/macro";
 import {
   Pagination,
   Popover,
   MadieDialog,
   TextField,
 } from "@madie/madie-design-system/dist/react";
-
 import {
   useReactTable,
   ColumnDef,
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-
 import "./Results.scss";
 import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../validations/SuffixSchemaValidator";
-
 import { ValueSetForSearch } from "../../../api/useTerminologyServiceApi";
-
 import {
   AppBar,
   Dialog,
@@ -44,7 +39,17 @@ import MonacoJsonEditor from "../../../editor/MonacoJsonEditor";
 // convert to: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
 // https://cts.nlm.nih.gov/fhir/res/ValueSet?url=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
 
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
+const TH = _styled.th.withConfig({
+  displayName: "Results__TH",
+  componentId: "sc-61l5j5-0",
+})({
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+  fontWeight: "700",
+  textTransform: "capitalize",
+});
 
 // easy lookup to interface label with value for the search fields
 type TCRow = {
@@ -53,18 +58,15 @@ type TCRow = {
   steward?: string;
   oid?: string;
 };
-
 interface ResultsProps {
   resultBundle: string;
   filteredValueSets: ValueSetForSearch[]; //should be type casted to ValueSetForSearch but importing from test file json breaks
   handleApplyValueSet: Function;
 }
-
 export default function Results(props: ResultsProps) {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [vsJson, setVsJson] = useState<string>("Loading");
-
   let { filteredValueSets, handleApplyValueSet } = props;
   // pagination lives here
   const [visibleFilteredValuesets, setVisibleFilteredValuesets] = useState<
@@ -109,12 +111,10 @@ export default function Results(props: ResultsProps) {
     setTotalItems,
     setTotalPages,
   ]);
-
   const canGoNext = (() => {
     return currentPage < totalPages;
   })();
   const canGoPrev = currentPage > 1;
-
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
@@ -122,11 +122,9 @@ export default function Results(props: ResultsProps) {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [filteredValueSets, currentPage, currentLimit]);
-
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
   const [actions, setActions] = useState<ActionItemDef[]>([
     {
@@ -146,33 +144,26 @@ export default function Results(props: ResultsProps) {
       },
     },
   ]);
-
   const handleOpen = async (selectedId, event) => {
     setOpenPopoverOptions(true);
-
     setSelectedReferenceId(table.getRow(selectedId).original.oid);
-
     setAnchorEl(event.currentTarget);
     setSelectedValueSetDetails(table.getRow(selectedId).original);
   };
-
   const handleClose = () => {
     setOpenPopoverOptions(false);
     setSelectedReferenceId(null);
     setAnchorEl(null);
   };
-
   const handleEditValueSetDetails = () => {
     setOpenPopoverOptions(false);
     setOpenEditDialog(true);
   };
-
   const toggleClose = () => {
     setOpenEditDialog(!openEditDialog);
     setSelectedValueSetDetails(null);
     resetForm();
   };
-
   const columns = useMemo<ColumnDef<TCRow>[]>(
     () => [
       {
@@ -221,7 +212,11 @@ export default function Results(props: ResultsProps) {
               >
                 <ControlPointIcon color="primary" />
               </ToolTippedIcon>
-              <Box sx={{ flexGrow: 1 }} />
+              <Box
+                sx={{
+                  flexGrow: 1,
+                }}
+              />
               <ActionCenter
                 actions={actions}
                 target={{
@@ -243,7 +238,6 @@ export default function Results(props: ResultsProps) {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const formik = useFormik({
     initialValues: {
       suffix: "",
@@ -266,12 +260,10 @@ export default function Results(props: ResultsProps) {
     },
   });
   const { resetForm } = formik;
-
   const getParsedResultBundle = () => {
     if (!props?.resultBundle?.trim()) {
       return null;
     }
-
     try {
       return JSON.parse(props.resultBundle);
     } catch (error) {
@@ -279,7 +271,6 @@ export default function Results(props: ResultsProps) {
       return null;
     }
   };
-
   const getValueSetEntryFromBundle = (oid: string | undefined): ValueSet => {
     const parsedBundle = getParsedResultBundle();
     return parsedBundle?.entry?.find((entry: BundleEntry) => {
@@ -287,29 +278,26 @@ export default function Results(props: ResultsProps) {
       return valueSet?.identifier?.[0]?.value === oid;
     })?.resource as ValueSet;
   };
-
   const handleDetailsClick = async (selectedReferenceId?: string) => {
     setOpenPopoverOptions(false);
     const bundleEntry = getValueSetEntryFromBundle(selectedReferenceId);
     bundleEntry && setVsJson(JSON.stringify(bundleEntry, null, 2));
     setDetailsOpen(true);
   };
-
   return (
     <div
       id="madie-editor-search-results"
       data-testid="madie-editor-search-results"
     >
       <div className="searc-results-container">
-        <table
-          tw="min-w-full"
+        <_StyledTable
           data-testid="value-sets-results-tbl"
           id="value-sets-results-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
         >
-          <thead tw="bg-slate">
+          <_StyledThead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -324,24 +312,24 @@ export default function Results(props: ResultsProps) {
                 ))}
               </tr>
             ))}
-          </thead>
+          </_StyledThead>
           <tbody data-testid="vs-results-table-body">
             {!visibleFilteredValuesets?.length ? (
               <tr>
-                <td colSpan={columns.length} tw="text-center p-2">
+                <_StyledTd colSpan={columns.length}>
                   No Results were found
-                </td>
+                </_StyledTd>
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id} data-test-id={`row-${row.id}`}>
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} tw="p-2">
+                    <_StyledTd2 key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </td>
+                    </_StyledTd2>
                   ))}
                 </tr>
               ))
@@ -381,7 +369,7 @@ export default function Results(props: ResultsProps) {
               },
             ]}
           />
-        </table>
+        </_StyledTable>
 
         <Dialog
           fullWidth={true}
@@ -420,7 +408,11 @@ export default function Results(props: ResultsProps) {
             >
               Details
             </DialogTitle>
-            <Toolbar sx={{ justifyContent: "space-between" }}>
+            <Toolbar
+              sx={{
+                justifyContent: "space-between",
+              }}
+            >
               <div />
               <div>
                 <IconButton
@@ -437,8 +429,16 @@ export default function Results(props: ResultsProps) {
               </div>
             </Toolbar>
           </AppBar>
-          <Divider sx={{ borderColor: "#8c8c8c" }} />
-          <div style={{ padding: "32px" }}>
+          <Divider
+            sx={{
+              borderColor: "#8c8c8c",
+            }}
+          />
+          <div
+            style={{
+              padding: "32px",
+            }}
+          >
             <div id="valueset-editor-wrapper">
               <MonacoJsonEditor
                 value={vsJson}
@@ -477,7 +477,7 @@ export default function Results(props: ResultsProps) {
             disabled: !(formik.isValid && formik.dirty),
           }}
           children={
-            <div tw="w-1/2">
+            <_StyledDiv>
               <TextField
                 placeholder="Suffix"
                 label="Suffix(Max Length 4)"
@@ -509,7 +509,7 @@ export default function Results(props: ResultsProps) {
                 error={Boolean(formik.errors.suffix)}
                 helperText={formik.errors.suffix}
               />
-            </div>
+            </_StyledDiv>
           }
         />
 
@@ -537,3 +537,35 @@ export default function Results(props: ResultsProps) {
     </div>
   );
 }
+var _StyledTable = _styled("table").withConfig({
+  displayName: "Results___StyledTable",
+  componentId: "sc-61l5j5-1",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "Results___StyledThead",
+  componentId: "sc-61l5j5-2",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "Results___StyledTd",
+  componentId: "sc-61l5j5-3",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+var _StyledTd2 = _styled("td").withConfig({
+  displayName: "Results___StyledTd2",
+  componentId: "sc-61l5j5-4",
+})({
+  padding: "0.5rem",
+});
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "Results___StyledDiv",
+  componentId: "sc-61l5j5-5",
+})({
+  width: "50%",
+});

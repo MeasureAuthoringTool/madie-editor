@@ -1,3 +1,4 @@
+import _styled from "styled-components";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 import {
@@ -6,8 +7,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import {
   Pagination,
   MadieDiscardDialog,
@@ -22,10 +21,27 @@ import { Stack } from "@mui/material";
 import { ParametersProps } from "./Parameters";
 import EditParameterDialog from "./EditParameterDialog";
 import { Parameter } from "./ParameterBuilder";
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-const TD = tw.td`p-3 text-left text-sm break-all`;
-
+const TH = _styled.th.withConfig({
+  displayName: "SavedParameters__TH",
+  componentId: "sc-j0j2pa-0",
+})({
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+  fontWeight: "700",
+  textTransform: "capitalize",
+});
+const TD = _styled.td.withConfig({
+  displayName: "SavedParameters__TD",
+  componentId: "sc-j0j2pa-1",
+})({
+  wordBreak: "break-all",
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+});
 const SavedParameters = ({
   canEdit,
   parameters,
@@ -47,14 +63,11 @@ const SavedParameters = ({
     open: false,
     operation: null,
   });
-
   const [openParameterDialog, setOpenParameterDialog] = useState<boolean>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const canGoPrev = currentPage > 1;
   const canGoNext = (() => {
     return currentPage < totalPages;
@@ -66,14 +79,12 @@ const SavedParameters = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [parameters, currentPage, currentLimit]);
 
   // table data
   const data = visibleParameters;
-
   const columns = useMemo<ColumnDef<Lookup>[]>(
     () => [
       {
@@ -114,7 +125,10 @@ const SavedParameters = ({
                     } as Parameter;
                     setParameterToDelete(parameterToDelete);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "delete" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "delete",
+                      });
                     } else {
                       setDeleteDialogOpen(true);
                     }
@@ -134,7 +148,10 @@ const SavedParameters = ({
                       table.getRow(row.cell.row.id).original
                     );
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "edit" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "edit",
+                      });
                     } else {
                       setOpenParameterDialog(true);
                     }
@@ -150,13 +167,11 @@ const SavedParameters = ({
     ],
     [canEdit, parameters, isCQLUnchanged]
   );
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const managePagination = useCallback(() => {
     if (parameters?.length > 0) {
       setTotalItems(parameters.length);
@@ -185,18 +200,20 @@ const SavedParameters = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   return (
     <>
-      <table
-        tw="min-w-full"
+      <_StyledTable
         data-testid="parameters-tbl"
         id="parameters-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
       >
-        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+        <_StyledThead
+          style={{
+            borderBottom: "solid 1px #8c8c8c",
+          }}
+        >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
@@ -211,7 +228,7 @@ const SavedParameters = ({
               ))}
             </tr>
           ))}
-        </thead>
+        </_StyledThead>
         <tbody data-testid="parameters-table-body">
           {loading && (
             <div>
@@ -222,9 +239,9 @@ const SavedParameters = ({
           )}
           {!loading && _.isEmpty(parameters) && (
             <tr>
-              <td colSpan={columns.length} tw="text-center p-2">
+              <_StyledTd colSpan={columns.length}>
                 No Results were found
-              </td>
+              </_StyledTd>
             </tr>
           )}
           {!loading &&
@@ -238,7 +255,7 @@ const SavedParameters = ({
               </tr>
             ))}
         </tbody>
-      </table>
+      </_StyledTable>
       <MadieDeleteDialog
         open={deleteDialogOpen}
         onContinue={() => {
@@ -300,5 +317,24 @@ const SavedParameters = ({
     </>
   );
 };
-
 export default SavedParameters;
+var _StyledTable = _styled("table").withConfig({
+  displayName: "SavedParameters___StyledTable",
+  componentId: "sc-j0j2pa-2",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "SavedParameters___StyledThead",
+  componentId: "sc-j0j2pa-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "SavedParameters___StyledTd",
+  componentId: "sc-j0j2pa-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});

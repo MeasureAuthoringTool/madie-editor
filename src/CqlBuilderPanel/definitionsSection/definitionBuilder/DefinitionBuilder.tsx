@@ -1,6 +1,12 @@
+import _styled, {
+  default as _styled2,
+  default as _styled3,
+  default as _styled4,
+  default as _styled5,
+  default as _styled6,
+  default as _styled7,
+} from "styled-components";
 import React, { useState, useEffect, useRef } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import {
   Button,
@@ -12,14 +18,12 @@ import { DefinitionSectionSchemaValidator } from "../../../validations/Definitio
 import ExpressionEditor from "../expressionSection/ExpressionEditor";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import { getNewExpressionsAndLines } from "../../common/utils";
-
 export interface Definition {
   definitionName?: string;
   comment?: string;
   expressionValue?: string;
   returnType?: string;
 }
-
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
@@ -29,7 +33,6 @@ export interface DefinitionProps {
   operation?: string;
   onClose?: Function;
 }
-
 export default function DefinitionBuilder({
   canEdit,
   handleApplyDefinition,
@@ -85,30 +88,26 @@ export default function DefinitionBuilder({
     setCursorPosition(null);
   };
   const { resetForm } = formik;
-
   useEffect(() => {
     if (formik.values.definitionName) {
       setExpressionEditorOpen(true);
     }
   }, [formik.values.definitionName]);
-
   const isEditDialogFormDirty = () => {
     if (definition?.expressionValue !== expressionEditorValue || formik.dirty) {
       return false;
     }
     return true;
   };
-
   return (
     <div>
       <form id="definition-form" onSubmit={formik.handleSubmit}>
-        <div tw="flex space-x-5">
-          <div tw="w-1/2">
-            <TextField
+        <_StyledDiv>
+          <_StyledDiv2>
+            <_StyledTextField
               required="required"
               id="definition-name"
               name="definitionName"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               label="Definition Name"
@@ -120,18 +119,17 @@ export default function DefinitionBuilder({
               error={Boolean(formik.errors.definitionName)}
               {...formik.getFieldProps("definitionName")}
             />
-          </div>
+          </_StyledDiv2>
           {definition && definition.returnType && (
-            <div tw="w-1/2 ml-10 my-2" data-testid="return-type">
+            <_StyledDiv3 data-testid="return-type">
               <p className="result-label">Return Type</p>
               <span className="result-value">{definition.returnType}</span>
-            </div>
+            </_StyledDiv3>
           )}
-        </div>
+        </_StyledDiv>
         <br />
-        <TextArea
+        <_StyledTextArea
           id="definition-comment"
-          tw="w-full"
           label="Comment"
           readOnly={!canEdit}
           disabled={!canEdit}
@@ -145,7 +143,11 @@ export default function DefinitionBuilder({
           name="comment"
           {...formik.getFieldProps("comment")}
         />
-        <div style={{ marginTop: "36px" }} />
+        <div
+          style={{
+            marginTop: "36px",
+          }}
+        />
         <FormikProvider value={formik}>
           <ExpressionEditor
             canEdit={canEdit}
@@ -161,7 +163,7 @@ export default function DefinitionBuilder({
         <div className="form-actions">
           {canEdit ? (
             <div>
-              <Button
+              <_StyledButton
                 variant="outline"
                 data-testid="clear-definition-btn"
                 disabled={
@@ -170,14 +172,13 @@ export default function DefinitionBuilder({
                       (definition?.expressionValue || "")) ||
                   !canEdit
                 }
-                tw="mr-4"
                 onClick={() => {
                   resetForm();
                   setExpressionEditorValue(definition?.expressionValue || "");
                 }}
               >
                 Clear
-              </Button>
+              </_StyledButton>
               <Button
                 data-testid={`definition-${
                   operation === "edit" ? "save" : "apply"
@@ -210,19 +211,68 @@ export default function DefinitionBuilder({
               </Button>
             </div>
           ) : (
-            <Button
+            <_StyledButton2
               variant="outline"
               data-testid="cancel-definition-btn"
-              tw="mr-4"
               onClick={() => {
                 onClose();
               }}
             >
               Cancel
-            </Button>
+            </_StyledButton2>
           )}
         </div>
       </form>
     </div>
   );
 }
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "DefinitionBuilder___StyledDiv",
+  componentId: "sc-15v127g-0",
+})({
+  display: "flex",
+  "> :not([hidden]) ~ :not([hidden])": {
+    "--tw-space-x-reverse": "0",
+    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
+    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
+  },
+});
+var _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "DefinitionBuilder___StyledDiv2",
+  componentId: "sc-15v127g-1",
+})({
+  width: "50%",
+});
+var _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "DefinitionBuilder___StyledTextField",
+  componentId: "sc-15v127g-2",
+})({
+  width: "100%",
+});
+var _StyledDiv3 = _styled4("div").withConfig({
+  displayName: "DefinitionBuilder___StyledDiv3",
+  componentId: "sc-15v127g-3",
+})({
+  marginTop: "0.5rem",
+  marginBottom: "0.5rem",
+  marginLeft: "2.5rem",
+  width: "50%",
+});
+var _StyledTextArea = _styled5(TextArea).withConfig({
+  displayName: "DefinitionBuilder___StyledTextArea",
+  componentId: "sc-15v127g-4",
+})({
+  width: "100%",
+});
+var _StyledButton = _styled6(Button).withConfig({
+  displayName: "DefinitionBuilder___StyledButton",
+  componentId: "sc-15v127g-5",
+})({
+  marginRight: "1rem",
+});
+var _StyledButton2 = _styled7(Button).withConfig({
+  displayName: "DefinitionBuilder___StyledButton2",
+  componentId: "sc-15v127g-6",
+})({
+  marginRight: "1rem",
+});

@@ -1,6 +1,5 @@
+import _styled from "styled-components";
 import React, { useMemo, useState } from "react";
-import tw from "twin.macro";
-import "styled-components/macro";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
@@ -8,7 +7,6 @@ import ExpandingSection from "../../../../common/ExpandingSection";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import _ from "lodash";
-
 import {
   useReactTable,
   ColumnDef,
@@ -20,7 +18,6 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
-
 type ResultSectionProps = {
   showResultsTable: boolean;
   setShowResultsTable: any;
@@ -29,7 +26,6 @@ type ResultSectionProps = {
   editorVal: string;
   measureModel?: string;
 };
-
 type ResultsColumnRow = {
   name: string;
   display: string;
@@ -37,8 +33,17 @@ type ResultsColumnRow = {
   svsVersion: string;
   versionIncluded?: string;
 };
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-
+const TH = _styled.th.withConfig({
+  displayName: "ResultsSection__TH",
+  componentId: "sc-hhov3i-0",
+})({
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+  fontWeight: "700",
+  textTransform: "capitalize",
+});
 export default function ResultsSection({
   showResultsTable,
   setShowResultsTable,
@@ -50,14 +55,12 @@ export default function ResultsSection({
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<ResultsColumnRow>(null);
   const [openEditCodeDialog, setOpenEditCodeDialog] = useState<boolean>(false);
-
   const handleOpen = async (
     selectedId,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     setSelectedCodeDetails(table.getRow(selectedId).original);
   };
-
   const data = [code];
   const columns = useMemo<ColumnDef<ResultsColumnRow>[]>(
     () => [
@@ -87,7 +90,12 @@ export default function ResultsSection({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => (
-          <div className="inline-flex gap-x-2" style={{ width: "max-content" }}>
+          <div
+            className="inline-flex gap-x-2"
+            style={{
+              width: "max-content",
+            }}
+          >
             <ToolTippedIcon
               tooltipMessage="Edit"
               buttonProps={{
@@ -125,7 +133,6 @@ export default function ResultsSection({
     ],
     [editorVal]
   );
-
   const table = useReactTable({
     data,
     columns,
@@ -134,15 +141,12 @@ export default function ResultsSection({
   const handleApplyCodeInner = (selectedCode) => {
     handleApplyCode(selectedCode);
   };
-
   const toggleEditCodeDialogState = () => {
     setOpenEditCodeDialog(!open);
   };
-
   const handleEditCode = () => {
     setOpenEditCodeDialog(true);
   };
-
   const getCodeStatus = (status) => {
     if (status == CodeStatus.ACTIVE) {
       return (
@@ -164,7 +168,6 @@ export default function ResultsSection({
       </ToolTippedIcon>
     );
   };
-
   return (
     <div>
       <ExpandingSection
@@ -173,16 +176,16 @@ export default function ResultsSection({
         setShowHeaderContent={setShowResultsTable}
         children={
           <>
-            <table
-              tw="min-w-full"
+            <_StyledTable
               data-testid="codes-results-tbl"
               style={{
                 borderBottom: "solid 1px #8c8c8c",
               }}
             >
-              <thead
-                tw="bg-slate"
-                style={{ borderBottom: "solid 1px #8c8c8c" }}
+              <_StyledThead
+                style={{
+                  borderBottom: "solid 1px #8c8c8c",
+                }}
               >
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
@@ -198,19 +201,19 @@ export default function ResultsSection({
                     ))}
                   </tr>
                 ))}
-              </thead>
+              </_StyledThead>
               <tbody>
                 {!code ? (
                   <tr>
-                    <td colSpan={columns.length} tw="text-center p-2">
+                    <_StyledTd colSpan={columns.length}>
                       No Results were found
-                    </td>
+                    </_StyledTd>
                   </tr>
                 ) : (
                   table.getRowModel().rows.map((row) => (
                     <tr key={row.id} data-test-id={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} tw="p-2">
+                        <_StyledTd2 key={cell.id}>
                           {cell.column.id === "status"
                             ? getCodeStatus(cell.getValue())
                             : cell.column.id === "fhirVersion"
@@ -219,13 +222,13 @@ export default function ResultsSection({
                                 cell.column.columnDef.cell,
                                 cell.getContext()
                               )}
-                        </td>
+                        </_StyledTd2>
                       ))}
                     </tr>
                   ))
                 )}
               </tbody>
-            </table>
+            </_StyledTable>
             <EditCodeDetailsDialog
               measureModel={measureModel}
               selectedCodeDetails={selectedCodeDetails}
@@ -239,3 +242,29 @@ export default function ResultsSection({
     </div>
   );
 }
+var _StyledTable = _styled("table").withConfig({
+  displayName: "ResultsSection___StyledTable",
+  componentId: "sc-hhov3i-1",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "ResultsSection___StyledThead",
+  componentId: "sc-hhov3i-2",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "ResultsSection___StyledTd",
+  componentId: "sc-hhov3i-3",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+var _StyledTd2 = _styled("td").withConfig({
+  displayName: "ResultsSection___StyledTd2",
+  componentId: "sc-hhov3i-4",
+})({
+  padding: "0.5rem",
+});

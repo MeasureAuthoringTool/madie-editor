@@ -1,3 +1,4 @@
+import _styled from "styled-components";
 import {
   ColumnDef,
   flexRender,
@@ -12,8 +13,6 @@ import React, {
   useState,
 } from "react";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
-import tw from "twin.macro";
-import "styled-components/macro";
 import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
 import ArrowDropUpOutlinedIcon from "@mui/icons-material/ArrowDropUpOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -26,13 +25,11 @@ import { Stack } from "@mui/material";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import "./Arguments.scss";
 import toastReducer from "../../../common/ToastReducer";
-
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
   handleDeleteArgument?: Function;
   canEdit: boolean;
 };
-
 type RowDef = {
   id: number;
   arrows: string;
@@ -40,9 +37,17 @@ type RowDef = {
   datatype: string;
   action: string;
 };
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-
+const TH = _styled.th.withConfig({
+  displayName: "Arguments__TH",
+  componentId: "sc-1q4xf5b-0",
+})({
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+  fontWeight: "700",
+  textTransform: "capitalize",
+});
 const Arguments = ({
   functionArguments,
   handleDeleteArgument,
@@ -72,7 +77,6 @@ const Arguments = ({
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const managePagination = useCallback(() => {
     //  page zero for no pages available
     if (functionArguments.length < currentLimit) {
@@ -101,12 +105,10 @@ const Arguments = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   const canGoNext = (() => {
     return currentPage < totalPages;
   })();
   const canGoPrev = currentPage > 1;
-
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
@@ -118,16 +120,13 @@ const Arguments = ({
       handlePageChange(null, newTotalPages);
     }
   }, [functionArguments, currentLimit]);
-
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [functionArguments, currentPage, currentLimit]);
-
   const deleteFunctionArgument = () => {
     handleDeleteArgument(selectedArgument);
     setDeleteDialogOpen(false);
@@ -153,7 +152,6 @@ const Arguments = ({
       action: null,
     };
   });
-
   const moveItem = (fromIndex, toIndex) => {
     setVisibleArguments((prevItems) => {
       const newItems = [...prevItems];
@@ -231,25 +229,26 @@ const Arguments = ({
       },
     ];
   }, [functionArguments]);
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   return (
     <>
       <div className="function-argument-container">
-        <table
-          tw="min-w-full"
+        <_StyledTable
           data-testid="function-argument-tbl"
           id="function-argument-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
         >
-          <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+          <_StyledThead
+            style={{
+              borderBottom: "solid 1px #8c8c8c",
+            }}
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -264,7 +263,7 @@ const Arguments = ({
                 ))}
               </tr>
             ))}
-          </thead>
+          </_StyledThead>
           <tbody data-testid="function-argument-table-body">
             {functionArguments?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -281,13 +280,13 @@ const Arguments = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} tw="text-center p-2">
+                <_StyledTd colSpan={columns.length}>
                   No Results were found
-                </td>
+                </_StyledTd>
               </tr>
             )}
           </tbody>
-        </table>
+        </_StyledTable>
         {functionArguments?.length > 0 && (
           <div className="pagination-container">
             <Pagination
@@ -314,7 +313,11 @@ const Arguments = ({
         toastType={toastState.type}
         open={toastState.open}
         message={toastState.message}
-        onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        onClose={() =>
+          dispatch({
+            type: "HIDE_TOAST",
+          })
+        }
         autoHideDuration={8000}
       />
       <MadieDeleteDialog
@@ -327,5 +330,24 @@ const Arguments = ({
     </>
   );
 };
-
 export default Arguments;
+var _StyledTable = _styled("table").withConfig({
+  displayName: "Arguments___StyledTable",
+  componentId: "sc-1q4xf5b-1",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "Arguments___StyledThead",
+  componentId: "sc-1q4xf5b-2",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "Arguments___StyledTd",
+  componentId: "sc-1q4xf5b-3",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});

@@ -1,6 +1,10 @@
+import _styled, {
+  default as _styled2,
+  default as _styled3,
+  default as _styled4,
+  default as _styled5,
+} from "styled-components";
 import React, { useState, useRef } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import {
   Button,
@@ -19,7 +23,6 @@ import ExpressionEditor from "../../definitionsSection/expressionSection/Express
 import { getNewExpressionsAndLines } from "../../common/utils";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import UseToast from "../../../common/UseToast";
-
 export interface Funct {
   name?: string;
   fluentFunction?: boolean;
@@ -28,7 +31,6 @@ export interface Funct {
   expressionEditorValue?: string;
   logic?: string;
 }
-
 export interface FunctionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookup;
   canEdit: boolean;
@@ -39,7 +41,6 @@ export interface FunctionProps {
   operation?: string;
   setEditFunctionDialogOpen?: Function;
 }
-
 export default function FunctionBuilder({
   canEdit,
   handleApplyFunction,
@@ -57,7 +58,6 @@ export default function FunctionBuilder({
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
-
   const formik = useFormik({
     initialValues: {
       functionName: funct?.name || "",
@@ -100,7 +100,6 @@ export default function FunctionBuilder({
     formik.setFieldValue("expressionEditorValue", newEditorExpressionValue);
     formik.setFieldValue("type", "");
     formik.setFieldValue("name", "");
-
     textAreaRef.current.editor.setValue(newEditorExpressionValue, 1);
     textAreaRef.current.editor.moveCursorTo(
       newCursorPosition.row,
@@ -110,7 +109,6 @@ export default function FunctionBuilder({
     setAutoInsert(true);
     setCursorPosition(null);
   };
-
   const addArgumentToFunctionsArguments = (fn) => {
     const newArgs = [
       ...formik.values.functionsArguments.filter(
@@ -125,7 +123,6 @@ export default function FunctionBuilder({
     setToastType("success");
     setToastOpen(true);
   };
-
   const deleteArgumentFromFunctionArguments = (fn) => {
     const newArgs = formik.values.functionsArguments.filter(
       (argument) =>
@@ -134,14 +131,12 @@ export default function FunctionBuilder({
     );
     formik.setFieldValue("functionsArguments", newArgs);
   };
-
   const validateQuotesForFunctionArguments = (argument) => {
     if (argument.startsWith('"') && argument.endsWith("'")) {
       return argument;
     }
     return `"${argument}"`;
   };
-
   const getFunctionArguments = (args) => {
     let argStr = "";
     args?.forEach((arg) => {
@@ -172,23 +167,20 @@ export default function FunctionBuilder({
     logic += "  " + formik.values.expressionEditorValue;
     return logic;
   };
-
   const validateArguments = (functionArguments) => {
     return !functionArguments.some(
       (argument) => argument.argumentName && argument.dataType
     );
   };
-
   return (
     <div>
       <form id="function-form" onSubmit={formik.handleSubmit}>
-        <div tw="flex space-x-5">
-          <div tw="w-1/2">
-            <TextField
+        <_StyledDiv>
+          <_StyledDiv2>
+            <_StyledTextField
               required="required"
               id="function-name"
               name="functionName"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               label="Function Name"
@@ -209,8 +201,12 @@ export default function FunctionBuilder({
                 }
               }}
             />
-          </div>
-          <Box sx={{ marginTop: "22px" }}>
+          </_StyledDiv2>
+          <Box
+            sx={{
+              marginTop: "22px",
+            }}
+          >
             <FormControlLabel
               control={
                 <Checkbox
@@ -222,15 +218,17 @@ export default function FunctionBuilder({
                   data-testid="fluentFunction"
                 />
               }
-              sx={{ textTransform: "none", color: "#515151" }}
+              sx={{
+                textTransform: "none",
+                color: "#515151",
+              }}
               label="Fluent Function"
             />
           </Box>
-        </div>
+        </_StyledDiv>
         <br />
-        <TextArea
+        <_StyledTextArea
           id="function-comment"
-          tw="w-full"
           label="Comment"
           readOnly={!canEdit}
           disabled={!canEdit}
@@ -244,7 +242,11 @@ export default function FunctionBuilder({
           name="comment"
           {...formik.getFieldProps("comment")}
         />
-        <div style={{ marginTop: "36px" }} />
+        <div
+          style={{
+            marginTop: "36px",
+          }}
+        />
         <ExpandingSection
           title="Arguments"
           showHeaderContent={argumentsEditorOpen}
@@ -262,7 +264,11 @@ export default function FunctionBuilder({
           />
         </ExpandingSection>
 
-        <div style={{ marginTop: "36px" }} />
+        <div
+          style={{
+            marginTop: "36px",
+          }}
+        />
         <FormikProvider value={formik}>
           <ExpressionEditor
             canEdit={canEdit}
@@ -278,18 +284,17 @@ export default function FunctionBuilder({
           />
         </FormikProvider>
         <div className="form-actions">
-          <Button
+          <_StyledButton
             id="clear-function-btn"
             variant="outline"
             data-testid="clear-function-btn"
             disabled={!formik.dirty || !canEdit}
-            tw="mr-4"
             onClick={() => {
               setConfirmationDialog(true);
             }}
           >
             Clear
-          </Button>
+          </_StyledButton>
           <Button
             data-testid={`function-apply-btn`}
             disabled={
@@ -365,3 +370,38 @@ export default function FunctionBuilder({
     </div>
   );
 }
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "FunctionBuilder___StyledDiv",
+  componentId: "sc-d6izr0-0",
+})({
+  display: "flex",
+  "> :not([hidden]) ~ :not([hidden])": {
+    "--tw-space-x-reverse": "0",
+    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
+    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
+  },
+});
+var _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "FunctionBuilder___StyledDiv2",
+  componentId: "sc-d6izr0-1",
+})({
+  width: "50%",
+});
+var _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "FunctionBuilder___StyledTextField",
+  componentId: "sc-d6izr0-2",
+})({
+  width: "100%",
+});
+var _StyledTextArea = _styled4(TextArea).withConfig({
+  displayName: "FunctionBuilder___StyledTextArea",
+  componentId: "sc-d6izr0-3",
+})({
+  width: "100%",
+});
+var _StyledButton = _styled5(Button).withConfig({
+  displayName: "FunctionBuilder___StyledButton",
+  componentId: "sc-d6izr0-4",
+})({
+  marginRight: "1rem",
+});

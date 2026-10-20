@@ -1,3 +1,4 @@
+import _styled from "styled-components";
 import React, {
   useCallback,
   useEffect,
@@ -11,8 +12,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import { CqlLibrary } from "../../../api/useCqlLibraryServiceApi";
 import {
   MadieDeleteDialog,
@@ -26,7 +25,6 @@ import CqlLibraryDetailsDialog, {
 import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
 import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
-
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
   canEdit: boolean;
@@ -40,7 +38,6 @@ type PropTypes = {
   handleDeleteLibrary?: (library) => void;
   operation?: string;
 };
-
 type RowDef = {
   id: string;
   name: string;
@@ -49,9 +46,17 @@ type RowDef = {
   ownerDisplayName: string;
   librarySetId: string;
 };
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-
+const TH = _styled.th.withConfig({
+  displayName: "Results__TH",
+  componentId: "sc-18pioce-0",
+})({
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+  fontWeight: "700",
+  textTransform: "capitalize",
+});
 const Results = ({
   cqlLibraries,
   canEdit,
@@ -68,7 +73,6 @@ const Results = ({
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
   const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
   const [selectedLibrary, setSelectedLibrary] = useState<SelectedLibrary>();
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const [rowIndex, setRowIndex] = useState<string>();
@@ -92,7 +96,6 @@ const Results = ({
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const managePagination = useCallback(() => {
     if (cqlLibraries.length < currentLimit) {
       setOffset(0);
@@ -120,12 +123,10 @@ const Results = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   const canGoNext = (() => {
     return currentPage < totalPages;
   })();
   const canGoPrev = currentPage > 1;
-
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
@@ -133,7 +134,6 @@ const Results = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [cqlLibraries, currentPage, currentLimit]);
@@ -152,7 +152,6 @@ const Results = ({
 
   // Use the custom hook to memoize the fetchLibrarySet async function
   const memoizedLibrarySetFetch = useMemoizedLibrarySet();
-
   const updateLibrarySelection = async (
     version: string,
     setId: string,
@@ -186,7 +185,10 @@ const Results = ({
     } catch (error) {
       dispatch({
         type: "SHOW_TOAST",
-        payload: { type: "danger", message: error.message },
+        payload: {
+          type: "danger",
+          message: error.message,
+        },
       });
     }
   };
@@ -207,7 +209,6 @@ const Results = ({
       setDiscardDialogOpen(true);
     }
   };
-
   const showDeleteConfirmation = (index) => {
     const rowModal = table.getRow(index).original;
     setSelectedLibrary({
@@ -221,7 +222,6 @@ const Results = ({
       setDiscardDialogOpen(true);
     }
   };
-
   const onDiscardContinue = async () => {
     setEditorValue(cql);
     setIsCQLUnchanged(true);
@@ -238,7 +238,6 @@ const Results = ({
     }
     setDiscardDialogOpen(false);
   };
-
   const columns = useMemo<ColumnDef<RowDef>[]>(() => {
     const columnDefs = [
       {
@@ -282,25 +281,26 @@ const Results = ({
         ]
       : columnDefs;
   }, [canEdit, cqlLibraries, isCQLUnchanged]);
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   return (
     <>
       <div className="search-results-container">
-        <table
-          tw="min-w-full"
+        <_StyledTable
           data-testid="library-results-tbl"
           id="library-results-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
         >
-          <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+          <_StyledThead
+            style={{
+              borderBottom: "solid 1px #8c8c8c",
+            }}
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -315,7 +315,7 @@ const Results = ({
                 ))}
               </tr>
             ))}
-          </thead>
+          </_StyledThead>
           <tbody data-testid="library-results-table-body">
             {cqlLibraries?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -332,13 +332,13 @@ const Results = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} tw="text-center p-2">
+                <_StyledTd colSpan={columns.length}>
                   No Results were found
-                </td>
+                </_StyledTd>
               </tr>
             )}
           </tbody>
-        </table>
+        </_StyledTable>
         {cqlLibraries?.length > 0 && (
           <div className="pagination-container">
             <Pagination
@@ -375,7 +375,11 @@ const Results = ({
         toastType={toastState.type}
         open={toastState.open}
         message={toastState.message}
-        onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        onClose={() =>
+          dispatch({
+            type: "HIDE_TOAST",
+          })
+        }
         autoHideDuration={8000}
       />
       <MadieDeleteDialog
@@ -393,5 +397,24 @@ const Results = ({
     </>
   );
 };
-
 export default Results;
+var _StyledTable = _styled("table").withConfig({
+  displayName: "Results___StyledTable",
+  componentId: "sc-18pioce-1",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "Results___StyledThead",
+  componentId: "sc-18pioce-2",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "Results___StyledTd",
+  componentId: "sc-18pioce-3",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});

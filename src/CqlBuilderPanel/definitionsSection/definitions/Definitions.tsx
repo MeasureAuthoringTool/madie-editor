@@ -1,3 +1,4 @@
+import _styled from "styled-components";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 import {
@@ -6,8 +7,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import {
   Pagination,
   MadieDeleteDialog,
@@ -22,10 +21,27 @@ import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
 import { Stack } from "@mui/material";
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-const TD = tw.td`p-3 text-left text-sm w-1/2`;
-
+const TH = _styled.th.withConfig({
+  displayName: "Definitions__TH",
+  componentId: "sc-cj02bv-0",
+})({
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+  fontWeight: "700",
+  textTransform: "capitalize",
+});
+const TD = _styled.td.withConfig({
+  displayName: "Definitions__TD",
+  componentId: "sc-cj02bv-1",
+})({
+  width: "50%",
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+});
 type DefinitionsPropTypes = {
   canEdit: boolean;
   definitions: Lookup[];
@@ -57,19 +73,15 @@ const Definitions = ({
     open: false,
     operation: null,
   });
-
   const [selectedDefinition, setSelectedDefinition] = useState<Lookup>();
   const [openDefinitionDialog, setOpenDefinitionDialog] = useState<boolean>();
-
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
   const [visibleDefinitions, setVisibleDefinitions] = useState<Lookup[]>([]);
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const canGoPrev = currentPage > 1;
   const canGoNext = (() => {
     return currentPage < totalPages;
@@ -81,17 +93,14 @@ const Definitions = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [definitions, currentPage, currentLimit]);
-
   const getReturnType = (index) => {
     const rowModal = table.getRow(index).original;
     const returnTypes = getCqlDefinitionReturnTypes();
     return returnTypes ? returnTypes[_.camelCase(rowModal.name)] : undefined;
   };
-
   const showEditDefinitionDialog = (index) => {
     setSelectedDefinition({
       ...table.getRow(index).original,
@@ -101,7 +110,6 @@ const Definitions = ({
 
   // table data
   const data = visibleDefinitions;
-
   const columns = useMemo<ColumnDef<Lookup>[]>(
     () => [
       {
@@ -149,7 +157,10 @@ const Definitions = ({
                     onClick: (e) => {
                       setSelectedDefinition(row.row.original.name);
                       if (!isCQLUnchanged) {
-                        setDiscardDialog({ open: true, operation: "delete" });
+                        setDiscardDialog({
+                          open: true,
+                          operation: "delete",
+                        });
                       } else {
                         setDeleteDialogOpen(true);
                       }
@@ -172,7 +183,10 @@ const Definitions = ({
                   onClick: () => {
                     showEditDefinitionDialog(row.cell.row.id);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "edit" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "edit",
+                      });
                     } else {
                       setOpenDefinitionDialog(true);
                     }
@@ -192,13 +206,11 @@ const Definitions = ({
     ],
     [canEdit, definitions]
   );
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const managePagination = useCallback(() => {
     if (definitions?.length > 0) {
       setTotalItems(definitions.length);
@@ -227,18 +239,20 @@ const Definitions = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   return (
     <>
-      <table
-        tw="min-w-full"
+      <_StyledTable
         data-testid="definitions-tbl"
         id="definitions-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
       >
-        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+        <_StyledThead
+          style={{
+            borderBottom: "solid 1px #8c8c8c",
+          }}
+        >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
@@ -253,7 +267,7 @@ const Definitions = ({
               ))}
             </tr>
           ))}
-        </thead>
+        </_StyledThead>
         <tbody data-testid="definitions-table-body">
           {loading && (
             <tr>
@@ -266,9 +280,9 @@ const Definitions = ({
           )}
           {!loading && _.isEmpty(definitions) && (
             <tr>
-              <td colSpan={columns.length} tw="text-center p-2">
+              <_StyledTd colSpan={columns.length}>
                 No Results were found
-              </td>
+              </_StyledTd>
             </tr>
           )}
           {!loading &&
@@ -282,7 +296,7 @@ const Definitions = ({
               </tr>
             ))}
         </tbody>
-      </table>
+      </_StyledTable>
       <MadieDeleteDialog
         open={deleteDialogOpen}
         onContinue={() => {
@@ -345,5 +359,24 @@ const Definitions = ({
     </>
   );
 };
-
 export default Definitions;
+var _StyledTable = _styled("table").withConfig({
+  displayName: "Definitions___StyledTable",
+  componentId: "sc-cj02bv-2",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "Definitions___StyledThead",
+  componentId: "sc-cj02bv-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "Definitions___StyledTd",
+  componentId: "sc-cj02bv-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});

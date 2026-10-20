@@ -1,7 +1,6 @@
+import _styled from "styled-components";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import _ from "lodash";
-import tw from "twin.macro";
-import "styled-components/macro";
 import { FunctionLookup } from "../../../model/CqlBuilderLookup";
 import { FunctionProps } from "../FunctionsSection";
 import {
@@ -21,10 +20,27 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import EditFunctionDialog from "../EditFunctionDialog";
 import Tooltip from "@mui/material/Tooltip";
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-const TD = tw.td`p-3 text-left text-sm break-all`;
-
+const TH = _styled.th.withConfig({
+  displayName: "Functions__TH",
+  componentId: "sc-z5k5r-0",
+})({
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+  fontWeight: "700",
+  textTransform: "capitalize",
+});
+const TD = _styled.td.withConfig({
+  displayName: "Functions__TD",
+  componentId: "sc-z5k5r-1",
+})({
+  wordBreak: "break-all",
+  padding: "0.75rem",
+  textAlign: "left",
+  fontSize: "0.875rem",
+  lineHeight: "1.25rem",
+});
 const getArgNameToolTipHtml = (args: string[], number) => {
   const result = args?.map((arg, index) => {
     if (index < number) {
@@ -37,7 +53,6 @@ const getArgNameToolTipHtml = (args: string[], number) => {
   });
   return result;
 };
-
 const Functions = ({
   canEdit,
   loading,
@@ -56,7 +71,6 @@ const Functions = ({
   const [visibleFunctions, setVisibleFunctions] = useState<FunctionLookup[]>(
     []
   );
-
   const [selectedFunction, setSelectedFunction] = useState<FunctionLookup>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialog, setDiscardDialog] = useState({
@@ -65,7 +79,6 @@ const Functions = ({
   });
   const [editFunctionDialogOpen, setEditFunctionDialogOpen] =
     useState<boolean>();
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -86,7 +99,6 @@ const Functions = ({
 
   // table data
   const data = visibleFunctions;
-
   const columns = useMemo<ColumnDef<FunctionLookup>[]>(
     () => [
       {
@@ -157,7 +169,10 @@ const Functions = ({
                   onClick: (e) => {
                     setSelectedFunction(table.getRow(row.cell.row.id).original);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "delete" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "delete",
+                      });
                     } else {
                       setDeleteDialogOpen(true);
                     }
@@ -175,7 +190,10 @@ const Functions = ({
                   onClick: (e) => {
                     setSelectedFunction(table.getRow(row.cell.row.id).original);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "edit" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "edit",
+                      });
                     } else {
                       setEditFunctionDialogOpen(true);
                     }
@@ -191,13 +209,11 @@ const Functions = ({
     ],
     [canEdit, functions, isCQLUnchanged]
   );
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const managePagination = useCallback(() => {
     if (functions?.length > 0) {
       setTotalItems(functions.length);
@@ -226,18 +242,20 @@ const Functions = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   return (
     <>
-      <table
-        tw="min-w-full"
+      <_StyledTable
         data-testid="functions-tbl"
         id="functions-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
       >
-        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+        <_StyledThead
+          style={{
+            borderBottom: "solid 1px #8c8c8c",
+          }}
+        >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
@@ -252,7 +270,7 @@ const Functions = ({
               ))}
             </tr>
           ))}
-        </thead>
+        </_StyledThead>
         <tbody data-testid="functions-table-body">
           {loading && (
             <div title="loading">
@@ -263,9 +281,9 @@ const Functions = ({
           )}
           {!loading && _.isEmpty(functions) && (
             <tr>
-              <td colSpan={columns.length} tw="text-center p-2">
+              <_StyledTd colSpan={columns.length}>
                 No Results were found
-              </td>
+              </_StyledTd>
             </tr>
           )}
           {!loading &&
@@ -279,7 +297,7 @@ const Functions = ({
               </tr>
             ))}
         </tbody>
-      </table>
+      </_StyledTable>
       <div className="pagination-container">
         <Pagination
           totalItems={totalItems}
@@ -366,5 +384,24 @@ const Functions = ({
     </>
   );
 };
-
 export default Functions;
+var _StyledTable = _styled("table").withConfig({
+  displayName: "Functions___StyledTable",
+  componentId: "sc-z5k5r-2",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "Functions___StyledThead",
+  componentId: "sc-z5k5r-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "Functions___StyledTd",
+  componentId: "sc-z5k5r-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});

@@ -29,6 +29,7 @@ export const CQL_EDITOR_THEME: editor.IStandaloneThemeData = {
   ],
   colors: {
     "editor.background": "#272822",
-    "editorLineNumber.foreground": "#6e7681",
+    "editorLineNumber.foreground": "#ffffff",
+    "editorLineNumber.activeForeground": "#ffffff",
   },
 };

@@ -1,6 +1,13 @@
+import _styled, {
+  default as _styled2,
+  default as _styled3,
+  default as _styled4,
+  default as _styled5,
+  default as _styled6,
+  default as _styled7,
+  default as _styled8,
+} from "styled-components";
 import React, { useCallback, useEffect, useState } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import {
   Select,
   Button,
@@ -10,14 +17,12 @@ import {
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import * as _ from "lodash";
-
 import { useFormik } from "formik";
 import Arguments from "./Arguments";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { FunctionArgumentSchemaValidator } from "../../../validations/FunctionArgumentSchemaValidator";
 import "./ArguementsSection.scss";
-
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
   canEdit: boolean;
@@ -26,7 +31,6 @@ interface ArgumentsProps {
   deleteArgumentFromFunctionArguments: Function;
   dirty: boolean;
 }
-
 const availableDataTypes = [
   "Boolean",
   "Date",
@@ -38,7 +42,6 @@ const availableDataTypes = [
   "Time",
   "Other",
 ];
-
 export default function ArgumentSection(props: ArgumentsProps) {
   const {
     addArgumentToFunctionsArguments,
@@ -49,7 +52,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
     dirty,
   } = props;
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
-
   const formik = useFormik({
     initialValues: {
       argumentName: "",
@@ -61,7 +63,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
     onSubmit: () => {},
   });
   const { dataType } = formik.values;
-
   const handleSubmit = () => {
     let value = dataType;
     if (value === "Other") {
@@ -83,16 +84,15 @@ export default function ArgumentSection(props: ArgumentsProps) {
   }, [dirty]);
   return (
     <>
-      <div tw="flex flex-wrap">
-        <div tw="w-1/2">
-          <TextField
+      <_StyledDiv>
+        <_StyledDiv2>
+          <_StyledTextField
             required={
               isFluentFunction || formik.values.dataType ? "required" : ""
             }
             label="Name"
             id="argument-name-field"
             name="argumentName"
-            tw="w-full"
             readOnly={!canEdit}
             disabled={!canEdit}
             placeholder=""
@@ -103,8 +103,8 @@ export default function ArgumentSection(props: ArgumentsProps) {
             helperText={formik.errors.argumentName}
             {...formik.getFieldProps("argumentName")}
           />
-        </div>
-        <div tw="flex-grow pl-5">
+        </_StyledDiv2>
+        <_StyledDiv3>
           <Select
             required={formik.values.argumentName ? "required" : ""}
             label="Available DataTypes"
@@ -136,16 +136,15 @@ export default function ArgumentSection(props: ArgumentsProps) {
               }
             }}
           />
-        </div>
-      </div>
+        </_StyledDiv3>
+      </_StyledDiv>
       {dataType === "Other" && (
-        <div tw="flex flex-wrap">
-          <div tw="pt-6 w-1/2">
-            <TextField
+        <_StyledDiv4>
+          <_StyledDiv5>
+            <_StyledTextField2
               label="Other"
               id="other-field"
               name="otherType"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               placeholder=""
@@ -157,22 +156,26 @@ export default function ArgumentSection(props: ArgumentsProps) {
               error={formik.touched.other && Boolean(formik.errors.other)}
               helperText={formik.errors.other}
             />
-          </div>
-        </div>
+          </_StyledDiv5>
+        </_StyledDiv4>
       )}
-      <div style={{ paddingTop: "24px", justifySelf: "end" }}>
-        <Button
+      <div
+        style={{
+          paddingTop: "24px",
+          justifySelf: "end",
+        }}
+      >
+        <_StyledButton
           id="clear-function-argument-btn"
           variant="outline"
           data-testid="clear-function-argument-btn"
           disabled={!canEdit || !formik.dirty}
-          tw="mr-4"
           onClick={() => {
             setConfirmationDialog(true);
           }}
         >
           Clear
-        </Button>
+        </_StyledButton>
         <Button
           data-testid={`function-argument-add-btn`}
           disabled={
@@ -187,7 +190,11 @@ export default function ArgumentSection(props: ArgumentsProps) {
           Add
         </Button>
       </div>
-      <div style={{ paddingTop: "24px" }}>
+      <div
+        style={{
+          paddingTop: "24px",
+        }}
+      >
         {/* tableData with pagination. */}
         <Arguments
           functionArguments={functionArguments}
@@ -206,3 +213,55 @@ export default function ArgumentSection(props: ArgumentsProps) {
     </>
   );
 }
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv",
+  componentId: "sc-1jx03lg-0",
+})({
+  display: "flex",
+  flexWrap: "wrap",
+});
+var _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv2",
+  componentId: "sc-1jx03lg-1",
+})({
+  width: "50%",
+});
+var _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "ArgumentSection___StyledTextField",
+  componentId: "sc-1jx03lg-2",
+})({
+  width: "100%",
+});
+var _StyledDiv3 = _styled4("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv3",
+  componentId: "sc-1jx03lg-3",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+var _StyledDiv4 = _styled5("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv4",
+  componentId: "sc-1jx03lg-4",
+})({
+  display: "flex",
+  flexWrap: "wrap",
+});
+var _StyledDiv5 = _styled6("div").withConfig({
+  displayName: "ArgumentSection___StyledDiv5",
+  componentId: "sc-1jx03lg-5",
+})({
+  width: "50%",
+  paddingTop: "1.5rem",
+});
+var _StyledTextField2 = _styled7(TextField).withConfig({
+  displayName: "ArgumentSection___StyledTextField2",
+  componentId: "sc-1jx03lg-6",
+})({
+  width: "100%",
+});
+var _StyledButton = _styled8(Button).withConfig({
+  displayName: "ArgumentSection___StyledButton",
+  componentId: "sc-1jx03lg-7",
+})({
+  marginRight: "1rem",
+});

@@ -1,3 +1,4 @@
+import _styled from "styled-components";
 import React, {
   useCallback,
   useEffect,
@@ -11,8 +12,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import {
   Pagination,
   MadieSpinner,
@@ -33,14 +32,12 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
-
 type SavedCodesColumnRow = {
   name: string;
   display: string;
   codeSystem: string;
   svsVersion: string;
 };
-
 export type CodesList = {
   code: string;
   codeSystem: string;
@@ -49,7 +46,6 @@ export type CodesList = {
   version: string;
   versionIncluded: boolean;
 };
-
 export type SelectedCodeDetails = SavedCodesColumnRow & {
   codeSystemOid?: string;
   versionIncluded?: boolean;
@@ -57,14 +53,12 @@ export type SelectedCodeDetails = SavedCodesColumnRow & {
   suffix?: string;
   fhirVersion?: string;
 };
-
 export const getFhirCodeSystemVersion = (codeSystemVersion) => {
   if (_.startsWith(codeSystemVersion, "http://snomed.info")) {
     return _.last(_.split(codeSystemVersion, "/"));
   }
   return codeSystemVersion;
 };
-
 export const getCodeSystemVersion = (codeSystem: CqlCodeSystem) => {
   if (codeSystem.version) {
     const version = codeSystem.version.replace(/['"]+/g, "");
@@ -72,7 +66,6 @@ export const getCodeSystemVersion = (codeSystem: CqlCodeSystem) => {
   }
   return null;
 };
-
 export const getCodeSuffix = (code: CqlCode) => {
   const name = code?.name.replace(/['"]+/g, "");
   const pattern = /\((\d+)\)/;
@@ -82,7 +75,6 @@ export const getCodeSuffix = (code: CqlCode) => {
   }
   return null;
 };
-
 export default function SavedCodesSubSection({
   measureStoreCql,
   measureModel,
@@ -118,11 +110,9 @@ export default function SavedCodesSubSection({
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
   const [visibleCodes, setVisibleCodes] = useState<Code[]>([]);
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const canGoPrev = currentPage > 1;
   const canGoNext = (() => {
     return currentPage < totalPages;
@@ -134,7 +124,6 @@ export default function SavedCodesSubSection({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [codes, currentPage, currentLimit]);
@@ -145,7 +134,6 @@ export default function SavedCodesSubSection({
       RetrieveCodeDetailsList(parsedCodesList);
     }
   }, [measureStoreCql]);
-
   const managePagination = useCallback(() => {
     if (codes?.length > 0) {
       if (totalItems < currentLimit) {
@@ -175,8 +163,17 @@ export default function SavedCodesSubSection({
     setTotalItems,
     setTotalPages,
   ]);
-
-  const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
+  const TH = _styled.th.withConfig({
+    displayName: "SavedCodesSubSection__TH",
+    componentId: "sc-obv2i0-0",
+  })({
+    padding: "0.75rem",
+    textAlign: "left",
+    fontSize: "0.875rem",
+    lineHeight: "1.25rem",
+    fontWeight: "700",
+    textTransform: "capitalize",
+  });
   const columns = useMemo<ColumnDef<SavedCodesColumnRow>[]>(
     () => [
       {
@@ -205,7 +202,12 @@ export default function SavedCodesSubSection({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => (
-          <div className="inline-flex gap-x-2" style={{ width: "max-content" }}>
+          <div
+            className="inline-flex gap-x-2"
+            style={{
+              width: "max-content",
+            }}
+          >
             {canEdit ? (
               <>
                 <ToolTippedIcon
@@ -255,13 +257,11 @@ export default function SavedCodesSubSection({
     ],
     [canEdit, isCQLUnchanged, measureModel]
   );
-
   const table = useReactTable({
     data: visibleCodes,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const terminologyService = useRef(useTerminologyServiceApi());
   const RetrieveCodeDetailsList = async (codesList) => {
     terminologyService.current
@@ -291,7 +291,6 @@ export default function SavedCodesSubSection({
         }
       });
   };
-
   const getCodeStatus = (status) => {
     if (status == "ACTIVE") {
       return (
@@ -313,11 +312,9 @@ export default function SavedCodesSubSection({
       </ToolTippedIcon>
     );
   };
-
   const toggleEditCodeDialogState = () => {
     setOpenEditCodeDialog(!open);
   };
-
   const handleEditCode = (selectedCode) => {
     setOpenEditCodeDialog(true);
     const parsedCode = parsedCodesList.find(
@@ -329,7 +326,6 @@ export default function SavedCodesSubSection({
       versionIncluded: parsedCode?.versionIncluded,
     });
   };
-
   return (
     <div>
       {showCqlHasErrorsAlert && (
@@ -339,10 +335,10 @@ export default function SavedCodesSubSection({
             <div aria-live="polite" role="alert">
               {
                 <div>
-                  <div tw="font-medium">
+                  <_StyledDiv>
                     Your Measure CQL contains errors. Due to that, your saved
                     codes table and CQL may not be consistent.
-                  </div>
+                  </_StyledDiv>
                 </div>
               }
             </div>
@@ -351,15 +347,18 @@ export default function SavedCodesSubSection({
         />
       )}
 
-      <table
-        tw="min-w-full"
+      <_StyledTable
         data-testid="saved-codes-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
           borderSpacing: "0 2em !important",
         }}
       >
-        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+        <_StyledThead
+          style={{
+            borderBottom: "solid 1px #8c8c8c",
+          }}
+        >
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -374,21 +373,21 @@ export default function SavedCodesSubSection({
               ))}
             </tr>
           ))}
-        </thead>
+        </_StyledThead>
         <tbody data-testid="saved-codes-tbl-body">
           {!loading ? (
             _.isEmpty(codes) ? (
               <tr>
-                <td colSpan={columns.length} tw="text-center p-2">
+                <_StyledTd colSpan={columns.length}>
                   No Results were found
-                </td>
+                </_StyledTd>
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id} data-testid={`saved-code-row-${row.id}`}>
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <td key={cell.id} tw="p-2">
+                      <_StyledTd2 key={cell.id}>
                         {cell.column.id === "status"
                           ? getCodeStatus(cell.getValue())
                           : cell.column.id === "fhirVersion"
@@ -397,7 +396,7 @@ export default function SavedCodesSubSection({
                               cell.column.columnDef.cell,
                               cell.getContext()
                             )}
-                      </td>
+                      </_StyledTd2>
                     );
                   })}
                 </tr>
@@ -405,11 +404,16 @@ export default function SavedCodesSubSection({
             )
           ) : (
             <div data-testid="saved-codes-loading-spinner">
-              <MadieSpinner style={{ height: 50, width: 50 }} />
+              <MadieSpinner
+                style={{
+                  height: 50,
+                  width: 50,
+                }}
+              />
             </div>
           )}
         </tbody>
-      </table>
+      </_StyledTable>
 
       <EditCodeDetailsDialog
         measureModel={measureModel}
@@ -469,3 +473,35 @@ export default function SavedCodesSubSection({
     </div>
   );
 }
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "SavedCodesSubSection___StyledDiv",
+  componentId: "sc-obv2i0-1",
+})({
+  fontWeight: "500",
+});
+var _StyledTable = _styled("table").withConfig({
+  displayName: "SavedCodesSubSection___StyledTable",
+  componentId: "sc-obv2i0-2",
+})({
+  minWidth: "100%",
+});
+var _StyledThead = _styled("thead").withConfig({
+  displayName: "SavedCodesSubSection___StyledThead",
+  componentId: "sc-obv2i0-3",
+})({
+  "--tw-bg-opacity": "1",
+  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
+});
+var _StyledTd = _styled("td").withConfig({
+  displayName: "SavedCodesSubSection___StyledTd",
+  componentId: "sc-obv2i0-4",
+})({
+  padding: "0.5rem",
+  textAlign: "center",
+});
+var _StyledTd2 = _styled("td").withConfig({
+  displayName: "SavedCodesSubSection___StyledTd2",
+  componentId: "sc-obv2i0-5",
+})({
+  padding: "0.5rem",
+});

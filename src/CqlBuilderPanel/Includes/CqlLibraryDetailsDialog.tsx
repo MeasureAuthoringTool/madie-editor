@@ -1,6 +1,10 @@
+import _styled, {
+  default as _styled2,
+  default as _styled3,
+  default as _styled4,
+  default as _styled5,
+} from "styled-components";
 import React from "react";
-import tw from "twin.macro";
-import "styled-components/macro";
 import { MenuItem } from "@mui/material";
 import {
   MadieDialog,
@@ -12,7 +16,6 @@ import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
 import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";
-
 export interface SelectedLibrary {
   id: string;
   name: string;
@@ -23,7 +26,6 @@ export interface SelectedLibrary {
   cql?: string;
   alias?: string;
 }
-
 interface PropTypes {
   library: SelectedLibrary;
   open: boolean;
@@ -34,7 +36,6 @@ interface PropTypes {
   onEdit?: Function;
   operation?: string;
 }
-
 const ReadOnlyLabelValue = ({
   label,
   value,
@@ -49,9 +50,10 @@ const ReadOnlyLabelValue = ({
     </>
   );
 };
-
-const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
-
+const emptyParseResult: MonacoParseResult = {
+  annotations: [],
+  markers: [],
+};
 const CqlLibraryDetailsDialog = ({
   library,
   open,
@@ -87,17 +89,14 @@ const CqlLibraryDetailsDialog = ({
     },
     enableReinitialize: true,
   });
-
   const handleVersionChange = (selectedVersion) => {
     onVersionChange(selectedVersion, library.librarySetId, library.alias);
   };
-
   const handleClose = () => {
     formik.setErrors({});
     formik.resetForm();
     setOpenLibraryDialog(false);
   };
-
   const getLibraryAliasView = () => {
     if (canEdit) {
       return (
@@ -128,7 +127,6 @@ const CqlLibraryDetailsDialog = ({
       return <ReadOnlyLabelValue label="Alias" value={library?.alias} />;
     }
   };
-
   const getLibraryVersionView = () => {
     if (canEdit) {
       return (
@@ -138,7 +136,9 @@ const CqlLibraryDetailsDialog = ({
           label="Version"
           id="version-select"
           data-testid="version-select"
-          inputProps={{ "data-testid": "version-select-input" }}
+          inputProps={{
+            "data-testid": "version-select-input",
+          }}
           name="version"
           disabled={!canEdit}
           SelectDisplayProps={{
@@ -147,7 +147,11 @@ const CqlLibraryDetailsDialog = ({
           size="small"
           onChange={(evt) => handleVersionChange(evt.target.value)}
           options={library?.otherVersions
-            .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
+            .sort((a, b) =>
+              b.localeCompare(a, undefined, {
+                numeric: true,
+              })
+            )
             .map((version) => (
               <MenuItem
                 key={version}
@@ -163,7 +167,6 @@ const CqlLibraryDetailsDialog = ({
       return <ReadOnlyLabelValue label="Version" value={library?.version} />;
     }
   };
-
   return (
     <MadieDialog
       form={true}
@@ -192,20 +195,20 @@ const CqlLibraryDetailsDialog = ({
           : ""
       }
     >
-      <div tw="flex flex-row">
-        <div tw="basis-1/4 -my-1" data-testid="library-alias-container">
+      <_StyledDiv>
+        <_StyledDiv2 data-testid="library-alias-container">
           {getLibraryAliasView()}
-        </div>
-        <div tw="flex-1 ml-5" data-testid="library-name-container">
+        </_StyledDiv2>
+        <_StyledDiv3 data-testid="library-name-container">
           <ReadOnlyLabelValue label="Name" value={library?.name} />
-        </div>
-        <div tw="flex-1 ml-5 -my-1" data-testid="library-version-container">
+        </_StyledDiv3>
+        <_StyledDiv4 data-testid="library-version-container">
           {getLibraryVersionView()}
-        </div>
-        <div tw="flex-1 ml-5" data-testid="library-owner-container">
+        </_StyledDiv4>
+        <_StyledDiv5 data-testid="library-owner-container">
           <ReadOnlyLabelValue label="Owner" value={library?.ownerDisplayName} />
-        </div>
-      </div>
+        </_StyledDiv5>
+      </_StyledDiv>
       <br />
       <div
         data-testid="include-library-editor-wrapper"
@@ -222,5 +225,42 @@ const CqlLibraryDetailsDialog = ({
     </MadieDialog>
   );
 };
-
 export default CqlLibraryDetailsDialog;
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv",
+  componentId: "sc-121c3b6-0",
+})({
+  display: "flex",
+  flexDirection: "row",
+});
+var _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv2",
+  componentId: "sc-121c3b6-1",
+})({
+  marginTop: "-0.25rem",
+  marginBottom: "-0.25rem",
+  flexBasis: "25%",
+});
+var _StyledDiv3 = _styled3("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv3",
+  componentId: "sc-121c3b6-2",
+})({
+  marginLeft: "1.25rem",
+  flex: "1 1 0%",
+});
+var _StyledDiv4 = _styled4("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv4",
+  componentId: "sc-121c3b6-3",
+})({
+  marginTop: "-0.25rem",
+  marginBottom: "-0.25rem",
+  marginLeft: "1.25rem",
+  flex: "1 1 0%",
+});
+var _StyledDiv5 = _styled5("div").withConfig({
+  displayName: "CqlLibraryDetailsDialog___StyledDiv5",
+  componentId: "sc-121c3b6-4",
+})({
+  marginLeft: "1.25rem",
+  flex: "1 1 0%",
+});

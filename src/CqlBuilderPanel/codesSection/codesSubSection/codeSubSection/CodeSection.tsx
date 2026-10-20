@@ -1,6 +1,12 @@
+import _styled, {
+  default as _styled2,
+  default as _styled3,
+  default as _styled4,
+  default as _styled5,
+  default as _styled6,
+  default as _styled7,
+} from "styled-components";
 import React, { useState, useEffect } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import {
   Select,
   TextField,
@@ -16,7 +22,6 @@ import moment from "moment";
 import { MenuItem, Tooltip } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
 import ControlledAutoComplete from "../../../../common/ControlledAutoComplete";
-
 interface CodeSectionProps {
   handleFormSubmit: Function;
   canEdit: boolean;
@@ -24,13 +29,11 @@ interface CodeSectionProps {
   blankResults: Function;
   measureModel: string;
 }
-
 interface MenuObj {
   value: string;
   label: string;
   fullValue: string;
 }
-
 const renderMenuItems = (options) =>
   options.map(({ value, label, fullValue }) => (
     <MenuItem
@@ -43,7 +46,6 @@ const renderMenuItems = (options) =>
       </Tooltip>
     </MenuItem>
   ));
-
 export default function CodeSection({
   handleFormSubmit,
   allCodeSystems,
@@ -64,7 +66,6 @@ export default function CodeSection({
       setTitles(filteredTitles);
     }
   }, [allCodeSystems]);
-
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -78,7 +79,6 @@ export default function CodeSection({
     },
   });
   const { resetForm } = formik;
-
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
     if (formik.values.title) {
@@ -123,7 +123,6 @@ export default function CodeSection({
       formik.setFieldValue("version", "");
     }
   }, [formik.values.title, measureModel, allCodeSystems]);
-
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -131,11 +130,9 @@ export default function CodeSection({
       </InputAdornment>
     ),
   };
-
   function trimCodeInput() {
     formik.setFieldValue("code", formik.values.code.trim());
   }
-
   return (
     <div>
       <ExpandingSection
@@ -156,11 +153,13 @@ export default function CodeSection({
               </span>
             </div>
             <form onSubmit={formik.handleSubmit}>
-              <div
-                tw="flex md:flex-wrap"
-                style={{ display: "flex", alignItems: "flex-end" }}
+              <_StyledDiv
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                }}
               >
-                <div tw="w-1/3">
+                <_StyledDiv2>
                   <ControlledAutoComplete
                     multipleSelect={false}
                     placeholder="-"
@@ -182,8 +181,8 @@ export default function CodeSection({
                     }}
                     limitTags={1}
                   />
-                </div>
-                <div tw="flex-grow pl-5">
+                </_StyledDiv2>
+                <_StyledDiv3>
                   <Select
                     required
                     label="Code System Version"
@@ -209,14 +208,13 @@ export default function CodeSection({
                     disabled={!formik.values.title || !canEdit}
                     {...formik.getFieldProps("version")}
                   />
-                </div>
-              </div>
+                </_StyledDiv3>
+              </_StyledDiv>
 
-              <div tw="w-1/2 mt-2">
-                <TextField
+              <_StyledDiv4>
+                <_StyledTextField
                   required="required"
                   id="code"
-                  tw="w-full"
                   label="Code"
                   placeholder="Search"
                   inputProps={{
@@ -236,20 +234,19 @@ export default function CodeSection({
                     trimCodeInput();
                   }}
                 />
-              </div>
-              <div tw="float-right">
-                <Button
+              </_StyledDiv4>
+              <_StyledDiv5>
+                <_StyledButton
                   variant="outline"
                   data-testid="clear-codes-btn"
                   disabled={!formik.dirty || !canEdit}
-                  tw="mr-4"
                   onClick={() => {
                     resetForm();
                     blankResults();
                   }}
                 >
                   Clear
-                </Button>
+                </_StyledButton>
                 <Button
                   type="submit"
                   data-testid="codes-search-btn"
@@ -257,7 +254,7 @@ export default function CodeSection({
                 >
                   Search
                 </Button>
-              </div>
+              </_StyledDiv5>
             </form>
           </>
         }
@@ -265,3 +262,50 @@ export default function CodeSection({
     </div>
   );
 }
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "CodeSection___StyledDiv",
+  componentId: "sc-1iniqlj-0",
+})({
+  display: "flex",
+  "@media (min-width: 768px)": {
+    flexWrap: "wrap",
+  },
+});
+var _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "CodeSection___StyledDiv2",
+  componentId: "sc-1iniqlj-1",
+})({
+  width: "33.333333%",
+});
+var _StyledDiv3 = _styled3("div").withConfig({
+  displayName: "CodeSection___StyledDiv3",
+  componentId: "sc-1iniqlj-2",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+var _StyledDiv4 = _styled4("div").withConfig({
+  displayName: "CodeSection___StyledDiv4",
+  componentId: "sc-1iniqlj-3",
+})({
+  marginTop: "0.5rem",
+  width: "50%",
+});
+var _StyledTextField = _styled5(TextField).withConfig({
+  displayName: "CodeSection___StyledTextField",
+  componentId: "sc-1iniqlj-4",
+})({
+  width: "100%",
+});
+var _StyledDiv5 = _styled6("div").withConfig({
+  displayName: "CodeSection___StyledDiv5",
+  componentId: "sc-1iniqlj-5",
+})({
+  float: "right",
+});
+var _StyledButton = _styled7(Button).withConfig({
+  displayName: "CodeSection___StyledButton",
+  componentId: "sc-1iniqlj-6",
+})({
+  marginRight: "1rem",
+});

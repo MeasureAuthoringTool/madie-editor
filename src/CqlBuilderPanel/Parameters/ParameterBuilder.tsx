@@ -1,6 +1,9 @@
+import _styled, {
+  default as _styled2,
+  default as _styled3,
+  default as _styled4,
+} from "styled-components";
 import React, { useState } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import { Button, TextField } from "@madie/madie-design-system/dist/react";
 import "./Parameters.scss";
@@ -8,12 +11,10 @@ import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValid
 import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
-
 export interface Parameter {
   parameterName?: string;
   expression?: string;
 }
-
 export interface ParameterProps {
   canEdit: boolean;
   handleParameterEdit?: Function;
@@ -21,9 +22,10 @@ export interface ParameterProps {
   onClose?: Function;
   setOpenParameterDialog?: Function;
 }
-
-const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
-
+const emptyParseResult: MonacoParseResult = {
+  annotations: [],
+  markers: [],
+};
 export default function ParameterBuilder({
   canEdit,
   handleParameterEdit,
@@ -32,7 +34,6 @@ export default function ParameterBuilder({
   setOpenParameterDialog,
 }: ParameterProps) {
   const [editorHeight] = useState("180px");
-
   const formik = useFormik({
     initialValues: {
       parameterName: parameter?.parameterName || "",
@@ -43,17 +44,15 @@ export default function ParameterBuilder({
     onSubmit: (values) => {},
   });
   const { resetForm } = formik;
-
   return (
     <div>
       <form id="parameter-form" onSubmit={formik.handleSubmit}>
-        <div tw="flex space-x-5">
-          <div tw="w-1/2">
-            <TextField
+        <_StyledDiv>
+          <_StyledDiv2>
+            <_StyledTextField
               required="required"
               id="parameter-name"
               name="parameterName"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               label="Paramter Name"
@@ -65,8 +64,8 @@ export default function ParameterBuilder({
               error={Boolean(formik.errors.parameterName)}
               helperText={formik.errors.parameterName}
             />
-          </div>
-        </div>
+          </_StyledDiv2>
+        </_StyledDiv>
         <br />
 
         <FormikProvider value={formik}>
@@ -82,20 +81,23 @@ export default function ParameterBuilder({
             />
           </div>
         </FormikProvider>
-        <div style={{ marginTop: "24px" }}>
+        <div
+          style={{
+            marginTop: "24px",
+          }}
+        >
           <div className="form-actions">
-            <Button
+            <_StyledButton
               variant="outline"
               data-testid="parameter-cancel-btn"
               disabled={!formik.dirty || !canEdit}
-              tw="mr-4"
               onClick={() => {
                 resetForm();
                 setOpenParameterDialog(false);
               }}
             >
               Cancel
-            </Button>
+            </_StyledButton>
             <Button
               data-testid={`parameter-save-btn`}
               disabled={!formik.dirty || !canEdit}
@@ -117,3 +119,32 @@ export default function ParameterBuilder({
     </div>
   );
 }
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "ParameterBuilder___StyledDiv",
+  componentId: "sc-dc3gsp-0",
+})({
+  display: "flex",
+  "> :not([hidden]) ~ :not([hidden])": {
+    "--tw-space-x-reverse": "0",
+    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
+    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
+  },
+});
+var _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "ParameterBuilder___StyledDiv2",
+  componentId: "sc-dc3gsp-1",
+})({
+  width: "50%",
+});
+var _StyledTextField = _styled3(TextField).withConfig({
+  displayName: "ParameterBuilder___StyledTextField",
+  componentId: "sc-dc3gsp-2",
+})({
+  width: "100%",
+});
+var _StyledButton = _styled4(Button).withConfig({
+  displayName: "ParameterBuilder___StyledButton",
+  componentId: "sc-dc3gsp-3",
+})({
+  marginRight: "1rem",
+});

@@ -1,6 +1,9 @@
+import _styled, {
+  default as _styled2,
+  default as _styled3,
+  default as _styled4,
+} from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import {
   Select,
   Button,
@@ -13,16 +16,12 @@ import {
   timingNames,
 } from "./ExpressionEditorHelper";
 import * as _ from "lodash";
-
 import Skeleton from "@mui/material/Skeleton";
-
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
-
 import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../../editor/MonacoCqlEditor";
 import { useFormikContext } from "formik";
-
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;
@@ -33,7 +32,6 @@ interface ExpressionsProps {
   setCursorPosition: Function;
   setAutoInsert: Function;
 }
-
 export const availableTypes = [
   "Parameters",
   "Definitions",
@@ -42,7 +40,6 @@ export const availableTypes = [
   "Timing",
   "Pre-Defined Functions",
 ];
-
 export default function ExpressionEditor(props: ExpressionsProps) {
   const {
     canEdit,
@@ -59,8 +56,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   const monacoEditorRef = useRef<any>(null);
   const editorValueRef = useRef(expressionEditorValue || "");
   const formik: any = useFormikContext();
-  const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
-
+  const emptyParseResult: MonacoParseResult = {
+    annotations: [],
+    markers: [],
+  };
   const renderMenuItems = (options: string[]) => {
     return cqlBuilderLookupsTypes
       ? [
@@ -80,12 +79,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
           </MenuItem>
         ));
   };
-
   const handleCursorChange = (newCursorPosition) => {
     setCursorPosition(newCursorPosition);
     setAutoInsert(false); // disable auto-insert when cursor moves
   };
-
   const getDefinitionNameWithAlias = (def: Lookup, type: string) => {
     const lookupTypeName =
       def.libraryAlias && type !== "fluentFunctions"
@@ -95,11 +92,9 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       ? lookupTypeName + "()"
       : lookupTypeName;
   };
-
   useEffect(() => {
     editorValueRef.current = expressionEditorValue || "";
   }, [expressionEditorValue]);
-
   useEffect(() => {
     if (!textAreaRef) {
       return;
@@ -134,7 +129,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
         },
       },
     };
-
     return () => {
       textAreaRef.current = null;
     };
@@ -153,10 +147,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     const newHeight = Math.min(maxHeight, proposedNewHeight) + "px";
     setEditorHeight(newHeight);
   }, [expressionEditorValue]);
-
   useEffect(() => {
     const type = formik.values.type;
-
     if (
       type === "Parameters" ||
       type === "Definitions" ||
@@ -193,7 +185,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   const handleContentChange = (value) => {
     setExpressionEditorValue(value);
   };
-
   return (
     <div>
       <ExpandingSection
@@ -201,8 +192,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
         showHeaderContent={expressionEditorOpen}
         children={
           <>
-            <div tw="flex flex-wrap">
-              <div tw="w-1/2">
+            <_StyledDiv>
+              <_StyledDiv2>
                 <Select
                   label="Type"
                   id="type-selector"
@@ -221,8 +212,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                     formik.setFieldValue("name", "");
                   }}
                 />
-              </div>
-              <div tw="flex-grow pl-5">
+              </_StyledDiv2>
+              <_StyledDiv3>
                 <AutoComplete
                   label="Name"
                   id="name-selector"
@@ -244,10 +235,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   }}
                   disabled={!canEdit || !formik.values.type}
                 />
-              </div>
-            </div>
+              </_StyledDiv3>
+            </_StyledDiv>
 
-            <div tw="float-right">
+            <_StyledDiv4>
               <Button
                 type="submit"
                 data-testid="expression-insert-btn"
@@ -257,8 +248,12 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               >
                 Insert
               </Button>
-            </div>
-            <div style={{ marginBottom: "72px" }} />
+            </_StyledDiv4>
+            <div
+              style={{
+                marginBottom: "72px",
+              }}
+            />
             <div
               data-testid="expression-editor-wrapper"
               id="expression-editor-wrapper"
@@ -283,3 +278,29 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     </div>
   );
 }
+var _StyledDiv = _styled("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv",
+  componentId: "sc-1ydk52f-0",
+})({
+  display: "flex",
+  flexWrap: "wrap",
+});
+var _StyledDiv2 = _styled2("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv2",
+  componentId: "sc-1ydk52f-1",
+})({
+  width: "50%",
+});
+var _StyledDiv3 = _styled3("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv3",
+  componentId: "sc-1ydk52f-2",
+})({
+  flexGrow: "1",
+  paddingLeft: "1.25rem",
+});
+var _StyledDiv4 = _styled4("div").withConfig({
+  displayName: "ExpressionEditor___StyledDiv4",
+  componentId: "sc-1ydk52f-3",
+})({
+  float: "right",
+});
