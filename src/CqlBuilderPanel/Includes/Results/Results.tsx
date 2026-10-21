@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, {
   useCallback,
   useEffect,
@@ -25,28 +24,6 @@ import CqlLibraryDetailsDialog, {
 import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
 import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
-
-const _StyledTable = _styled("table").withConfig({
-  displayName: "Results___StyledTable",
-  componentId: "sc-18pioce-1",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "Results___StyledThead",
-  componentId: "sc-18pioce-2",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "Results___StyledTd",
-  componentId: "sc-18pioce-3",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
   canEdit: boolean;
@@ -68,17 +45,6 @@ type RowDef = {
   ownerDisplayName: string;
   librarySetId: string;
 };
-const TH = _styled.th.withConfig({
-  displayName: "Results__TH",
-  componentId: "sc-18pioce-0",
-})({
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: "700",
-  textTransform: "capitalize",
-});
 const Results = ({
   cqlLibraries,
   canEdit,
@@ -311,33 +277,39 @@ const Results = ({
   return (
     <>
       <div className="search-results-container">
-        <_StyledTable
+        <table
           data-testid="library-results-tbl"
           id="library-results-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:min-w-full"
         >
-          <_StyledThead
+          <thead
             style={{
               borderBottom: "solid 1px #8c8c8c",
             }}
+            className="me:bg-slate"
           >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TH key={header.id} scope="col">
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TH>
+                  </th>
                 ))}
               </tr>
             ))}
-          </_StyledThead>
+          </thead>
           <tbody data-testid="library-results-table-body">
             {cqlLibraries?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -354,13 +326,13 @@ const Results = ({
               ))
             ) : (
               <tr>
-                <_StyledTd colSpan={columns.length}>
+                <td colSpan={columns.length} className="me:text-center me:p-2">
                   No Results were found
-                </_StyledTd>
+                </td>
               </tr>
             )}
           </tbody>
-        </_StyledTable>
+        </table>
         {cqlLibraries?.length > 0 && (
           <div className="pagination-container">
             <Pagination

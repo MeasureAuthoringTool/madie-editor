@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import CodesSectionNavTabs from "./CodesSectionNavTabs";
 import CodeSubSection from "./codesSubSection/codeSubSection/CodeSubSection";
@@ -10,14 +9,6 @@ import SavedCodesSubSection, {
 import { useCodeSystems } from "./useCodeSystems";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import _ from "lodash";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "CodesSection___StyledDiv",
-  componentId: "sc-1rldvun-0",
-})({
-  marginTop: "1rem",
-});
-
 interface CodesSectionProps {
   canEdit: boolean;
   measureStoreCql: string;
@@ -85,7 +76,7 @@ export default function CodesSection({
         setActiveTab={setActiveTab}
         savedCodes={parsedCodesList ? parsedCodesList?.length : 0}
       />
-      <_StyledDiv>
+      <div className="me:mt-4">
         {activeTab === "code" && (
           <CodeSubSection
             allCodeSystems={codeSystems}
@@ -109,7 +100,7 @@ export default function CodesSection({
             hasCqlError={hasCqlError}
           />
         )}
-      </_StyledDiv>
+      </div>
     </>
   );
 }

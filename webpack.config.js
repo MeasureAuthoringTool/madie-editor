@@ -72,7 +72,6 @@ module.exports = (env, argv) => ({
 
     "@emotion/react": "@emotion/react",
     "@emotion/styled": "@emotion/styled",
-    "styled-components": "styled-components",
 
     "@mui/material": "@mui/material",
     "@mui/icons-material": "@mui/icons-material",

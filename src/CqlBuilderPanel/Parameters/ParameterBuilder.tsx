@@ -1,8 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-} from "styled-components";
 import React, { useState } from "react";
 import { useFormik, FormikProvider } from "formik";
 import { Button, TextField } from "@madie/madie-design-system/dist/react";
@@ -11,37 +6,6 @@ import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValid
 import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "ParameterBuilder___StyledDiv",
-  componentId: "sc-dc3gsp-0",
-})({
-  display: "flex",
-  "> :not([hidden]) ~ :not([hidden])": {
-    "--tw-space-x-reverse": "0",
-    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
-    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
-  },
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "ParameterBuilder___StyledDiv2",
-  componentId: "sc-dc3gsp-1",
-})({
-  width: "50%",
-});
-const _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "ParameterBuilder___StyledTextField",
-  componentId: "sc-dc3gsp-2",
-})({
-  width: "100%",
-});
-const _StyledButton = _styled4(Button).withConfig({
-  displayName: "ParameterBuilder___StyledButton",
-  componentId: "sc-dc3gsp-3",
-})({
-  marginRight: "1rem",
-});
-
 export interface Parameter {
   parameterName?: string;
   expression?: string;
@@ -78,9 +42,9 @@ export default function ParameterBuilder({
   return (
     <div>
       <form id="parameter-form" onSubmit={formik.handleSubmit}>
-        <_StyledDiv>
-          <_StyledDiv2>
-            <_StyledTextField
+        <div className="me:flex me:editor-space-x-5">
+          <div className="me:w-1/2">
+            <TextField
               required="required"
               id="parameter-name"
               name="parameterName"
@@ -94,9 +58,10 @@ export default function ParameterBuilder({
               {...formik.getFieldProps("parameterName")}
               error={Boolean(formik.errors.parameterName)}
               helperText={formik.errors.parameterName}
+              className="me:w-full"
             />
-          </_StyledDiv2>
-        </_StyledDiv>
+          </div>
+        </div>
         <br />
 
         <FormikProvider value={formik}>
@@ -118,7 +83,7 @@ export default function ParameterBuilder({
           }}
         >
           <div className="form-actions">
-            <_StyledButton
+            <Button
               variant="outline"
               data-testid="parameter-cancel-btn"
               disabled={!formik.dirty || !canEdit}
@@ -126,9 +91,10 @@ export default function ParameterBuilder({
                 resetForm();
                 setOpenParameterDialog(false);
               }}
+              className="me:mr-4"
             >
               Cancel
-            </_StyledButton>
+            </Button>
             <Button
               data-testid={`parameter-save-btn`}
               disabled={!formik.dirty || !canEdit}

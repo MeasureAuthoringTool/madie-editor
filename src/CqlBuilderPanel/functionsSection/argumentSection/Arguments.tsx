@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import {
   ColumnDef,
   flexRender,
@@ -25,28 +24,6 @@ import { Stack } from "@mui/material";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import "./Arguments.scss";
 import toastReducer from "../../../common/ToastReducer";
-
-const _StyledTable = _styled("table").withConfig({
-  displayName: "Arguments___StyledTable",
-  componentId: "sc-1q4xf5b-1",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "Arguments___StyledThead",
-  componentId: "sc-1q4xf5b-2",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "Arguments___StyledTd",
-  componentId: "sc-1q4xf5b-3",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
   handleDeleteArgument?: Function;
@@ -59,17 +36,6 @@ type RowDef = {
   datatype: string;
   action: string;
 };
-const TH = _styled.th.withConfig({
-  displayName: "Arguments__TH",
-  componentId: "sc-1q4xf5b-0",
-})({
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: "700",
-  textTransform: "capitalize",
-});
 const Arguments = ({
   functionArguments,
   handleDeleteArgument,
@@ -259,33 +225,39 @@ const Arguments = ({
   return (
     <>
       <div className="function-argument-container">
-        <_StyledTable
+        <table
           data-testid="function-argument-tbl"
           id="function-argument-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:min-w-full"
         >
-          <_StyledThead
+          <thead
             style={{
               borderBottom: "solid 1px #8c8c8c",
             }}
+            className="me:bg-slate"
           >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TH key={header.id} scope="col">
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TH>
+                  </th>
                 ))}
               </tr>
             ))}
-          </_StyledThead>
+          </thead>
           <tbody data-testid="function-argument-table-body">
             {functionArguments?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -302,13 +274,13 @@ const Arguments = ({
               ))
             ) : (
               <tr>
-                <_StyledTd colSpan={columns.length}>
+                <td colSpan={columns.length} className="me:text-center me:p-2">
                   No Results were found
-                </_StyledTd>
+                </td>
               </tr>
             )}
           </tbody>
-        </_StyledTable>
+        </table>
         {functionArguments?.length > 0 && (
           <div className="pagination-container">
             <Pagination

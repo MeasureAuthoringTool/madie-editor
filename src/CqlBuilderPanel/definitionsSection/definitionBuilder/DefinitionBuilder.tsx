@@ -1,11 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-  default as _styled5,
-  default as _styled6,
-  default as _styled7,
-} from "styled-components";
 import React, { useState, useEffect, useRef } from "react";
 import { useFormik, FormikProvider } from "formik";
 import {
@@ -18,58 +10,6 @@ import { DefinitionSectionSchemaValidator } from "../../../validations/Definitio
 import ExpressionEditor from "../expressionSection/ExpressionEditor";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import { getNewExpressionsAndLines } from "../../common/utils";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "DefinitionBuilder___StyledDiv",
-  componentId: "sc-15v127g-0",
-})({
-  display: "flex",
-  "> :not([hidden]) ~ :not([hidden])": {
-    "--tw-space-x-reverse": "0",
-    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
-    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
-  },
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "DefinitionBuilder___StyledDiv2",
-  componentId: "sc-15v127g-1",
-})({
-  width: "50%",
-});
-const _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "DefinitionBuilder___StyledTextField",
-  componentId: "sc-15v127g-2",
-})({
-  width: "100%",
-});
-const _StyledDiv3 = _styled4("div").withConfig({
-  displayName: "DefinitionBuilder___StyledDiv3",
-  componentId: "sc-15v127g-3",
-})({
-  marginTop: "0.5rem",
-  marginBottom: "0.5rem",
-  marginLeft: "2.5rem",
-  width: "50%",
-});
-const _StyledTextArea = _styled5(TextArea).withConfig({
-  displayName: "DefinitionBuilder___StyledTextArea",
-  componentId: "sc-15v127g-4",
-})({
-  width: "100%",
-});
-const _StyledButton = _styled6(Button).withConfig({
-  displayName: "DefinitionBuilder___StyledButton",
-  componentId: "sc-15v127g-5",
-})({
-  marginRight: "1rem",
-});
-const _StyledButton2 = _styled7(Button).withConfig({
-  displayName: "DefinitionBuilder___StyledButton2",
-  componentId: "sc-15v127g-6",
-})({
-  marginRight: "1rem",
-});
-
 export interface Definition {
   definitionName?: string;
   comment?: string;
@@ -154,9 +94,9 @@ export default function DefinitionBuilder({
   return (
     <div>
       <form id="definition-form" onSubmit={formik.handleSubmit}>
-        <_StyledDiv>
-          <_StyledDiv2>
-            <_StyledTextField
+        <div className="me:flex me:editor-space-x-5">
+          <div className="me:w-1/2">
+            <TextField
               required="required"
               id="definition-name"
               name="definitionName"
@@ -170,17 +110,21 @@ export default function DefinitionBuilder({
               helperText={formik.errors.definitionName}
               error={Boolean(formik.errors.definitionName)}
               {...formik.getFieldProps("definitionName")}
+              className="me:w-full"
             />
-          </_StyledDiv2>
+          </div>
           {definition && definition.returnType && (
-            <_StyledDiv3 data-testid="return-type">
+            <div
+              data-testid="return-type"
+              className="me:w-1/2 me:ml-10 me:my-2"
+            >
               <p className="result-label">Return Type</p>
               <span className="result-value">{definition.returnType}</span>
-            </_StyledDiv3>
+            </div>
           )}
-        </_StyledDiv>
+        </div>
         <br />
-        <_StyledTextArea
+        <TextArea
           id="definition-comment"
           label="Comment"
           readOnly={!canEdit}
@@ -194,6 +138,7 @@ export default function DefinitionBuilder({
           value={formik.values.comment}
           name="comment"
           {...formik.getFieldProps("comment")}
+          className="me:w-full"
         />
         <div
           style={{
@@ -215,7 +160,7 @@ export default function DefinitionBuilder({
         <div className="form-actions">
           {canEdit ? (
             <div>
-              <_StyledButton
+              <Button
                 variant="outline"
                 data-testid="clear-definition-btn"
                 disabled={
@@ -228,9 +173,10 @@ export default function DefinitionBuilder({
                   resetForm();
                   setExpressionEditorValue(definition?.expressionValue || "");
                 }}
+                className="me:mr-4"
               >
                 Clear
-              </_StyledButton>
+              </Button>
               <Button
                 data-testid={`definition-${
                   operation === "edit" ? "save" : "apply"
@@ -263,15 +209,16 @@ export default function DefinitionBuilder({
               </Button>
             </div>
           ) : (
-            <_StyledButton2
+            <Button
               variant="outline"
               data-testid="cancel-definition-btn"
               onClick={() => {
                 onClose();
               }}
+              className="me:mr-4"
             >
               Cancel
-            </_StyledButton2>
+            </Button>
           )}
         </div>
       </form>

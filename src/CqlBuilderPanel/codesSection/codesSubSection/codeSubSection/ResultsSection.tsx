@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, { useMemo, useState } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
@@ -18,34 +17,6 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
-
-const _StyledTable = _styled("table").withConfig({
-  displayName: "ResultsSection___StyledTable",
-  componentId: "sc-hhov3i-1",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "ResultsSection___StyledThead",
-  componentId: "sc-hhov3i-2",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "ResultsSection___StyledTd",
-  componentId: "sc-hhov3i-3",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-const _StyledTd2 = _styled("td").withConfig({
-  displayName: "ResultsSection___StyledTd2",
-  componentId: "sc-hhov3i-4",
-})({
-  padding: "0.5rem",
-});
-
 type ResultSectionProps = {
   showResultsTable: boolean;
   setShowResultsTable: any;
@@ -61,17 +32,6 @@ type ResultsColumnRow = {
   svsVersion: string;
   versionIncluded?: string;
 };
-const TH = _styled.th.withConfig({
-  displayName: "ResultsSection__TH",
-  componentId: "sc-hhov3i-0",
-})({
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: "700",
-  textTransform: "capitalize",
-});
 export default function ResultsSection({
   showResultsTable,
   setShowResultsTable,
@@ -204,44 +164,53 @@ export default function ResultsSection({
         setShowHeaderContent={setShowResultsTable}
         children={
           <>
-            <_StyledTable
+            <table
               data-testid="codes-results-tbl"
               style={{
                 borderBottom: "solid 1px #8c8c8c",
               }}
+              className="me:min-w-full"
             >
-              <_StyledThead
+              <thead
                 style={{
                   borderBottom: "solid 1px #8c8c8c",
                 }}
+                className="me:bg-slate"
               >
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
-                      <TH key={header.id} scope="col">
+                      <th
+                        key={header.id}
+                        scope="col"
+                        className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
                               header.getContext()
                             )}
-                      </TH>
+                      </th>
                     ))}
                   </tr>
                 ))}
-              </_StyledThead>
+              </thead>
               <tbody>
                 {!code ? (
                   <tr>
-                    <_StyledTd colSpan={columns.length}>
+                    <td
+                      colSpan={columns.length}
+                      className="me:text-center me:p-2"
+                    >
                       No Results were found
-                    </_StyledTd>
+                    </td>
                   </tr>
                 ) : (
                   table.getRowModel().rows.map((row) => (
                     <tr key={row.id} data-test-id={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <_StyledTd2 key={cell.id}>
+                        <td key={cell.id} className="me:p-2">
                           {cell.column.id === "status"
                             ? getCodeStatus(cell.getValue())
                             : cell.column.id === "fhirVersion"
@@ -250,13 +219,13 @@ export default function ResultsSection({
                                 cell.column.columnDef.cell,
                                 cell.getContext()
                               )}
-                        </_StyledTd2>
+                        </td>
                       ))}
                     </tr>
                   ))
                 )}
               </tbody>
-            </_StyledTable>
+            </table>
             <EditCodeDetailsDialog
               measureModel={measureModel}
               selectedCodeDetails={selectedCodeDetails}

@@ -1,9 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-  default as _styled5,
-} from "styled-components";
 import React, { useState, useRef } from "react";
 import { useFormik, FormikProvider } from "formik";
 import {
@@ -23,43 +17,6 @@ import ExpressionEditor from "../../definitionsSection/expressionSection/Express
 import { getNewExpressionsAndLines } from "../../common/utils";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import UseToast from "../../../common/UseToast";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "FunctionBuilder___StyledDiv",
-  componentId: "sc-d6izr0-0",
-})({
-  display: "flex",
-  "> :not([hidden]) ~ :not([hidden])": {
-    "--tw-space-x-reverse": "0",
-    marginRight: "calc(1.25rem * var(--tw-space-x-reverse))",
-    marginLeft: "calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))",
-  },
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "FunctionBuilder___StyledDiv2",
-  componentId: "sc-d6izr0-1",
-})({
-  width: "50%",
-});
-const _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "FunctionBuilder___StyledTextField",
-  componentId: "sc-d6izr0-2",
-})({
-  width: "100%",
-});
-const _StyledTextArea = _styled4(TextArea).withConfig({
-  displayName: "FunctionBuilder___StyledTextArea",
-  componentId: "sc-d6izr0-3",
-})({
-  width: "100%",
-});
-const _StyledButton = _styled5(Button).withConfig({
-  displayName: "FunctionBuilder___StyledButton",
-  componentId: "sc-d6izr0-4",
-})({
-  marginRight: "1rem",
-});
-
 export interface Funct {
   name?: string;
   fluentFunction?: boolean;
@@ -212,9 +169,9 @@ export default function FunctionBuilder({
   return (
     <div>
       <form id="function-form" onSubmit={formik.handleSubmit}>
-        <_StyledDiv>
-          <_StyledDiv2>
-            <_StyledTextField
+        <div className="me:flex me:editor-space-x-5">
+          <div className="me:w-1/2">
+            <TextField
               required="required"
               id="function-name"
               name="functionName"
@@ -237,8 +194,9 @@ export default function FunctionBuilder({
                   setArgumentsEditorOpen(true);
                 }
               }}
+              className="me:w-full"
             />
-          </_StyledDiv2>
+          </div>
           <Box
             sx={{
               marginTop: "22px",
@@ -262,9 +220,9 @@ export default function FunctionBuilder({
               label="Fluent Function"
             />
           </Box>
-        </_StyledDiv>
+        </div>
         <br />
-        <_StyledTextArea
+        <TextArea
           id="function-comment"
           label="Comment"
           readOnly={!canEdit}
@@ -278,6 +236,7 @@ export default function FunctionBuilder({
           value={formik.values.comment}
           name="comment"
           {...formik.getFieldProps("comment")}
+          className="me:w-full"
         />
         <div
           style={{
@@ -321,7 +280,7 @@ export default function FunctionBuilder({
           />
         </FormikProvider>
         <div className="form-actions">
-          <_StyledButton
+          <Button
             id="clear-function-btn"
             variant="outline"
             data-testid="clear-function-btn"
@@ -329,9 +288,10 @@ export default function FunctionBuilder({
             onClick={() => {
               setConfirmationDialog(true);
             }}
+            className="me:mr-4"
           >
             Clear
-          </_StyledButton>
+          </Button>
           <Button
             data-testid={`function-apply-btn`}
             disabled={

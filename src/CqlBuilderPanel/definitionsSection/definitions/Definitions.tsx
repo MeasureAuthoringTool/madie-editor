@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 import {
@@ -21,49 +20,6 @@ import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
 import { Stack } from "@mui/material";
-
-const _StyledTable = _styled("table").withConfig({
-  displayName: "Definitions___StyledTable",
-  componentId: "sc-cj02bv-2",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "Definitions___StyledThead",
-  componentId: "sc-cj02bv-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "Definitions___StyledTd",
-  componentId: "sc-cj02bv-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-
-const TH = _styled.th.withConfig({
-  displayName: "Definitions__TH",
-  componentId: "sc-cj02bv-0",
-})({
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: "700",
-  textTransform: "capitalize",
-});
-const TD = _styled.td.withConfig({
-  displayName: "Definitions__TD",
-  componentId: "sc-cj02bv-1",
-})({
-  width: "50%",
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-});
 type DefinitionsPropTypes = {
   canEdit: boolean;
   definitions: Lookup[];
@@ -263,33 +219,39 @@ const Definitions = ({
   ]);
   return (
     <>
-      <_StyledTable
+      <table
         data-testid="definitions-tbl"
         id="definitions-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
+        className="me:min-w-full"
       >
-        <_StyledThead
+        <thead
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:bg-slate"
         >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
-                <TH key={header.id} scope="col">
+                <th
+                  key={header.id}
+                  scope="col"
+                  className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TH>
+                </th>
               ))}
             </tr>
           ))}
-        </_StyledThead>
+        </thead>
         <tbody data-testid="definitions-table-body">
           {loading && (
             <tr>
@@ -302,23 +264,26 @@ const Definitions = ({
           )}
           {!loading && _.isEmpty(definitions) && (
             <tr>
-              <_StyledTd colSpan={columns.length}>
+              <td colSpan={columns.length} className="me:text-center me:p-2">
                 No Results were found
-              </_StyledTd>
+              </td>
             </tr>
           )}
           {!loading &&
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`definitions-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
-                  <TD key={cell.id}>
+                  <td
+                    key={cell.id}
+                    className="me:p-3 me:text-left me:text-sm me:w-1/2"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TD>
+                  </td>
                 ))}
               </tr>
             ))}
         </tbody>
-      </_StyledTable>
+      </table>
       <MadieDeleteDialog
         open={deleteDialogOpen}
         onContinue={() => {

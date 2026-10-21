@@ -1,0 +1,16 @@
+@import "tailwindcss/theme.css" layer(theme) prefix(me);
+@import "tailwindcss/utilities.css" prefix(me) source(none);
+
+@source "../CqlBuilderPanel";
+
+@theme {
+  --color-slate: #ededed;
+}
+
+/* Preserve twin's sibling spacing, including hidden-child behavior. */
+@utility editor-space-x-5 {
+  > :not([hidden]) ~ :not([hidden]) {
+    margin-right: 0;
+    margin-left: 1.25rem;
+  }
+}

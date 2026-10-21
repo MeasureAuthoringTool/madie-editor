@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Pagination,
@@ -34,55 +33,10 @@ import { Box } from "@mui/system";
 import CodeOffOutlinedIcon from "@mui/icons-material/CodeOffOutlined";
 import MonacoJsonEditor from "../../../editor/MonacoJsonEditor";
 
-const _StyledTable = _styled("table").withConfig({
-  displayName: "Results___StyledTable",
-  componentId: "sc-61l5j5-1",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "Results___StyledThead",
-  componentId: "sc-61l5j5-2",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "Results___StyledTd",
-  componentId: "sc-61l5j5-3",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-const _StyledTd2 = _styled("td").withConfig({
-  displayName: "Results___StyledTd2",
-  componentId: "sc-61l5j5-4",
-})({
-  padding: "0.5rem",
-});
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "Results___StyledDiv",
-  componentId: "sc-61l5j5-5",
-})({
-  width: "50%",
-});
-
 // given url:  2.16.840.1.113762.1.4.1200.105
 // given url: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
 // convert to: http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
 // https://cts.nlm.nih.gov/fhir/res/ValueSet?url=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1200.105
-
-const TH = _styled.th.withConfig({
-  displayName: "Results__TH",
-  componentId: "sc-61l5j5-0",
-})({
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: "700",
-  textTransform: "capitalize",
-});
 
 // easy lookup to interface label with value for the search fields
 type TCRow = {
@@ -323,46 +277,51 @@ export default function Results(props: ResultsProps) {
       data-testid="madie-editor-search-results"
     >
       <div className="searc-results-container">
-        <_StyledTable
+        <table
           data-testid="value-sets-results-tbl"
           id="value-sets-results-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:min-w-full"
         >
-          <_StyledThead>
+          <thead className="me:bg-slate">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TH key={header.id} scope="col">
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TH>
+                  </th>
                 ))}
               </tr>
             ))}
-          </_StyledThead>
+          </thead>
           <tbody data-testid="vs-results-table-body">
             {!visibleFilteredValuesets?.length ? (
               <tr>
-                <_StyledTd colSpan={columns.length}>
+                <td colSpan={columns.length} className="me:text-center me:p-2">
                   No Results were found
-                </_StyledTd>
+                </td>
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id} data-test-id={`row-${row.id}`}>
                   {row.getVisibleCells().map((cell) => (
-                    <_StyledTd2 key={cell.id}>
+                    <td key={cell.id} className="me:p-2">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </_StyledTd2>
+                    </td>
                   ))}
                 </tr>
               ))
@@ -402,7 +361,7 @@ export default function Results(props: ResultsProps) {
               },
             ]}
           />
-        </_StyledTable>
+        </table>
 
         <Dialog
           fullWidth={true}
@@ -510,7 +469,7 @@ export default function Results(props: ResultsProps) {
             disabled: !(formik.isValid && formik.dirty),
           }}
           children={
-            <_StyledDiv>
+            <div className="me:w-1/2">
               <TextField
                 placeholder="Suffix"
                 label="Suffix(Max Length 4)"
@@ -542,7 +501,7 @@ export default function Results(props: ResultsProps) {
                 error={Boolean(formik.errors.suffix)}
                 helperText={formik.errors.suffix}
               />
-            </_StyledDiv>
+            </div>
           }
         />
 

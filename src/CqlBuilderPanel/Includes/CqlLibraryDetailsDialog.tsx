@@ -1,9 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-  default as _styled5,
-} from "styled-components";
 import React from "react";
 import { MenuItem } from "@mui/material";
 import {
@@ -16,46 +10,6 @@ import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
 import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv",
-  componentId: "sc-121c3b6-0",
-})({
-  display: "flex",
-  flexDirection: "row",
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv2",
-  componentId: "sc-121c3b6-1",
-})({
-  marginTop: "-0.25rem",
-  marginBottom: "-0.25rem",
-  flexBasis: "25%",
-});
-const _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv3",
-  componentId: "sc-121c3b6-2",
-})({
-  marginLeft: "1.25rem",
-  flex: "1 1 0%",
-});
-const _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv4",
-  componentId: "sc-121c3b6-3",
-})({
-  marginTop: "-0.25rem",
-  marginBottom: "-0.25rem",
-  marginLeft: "1.25rem",
-  flex: "1 1 0%",
-});
-const _StyledDiv5 = _styled5("div").withConfig({
-  displayName: "CqlLibraryDetailsDialog___StyledDiv5",
-  componentId: "sc-121c3b6-4",
-})({
-  marginLeft: "1.25rem",
-  flex: "1 1 0%",
-});
-
 export interface SelectedLibrary {
   id: string;
   name: string;
@@ -235,20 +189,32 @@ const CqlLibraryDetailsDialog = ({
           : ""
       }
     >
-      <_StyledDiv>
-        <_StyledDiv2 data-testid="library-alias-container">
+      <div className="me:flex me:flex-row">
+        <div
+          data-testid="library-alias-container"
+          className="me:basis-1/4 me:-my-1"
+        >
           {getLibraryAliasView()}
-        </_StyledDiv2>
-        <_StyledDiv3 data-testid="library-name-container">
+        </div>
+        <div
+          data-testid="library-name-container"
+          className="me:flex-[1_1_0%] me:ml-5"
+        >
           <ReadOnlyLabelValue label="Name" value={library?.name} />
-        </_StyledDiv3>
-        <_StyledDiv4 data-testid="library-version-container">
+        </div>
+        <div
+          data-testid="library-version-container"
+          className="me:flex-[1_1_0%] me:ml-5 me:-my-1"
+        >
           {getLibraryVersionView()}
-        </_StyledDiv4>
-        <_StyledDiv5 data-testid="library-owner-container">
+        </div>
+        <div
+          data-testid="library-owner-container"
+          className="me:flex-[1_1_0%] me:ml-5"
+        >
           <ReadOnlyLabelValue label="Owner" value={library?.ownerDisplayName} />
-        </_StyledDiv5>
-      </_StyledDiv>
+        </div>
+      </div>
       <br />
       <div
         data-testid="include-library-editor-wrapper"

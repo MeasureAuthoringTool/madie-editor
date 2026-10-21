@@ -1,11 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-  default as _styled5,
-  default as _styled6,
-  default as _styled7,
-} from "styled-components";
 import React, { useState, useEffect } from "react";
 import {
   Select,
@@ -22,55 +14,6 @@ import moment from "moment";
 import { MenuItem, Tooltip } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
 import ControlledAutoComplete from "../../../../common/ControlledAutoComplete";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "CodeSection___StyledDiv",
-  componentId: "sc-1iniqlj-0",
-})({
-  display: "flex",
-  "@media (min-width: 768px)": {
-    flexWrap: "wrap",
-  },
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "CodeSection___StyledDiv2",
-  componentId: "sc-1iniqlj-1",
-})({
-  width: "33.333333%",
-});
-const _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "CodeSection___StyledDiv3",
-  componentId: "sc-1iniqlj-2",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-const _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "CodeSection___StyledDiv4",
-  componentId: "sc-1iniqlj-3",
-})({
-  marginTop: "0.5rem",
-  width: "50%",
-});
-const _StyledTextField = _styled5(TextField).withConfig({
-  displayName: "CodeSection___StyledTextField",
-  componentId: "sc-1iniqlj-4",
-})({
-  width: "100%",
-});
-const _StyledDiv5 = _styled6("div").withConfig({
-  displayName: "CodeSection___StyledDiv5",
-  componentId: "sc-1iniqlj-5",
-})({
-  float: "right",
-});
-const _StyledButton = _styled7(Button).withConfig({
-  displayName: "CodeSection___StyledButton",
-  componentId: "sc-1iniqlj-6",
-})({
-  marginRight: "1rem",
-});
-
 interface CodeSectionProps {
   handleFormSubmit: Function;
   canEdit: boolean;
@@ -202,13 +145,14 @@ export default function CodeSection({
               </span>
             </div>
             <form onSubmit={formik.handleSubmit}>
-              <_StyledDiv
+              <div
                 style={{
                   display: "flex",
                   alignItems: "flex-end",
                 }}
+                className="me:flex me:md:flex-wrap"
               >
-                <_StyledDiv2>
+                <div className="me:w-1/3">
                   <ControlledAutoComplete
                     multipleSelect={false}
                     placeholder="-"
@@ -230,8 +174,8 @@ export default function CodeSection({
                     }}
                     limitTags={1}
                   />
-                </_StyledDiv2>
-                <_StyledDiv3>
+                </div>
+                <div className="me:grow me:pl-5">
                   <Select
                     required
                     label="Code System Version"
@@ -257,11 +201,11 @@ export default function CodeSection({
                     disabled={!formik.values.title || !canEdit}
                     {...formik.getFieldProps("version")}
                   />
-                </_StyledDiv3>
-              </_StyledDiv>
+                </div>
+              </div>
 
-              <_StyledDiv4>
-                <_StyledTextField
+              <div className="me:w-1/2 me:mt-2">
+                <TextField
                   required="required"
                   id="code"
                   label="Code"
@@ -282,10 +226,11 @@ export default function CodeSection({
                     formik.setFieldTouched("code", true);
                     trimCodeInput();
                   }}
+                  className="me:w-full"
                 />
-              </_StyledDiv4>
-              <_StyledDiv5>
-                <_StyledButton
+              </div>
+              <div className="me:float-right">
+                <Button
                   variant="outline"
                   data-testid="clear-codes-btn"
                   disabled={!formik.dirty || !canEdit}
@@ -293,9 +238,10 @@ export default function CodeSection({
                     resetForm();
                     blankResults();
                   }}
+                  className="me:mr-4"
                 >
                   Clear
-                </_StyledButton>
+                </Button>
                 <Button
                   type="submit"
                   data-testid="codes-search-btn"
@@ -303,7 +249,7 @@ export default function CodeSection({
                 >
                   Search
                 </Button>
-              </_StyledDiv5>
+              </div>
             </form>
           </>
         }

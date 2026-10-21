@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 import {
@@ -21,49 +20,6 @@ import { Stack } from "@mui/material";
 import { ParametersProps } from "./Parameters";
 import EditParameterDialog from "./EditParameterDialog";
 import { Parameter } from "./ParameterBuilder";
-
-const _StyledTable = _styled("table").withConfig({
-  displayName: "SavedParameters___StyledTable",
-  componentId: "sc-j0j2pa-2",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "SavedParameters___StyledThead",
-  componentId: "sc-j0j2pa-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "SavedParameters___StyledTd",
-  componentId: "sc-j0j2pa-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-
-const TH = _styled.th.withConfig({
-  displayName: "SavedParameters__TH",
-  componentId: "sc-j0j2pa-0",
-})({
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: "700",
-  textTransform: "capitalize",
-});
-const TD = _styled.td.withConfig({
-  displayName: "SavedParameters__TD",
-  componentId: "sc-j0j2pa-1",
-})({
-  wordBreak: "break-all",
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-});
 const SavedParameters = ({
   canEdit,
   parameters,
@@ -224,33 +180,39 @@ const SavedParameters = ({
   ]);
   return (
     <>
-      <_StyledTable
+      <table
         data-testid="parameters-tbl"
         id="parameters-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
+        className="me:min-w-full"
       >
-        <_StyledThead
+        <thead
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:bg-slate"
         >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
-                <TH key={header.id} scope="col">
+                <th
+                  key={header.id}
+                  scope="col"
+                  className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TH>
+                </th>
               ))}
             </tr>
           ))}
-        </_StyledThead>
+        </thead>
         <tbody data-testid="parameters-table-body">
           {loading && (
             <div>
@@ -261,23 +223,26 @@ const SavedParameters = ({
           )}
           {!loading && _.isEmpty(parameters) && (
             <tr>
-              <_StyledTd colSpan={columns.length}>
+              <td colSpan={columns.length} className="me:text-center me:p-2">
                 No Results were found
-              </_StyledTd>
+              </td>
             </tr>
           )}
           {!loading &&
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`parameters-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
-                  <TD key={cell.id}>
+                  <td
+                    key={cell.id}
+                    className="me:p-3 me:text-left me:text-sm me:break-all"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TD>
+                  </td>
                 ))}
               </tr>
             ))}
         </tbody>
-      </_StyledTable>
+      </table>
       <MadieDeleteDialog
         open={deleteDialogOpen}
         onContinue={() => {

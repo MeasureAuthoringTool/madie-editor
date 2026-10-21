@@ -1,14 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-  default as _styled5,
-  default as _styled6,
-  default as _styled7,
-  default as _styled8,
-  default as _styled9,
-  default as _styled0,
-} from "styled-components";
 import React from "react";
 import { MadieDialog, TextField } from "@madie/madie-design-system/dist/react";
 import { Checkbox, FormControlLabel } from "@mui/material";
@@ -16,82 +5,6 @@ import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../../validations/SuffixSchemaValidator";
 import _ from "lodash";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv",
-  componentId: "sc-nlvak4-0",
-})({
-  display: "flex",
-  flexDirection: "column",
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv2",
-  componentId: "sc-nlvak4-1",
-})({
-  marginTop: "1rem",
-  display: "flex",
-});
-const _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv3",
-  componentId: "sc-nlvak4-2",
-})({
-  width: "33.333333%",
-});
-const _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv4",
-  componentId: "sc-nlvak4-3",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-const _StyledDiv5 = _styled5("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv5",
-  componentId: "sc-nlvak4-4",
-})({
-  marginTop: "1rem",
-  display: "flex",
-  "@media (min-width: 768px)": {
-    flexWrap: "wrap",
-  },
-});
-const _StyledDiv6 = _styled6("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv6",
-  componentId: "sc-nlvak4-5",
-})({
-  width: "33.333333%",
-});
-const _StyledDiv7 = _styled7("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv7",
-  componentId: "sc-nlvak4-6",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-const _StyledDiv8 = _styled8("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv8",
-  componentId: "sc-nlvak4-7",
-})({
-  marginTop: "1rem",
-  display: "flex",
-  "@media (min-width: 768px)": {
-    flexWrap: "wrap",
-  },
-});
-const _StyledDiv9 = _styled9("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv9",
-  componentId: "sc-nlvak4-8",
-})({
-  width: "12rem",
-});
-const _StyledDiv0 = _styled0("div").withConfig({
-  displayName: "EditCodeDetailsDialog___StyledDiv0",
-  componentId: "sc-nlvak4-9",
-})({
-  marginTop: "0.5rem",
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-
 export default function EditCodeDetailsDialog({
   measureModel,
   selectedCodeDetails,
@@ -138,39 +51,42 @@ export default function EditCodeDetailsDialog({
         disabled: Boolean(formik.errors.suffix),
       }}
     >
-      <_StyledDiv>
-        <_StyledDiv2>
-          <_StyledDiv3 data-testid="code-info">
+      <div className="me:flex me:flex-col">
+        <div className="me:flex me:mt-4">
+          <div data-testid="code-info" className="me:w-1/3">
             <p className="result-label">Code</p>
             <span className="result-value">{selectedCodeDetails?.name}</span>
-          </_StyledDiv3>
+          </div>
 
-          <_StyledDiv4 data-testid="code-description-info">
+          <div data-testid="code-description-info" className="me:grow me:pl-5">
             <p className="result-label">Code Description</p>
             <span className="result-value">{selectedCodeDetails?.display}</span>
-          </_StyledDiv4>
-        </_StyledDiv2>
+          </div>
+        </div>
 
-        <_StyledDiv5>
-          <_StyledDiv6 data-testid="code-system-info">
+        <div className="me:flex me:md:flex-wrap me:mt-4">
+          <div data-testid="code-system-info" className="me:w-1/3">
             <p className="result-label">Code System</p>
             <span className="result-value">
               {selectedCodeDetails?.codeSystem}
             </span>
-          </_StyledDiv6>
+          </div>
 
-          <_StyledDiv7 data-testid="code-system-version-info">
+          <div
+            data-testid="code-system-version-info"
+            className="me:grow me:pl-5"
+          >
             <p className="result-label">Code System Version</p>
             <span className="result-value">
               {_.includes(measureModel, "QDM")
                 ? selectedCodeDetails?.svsVersion
                 : getFhirCodeSystemVersion(selectedCodeDetails?.fhirVersion)}
             </span>
-          </_StyledDiv7>
-        </_StyledDiv5>
+          </div>
+        </div>
 
-        <_StyledDiv8>
-          <_StyledDiv9>
+        <div className="me:flex me:md:flex-wrap me:mt-4">
+          <div className="me:w-48">
             <TextField
               {...formik.getFieldProps("suffix")}
               placeholder="Suffix"
@@ -187,8 +103,8 @@ export default function EditCodeDetailsDialog({
               error={Boolean(formik.errors.suffix)}
               maxLength={4}
             />
-          </_StyledDiv9>
-          <_StyledDiv0>
+          </div>
+          <div className="me:grow me:pl-5 me:mt-2">
             <FormControlLabel
               control={
                 <Checkbox
@@ -210,9 +126,9 @@ export default function EditCodeDetailsDialog({
                 marginTop: "6px",
               }}
             />
-          </_StyledDiv0>
-        </_StyledDiv8>
-      </_StyledDiv>
+          </div>
+        </div>
+      </div>
     </MadieDialog>
   );
 }

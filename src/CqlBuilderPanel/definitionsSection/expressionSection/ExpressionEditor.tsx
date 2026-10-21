@@ -1,8 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-} from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Select,
@@ -22,34 +17,6 @@ import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../../editor/MonacoCqlEditor";
 import { useFormikContext } from "formik";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv",
-  componentId: "sc-1ydk52f-0",
-})({
-  display: "flex",
-  flexWrap: "wrap",
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv2",
-  componentId: "sc-1ydk52f-1",
-})({
-  width: "50%",
-});
-const _StyledDiv3 = _styled3("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv3",
-  componentId: "sc-1ydk52f-2",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-const _StyledDiv4 = _styled4("div").withConfig({
-  displayName: "ExpressionEditor___StyledDiv4",
-  componentId: "sc-1ydk52f-3",
-})({
-  float: "right",
-});
-
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;
@@ -220,8 +187,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
         showHeaderContent={expressionEditorOpen}
         children={
           <>
-            <_StyledDiv>
-              <_StyledDiv2>
+            <div className="me:flex me:flex-wrap">
+              <div className="me:w-1/2">
                 <Select
                   label="Type"
                   id="type-selector"
@@ -240,8 +207,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                     formik.setFieldValue("name", "");
                   }}
                 />
-              </_StyledDiv2>
-              <_StyledDiv3>
+              </div>
+              <div className="me:grow me:pl-5">
                 <AutoComplete
                   label="Name"
                   id="name-selector"
@@ -263,10 +230,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   }}
                   disabled={!canEdit || !formik.values.type}
                 />
-              </_StyledDiv3>
-            </_StyledDiv>
+              </div>
+            </div>
 
-            <_StyledDiv4>
+            <div className="me:float-right">
               <Button
                 type="submit"
                 data-testid="expression-insert-btn"
@@ -276,7 +243,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               >
                 Insert
               </Button>
-            </_StyledDiv4>
+            </div>
             <div
               style={{
                 marginBottom: "72px",

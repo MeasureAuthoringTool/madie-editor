@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, {
   useCallback,
   useEffect,
@@ -32,40 +31,6 @@ import useTerminologyServiceApi, {
 } from "../../../../api/useTerminologyServiceApi";
 import _ from "lodash";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "SavedCodesSubSection___StyledDiv",
-  componentId: "sc-obv2i0-1",
-})({
-  fontWeight: "500",
-});
-const _StyledTable = _styled("table").withConfig({
-  displayName: "SavedCodesSubSection___StyledTable",
-  componentId: "sc-obv2i0-2",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "SavedCodesSubSection___StyledThead",
-  componentId: "sc-obv2i0-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "SavedCodesSubSection___StyledTd",
-  componentId: "sc-obv2i0-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-const _StyledTd2 = _styled("td").withConfig({
-  displayName: "SavedCodesSubSection___StyledTd2",
-  componentId: "sc-obv2i0-5",
-})({
-  padding: "0.5rem",
-});
-
 type SavedCodesColumnRow = {
   name: string;
   display: string;
@@ -197,17 +162,6 @@ export default function SavedCodesSubSection({
     setTotalItems,
     setTotalPages,
   ]);
-  const TH = _styled.th.withConfig({
-    displayName: "SavedCodesSubSection__TH",
-    componentId: "sc-obv2i0-0",
-  })({
-    padding: "0.75rem",
-    textAlign: "left",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
-    fontWeight: "700",
-    textTransform: "capitalize",
-  });
   const columns = useMemo<ColumnDef<SavedCodesColumnRow>[]>(
     () => [
       {
@@ -369,10 +323,10 @@ export default function SavedCodesSubSection({
             <div aria-live="polite" role="alert">
               {
                 <div>
-                  <_StyledDiv>
+                  <div className="me:font-medium">
                     Your Measure CQL contains errors. Due to that, your saved
                     codes table and CQL may not be consistent.
-                  </_StyledDiv>
+                  </div>
                 </div>
               }
             </div>
@@ -381,47 +335,53 @@ export default function SavedCodesSubSection({
         />
       )}
 
-      <_StyledTable
+      <table
         data-testid="saved-codes-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
           borderSpacing: "0 2em !important",
         }}
+        className="me:min-w-full"
       >
-        <_StyledThead
+        <thead
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:bg-slate"
         >
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TH key={header.id} scope="col">
+                <th
+                  key={header.id}
+                  scope="col"
+                  className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TH>
+                </th>
               ))}
             </tr>
           ))}
-        </_StyledThead>
+        </thead>
         <tbody data-testid="saved-codes-tbl-body">
           {!loading ? (
             _.isEmpty(codes) ? (
               <tr>
-                <_StyledTd colSpan={columns.length}>
+                <td colSpan={columns.length} className="me:text-center me:p-2">
                   No Results were found
-                </_StyledTd>
+                </td>
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id} data-testid={`saved-code-row-${row.id}`}>
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <_StyledTd2 key={cell.id}>
+                      <td key={cell.id} className="me:p-2">
                         {cell.column.id === "status"
                           ? getCodeStatus(cell.getValue())
                           : cell.column.id === "fhirVersion"
@@ -430,7 +390,7 @@ export default function SavedCodesSubSection({
                               cell.column.columnDef.cell,
                               cell.getContext()
                             )}
-                      </_StyledTd2>
+                      </td>
                     );
                   })}
                 </tr>
@@ -447,7 +407,7 @@ export default function SavedCodesSubSection({
             </div>
           )}
         </tbody>
-      </_StyledTable>
+      </table>
 
       <EditCodeDetailsDialog
         measureModel={measureModel}

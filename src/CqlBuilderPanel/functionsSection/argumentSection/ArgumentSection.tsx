@@ -1,12 +1,3 @@
-import _styled, {
-  default as _styled2,
-  default as _styled3,
-  default as _styled4,
-  default as _styled5,
-  default as _styled6,
-  default as _styled7,
-  default as _styled8,
-} from "styled-components";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Select,
@@ -23,60 +14,6 @@ import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { FunctionArgumentSchemaValidator } from "../../../validations/FunctionArgumentSchemaValidator";
 import "./ArguementsSection.scss";
-
-const _StyledDiv = _styled("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv",
-  componentId: "sc-1jx03lg-0",
-})({
-  display: "flex",
-  flexWrap: "wrap",
-});
-const _StyledDiv2 = _styled2("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv2",
-  componentId: "sc-1jx03lg-1",
-})({
-  width: "50%",
-});
-const _StyledTextField = _styled3(TextField).withConfig({
-  displayName: "ArgumentSection___StyledTextField",
-  componentId: "sc-1jx03lg-2",
-})({
-  width: "100%",
-});
-const _StyledDiv3 = _styled4("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv3",
-  componentId: "sc-1jx03lg-3",
-})({
-  flexGrow: "1",
-  paddingLeft: "1.25rem",
-});
-const _StyledDiv4 = _styled5("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv4",
-  componentId: "sc-1jx03lg-4",
-})({
-  display: "flex",
-  flexWrap: "wrap",
-});
-const _StyledDiv5 = _styled6("div").withConfig({
-  displayName: "ArgumentSection___StyledDiv5",
-  componentId: "sc-1jx03lg-5",
-})({
-  width: "50%",
-  paddingTop: "1.5rem",
-});
-const _StyledTextField2 = _styled7(TextField).withConfig({
-  displayName: "ArgumentSection___StyledTextField2",
-  componentId: "sc-1jx03lg-6",
-})({
-  width: "100%",
-});
-const _StyledButton = _styled8(Button).withConfig({
-  displayName: "ArgumentSection___StyledButton",
-  componentId: "sc-1jx03lg-7",
-})({
-  marginRight: "1rem",
-});
-
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
   canEdit: boolean;
@@ -138,9 +75,9 @@ export default function ArgumentSection(props: ArgumentsProps) {
   }, [dirty]);
   return (
     <>
-      <_StyledDiv>
-        <_StyledDiv2>
-          <_StyledTextField
+      <div className="me:flex me:flex-wrap">
+        <div className="me:w-1/2">
+          <TextField
             required={
               isFluentFunction || formik.values.dataType ? "required" : ""
             }
@@ -156,9 +93,10 @@ export default function ArgumentSection(props: ArgumentsProps) {
             error={Boolean(formik.errors.argumentName)}
             helperText={formik.errors.argumentName}
             {...formik.getFieldProps("argumentName")}
+            className="me:w-full"
           />
-        </_StyledDiv2>
-        <_StyledDiv3>
+        </div>
+        <div className="me:grow me:pl-5">
           <Select
             required={formik.values.argumentName ? "required" : ""}
             label="Available DataTypes"
@@ -190,12 +128,12 @@ export default function ArgumentSection(props: ArgumentsProps) {
               }
             }}
           />
-        </_StyledDiv3>
-      </_StyledDiv>
+        </div>
+      </div>
       {dataType === "Other" && (
-        <_StyledDiv4>
-          <_StyledDiv5>
-            <_StyledTextField2
+        <div className="me:flex me:flex-wrap">
+          <div className="me:pt-6 me:w-1/2">
+            <TextField
               label="Other"
               id="other-field"
               name="otherType"
@@ -209,9 +147,10 @@ export default function ArgumentSection(props: ArgumentsProps) {
               {...formik.getFieldProps("other")}
               error={formik.touched.other && Boolean(formik.errors.other)}
               helperText={formik.errors.other}
+              className="me:w-full"
             />
-          </_StyledDiv5>
-        </_StyledDiv4>
+          </div>
+        </div>
       )}
       <div
         style={{
@@ -219,7 +158,7 @@ export default function ArgumentSection(props: ArgumentsProps) {
           justifySelf: "end",
         }}
       >
-        <_StyledButton
+        <Button
           id="clear-function-argument-btn"
           variant="outline"
           data-testid="clear-function-argument-btn"
@@ -227,9 +166,10 @@ export default function ArgumentSection(props: ArgumentsProps) {
           onClick={() => {
             setConfirmationDialog(true);
           }}
+          className="me:mr-4"
         >
           Clear
-        </_StyledButton>
+        </Button>
         <Button
           data-testid={`function-argument-add-btn`}
           disabled={

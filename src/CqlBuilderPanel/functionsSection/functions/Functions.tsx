@@ -1,4 +1,3 @@
-import _styled from "styled-components";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import _ from "lodash";
 import { FunctionLookup } from "../../../model/CqlBuilderLookup";
@@ -20,49 +19,6 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import EditFunctionDialog from "../EditFunctionDialog";
 import Tooltip from "@mui/material/Tooltip";
-
-const _StyledTable = _styled("table").withConfig({
-  displayName: "Functions___StyledTable",
-  componentId: "sc-z5k5r-2",
-})({
-  minWidth: "100%",
-});
-const _StyledThead = _styled("thead").withConfig({
-  displayName: "Functions___StyledThead",
-  componentId: "sc-z5k5r-3",
-})({
-  "--tw-bg-opacity": "1",
-  backgroundColor: "rgb(237 237 237 / var(--tw-bg-opacity, 1))",
-});
-const _StyledTd = _styled("td").withConfig({
-  displayName: "Functions___StyledTd",
-  componentId: "sc-z5k5r-4",
-})({
-  padding: "0.5rem",
-  textAlign: "center",
-});
-
-const TH = _styled.th.withConfig({
-  displayName: "Functions__TH",
-  componentId: "sc-z5k5r-0",
-})({
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: "700",
-  textTransform: "capitalize",
-});
-const TD = _styled.td.withConfig({
-  displayName: "Functions__TD",
-  componentId: "sc-z5k5r-1",
-})({
-  wordBreak: "break-all",
-  padding: "0.75rem",
-  textAlign: "left",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-});
 const getArgNameToolTipHtml = (args: string[], number) => {
   const result = args?.map((arg, index) => {
     if (index < number) {
@@ -266,33 +222,39 @@ const Functions = ({
   ]);
   return (
     <>
-      <_StyledTable
+      <table
         data-testid="functions-tbl"
         id="functions-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
+        className="me:min-w-full"
       >
-        <_StyledThead
+        <thead
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:bg-slate"
         >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
-                <TH key={header.id} scope="col">
+                <th
+                  key={header.id}
+                  scope="col"
+                  className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TH>
+                </th>
               ))}
             </tr>
           ))}
-        </_StyledThead>
+        </thead>
         <tbody data-testid="functions-table-body">
           {loading && (
             <div title="loading">
@@ -303,23 +265,26 @@ const Functions = ({
           )}
           {!loading && _.isEmpty(functions) && (
             <tr>
-              <_StyledTd colSpan={columns.length}>
+              <td colSpan={columns.length} className="me:text-center me:p-2">
                 No Results were found
-              </_StyledTd>
+              </td>
             </tr>
           )}
           {!loading &&
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`functions-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
-                  <TD key={cell.id}>
+                  <td
+                    key={cell.id}
+                    className="me:p-3 me:text-left me:text-sm me:break-all"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TD>
+                  </td>
                 ))}
               </tr>
             ))}
         </tbody>
-      </_StyledTable>
+      </table>
       <div className="pagination-container">
         <Pagination
           totalItems={totalItems}
