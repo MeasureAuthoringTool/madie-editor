@@ -12,8 +12,6 @@ import React, {
   useState,
 } from "react";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
-import tw from "twin.macro";
-import "styled-components/macro";
 import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
 import ArrowDropUpOutlinedIcon from "@mui/icons-material/ArrowDropUpOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -26,13 +24,11 @@ import { Stack } from "@mui/material";
 import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import "./Arguments.scss";
 import toastReducer from "../../../common/ToastReducer";
-
 type PropTypes = {
   functionArguments: Array<FunctionArgument>;
   handleDeleteArgument?: Function;
   canEdit: boolean;
 };
-
 type RowDef = {
   id: number;
   arrows: string;
@@ -40,9 +36,6 @@ type RowDef = {
   datatype: string;
   action: string;
 };
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-
 const Arguments = ({
   functionArguments,
   handleDeleteArgument,
@@ -72,7 +65,6 @@ const Arguments = ({
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const managePagination = useCallback(() => {
     //  page zero for no pages available
     if (functionArguments.length < currentLimit) {
@@ -101,12 +93,10 @@ const Arguments = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   const canGoNext = (() => {
     return currentPage < totalPages;
   })();
   const canGoPrev = currentPage > 1;
-
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
@@ -118,16 +108,13 @@ const Arguments = ({
       handlePageChange(null, newTotalPages);
     }
   }, [functionArguments, currentLimit]);
-
   const handleLimitChange = (e) => {
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [functionArguments, currentPage, currentLimit]);
-
   const deleteFunctionArgument = () => {
     handleDeleteArgument(selectedArgument);
     setDeleteDialogOpen(false);
@@ -153,7 +140,6 @@ const Arguments = ({
       action: null,
     };
   });
-
   const moveItem = (fromIndex, toIndex) => {
     setVisibleArguments((prevItems) => {
       const newItems = [...prevItems];
@@ -231,36 +217,43 @@ const Arguments = ({
       },
     ];
   }, [functionArguments]);
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   return (
     <>
       <div className="function-argument-container">
         <table
-          tw="min-w-full"
           data-testid="function-argument-tbl"
           id="function-argument-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:min-w-full"
         >
-          <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+          <thead
+            style={{
+              borderBottom: "solid 1px #8c8c8c",
+            }}
+            className="me:bg-slate"
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TH key={header.id} scope="col">
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TH>
+                  </th>
                 ))}
               </tr>
             ))}
@@ -281,7 +274,7 @@ const Arguments = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} tw="text-center p-2">
+                <td colSpan={columns.length} className="me:text-center me:p-2">
                   No Results were found
                 </td>
               </tr>
@@ -314,7 +307,11 @@ const Arguments = ({
         toastType={toastState.type}
         open={toastState.open}
         message={toastState.message}
-        onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        onClose={() =>
+          dispatch({
+            type: "HIDE_TOAST",
+          })
+        }
         autoHideDuration={8000}
       />
       <MadieDeleteDialog
@@ -327,5 +324,4 @@ const Arguments = ({
     </>
   );
 };
-
 export default Arguments;

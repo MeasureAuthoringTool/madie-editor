@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import {
   Select,
   Button,
@@ -10,14 +8,12 @@ import {
 import ExpandingSection from "../../../common/ExpandingSection";
 import { MenuItem } from "@mui/material";
 import * as _ from "lodash";
-
 import { useFormik } from "formik";
 import Arguments from "./Arguments";
 import { FunctionArgument } from "../../../model/CqlBuilderLookup";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { FunctionArgumentSchemaValidator } from "../../../validations/FunctionArgumentSchemaValidator";
 import "./ArguementsSection.scss";
-
 interface ArgumentsProps {
   functionArguments?: FunctionArgument[];
   canEdit: boolean;
@@ -26,7 +22,6 @@ interface ArgumentsProps {
   deleteArgumentFromFunctionArguments: Function;
   dirty: boolean;
 }
-
 const availableDataTypes = [
   "Boolean",
   "Date",
@@ -38,7 +33,6 @@ const availableDataTypes = [
   "Time",
   "Other",
 ];
-
 export default function ArgumentSection(props: ArgumentsProps) {
   const {
     addArgumentToFunctionsArguments,
@@ -49,7 +43,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
     dirty,
   } = props;
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
-
   const formik = useFormik({
     initialValues: {
       argumentName: "",
@@ -61,7 +54,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
     onSubmit: () => {},
   });
   const { dataType } = formik.values;
-
   const handleSubmit = () => {
     let value = dataType;
     if (value === "Other") {
@@ -83,8 +75,8 @@ export default function ArgumentSection(props: ArgumentsProps) {
   }, [dirty]);
   return (
     <>
-      <div tw="flex flex-wrap">
-        <div tw="w-1/2">
+      <div className="me:flex me:flex-wrap">
+        <div className="me:w-1/2">
           <TextField
             required={
               isFluentFunction || formik.values.dataType ? "required" : ""
@@ -92,7 +84,6 @@ export default function ArgumentSection(props: ArgumentsProps) {
             label="Name"
             id="argument-name-field"
             name="argumentName"
-            tw="w-full"
             readOnly={!canEdit}
             disabled={!canEdit}
             placeholder=""
@@ -102,9 +93,10 @@ export default function ArgumentSection(props: ArgumentsProps) {
             error={Boolean(formik.errors.argumentName)}
             helperText={formik.errors.argumentName}
             {...formik.getFieldProps("argumentName")}
+            className="me:w-full"
           />
         </div>
-        <div tw="flex-grow pl-5">
+        <div className="me:grow me:pl-5">
           <Select
             required={formik.values.argumentName ? "required" : ""}
             label="Available DataTypes"
@@ -139,13 +131,12 @@ export default function ArgumentSection(props: ArgumentsProps) {
         </div>
       </div>
       {dataType === "Other" && (
-        <div tw="flex flex-wrap">
-          <div tw="pt-6 w-1/2">
+        <div className="me:flex me:flex-wrap">
+          <div className="me:pt-6 me:w-1/2">
             <TextField
               label="Other"
               id="other-field"
               name="otherType"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               placeholder=""
@@ -156,20 +147,26 @@ export default function ArgumentSection(props: ArgumentsProps) {
               {...formik.getFieldProps("other")}
               error={formik.touched.other && Boolean(formik.errors.other)}
               helperText={formik.errors.other}
+              className="me:w-full"
             />
           </div>
         </div>
       )}
-      <div style={{ paddingTop: "24px", justifySelf: "end" }}>
+      <div
+        style={{
+          paddingTop: "24px",
+          justifySelf: "end",
+        }}
+      >
         <Button
           id="clear-function-argument-btn"
           variant="outline"
           data-testid="clear-function-argument-btn"
           disabled={!canEdit || !formik.dirty}
-          tw="mr-4"
           onClick={() => {
             setConfirmationDialog(true);
           }}
+          className="me:mr-4"
         >
           Clear
         </Button>
@@ -187,7 +184,11 @@ export default function ArgumentSection(props: ArgumentsProps) {
           Add
         </Button>
       </div>
-      <div style={{ paddingTop: "24px" }}>
+      <div
+        style={{
+          paddingTop: "24px",
+        }}
+      >
         {/* tableData with pagination. */}
         <Arguments
           functionArguments={functionArguments}

@@ -6,8 +6,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import {
   Pagination,
   MadieDiscardDialog,
@@ -22,10 +20,6 @@ import { Stack } from "@mui/material";
 import { ParametersProps } from "./Parameters";
 import EditParameterDialog from "./EditParameterDialog";
 import { Parameter } from "./ParameterBuilder";
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-const TD = tw.td`p-3 text-left text-sm break-all`;
-
 const SavedParameters = ({
   canEdit,
   parameters,
@@ -47,14 +41,11 @@ const SavedParameters = ({
     open: false,
     operation: null,
   });
-
   const [openParameterDialog, setOpenParameterDialog] = useState<boolean>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const canGoPrev = currentPage > 1;
   const canGoNext = (() => {
     return currentPage < totalPages;
@@ -66,14 +57,12 @@ const SavedParameters = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [parameters, currentPage, currentLimit]);
 
   // table data
   const data = visibleParameters;
-
   const columns = useMemo<ColumnDef<Lookup>[]>(
     () => [
       {
@@ -114,7 +103,10 @@ const SavedParameters = ({
                     } as Parameter;
                     setParameterToDelete(parameterToDelete);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "delete" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "delete",
+                      });
                     } else {
                       setDeleteDialogOpen(true);
                     }
@@ -134,7 +126,10 @@ const SavedParameters = ({
                       table.getRow(row.cell.row.id).original
                     );
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "edit" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "edit",
+                      });
                     } else {
                       setOpenParameterDialog(true);
                     }
@@ -150,13 +145,11 @@ const SavedParameters = ({
     ],
     [canEdit, parameters, isCQLUnchanged]
   );
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const managePagination = useCallback(() => {
     if (parameters?.length > 0) {
       setTotalItems(parameters.length);
@@ -185,29 +178,37 @@ const SavedParameters = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   return (
     <>
       <table
-        tw="min-w-full"
         data-testid="parameters-tbl"
         id="parameters-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
+        className="me:min-w-full"
       >
-        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+        <thead
+          style={{
+            borderBottom: "solid 1px #8c8c8c",
+          }}
+          className="me:bg-slate"
+        >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
-                <TH key={header.id} scope="col">
+                <th
+                  key={header.id}
+                  scope="col"
+                  className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TH>
+                </th>
               ))}
             </tr>
           ))}
@@ -222,7 +223,7 @@ const SavedParameters = ({
           )}
           {!loading && _.isEmpty(parameters) && (
             <tr>
-              <td colSpan={columns.length} tw="text-center p-2">
+              <td colSpan={columns.length} className="me:text-center me:p-2">
                 No Results were found
               </td>
             </tr>
@@ -231,9 +232,12 @@ const SavedParameters = ({
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`parameters-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
-                  <TD key={cell.id}>
+                  <td
+                    key={cell.id}
+                    className="me:p-3 me:text-left me:text-sm me:break-all"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TD>
+                  </td>
                 ))}
               </tr>
             ))}
@@ -300,5 +304,4 @@ const SavedParameters = ({
     </>
   );
 };
-
 export default SavedParameters;
