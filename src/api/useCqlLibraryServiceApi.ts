@@ -17,11 +17,15 @@ export interface CqlLibrary {
   alias?: string;
   librarySetId: string;
   ownerDisplayName: string;
+  cql?: string;
+  namespacePrefix?: string;
+  externalLibrary?: boolean;
 }
 
+// libraries are all versions of a MADiE library, or of an NPM library if the set belongs to one
 export interface LibrarySetDto {
   librarySet: LibrarySet;
-  libraries: Array<CqlLibrary>;
+  libraries: Array<CqlLibraryDto>;
 }
 
 const tryAgainMessage =
@@ -31,15 +35,70 @@ export const fetchVersionedLibrariesErrorMessage =
 export const fetchCqlErrorMessage =
   "An error occurred while fetching the CQL. " + tryAgainMessage;
 
+// Name used to reference the library in CQL, e.g. hl7.fhir.uv.cql.FHIRCommon for NPM libraries
+export const getQualifiedLibraryName = (library: {
+  cqlLibraryName: string;
+  namespacePrefix?: string;
+  externalLibrary?: boolean;
+}): string =>
+  library?.externalLibrary && library?.namespacePrefix
+    ? `${library.namespacePrefix}.${library.cqlLibraryName}`
+    : library?.cqlLibraryName;
+
+// Splits an included library name into its namespace prefix and library name, e.g.
+// hl7.fhir.uv.cql.FHIRCommon -> { namespacePrefix: "hl7.fhir.uv.cql", name: "FHIRCommon" }
+export const parseQualifiedLibraryName = (
+  qualifiedName: string
+): { namespacePrefix?: string; name: string } => {
+  const lastDot = qualifiedName?.lastIndexOf(".") ?? -1;
+  if (lastDot <= 0) {
+    return { name: qualifiedName };
+  }
+  return {
+    namespacePrefix: qualifiedName.substring(0, lastDot),
+    name: qualifiedName.substring(lastDot + 1),
+  };
+};
+
+// Models declared by the using statements of the CQL, as name:version e.g. USQualityCore:0.5.0
+export const getUsingModels = (cql: string): string[] => {
+  if (!cql) {
+    return [];
+  }
+  const cqlWithoutComments = cql
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+  const usingStatement = /^\s*using\s+(.+?)\s+version\s+'([^']*)'/gm;
+  const models: string[] = [];
+  let match: RegExpExecArray;
+  while ((match = usingStatement.exec(cqlWithoutComments)) !== null) {
+    models.push(`${match[1].replace(/"/g, "")}:${match[2]}`);
+  }
+  return models;
+};
+
+// MADiE library list response. NPM library versions do not follow the MADiE version format,
+// so they are returned in externalVersion instead of version.
+interface LibraryListItem extends Omit<CqlLibrary, "version"> {
+  version?: string;
+  externalVersion?: string;
+}
+
+export interface CqlLibraryDto extends CqlLibrary {
+  external?: boolean;
+  publisher?: string;
+}
+
 export class CqlLibraryServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async fetchVersionedCqlLibrariesBySearchTermAndModel(
     searchTerm: string,
-    model: string
+    model: string,
+    usingModels: string[] = []
   ): Promise<CqlLibrary[]> {
     try {
-      const response = await axios.get<CqlLibrary[]>(
+      const response = await axios.get<LibraryListItem[]>(
         `${this.baseUrl}/cql-libraries/all-versioned`,
         {
           headers: {
@@ -48,10 +107,18 @@ export class CqlLibraryServiceApi {
           params: {
             libraryName: searchTerm,
             model: model,
+            // NPM libraries are only returned if all of their models are declared in the CQL
+            usingModels: usingModels.join(","),
           },
         }
       );
-      return response.data;
+      return response.data?.map((library) => {
+        const { externalVersion, ...rest } = library;
+        return {
+          ...rest,
+          version: library.externalLibrary ? externalVersion : library.version,
+        } as CqlLibrary;
+      });
     } catch (err) {
       console.error(fetchVersionedLibrariesErrorMessage, err);
       throw new Error(fetchVersionedLibrariesErrorMessage);
@@ -60,8 +127,9 @@ export class CqlLibraryServiceApi {
 
   getVersionedCqlLibraryByNameVersion(
     name: string,
-    version: string
-  ): Promise<AxiosResponse<CqlLibrary>> {
+    version: string,
+    namespacePrefix?: string
+  ): Promise<AxiosResponse<CqlLibraryDto>> {
     return axios.get(`${this.baseUrl}/cql-libraries/versioned`, {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
@@ -70,6 +138,7 @@ export class CqlLibraryServiceApi {
         name,
         version,
         includeElm: false,
+        ...(namespacePrefix && { namespacePrefix }),
       },
     });
   }

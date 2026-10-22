@@ -11,6 +11,8 @@ import Results from "../Results/Results";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
   fetchVersionedLibrariesErrorMessage,
+  getQualifiedLibraryName,
+  parseQualifiedLibraryName,
 } from "../../../api/useCqlLibraryServiceApi";
 import toastReducer from "../../../common/ToastReducer";
 
@@ -54,9 +56,9 @@ const SavedLibraryIncludes = ({
   const getAlias = (includes: CqlInclude[], library: CqlLibrary): string => {
     return includes.find(
       (include) =>
-        include.name === library.cqlLibraryName &&
+        include.name === getQualifiedLibraryName(library) &&
         include.version.replace(/["']/g, "") === library.version
-    ).called;
+    )?.called;
   };
 
   const fetchIncludedLibraries = useCallback(
@@ -64,11 +66,14 @@ const SavedLibraryIncludes = ({
       const parsedCql = new CqlAntlr(cql).parse();
       if (parsedCql.includes.length > 0) {
         const promises = parsedCql?.includes.map(async (l) => {
+          // NPM libraries are included with their namespace prefix, e.g. hl7.fhir.uv.cql.FHIRCommon
+          const { namespacePrefix, name } = parseQualifiedLibraryName(l.name);
           return (
             await libraryService.current
           ).getVersionedCqlLibraryByNameVersion(
-            l.name,
-            l.version.replace(/["']/g, "")
+            name,
+            l.version.replace(/["']/g, ""),
+            namespacePrefix
           );
         });
 
@@ -76,16 +81,21 @@ const SavedLibraryIncludes = ({
           .then((responses) => {
             const cqlLibraries = responses.map((response) => {
               const lib = response.data;
-              return {
+              const library = {
                 id: lib.id,
                 cqlLibraryName: lib.cqlLibraryName,
                 version: lib.version,
-                alias: getAlias(parsedCql.includes, lib),
                 librarySet: lib.librarySet,
                 draft: false,
                 librarySetId: lib.librarySetId,
-                ownerDisplayName: lib.ownerDisplayName,
+                ownerDisplayName: lib.ownerDisplayName || lib.publisher,
+                namespacePrefix: lib.namespacePrefix,
+                externalLibrary: !!lib.external,
               } as CqlLibrary;
+              return {
+                ...library,
+                alias: getAlias(parsedCql.includes, library),
+              };
             });
             setLibraries(cqlLibraries);
           })

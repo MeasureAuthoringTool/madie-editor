@@ -3,6 +3,9 @@ import {
   CqlLibrary,
   CqlLibraryServiceApi,
   fetchVersionedLibrariesErrorMessage,
+  getQualifiedLibraryName,
+  getUsingModels,
+  parseQualifiedLibraryName,
 } from "./useCqlLibraryServiceApi";
 import { mockServiceConfig } from "../__mocks__/mockServiceConfig";
 
@@ -58,6 +61,114 @@ describe("CqlLibraryServiceApi Tests", () => {
     expect(response[0].version).toEqual(cqlLibraries[0].version);
     expect(response[1].cqlLibraryName).toEqual(cqlLibraries[1].cqlLibraryName);
     expect(response[1].version).toEqual(cqlLibraries[1].version);
+  });
+
+  it("Should use the external version for NPM libraries in search results", async () => {
+    mockedAxios.get.mockImplementation(() =>
+      Promise.resolve({
+        data: [
+          ...cqlLibraries,
+          {
+            id: "3",
+            cqlLibraryName: "FHIRCommon",
+            namespacePrefix: "hl7.fhir.uv.cql",
+            externalLibrary: true,
+            externalVersion: "2.0.0",
+            librarySetId: "ext-set",
+          },
+        ],
+      })
+    );
+    const response =
+      await cqlLibraryServiceApi.fetchVersionedCqlLibrariesBySearchTermAndModel(
+        "common",
+        "US Quality Core v0.5.0"
+      );
+    expect(response.length).toBe(3);
+    expect(response[0].version).toEqual(cqlLibraries[0].version);
+    expect(response[2].version).toEqual("2.0.0");
+    expect(response[2].namespacePrefix).toEqual("hl7.fhir.uv.cql");
+    expect(response[2].externalLibrary).toBe(true);
+    expect(response[2]).not.toHaveProperty("externalVersion");
+  });
+
+  it("Should pass namespace prefix when fetching a versioned NPM library", async () => {
+    mockedAxios.get.mockImplementation(() =>
+      Promise.resolve({ data: {}, status: 200 })
+    );
+    await cqlLibraryServiceApi.getVersionedCqlLibraryByNameVersion(
+      "FHIRCommon",
+      "2.0.0",
+      "hl7.fhir.uv.cql"
+    );
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      `${mockServiceConfig.cqlLibraryService.baseUrl}/cql-libraries/versioned`,
+      expect.objectContaining({
+        params: {
+          name: "FHIRCommon",
+          version: "2.0.0",
+          includeElm: false,
+          namespacePrefix: "hl7.fhir.uv.cql",
+        },
+      })
+    );
+  });
+
+  it("Should send the declared models when searching libraries", async () => {
+    mockedAxios.get.mockImplementation(() => Promise.resolve({ data: [] }));
+    await cqlLibraryServiceApi.fetchVersionedCqlLibrariesBySearchTermAndModel(
+      "common",
+      "US Quality Core v0.5.0",
+      ["USQualityCore:0.5.0", "FHIR:4.0.1"]
+    );
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      `${mockServiceConfig.cqlLibraryService.baseUrl}/cql-libraries/all-versioned`,
+      expect.objectContaining({
+        params: {
+          libraryName: "common",
+          model: "US Quality Core v0.5.0",
+          usingModels: "USQualityCore:0.5.0,FHIR:4.0.1",
+        },
+      })
+    );
+  });
+
+  it("Should get the models declared by the using statements of the CQL", () => {
+    const cql =
+      "library Test1bjjb version '1.0.000'\n" +
+      "using USQualityCore version '0.5.0'\n" +
+      "using USCore version '6.1.0-derived'\n" +
+      "// using USCore version '7.1.0-derived'\n" +
+      "/* using QICore version '4.1.1' */\n" +
+      "using \"FHIR\" version '4.0.1' called FHIR\n" +
+      'define "using statements": true';
+    expect(getUsingModels(cql)).toEqual([
+      "USQualityCore:0.5.0",
+      "USCore:6.1.0-derived",
+      "FHIR:4.0.1",
+    ]);
+    expect(getUsingModels("")).toEqual([]);
+    expect(getUsingModels(undefined)).toEqual([]);
+  });
+
+  it("Should build and parse qualified library names", () => {
+    expect(
+      getQualifiedLibraryName({
+        cqlLibraryName: "FHIRCommon",
+        namespacePrefix: "hl7.fhir.uv.cql",
+        externalLibrary: true,
+      })
+    ).toEqual("hl7.fhir.uv.cql.FHIRCommon");
+    expect(getQualifiedLibraryName({ cqlLibraryName: "Test_1" })).toEqual(
+      "Test_1"
+    );
+    expect(parseQualifiedLibraryName("hl7.fhir.uv.cql.FHIRCommon")).toEqual({
+      namespacePrefix: "hl7.fhir.uv.cql",
+      name: "FHIRCommon",
+    });
+    expect(parseQualifiedLibraryName("FHIRHelpers")).toEqual({
+      name: "FHIRHelpers",
+    });
   });
 
   it("Should return error if fetch cql libraries failed", async () => {

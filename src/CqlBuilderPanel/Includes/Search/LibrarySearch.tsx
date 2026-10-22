@@ -3,6 +3,7 @@ import ExpandingSection from "../../../common/ExpandingSection";
 import Search from "../Search";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
+  getUsingModels,
 } from "../../../api/useCqlLibraryServiceApi";
 import { Toast } from "@madie/madie-design-system/dist/react";
 import Results from "../Results/Results";
@@ -44,7 +45,11 @@ const LibrarySearch = (props: LibraryTabContentProps) => {
 
   const handleSearch = async (searchTerm: string) => {
     (await libraryService)
-      .fetchVersionedCqlLibrariesBySearchTermAndModel(searchTerm, measureModel)
+      .fetchVersionedCqlLibrariesBySearchTermAndModel(
+        searchTerm,
+        measureModel,
+        getUsingModels(cql)
+      )
       .then((libraries) => {
         setCqlLibraries(libraries);
       })

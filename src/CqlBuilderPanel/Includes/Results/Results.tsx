@@ -13,7 +13,11 @@ import {
 } from "@tanstack/react-table";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { CqlLibrary } from "../../../api/useCqlLibraryServiceApi";
+import {
+  CqlLibrary,
+  CqlLibraryDto,
+  getQualifiedLibraryName,
+} from "../../../api/useCqlLibraryServiceApi";
 import {
   MadieDeleteDialog,
   MadieDiscardDialog,
@@ -26,6 +30,7 @@ import CqlLibraryDetailsDialog, {
 import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
 import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
+import { Chip, Tooltip } from "@mui/material";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
@@ -48,6 +53,7 @@ type RowDef = {
   alias: string;
   ownerDisplayName: string;
   librarySetId: string;
+  externalLibrary: boolean;
 };
 
 const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
@@ -143,10 +149,12 @@ const Results = ({
     return {
       id: library.id,
       librarySetId: library.librarySetId,
-      name: library.cqlLibraryName,
+      // NPM libraries are referenced in CQL by their prefixed name
+      name: getQualifiedLibraryName(library),
       version: library.version,
       alias: library.alias,
       ownerDisplayName: library.ownerDisplayName,
+      externalLibrary: !!library.externalLibrary,
     };
   });
 
@@ -164,17 +172,20 @@ const Results = ({
       if (librarySet) {
         // filter out library for selected version from family of library
         const library = librarySet.libraries.find(
-          (library: CqlLibrary) => library.version === version
+          (library: CqlLibraryDto) => library.version === version
         );
         // list if all the versions for selected library
         const versions = librarySet.libraries.map(
-          (library: CqlLibrary) => library.version
+          (library: CqlLibraryDto) => library.version
         );
         setSelectedLibrary({
           id: library.id,
-          name: library.cqlLibraryName,
+          name: getQualifiedLibraryName({
+            ...library,
+            externalLibrary: library.external,
+          }),
           alias: alias,
-          ownerDisplayName: ownerDisplayName,
+          ownerDisplayName: ownerDisplayName || library.ownerDisplayName,
           librarySetId: setId,
           version: version,
           cql: library.cql,
@@ -244,6 +255,39 @@ const Results = ({
       {
         header: "name",
         accessorKey: "name",
+        cell: (row: any) => {
+          const rowModal: RowDef = row.cell.row.original;
+          return (
+            <div tw="flex flex-wrap items-center gap-2">
+              <span>{rowModal.name}</span>
+              {rowModal.externalLibrary && (
+                <Tooltip
+                  title="These libraries are created and stored in NPM and cannot be edited in MADiE"
+                  id={`external-library-tooltip-${row.cell.row.id}`}
+                  placement="bottom"
+                  arrow
+                  slotProps={{
+                    tooltip: {
+                      sx: {
+                        zIndex: 99,
+                        backgroundColor: "#333",
+                        "& .MuiTooltip-arrow": {
+                          color: "#333",
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <Chip
+                    className="chip-external"
+                    label="From HL7 IG"
+                    aria-label="External"
+                  />
+                </Tooltip>
+              )}
+            </div>
+          );
+        },
       },
       {
         header: "version",
