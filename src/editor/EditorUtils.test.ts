@@ -104,6 +104,7 @@ describe("registerEditorKeybindings", () => {
         return { dispose: jest.fn() };
       }),
       updateOptions: jest.fn(),
+      hasTextFocus: jest.fn(() => true),
       getModel: jest.fn(() => ({
         getValueInRange: jest.fn(() => "selected-text"),
         getFullModelRange: jest.fn(() => FULL_RANGE),
@@ -138,6 +139,17 @@ describe("registerEditorKeybindings", () => {
 
     expect(event.preventDefault).not.toHaveBeenCalled();
     expect(writeText).not.toHaveBeenCalled();
+  });
+
+  it("does not run editor-document clipboard handling when the editor text area is not focused", () => {
+    editor.hasTextFocus.mockReturnValue(false);
+    mountHandler();
+
+    const event = buildKeyEvent(monaco.KeyCode.KeyV, { metaKey: true });
+    keyDownHandler(event);
+
+    expect(editor.executeEdits).not.toHaveBeenCalled();
+    expect(readText).not.toHaveBeenCalled();
   });
 
   it("copies the current selection to the clipboard (Cmd+C)", () => {

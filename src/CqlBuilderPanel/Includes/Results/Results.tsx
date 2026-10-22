@@ -11,8 +11,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import { CqlLibrary } from "../../../api/useCqlLibraryServiceApi";
 import {
   MadieDeleteDialog,
@@ -26,7 +24,6 @@ import CqlLibraryDetailsDialog, {
 import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
 import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
-
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
   canEdit: boolean;
@@ -40,7 +37,6 @@ type PropTypes = {
   handleDeleteLibrary?: (library) => void;
   operation?: string;
 };
-
 type RowDef = {
   id: string;
   name: string;
@@ -49,9 +45,6 @@ type RowDef = {
   ownerDisplayName: string;
   librarySetId: string;
 };
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-
 const Results = ({
   cqlLibraries,
   canEdit,
@@ -68,7 +61,6 @@ const Results = ({
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
   const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
   const [selectedLibrary, setSelectedLibrary] = useState<SelectedLibrary>();
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const [rowIndex, setRowIndex] = useState<string>();
@@ -92,7 +84,6 @@ const Results = ({
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const managePagination = useCallback(() => {
     if (cqlLibraries.length < currentLimit) {
       setOffset(0);
@@ -120,12 +111,10 @@ const Results = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   const canGoNext = (() => {
     return currentPage < totalPages;
   })();
   const canGoPrev = currentPage > 1;
-
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
@@ -133,7 +122,6 @@ const Results = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [cqlLibraries, currentPage, currentLimit]);
@@ -152,7 +140,6 @@ const Results = ({
 
   // Use the custom hook to memoize the fetchLibrarySet async function
   const memoizedLibrarySetFetch = useMemoizedLibrarySet();
-
   const updateLibrarySelection = async (
     version: string,
     setId: string,
@@ -186,7 +173,10 @@ const Results = ({
     } catch (error) {
       dispatch({
         type: "SHOW_TOAST",
-        payload: { type: "danger", message: error.message },
+        payload: {
+          type: "danger",
+          message: error.message,
+        },
       });
     }
   };
@@ -207,7 +197,6 @@ const Results = ({
       setDiscardDialogOpen(true);
     }
   };
-
   const showDeleteConfirmation = (index) => {
     const rowModal = table.getRow(index).original;
     setSelectedLibrary({
@@ -221,7 +210,6 @@ const Results = ({
       setDiscardDialogOpen(true);
     }
   };
-
   const onDiscardContinue = async () => {
     setEditorValue(cql);
     setIsCQLUnchanged(true);
@@ -238,7 +226,6 @@ const Results = ({
     }
     setDiscardDialogOpen(false);
   };
-
   const columns = useMemo<ColumnDef<RowDef>[]>(() => {
     const columnDefs = [
       {
@@ -282,36 +269,43 @@ const Results = ({
         ]
       : columnDefs;
   }, [canEdit, cqlLibraries, isCQLUnchanged]);
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   return (
     <>
       <div className="search-results-container">
         <table
-          tw="min-w-full"
           data-testid="library-results-tbl"
           id="library-results-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:min-w-full"
         >
-          <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+          <thead
+            style={{
+              borderBottom: "solid 1px #8c8c8c",
+            }}
+            className="me:bg-slate"
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TH key={header.id} scope="col">
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TH>
+                  </th>
                 ))}
               </tr>
             ))}
@@ -332,7 +326,7 @@ const Results = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} tw="text-center p-2">
+                <td colSpan={columns.length} className="me:text-center me:p-2">
                   No Results were found
                 </td>
               </tr>
@@ -375,7 +369,11 @@ const Results = ({
         toastType={toastState.type}
         open={toastState.open}
         message={toastState.message}
-        onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        onClose={() =>
+          dispatch({
+            type: "HIDE_TOAST",
+          })
+        }
         autoHideDuration={8000}
       />
       <MadieDeleteDialog
@@ -393,5 +391,4 @@ const Results = ({
     </>
   );
 };
-
 export default Results;

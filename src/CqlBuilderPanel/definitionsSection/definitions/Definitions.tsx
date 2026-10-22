@@ -6,8 +6,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import {
   Pagination,
   MadieDeleteDialog,
@@ -22,10 +20,6 @@ import ToolTippedIcon from "../../../toolTippedIcon/ToolTippedIcon";
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
 import DefinitionBuilderDialog from "../definitionBuilderDialog/DefinitionBuilderDialog";
 import { Stack } from "@mui/material";
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-const TD = tw.td`p-3 text-left text-sm w-1/2`;
-
 type DefinitionsPropTypes = {
   canEdit: boolean;
   definitions: Lookup[];
@@ -57,19 +51,15 @@ const Definitions = ({
     open: false,
     operation: null,
   });
-
   const [selectedDefinition, setSelectedDefinition] = useState<Lookup>();
   const [openDefinitionDialog, setOpenDefinitionDialog] = useState<boolean>();
-
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [visibleItems, setVisibleItems] = useState<number>(0);
   const [visibleDefinitions, setVisibleDefinitions] = useState<Lookup[]>([]);
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const canGoPrev = currentPage > 1;
   const canGoNext = (() => {
     return currentPage < totalPages;
@@ -81,17 +71,14 @@ const Definitions = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [definitions, currentPage, currentLimit]);
-
   const getReturnType = (index) => {
     const rowModal = table.getRow(index).original;
     const returnTypes = getCqlDefinitionReturnTypes();
     return returnTypes ? returnTypes[_.camelCase(rowModal.name)] : undefined;
   };
-
   const showEditDefinitionDialog = (index) => {
     setSelectedDefinition({
       ...table.getRow(index).original,
@@ -101,7 +88,6 @@ const Definitions = ({
 
   // table data
   const data = visibleDefinitions;
-
   const columns = useMemo<ColumnDef<Lookup>[]>(
     () => [
       {
@@ -149,7 +135,10 @@ const Definitions = ({
                     onClick: (e) => {
                       setSelectedDefinition(row.row.original.name);
                       if (!isCQLUnchanged) {
-                        setDiscardDialog({ open: true, operation: "delete" });
+                        setDiscardDialog({
+                          open: true,
+                          operation: "delete",
+                        });
                       } else {
                         setDeleteDialogOpen(true);
                       }
@@ -172,7 +161,10 @@ const Definitions = ({
                   onClick: () => {
                     showEditDefinitionDialog(row.cell.row.id);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "edit" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "edit",
+                      });
                     } else {
                       setOpenDefinitionDialog(true);
                     }
@@ -192,13 +184,11 @@ const Definitions = ({
     ],
     [canEdit, definitions]
   );
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const managePagination = useCallback(() => {
     if (definitions?.length > 0) {
       setTotalItems(definitions.length);
@@ -227,29 +217,37 @@ const Definitions = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   return (
     <>
       <table
-        tw="min-w-full"
         data-testid="definitions-tbl"
         id="definitions-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
+        className="me:min-w-full"
       >
-        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+        <thead
+          style={{
+            borderBottom: "solid 1px #8c8c8c",
+          }}
+          className="me:bg-slate"
+        >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
-                <TH key={header.id} scope="col">
+                <th
+                  key={header.id}
+                  scope="col"
+                  className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TH>
+                </th>
               ))}
             </tr>
           ))}
@@ -266,7 +264,7 @@ const Definitions = ({
           )}
           {!loading && _.isEmpty(definitions) && (
             <tr>
-              <td colSpan={columns.length} tw="text-center p-2">
+              <td colSpan={columns.length} className="me:text-center me:p-2">
                 No Results were found
               </td>
             </tr>
@@ -275,9 +273,12 @@ const Definitions = ({
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`definitions-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
-                  <TD key={cell.id}>
+                  <td
+                    key={cell.id}
+                    className="me:p-3 me:text-left me:text-sm me:w-1/2"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TD>
+                  </td>
                 ))}
               </tr>
             ))}
@@ -345,5 +346,4 @@ const Definitions = ({
     </>
   );
 };
-
 export default Definitions;
