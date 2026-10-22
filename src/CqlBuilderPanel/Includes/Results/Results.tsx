@@ -14,8 +14,11 @@ import {
 import {
   CqlLibrary,
   CqlLibraryDto,
-  getQualifiedLibraryName,
 } from "../../../api/useCqlLibraryServiceApi";
+import {
+  getCqlIncludeName,
+  getQualifiedLibraryName,
+} from "../../../utils/cqlLibraryUtils";
 import {
   MadieDeleteDialog,
   MadieDiscardDialog,
@@ -212,7 +215,7 @@ const Results = ({
   const showDeleteConfirmation = (index) => {
     const rowModal = table.getRow(index).original;
     setSelectedLibrary({
-      name: rowModal.name,
+      name: getCqlIncludeName(rowModal.name),
       version: rowModal.version,
       alias: rowModal.alias,
     } as SelectedLibrary);

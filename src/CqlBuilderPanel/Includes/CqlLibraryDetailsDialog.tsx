@@ -10,6 +10,7 @@ import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
 import { EditLibraryDetailsSchemaValidator } from "../../validations/EditLibraryDetailsSchemaValidator";
+import { getCqlIncludeName } from "../../utils/cqlLibraryUtils";
 export interface SelectedLibrary {
   id: string;
   name: string;
@@ -65,15 +66,19 @@ const CqlLibraryDetailsDialog = ({
     },
     validationSchema: EditLibraryDetailsSchemaValidator,
     onSubmit: ({ version, libraryAlias }) => {
+      const cqlIncludeName = getCqlIncludeName(library.name);
       if (operation === "edit" && onEdit) {
-        onEdit(library, {
-          name: library.name,
-          version: version,
-          alias: libraryAlias,
-        });
+        onEdit(
+          { ...library, name: cqlIncludeName },
+          {
+            name: cqlIncludeName,
+            version: version,
+            alias: libraryAlias,
+          }
+        );
       } else {
         onApply({
-          name: library.name,
+          name: cqlIncludeName,
           version: version,
           alias: libraryAlias,
         });

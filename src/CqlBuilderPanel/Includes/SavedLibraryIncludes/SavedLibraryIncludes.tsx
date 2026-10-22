@@ -11,9 +11,11 @@ import Results from "../Results/Results";
 import useCqlLibraryServiceApi, {
   CqlLibrary,
   fetchVersionedLibrariesErrorMessage,
+} from "../../../api/useCqlLibraryServiceApi";
+import {
   getQualifiedLibraryName,
   parseQualifiedLibraryName,
-} from "../../../api/useCqlLibraryServiceApi";
+} from "../../../utils/cqlLibraryUtils";
 import toastReducer from "../../../common/ToastReducer";
 
 interface PropTypes {
@@ -56,7 +58,7 @@ const SavedLibraryIncludes = ({
   const getAlias = (includes: CqlInclude[], library: CqlLibrary): string => {
     return includes.find(
       (include) =>
-        include.name === getQualifiedLibraryName(library) &&
+        include.name.replace(/"/g, "") === getQualifiedLibraryName(library) &&
         include.version.replace(/["']/g, "") === library.version
     )?.called;
   };
@@ -73,7 +75,7 @@ const SavedLibraryIncludes = ({
           ).getVersionedCqlLibraryByNameVersion(
             name,
             l.version.replace(/["']/g, ""),
-            namespacePrefix
+            namespacePrefix?.replace(/"/g, "")
           );
         });
 

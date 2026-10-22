@@ -143,4 +143,58 @@ describe("SavedLibraryIncludes with NPM libraries", () => {
       })
     );
   });
+
+  it("Should look up an NPM library with a quoted prefix segment without the quotes", async () => {
+    const quotedCql =
+      "library NpmTest version '0.0.000'\n" +
+      "using USQualityCore version '0.5.0'\n" +
+      "include fhir.onc.\"us-quality-core\".USQualityCoreCommon version '0.5.0' called UQC";
+    mockedAxios.get.mockImplementation(() =>
+      Promise.resolve({
+        data: {
+          id: "ext-uqc",
+          cqlLibraryName: "USQualityCoreCommon",
+          version: "0.5.0",
+          librarySetId: "ext-uqc-set",
+          namespacePrefix: "fhir.onc.us-quality-core",
+          publisher: "ONC",
+          external: true,
+        },
+        status: 200,
+      })
+    );
+    render(<SavedLibraryIncludes {...props} cql={quotedCql} />);
+
+    await waitFor(() => {
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "library-service.com/cql-libraries/versioned",
+        expect.objectContaining({
+          params: {
+            name: "USQualityCoreCommon",
+            version: "0.5.0",
+            includeElm: false,
+            namespacePrefix: "fhir.onc.us-quality-core",
+          },
+        })
+      );
+    });
+    const table = screen.getByRole("table");
+    await waitFor(() => {
+      const columns = table.querySelectorAll("tbody tr td");
+      expect(columns[0]).toHaveTextContent("UQC");
+      expect(columns[1].textContent).toEqual(
+        "fhir.onc.us-quality-core.USQualityCoreCommon" + "From HL7 IG"
+      );
+    });
+
+    userEvent.click(screen.getByTestId("delete-button-0"));
+    userEvent.click(screen.getByRole("button", { name: /Yes, Delete/i }));
+    expect(props.handleDeleteLibrary).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'fhir.onc."us-quality-core".USQualityCoreCommon',
+        version: "0.5.0",
+        alias: "UQC",
+      })
+    );
+  });
 });
