@@ -68,7 +68,7 @@ const SavedLibraryIncludes = ({
       const parsedCql = new CqlAntlr(cql).parse();
       if (parsedCql.includes.length > 0) {
         const promises = parsedCql?.includes.map(async (l) => {
-          // NPM libraries are included with their namespace prefix, e.g. hl7.fhir.uv.cql.FHIRCommon
+          // NPM libraries are included with their namespace prefix
           const { namespacePrefix, name } = parseQualifiedLibraryName(l.name);
           return (
             await libraryService.current

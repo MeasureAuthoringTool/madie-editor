@@ -22,7 +22,6 @@ export interface CqlLibrary {
   externalLibrary?: boolean;
 }
 
-// libraries are all versions of a MADiE library, or of an NPM library if the set belongs to one
 export interface LibrarySetDto {
   librarySet: LibrarySet;
   libraries: Array<CqlLibraryDto>;
@@ -35,8 +34,7 @@ export const fetchVersionedLibrariesErrorMessage =
 export const fetchCqlErrorMessage =
   "An error occurred while fetching the CQL. " + tryAgainMessage;
 
-// MADiE library list response. NPM library versions do not follow the MADiE version format,
-// so they are returned in externalVersion instead of version.
+// NPM library versions do not follow the MADiE version format, so they are returned in externalVersion instead of version.
 interface LibraryListItem extends Omit<CqlLibrary, "version"> {
   version?: string;
   externalVersion?: string;
@@ -65,7 +63,6 @@ export class CqlLibraryServiceApi {
           params: {
             libraryName: searchTerm,
             model: model,
-            // NPM libraries are only returned if all of their models are declared in the CQL
             usingModels: usingModels.join(","),
           },
         }
