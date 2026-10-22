@@ -287,10 +287,62 @@ describe("CQL sync and parser behavior", () => {
 
     expect(result.isValueSetChanged).toEqual(true);
     expect(valueSetLine).toBe(
-      "valueset \"Test VS\": 'urn:oid:2.16.840.1.113762.1.4.1260.162'"
+      "valueset \"Test VS\":  'urn:oid:2.16.840.1.113762.1.4.1260.162' "
     );
     expect(valueSetLine).not.toContain("version");
   });
+
+  it.each([
+    ["QDM", "5.6", "measureEditor"],
+    ["QDM", "5.6", "updateCqlLibrary"],
+    ["QICore", "4.1.1", "measureEditor"],
+    ["QICore", "6.0.0", "updateCqlLibrary"],
+    ["FHIR", "4.0.1", "measureEditor"],
+    ["FHIR", "4.0.1", "updateCqlLibrary"],
+  ])(
+    "removes only value set versions for %s %s in %s",
+    async (model, version, trigger) => {
+      const cql = `library Test version '0.0.000'
+using ${model} version '${version}'
+valueset "Encounter Inpatient": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307' version '20260210' // keep this comment
+valueset "Multiline":
+  'urn:oid:1.2.3'
+  version 'urn:hl7:version:20240307'
+valueset "Unversioned": 'urn:oid:4.5.6'
+context Patient`;
+
+      const result = await updateEditorContent(
+        cql,
+        "",
+        "Test",
+        "",
+        "0.0.000",
+        model,
+        version,
+        trigger
+      );
+
+      expect(result.isValueSetChanged).toBe(true);
+      expect(result.cql).toBe(
+        cql
+          .replace("version '20260210'", "")
+          .replace("version 'urn:hl7:version:20240307'", "")
+      );
+
+      const unchanged = await updateEditorContent(
+        result.cql,
+        "",
+        "Test",
+        "",
+        "0.0.000",
+        model,
+        version,
+        trigger
+      );
+      expect(unchanged.isValueSetChanged).toBe(false);
+      expect(unchanged.cql).toBe(result.cql);
+    }
+  );
 
   it("handles CQL without a library statement", async () => {
     const cql = "using QICore version '4.1.1'\ncontext Patient";
