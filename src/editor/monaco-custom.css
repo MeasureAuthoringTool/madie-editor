@@ -24,3 +24,49 @@
   margin-left: 5px;
   margin-top: 5px;
 }
+
+/*
+ * Force the Find/Replace widget colors.
+ *
+ * These colors normally come from the Monaco theme
+ * However, when the editor runs inside single-spa and the host micro-frontend
+ * unmounts/remounts (e.g. navigating from the CQL Editor tab to the Population
+ * Criteria page and back), Monaco's global theme/color state can get reset.
+ * When that happens the find/replace input text falls back to a near-black
+ * default that is invisible on the dark widget background.
+ *
+ * Pinning the values here with !important, scoped to `.monaco-editor .find-widget`
+ * (which is always present regardless of theme state), guarantees the text stays
+ * readable and cannot be overridden by a stale/reset theme.
+ */
+.monaco-editor .find-widget {
+  background-color: #2d2d2d !important;
+  color: #f0f0f0 !important;
+  border: 1px solid #454545 !important;
+}
+
+.monaco-editor .find-widget .monaco-inputbox {
+  background-color: #3c3c3c !important;
+}
+
+.monaco-editor .find-widget .monaco-inputbox .input,
+.monaco-editor .find-widget .monaco-inputbox textarea,
+.monaco-editor .find-widget .monaco-inputbox input {
+  color: #f0f0f0 !important;
+  background-color: transparent !important;
+  caret-color: #f0f0f0 !important;
+}
+
+.monaco-editor .find-widget .monaco-inputbox .input::placeholder,
+.monaco-editor .find-widget .monaco-inputbox textarea::placeholder,
+.monaco-editor .find-widget .monaco-inputbox input::placeholder {
+  color: #a6a6a6 !important;
+}
+
+/* Match count ("1 of 3") and widget labels/icons. */
+.monaco-editor .find-widget .matchesCount,
+.monaco-editor .find-widget .monaco-findInput,
+.monaco-editor .find-widget .button {
+  color: #f0f0f0 !important;
+}
+
