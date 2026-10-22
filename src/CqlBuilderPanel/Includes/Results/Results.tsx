@@ -11,8 +11,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
 import {
   CqlLibrary,
   CqlLibraryDto,
@@ -30,6 +28,7 @@ import CqlLibraryDetailsDialog, {
 import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
 import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
+import { Chip, Tooltip } from "@mui/material";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
@@ -247,7 +246,7 @@ const Results = ({
         cell: (row: any) => {
           const rowModal: RowDef = row.cell.row.original;
           return (
-            <div tw="flex flex-wrap items-center gap-2">
+            <div className="me:flex me:flex-wrap me:items-center me:gap-2">
               <span>{rowModal.name}</span>
               {rowModal.externalLibrary && (
                 <Tooltip
