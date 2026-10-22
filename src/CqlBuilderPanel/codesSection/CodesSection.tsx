@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import CodesSectionNavTabs from "./CodesSectionNavTabs";
 import CodeSubSection from "./codesSubSection/codeSubSection/CodeSubSection";
 import SavedCodesSubSection, {
@@ -11,7 +9,6 @@ import SavedCodesSubSection, {
 import { useCodeSystems } from "./useCodeSystems";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import _ from "lodash";
-
 interface CodesSectionProps {
   canEdit: boolean;
   measureStoreCql: string;
@@ -24,7 +21,6 @@ interface CodesSectionProps {
   handleApplyCode;
   hasCqlError?: boolean;
 }
-
 export default function CodesSection({
   canEdit,
   measureStoreCql,
@@ -40,7 +36,6 @@ export default function CodesSection({
   const [activeTab, setActiveTab] = useState<string>("code");
   const { codeSystems } = useCodeSystems();
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
-
   useEffect(() => {
     if (measureStoreCql && !hasCqlError && !_.isEmpty(codeSystems)) {
       const parsedCql = new CqlAntlr(measureStoreCql).parse();
@@ -74,7 +69,6 @@ export default function CodesSection({
       }
     }
   }, [measureStoreCql, codeSystems]);
-
   return (
     <>
       <CodesSectionNavTabs
@@ -82,7 +76,7 @@ export default function CodesSection({
         setActiveTab={setActiveTab}
         savedCodes={parsedCodesList ? parsedCodesList?.length : 0}
       />
-      <div tw="mt-4">
+      <div className="me:mt-4">
         {activeTab === "code" && (
           <CodeSubSection
             allCodeSystems={codeSystems}

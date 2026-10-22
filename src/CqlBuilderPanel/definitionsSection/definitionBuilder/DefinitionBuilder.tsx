@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import {
   Button,
@@ -12,14 +10,12 @@ import { DefinitionSectionSchemaValidator } from "../../../validations/Definitio
 import ExpressionEditor from "../expressionSection/ExpressionEditor";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import { getNewExpressionsAndLines } from "../../common/utils";
-
 export interface Definition {
   definitionName?: string;
   comment?: string;
   expressionValue?: string;
   returnType?: string;
 }
-
 export interface DefinitionProps {
   canEdit: boolean;
   handleApplyDefinition: Function;
@@ -29,7 +25,6 @@ export interface DefinitionProps {
   operation?: string;
   onClose?: Function;
 }
-
 export default function DefinitionBuilder({
   canEdit,
   handleApplyDefinition,
@@ -85,30 +80,26 @@ export default function DefinitionBuilder({
     setCursorPosition(null);
   };
   const { resetForm } = formik;
-
   useEffect(() => {
     if (formik.values.definitionName) {
       setExpressionEditorOpen(true);
     }
   }, [formik.values.definitionName]);
-
   const isEditDialogFormDirty = () => {
     if (definition?.expressionValue !== expressionEditorValue || formik.dirty) {
       return false;
     }
     return true;
   };
-
   return (
     <div>
       <form id="definition-form" onSubmit={formik.handleSubmit}>
-        <div tw="flex space-x-5">
-          <div tw="w-1/2">
+        <div className="me:flex me:editor-space-x-5">
+          <div className="me:w-1/2">
             <TextField
               required="required"
               id="definition-name"
               name="definitionName"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               label="Definition Name"
@@ -119,10 +110,14 @@ export default function DefinitionBuilder({
               helperText={formik.errors.definitionName}
               error={Boolean(formik.errors.definitionName)}
               {...formik.getFieldProps("definitionName")}
+              className="me:w-full"
             />
           </div>
           {definition && definition.returnType && (
-            <div tw="w-1/2 ml-10 my-2" data-testid="return-type">
+            <div
+              data-testid="return-type"
+              className="me:w-1/2 me:ml-10 me:my-2"
+            >
               <p className="result-label">Return Type</p>
               <span className="result-value">{definition.returnType}</span>
             </div>
@@ -131,7 +126,6 @@ export default function DefinitionBuilder({
         <br />
         <TextArea
           id="definition-comment"
-          tw="w-full"
           label="Comment"
           readOnly={!canEdit}
           disabled={!canEdit}
@@ -144,8 +138,13 @@ export default function DefinitionBuilder({
           value={formik.values.comment}
           name="comment"
           {...formik.getFieldProps("comment")}
+          className="me:w-full"
         />
-        <div style={{ marginTop: "36px" }} />
+        <div
+          style={{
+            marginTop: "36px",
+          }}
+        />
         <FormikProvider value={formik}>
           <ExpressionEditor
             canEdit={canEdit}
@@ -170,11 +169,11 @@ export default function DefinitionBuilder({
                       (definition?.expressionValue || "")) ||
                   !canEdit
                 }
-                tw="mr-4"
                 onClick={() => {
                   resetForm();
                   setExpressionEditorValue(definition?.expressionValue || "");
                 }}
+                className="me:mr-4"
               >
                 Clear
               </Button>
@@ -213,10 +212,10 @@ export default function DefinitionBuilder({
             <Button
               variant="outline"
               data-testid="cancel-definition-btn"
-              tw="mr-4"
               onClick={() => {
                 onClose();
               }}
+              className="me:mr-4"
             >
               Cancel
             </Button>
