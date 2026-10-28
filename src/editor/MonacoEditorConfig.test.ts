@@ -1,6 +1,6 @@
 import { CQL_EDITOR_THEME } from "./MonacoEditorConfig";
 
-describe("CQL editor line numbers", () => {
+describe("CQL editor theme", () => {
   it("uses white for both normal and active line numbers", () => {
     expect(CQL_EDITOR_THEME.colors["editorLineNumber.foreground"]).toBe(
       "#ffffff"
@@ -21,11 +21,16 @@ describe("CQL editor line numbers", () => {
       return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
     };
     const background = luminance(CQL_EDITOR_THEME.colors["editor.background"]);
-    for (const key of [
-      "editorLineNumber.foreground",
-      "editorLineNumber.activeForeground",
+    const comment = CQL_EDITOR_THEME.rules.find(
+      (rule) => rule.token === "comment"
+    );
+    expect(comment?.foreground).toBe("739F60");
+    for (const color of [
+      CQL_EDITOR_THEME.colors["editorLineNumber.foreground"],
+      CQL_EDITOR_THEME.colors["editorLineNumber.activeForeground"],
+      `#${comment?.foreground}`,
     ]) {
-      const foreground = luminance(CQL_EDITOR_THEME.colors[key]);
+      const foreground = luminance(color);
       const ratio =
         (Math.max(foreground, background) + 0.05) /
         (Math.min(foreground, background) + 0.05);

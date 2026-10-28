@@ -24,7 +24,7 @@ export const CQL_EDITOR_THEME: editor.IStandaloneThemeData = {
     { token: "functionKeywords", foreground: "DCDCAA" },
     { token: "constant.language", foreground: "9CDCFE" },
     { token: "string", foreground: "CE9178" },
-    { token: "comment", foreground: "6A9955" },
+    { token: "comment", foreground: "739F60" },
     { token: "number", foreground: "B5CEA8" },
   ],
   colors: {
