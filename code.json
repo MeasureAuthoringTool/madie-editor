@@ -11,30 +11,50 @@
         "URL": "https://github.com/MeasureAuthoringTool/madie-editor/blob/main/LICENSE"
       }
     ],
-    "usageType": ["openSource"],
+    "usageType": [
+      "openSource"
+    ],
     "exemptionText": ""
   },
   "organization": "Centers for Medicare & Medicaid Services",
   "repositoryURL": "https://github.com/MeasureAuthoringTool/madie-editor",
   "repositoryHost": "github.com",
   "repositoryVisibility": "public",
+  "homepageURL": "",
+  "downloadURL": "",
+  "disclaimerURL": "",
+  "disclaimerText": "",
   "vcs": "git",
-  "laborHours": 8445,
+  "laborHours": 8909,
   "reuseFrequency": {
-    "forks": 0,
+    "forks": 2,
     "clones": 0
   },
-  "platforms": ["web"],
-  "categories": ["design", "application-development"],
+  "platforms": [
+    "web"
+  ],
+  "categories": [
+    "design",
+    "application-development"
+  ],
   "softwareType": "standalone/web",
-  "languages": ["TypeScript", "SCSS", "JavaScript", "CSS", "Shell"],
+  "languages": [
+    "TypeScript",
+    "SCSS",
+    "JavaScript",
+    "CSS",
+    "Shell"
+  ],
   "maintenance": "internal",
   "contractNumber": [],
   "SBOM": "https://github.com/MeasureAuthoringTool/madie-editor/network/dependencies",
+  "relatedCode": [],
+  "reusedCode": [],
+  "partners": [],
   "date": {
     "created": "2021-08-31T22:30:47Z",
-    "lastModified": "2025-03-12T18:34:33Z",
-    "metadataLastUpdated": "2025-03-12T18:35:26.080Z"
+    "lastModified": "2026-10-28T21:23:49Z",
+    "metadataLastUpdated": "2026-11-01T05:12:08.252Z"
   },
   "tags": [
     "madie",
@@ -55,9 +75,15 @@
   "userInput": true,
   "fismaLevel": "low",
   "group": "CCSQ",
-  "projects": ["MADiE"],
+  "projects": [
+    "MADiE"
+  ],
   "systems": [],
-  "subsetInHealthcare": ["operational"],
-  "userType": ["government"],
+  "subsetInHealthcare": [
+    "operational"
+  ],
+  "userType": [
+    "government"
+  ],
   "maturityModelTier": 2
 }
