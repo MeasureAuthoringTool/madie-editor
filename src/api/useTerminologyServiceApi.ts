@@ -263,6 +263,19 @@ export class TerminologyServiceApi {
       }
     );
   }
+
+  async validateCodeSystemMapping(codes: string[]): Promise<string[]> {
+    const response = await axios.put(
+      `${this.baseUrl}/terminology/validations/code-system-mapping`,
+      codes,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      }
+    );
+    return response.data;
+  }
 }
 
 const processCodeSystemErrors = (

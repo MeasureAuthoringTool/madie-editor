@@ -5,6 +5,8 @@ import ValidateCustomCqlCodes, {
   validateAccessModifierErrors,
   getCustomCqlCodes,
   mapCodeSystemErrorsToTranslationErrors,
+  getCodeMappingCandidates,
+  mapMappingErrorsToTranslationErrors,
 } from "./codesystemValidation";
 import useTerminologyServiceApi, {
   CustomCqlCode,
@@ -417,6 +419,35 @@ describe("Code System validation", () => {
         customCqlCodesWithCodeSystemInvalid
       );
     expect(elmTranslationErrors.length).toBe(1);
+  });
+
+  it("getCodeMappingCandidates includes both codes and codeSystems with quote-stripped names", () => {
+    const result = getCodeMappingCandidates(cqlResult);
+
+    expect(result).toEqual([
+      {
+        name: "ActPriority:HL7V3.0_2021-03",
+        source: cqlResult.codes[0],
+      },
+      {
+        name: "ActPriority:HL7V3.0_2021-03",
+        source: cqlResult.codeSystems[0],
+      },
+    ]);
+  });
+
+  it("mapMappingErrorsToTranslationErrors returns translation errors for invalid mapped candidates", () => {
+    const result = mapMappingErrorsToTranslationErrors(
+      ["ActPriority:HL7V3.0_2021-03"],
+      getCodeMappingCandidates(cqlResult)
+    );
+
+    expect(result).toHaveLength(2);
+    expect(result[0].errorType).toBe("Code System Mapping");
+    expect(result[0].message).toContain(
+      "MADiE does not support the code system, 'ActPriority:HL7V3.0_2021-03'."
+    );
+    expect(result[1].errorType).toBe("Code System Mapping");
   });
 });
 

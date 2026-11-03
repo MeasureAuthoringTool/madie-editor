@@ -156,6 +156,7 @@ describe("Editor Validation Test", () => {
   const mockTerminologyApi = {
     checkLogin: jest.fn().mockResolvedValue(true),
     validateCodes: jest.fn().mockResolvedValue(customCqlCodesValid),
+    validateCodeSystemMapping: jest.fn().mockResolvedValue([]),
   } as unknown as TerminologyServiceApi;
 
   const mockFhirApi = {
