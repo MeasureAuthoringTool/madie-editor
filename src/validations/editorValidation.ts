@@ -8,6 +8,9 @@ import ValidateCustomCqlCodes, {
   getCustomCqlCodes,
   validateAccessModifierErrors,
   mapCodeSystemErrorsToTranslationErrors,
+  validateCodeSystemMapping,
+  getCodeMappingCandidates,
+  mapMappingErrorsToTranslationErrors,
 } from "../validations/codesystemValidation";
 import TranslateCql from "../validations/elmTranslateValidation";
 import GetValueSetErrors from "../validations/valuesetValidation";
@@ -36,7 +39,8 @@ export const getAllErrors = async (
     const cqlResult: CqlResult = new CqlAntlr(cql).parse();
     const customCqlCodes: CustomCqlCode[] = getCustomCqlCodes(cql, cqlResult);
     const isLoggedInUMLS = await terminologyServiceApi.checkLogin();
-    const [validatedCodes, translationResults, valuesetsErrors] =
+    const candidates = getCodeMappingCandidates(cqlResult);
+    const [validatedCodes, translationResults, valuesetsErrors, mappingErrors] =
       await Promise.all([
         ValidateCustomCqlCodes(
           customCqlCodes,
@@ -58,9 +62,18 @@ export const getAllErrors = async (
           cqlResult?.usings[0]?.name,
           terminologyServiceApi
         ),
+        validateCodeSystemMapping(
+          candidates.map((c) => c.name),
+          terminologyServiceApi
+        ),
       ]);
     const codeSystemCqlErrors =
       mapCodeSystemErrorsToTranslationErrors(validatedCodes);
+
+    const mappingErrorsCqlErrors = mapMappingErrorsToTranslationErrors(
+      mappingErrors,
+      candidates
+    );
 
     let allErrorsArray: ElmTranslationError[] =
       updateErrorTypeForTranslationErrors(translationResults);
@@ -71,6 +84,10 @@ export const getAllErrors = async (
 
     codeSystemCqlErrors.forEach((codeError) => {
       allErrorsArray.push(codeError);
+    });
+
+    mappingErrorsCqlErrors.forEach((mappingError) => {
+      allErrorsArray.push(mappingError);
     });
 
     if (valuesetsErrors && valuesetsErrors.length > 0) {
