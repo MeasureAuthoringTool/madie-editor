@@ -154,10 +154,7 @@ const sanitizeValueSetDeclaration = (
     }
   }
 
-  const cleanedText = sanitizedText.replace(
-    /version\s+('.*?'|[^\s]+)/gi,
-    ""
-  );
+  const cleanedText = sanitizedText.replace(/version\s+('.*?'|[^\s]+)/gi, "");
 
   return {
     sanitizedText: cleanedText,

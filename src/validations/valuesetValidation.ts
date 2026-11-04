@@ -1,6 +1,6 @@
-import { TerminologyServiceApi } from "../api/useTerminologyServiceApi";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
+import { TerminologyServiceApi } from "@madie/madie-util";
 
 export const getOidFromString = (
   oidString: string,
@@ -29,11 +29,9 @@ const GetValueSetErrors = async (
         if (valueSetUrlErrors != null) {
           valuesetsErrorArray.push(valueSetUrlErrors);
         }
-        console.log("model", model, "valueSet", valueSet, "oid", oid);
         await terminologyServiceApi
-          .getValueSet(oid, locator, loggedInUMLS, model, valueSetUrl)
+          .getValueSet(locator, loggedInUMLS, model, oid, valueSetUrl)
           .then((response) => {
-            console.log("response", response);
             if (response.errorMsg) {
               const vsErrorForElmTranslationError: ElmTranslationError =
                 processValueSetErrorForElmTranslationError(
