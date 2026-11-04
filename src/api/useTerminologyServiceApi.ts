@@ -128,7 +128,7 @@ export class TerminologyServiceApi {
         errorMsg: "Please log in to UMLS",
       };
     }
-
+    console.log("model", model, "valueSetUrl", valueSetUrl, "oid", oid);
     const isFhirModel = !!model && model !== "QDM";
     try {
       if (isFhirModel) {

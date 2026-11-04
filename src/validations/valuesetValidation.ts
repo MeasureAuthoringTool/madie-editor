@@ -29,10 +29,11 @@ const GetValueSetErrors = async (
         if (valueSetUrlErrors != null) {
           valuesetsErrorArray.push(valueSetUrlErrors);
         }
-
+        console.log("model", model, "valueSet", valueSet, "oid", oid);
         await terminologyServiceApi
           .getValueSet(oid, locator, loggedInUMLS, model, valueSetUrl)
           .then((response) => {
+            console.log("response", response);
             if (response.errorMsg) {
               const vsErrorForElmTranslationError: ElmTranslationError =
                 processValueSetErrorForElmTranslationError(
