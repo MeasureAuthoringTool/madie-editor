@@ -47,8 +47,15 @@ const cqlValueset: CqlValueSet[] = [
     start: { line: 13, position: 0 },
     stop: { line: 13, position: 96 },
     name: '"ONC Administrative Sex"',
-    url: "'http://cts.nlm.nih.gov/otherfhir/ValueSet/2.16.840.1.113762.1.4.1'",
+    url: "'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1'",
     hits: 0,
+  },
+];
+
+const qicoreCqlValuesetWithIncorrectUrl: CqlValueSet[] = [
+  {
+    ...cqlValueset[0],
+    url: "'http://cts.nlm.nih.gov/otherfhir/ValueSet/2.16.840.1.113762.1.4.1'",
   },
 ];
 
@@ -117,7 +124,11 @@ describe("Value Set validation", () => {
   it("get value set url is not in correct format error for QICore", async () => {
     mockTerminologyApi.getValueSet.mockResolvedValue(fhirValueset);
 
-    const valuesetErrors = await GetValueSetErrors(cqlValueset, true, "QICore");
+    const valuesetErrors = await GetValueSetErrors(
+      qicoreCqlValuesetWithIncorrectUrl,
+      true,
+      "QICore"
+    );
     expect(valuesetErrors.length).toBe(1);
   });
 
@@ -135,7 +146,7 @@ describe("Value Set validation", () => {
 
   it("get value set null input", async () => {
     const valuesetErrors = await GetValueSetErrors(null, true, dataModel);
-    expect(valuesetErrors === undefined).toBeTruthy();
+    expect(valuesetErrors).toEqual([]);
   });
 
   it("get value set with error", async () => {
@@ -150,9 +161,11 @@ describe("Value Set validation", () => {
       useTerminologyServiceApi()
     );
 
-    expect(valuesetErrors.length).toBe(2);
-    expect(valuesetErrors[0].message).toEqual(
-      "Value set not found for oid = '' location = 9:0-9:22"
+    expect(valuesetErrors.length).toBe(4);
+    expect(valuesetErrors).toContainEqual(
+      expect.objectContaining({
+        message: "Value set not found for oid = '' location = 9:0-9:22",
+      })
     );
   });
 

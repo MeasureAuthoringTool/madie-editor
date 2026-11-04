@@ -92,27 +92,71 @@ export interface ValueSetForSearch {
   version?: string;
 }
 
+export interface ValueSetSearchCriteriaValueSetParam {
+  oid?: string;
+  url?: string;
+  release?: string;
+  count?: number;
+  offset?: number;
+}
+
+export interface ValueSetsSearchCriteria {
+  profile?: string;
+  includeDraft?: string;
+  activeOnly?: string;
+  manifestExpansion?: unknown;
+  valueSetParams?: ValueSetSearchCriteriaValueSetParam[];
+  includeExpansion?: boolean;
+}
+
 export class TerminologyServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async getValueSet(
     oid: string,
     locator: string,
-    loggedInUMLS: boolean
+    loggedInUMLS: boolean,
+    model?: string,
+    valueSetUrl?: string
   ): Promise<ValueSet> {
-    let valueset: ValueSet = null;
     if (!loggedInUMLS) {
-      valueset = {
+      return {
         resourceType: "ValueSet",
         id: oid,
         url: locator,
         status: "unauthorized",
         errorMsg: "Please log in to UMLS",
       };
-      return valueset;
     }
-    await axios
-      .get(`${this.baseUrl}/vsac/valueset`, {
+
+    const isFhirModel = !!model && model !== "QDM";
+    try {
+      if (isFhirModel) {
+        const cleanedUrl = (valueSetUrl || oid || "")
+          .replace(/^['"]+|['"]+$/g, "")
+          .trim();
+
+        const response = await axios.put(
+          `${this.baseUrl}/value-sets/fhir`,
+          {
+            profile: "",
+            includeDraft: "true",
+            activeOnly: "true",
+            includeExpansion: false,
+            valueSetParams: [{ url: cleanedUrl }],
+          } as ValueSetsSearchCriteria,
+          {
+            headers: {
+              Authorization: `Bearer ${this.getAccessToken()}`,
+              "Content-Type": "application/json",
+            },
+            timeout: 15000,
+          }
+        );
+        return response.data as ValueSet;
+      }
+
+      const response = await axios.get(`${this.baseUrl}/vsac/valueset`, {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
           "Content-Type": "text/plain",
@@ -121,22 +165,19 @@ export class TerminologyServiceApi {
           oid: oid,
         },
         timeout: 15000,
-      })
-      .then((resp) => {
-        valueset = resp.data;
-      })
-      .catch((error) => {
-        const message =
-          error.message + " for oid = " + oid + " location = " + locator;
-        valueset = {
-          resourceType: "ValueSet",
-          id: oid,
-          url: locator,
-          status: error.status,
-          errorMsg: message,
-        };
       });
-    return valueset;
+      return response.data as ValueSet;
+    } catch (error: any) {
+      const message =
+        error.message + " for oid = " + oid + " location = " + locator;
+      return {
+        resourceType: "ValueSet",
+        id: oid,
+        url: locator,
+        status: error.status,
+        errorMsg: message,
+      };
+    }
   }
 
   async validateCodes(
@@ -163,13 +204,12 @@ export class TerminologyServiceApi {
       );
       if (response.status === 200) {
         return response.data;
-      } else {
-        return processCodeSystemErrors(
-          customCqlCodes,
-          "Unable to validate code, Please contact HelpDesk",
-          false
-        );
       }
+      return processCodeSystemErrors(
+        customCqlCodes,
+        "Unable to validate code, Please contact HelpDesk",
+        false
+      );
     } catch (err) {
       return processCodeSystemErrors(
         customCqlCodes,
@@ -178,8 +218,11 @@ export class TerminologyServiceApi {
       );
     }
   }
+
   // https://cts.nlm.nih.gov/fhir/ValueSet?usage=VSAC$covid
-  async searchValueSets(values): Promise<ValueSetSearchResult> {
+  async searchValueSets(
+    values: Record<string, string | number | boolean>
+  ): Promise<ValueSetSearchResult> {
     const keys = Object.keys(values);
     let qString = "?";
     for (let i = 0; i < keys.length; i++) {
@@ -202,6 +245,7 @@ export class TerminologyServiceApi {
       return response.data;
     } catch (err) {
       console.error("Error retrieving getAllCodeSystems: ", err);
+      return { resultBundle: "", valueSets: [] };
     }
   }
 
@@ -215,9 +259,10 @@ export class TerminologyServiceApi {
           },
         }
       );
-      return response.data;
+      return response.data ?? [];
     } catch (err) {
       console.error("Error retrieving getAllCodeSystems: ", err);
+      return [];
     }
   }
 
@@ -252,7 +297,9 @@ export class TerminologyServiceApi {
     }
   }
 
-  async getCodesAndCodeSystems(codesList): Promise<AxiosResponse<Code[]>> {
+  async getCodesAndCodeSystems(
+    codesList: unknown[]
+  ): Promise<AxiosResponse<Code[]>> {
     return await axios.post<any>(
       `${this.baseUrl}/terminology/codes`,
       codesList,

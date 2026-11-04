@@ -1,6 +1,4 @@
-import useTerminologyServiceApi, {
-  TerminologyServiceApi,
-} from "../api/useTerminologyServiceApi";
+import { TerminologyServiceApi } from "../api/useTerminologyServiceApi";
 import CqlValueSet from "@madie/cql-antlr-parser/dist/src/dto/CqlValueSet";
 import { ElmTranslationError } from "../api/TranslatedElmModels";
 
@@ -23,17 +21,17 @@ const GetValueSetErrors = async (
   const valuesetsErrorArray: ElmTranslationError[] = [];
   if (valuesetsArray) {
     await Promise.allSettled(
-      valuesetsArray.map(async (valueSet) => {
+      valuesetsArray.map(async (valueSet: CqlValueSet) => {
         const oid = getOidFromCqlValueSet(valueSet, model);
         const locator = getLocatorFromCqlValueSet(valueSet);
-
+        const valueSetUrl = valueSet?.url;
         const valueSetUrlErrors = validateValuesetUrl(model, valueSet, locator);
-        if (valueSetUrlErrors) {
+        if (valueSetUrlErrors != null) {
           valuesetsErrorArray.push(valueSetUrlErrors);
         }
 
         await terminologyServiceApi
-          .getValueSet(oid, locator, loggedInUMLS)
+          .getValueSet(oid, locator, loggedInUMLS, model, valueSetUrl)
           .then((response) => {
             if (response.errorMsg) {
               const vsErrorForElmTranslationError: ElmTranslationError =
@@ -48,11 +46,16 @@ const GetValueSetErrors = async (
     );
     return valuesetsErrorArray;
   }
+  return [];
 };
 
-const validateValuesetUrl = (model, valueSet, locator) => {
-  let invalidValuesetUrlError;
-  if (model === "QICore") {
+const validateValuesetUrl = (
+  model: string,
+  valueSet: CqlValueSet,
+  locator: string
+): ElmTranslationError | undefined => {
+  let invalidValuesetUrlError: ElmTranslationError | undefined;
+  if (model != "QDM") {
     const valuesetUrlWithoutOid = valueSet?.url?.split("ValueSet/");
     if (
       valuesetUrlWithoutOid &&
@@ -63,8 +66,7 @@ const validateValuesetUrl = (model, valueSet, locator) => {
         locator
       );
     }
-  }
-  if (model === "QDM") {
+  } else {
     const valuesetUrlWithoutOid = valueSet?.url?.split("oid:");
     if (valuesetUrlWithoutOid && valuesetUrlWithoutOid[0] !== "'urn:") {
       invalidValuesetUrlError = processValueSetErrorForElmTranslationError(
@@ -80,23 +82,20 @@ const getOidFromCqlValueSet = (
   valueSet: CqlValueSet,
   model: string
 ): string => {
-  let oid = getOidFromString(valueSet?.url, model);
+  const oid = getOidFromString(valueSet?.url ?? "", model);
   if (oid) {
     return oid.replace("'", "");
   }
-  return valueSet.url;
+  return valueSet.url ?? "";
 };
 
 const getLocatorFromCqlValueSet = (valueSet: CqlValueSet): string => {
-  return (
-    valueSet.start.line +
-    ":" +
-    valueSet.start.position +
-    "-" +
-    valueSet.stop.line +
-    ":" +
-    valueSet.stop.position
-  );
+  const start = valueSet.start;
+  const stop = valueSet.stop;
+  if (!start || !stop) {
+    return "0:0-0:0";
+  }
+  return `${start.line}:${start.position}-${stop.line}:${stop.position}`;
 };
 
 const processValueSetErrorForElmTranslationError = (

@@ -292,6 +292,78 @@ describe("CQL sync and parser behavior", () => {
     expect(valueSetLine).not.toContain("version");
   });
 
+  it("removes pipe-separated value set URLs and flags the change", async () => {
+    const cql =
+      "library Test version '0.0.000'\n" +
+      "using QICore version '4.1.1'\n" +
+      "valueset \"Encounter Inpatient\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307|20260201'\n" +
+      "context Patient";
+
+    const result = await updateEditorContent(
+      cql,
+      "",
+      "Test",
+      "",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+
+    expect(result.isValueSetChanged).toBe(true);
+    expect(result.cql).toContain(
+      "valueset \"Encounter Inpatient\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307'"
+    );
+    expect(result.cql).not.toContain("|");
+  });
+
+  it("removes inline version keyword suffixes from value set declarations and flags the change", async () => {
+    const cql =
+      "library Test version '0.0.000'\n" +
+      "using QICore version '4.1.1'\n" +
+      "valueset \"Encounter Inpatient\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307' version 20260201\n" +
+      "context Patient";
+
+    const result = await updateEditorContent(
+      cql,
+      "",
+      "Test",
+      "",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+
+    expect(result.isValueSetChanged).toBe(true);
+    expect(result.cql).toContain(
+      "valueset \"Encounter Inpatient\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307'"
+    );
+    expect(result.cql).not.toContain("version 20260201");
+  });
+
+  it("keeps a valid valueset declaration unchanged when it has no unsupported version suffix", async () => {
+    const cql =
+      "library Test version '0.0.000'\n" +
+      "using QICore version '4.1.1'\n" +
+      "valueset \"Encounter Inpatient\": 'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307'\n" +
+      "context Patient";
+
+    const result = await updateEditorContent(
+      cql,
+      "",
+      "Test",
+      "",
+      "0.0.000",
+      "QI-Core",
+      "4.1.1",
+      "measureEditor"
+    );
+
+    expect(result.isValueSetChanged).toBe(false);
+    expect(result.cql).toBe(cql);
+  });
+
   it.each([
     ["QDM", "5.6", "measureEditor"],
     ["QDM", "5.6", "updateCqlLibrary"],
