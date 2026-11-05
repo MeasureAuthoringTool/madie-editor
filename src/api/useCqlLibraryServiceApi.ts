@@ -17,11 +17,14 @@ export interface CqlLibrary {
   alias?: string;
   librarySetId: string;
   ownerDisplayName: string;
+  cql?: string;
+  namespacePrefix?: string;
+  externalLibrary?: boolean;
 }
 
 export interface LibrarySetDto {
   librarySet: LibrarySet;
-  libraries: Array<CqlLibrary>;
+  libraries: Array<CqlLibraryDto>;
 }
 
 const tryAgainMessage =
@@ -31,15 +34,27 @@ export const fetchVersionedLibrariesErrorMessage =
 export const fetchCqlErrorMessage =
   "An error occurred while fetching the CQL. " + tryAgainMessage;
 
+// NPM library versions do not follow the MADiE version format, so they are returned in externalVersion instead of version.
+interface LibraryListItem extends Omit<CqlLibrary, "version"> {
+  version?: string;
+  externalVersion?: string;
+}
+
+export interface CqlLibraryDto extends CqlLibrary {
+  external?: boolean;
+  publisher?: string;
+}
+
 export class CqlLibraryServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async fetchVersionedCqlLibrariesBySearchTermAndModel(
     searchTerm: string,
-    model: string
+    model: string,
+    usingModels: string[] = []
   ): Promise<CqlLibrary[]> {
     try {
-      const response = await axios.get<CqlLibrary[]>(
+      const response = await axios.get<LibraryListItem[]>(
         `${this.baseUrl}/cql-libraries/all-versioned`,
         {
           headers: {
@@ -48,10 +63,17 @@ export class CqlLibraryServiceApi {
           params: {
             libraryName: searchTerm,
             model: model,
+            usingModels: usingModels.join(","),
           },
         }
       );
-      return response.data;
+      return response.data?.map((library) => {
+        const { externalVersion, ...rest } = library;
+        return {
+          ...rest,
+          version: library.externalLibrary ? externalVersion : library.version,
+        } as CqlLibrary;
+      });
     } catch (err) {
       console.error(fetchVersionedLibrariesErrorMessage, err);
       throw new Error(fetchVersionedLibrariesErrorMessage);
@@ -60,8 +82,9 @@ export class CqlLibraryServiceApi {
 
   getVersionedCqlLibraryByNameVersion(
     name: string,
-    version: string
-  ): Promise<AxiosResponse<CqlLibrary>> {
+    version: string,
+    namespacePrefix?: string
+  ): Promise<AxiosResponse<CqlLibraryDto>> {
     return axios.get(`${this.baseUrl}/cql-libraries/versioned`, {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
@@ -70,6 +93,7 @@ export class CqlLibraryServiceApi {
         name,
         version,
         includeElm: false,
+        ...(namespacePrefix && { namespacePrefix }),
       },
     });
   }

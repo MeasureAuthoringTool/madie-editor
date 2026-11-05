@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import {
   Select,
   TextField,
@@ -16,7 +14,6 @@ import moment from "moment";
 import { MenuItem, Tooltip } from "@mui/material";
 import { CodeSystem } from "../../../../api/useTerminologyServiceApi";
 import ControlledAutoComplete from "../../../../common/ControlledAutoComplete";
-
 interface CodeSectionProps {
   handleFormSubmit: Function;
   canEdit: boolean;
@@ -24,13 +21,11 @@ interface CodeSectionProps {
   blankResults: Function;
   measureModel: string;
 }
-
 interface MenuObj {
   value: string;
   label: string;
   fullValue: string;
 }
-
 const renderMenuItems = (options) =>
   options.map(({ value, label, fullValue }) => (
     <MenuItem
@@ -43,7 +38,6 @@ const renderMenuItems = (options) =>
       </Tooltip>
     </MenuItem>
   ));
-
 export default function CodeSection({
   handleFormSubmit,
   allCodeSystems,
@@ -64,7 +58,6 @@ export default function CodeSection({
       setTitles(filteredTitles);
     }
   }, [allCodeSystems]);
-
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -78,7 +71,6 @@ export default function CodeSection({
     },
   });
   const { resetForm } = formik;
-
   const [availableVersions, setAvailableVersions] = useState([]);
   useEffect(() => {
     if (formik.values.title) {
@@ -123,7 +115,6 @@ export default function CodeSection({
       formik.setFieldValue("version", "");
     }
   }, [formik.values.title, measureModel, allCodeSystems]);
-
   const searchInputProps = {
     startAdornment: (
       <InputAdornment position="start">
@@ -131,11 +122,9 @@ export default function CodeSection({
       </InputAdornment>
     ),
   };
-
   function trimCodeInput() {
     formik.setFieldValue("code", formik.values.code.trim());
   }
-
   return (
     <div>
       <ExpandingSection
@@ -157,10 +146,13 @@ export default function CodeSection({
             </div>
             <form onSubmit={formik.handleSubmit}>
               <div
-                tw="flex md:flex-wrap"
-                style={{ display: "flex", alignItems: "flex-end" }}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                }}
+                className="me:flex me:md:flex-wrap"
               >
-                <div tw="w-1/3">
+                <div className="me:w-1/3">
                   <ControlledAutoComplete
                     multipleSelect={false}
                     placeholder="-"
@@ -183,7 +175,7 @@ export default function CodeSection({
                     limitTags={1}
                   />
                 </div>
-                <div tw="flex-grow pl-5">
+                <div className="me:grow me:pl-5">
                   <Select
                     required
                     label="Code System Version"
@@ -212,11 +204,10 @@ export default function CodeSection({
                 </div>
               </div>
 
-              <div tw="w-1/2 mt-2">
+              <div className="me:w-1/2 me:mt-2">
                 <TextField
                   required="required"
                   id="code"
-                  tw="w-full"
                   label="Code"
                   placeholder="Search"
                   inputProps={{
@@ -235,18 +226,19 @@ export default function CodeSection({
                     formik.setFieldTouched("code", true);
                     trimCodeInput();
                   }}
+                  className="me:w-full"
                 />
               </div>
-              <div tw="float-right">
+              <div className="me:float-right">
                 <Button
                   variant="outline"
                   data-testid="clear-codes-btn"
                   disabled={!formik.dirty || !canEdit}
-                  tw="mr-4"
                   onClick={() => {
                     resetForm();
                     blankResults();
                   }}
+                  className="me:mr-4"
                 >
                   Clear
                 </Button>

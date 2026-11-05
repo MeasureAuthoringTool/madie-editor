@@ -81,6 +81,12 @@ export const registerEditorKeybindings = (
       return;
     }
 
+    // Only intercept clipboard/selection shortcuts when the editor's own text
+    // input is focused.
+    if (!editor.hasTextFocus?.()) {
+      return;
+    }
+
     const model = editor.getModel();
     const selection = editor.getSelection();
 

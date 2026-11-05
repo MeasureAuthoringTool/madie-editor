@@ -57,6 +57,179 @@ describe("LibrarySearch component tests", () => {
     expect(tableBody).toHaveTextContent("No Results were found");
   });
 
+  it("should display NPM libraries in search results and apply them with their prefix", async () => {
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.includes("/cql-libraries/library-set/ext-set")) {
+        return Promise.resolve({
+          data: {
+            librarySet: {},
+            libraries: [
+              {
+                id: "ext-1",
+                cqlLibraryName: "FHIRCommon",
+                version: "2.0.0",
+                librarySetId: "ext-set",
+                namespacePrefix: "hl7.fhir.uv.cql",
+                publisher: "HL7 International",
+                cql: "library FHIRCommon version '2.0.0'",
+                external: true,
+              },
+            ],
+          },
+          status: 200,
+        });
+      }
+      return Promise.resolve({
+        data: [
+          {
+            id: "ext-1",
+            cqlLibraryName: "FHIRCommon",
+            externalVersion: "2.0.0",
+            librarySetId: "ext-set",
+            namespacePrefix: "hl7.fhir.uv.cql",
+            ownerDisplayName: "HL7 International",
+            externalLibrary: true,
+          },
+        ],
+        status: 200,
+      });
+    });
+    render(
+      <LibrarySearch
+        canEdit={true}
+        measureModel="US Quality Core v0.5.0"
+        handleApplyLibrary={handleApplyLibrary}
+        cql={
+          "library Test version '0.0.000'\nusing USQualityCore version '0.5.0'"
+        }
+        isCQLUnchanged={true}
+        setIsCQLUnchanged={jest.fn()}
+        setEditorValue={jest.fn()}
+      />
+    );
+    userEvent.type(
+      screen.getByRole("textbox", { name: /Library Search/i }),
+      "FHIRCommon"
+    );
+    userEvent.click(screen.getByTestId("search-btn"));
+
+    await waitFor(() => {
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect.stringContaining("/cql-libraries/all-versioned"),
+        expect.objectContaining({
+          params: expect.objectContaining({
+            usingModels: "USQualityCore:0.5.0",
+          }),
+        })
+      );
+    });
+    const table = screen.getByRole("table");
+    await waitFor(() => {
+      const columns = table.querySelectorAll("tbody tr td");
+      expect(
+        Array.from(columns)
+          .slice(0, 3)
+          .map((c) => c.textContent.trim())
+      ).toEqual([
+        "hl7.fhir.uv.cql.FHIRCommonFrom HL7 IG",
+        "2.0.0",
+        "HL7 International",
+      ]);
+    });
+
+    userEvent.click(screen.getByTestId("edit-button-0"));
+    const dialog = await screen.findByTestId("view-apply-library-dialog");
+    expect(
+      within(dialog).getByTestId("library-name-container")
+    ).toHaveTextContent("hl7.fhir.uv.cql.FHIRCommon");
+    userEvent.type(within(dialog).getByTestId("library-alias-input"), "FC");
+    userEvent.click(within(dialog).getByTestId("apply-button"));
+    await waitFor(() => {
+      expect(handleApplyLibrary).toHaveBeenCalledWith({
+        name: "hl7.fhir.uv.cql.FHIRCommon",
+        version: "2.0.0",
+        alias: "FC",
+      });
+    });
+  });
+
+  it("should display NPM library prefix without quotes but apply it quoted where needed", async () => {
+    const npmLibrary = {
+      id: "ext-uqc",
+      cqlLibraryName: "USQualityCoreCommon",
+      librarySetId: "ext-uqc-set",
+      namespacePrefix: "fhir.onc.us-quality-core",
+    };
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.includes("/cql-libraries/library-set/ext-uqc-set")) {
+        return Promise.resolve({
+          data: {
+            librarySet: {},
+            libraries: [
+              {
+                ...npmLibrary,
+                version: "0.5.0",
+                cql: "library USQualityCoreCommon version '0.5.0'",
+                external: true,
+              },
+            ],
+          },
+          status: 200,
+        });
+      }
+      return Promise.resolve({
+        data: [
+          {
+            ...npmLibrary,
+            externalVersion: "0.5.0",
+            ownerDisplayName: "ONC",
+            externalLibrary: true,
+          },
+        ],
+        status: 200,
+      });
+    });
+    render(
+      <LibrarySearch
+        canEdit={true}
+        measureModel="US Quality Core v0.5.0"
+        handleApplyLibrary={handleApplyLibrary}
+        cql={""}
+        isCQLUnchanged={true}
+        setIsCQLUnchanged={jest.fn()}
+        setEditorValue={jest.fn()}
+      />
+    );
+    userEvent.type(
+      screen.getByRole("textbox", { name: /Library Search/i }),
+      "USQualityCoreCommon"
+    );
+    userEvent.click(screen.getByTestId("search-btn"));
+
+    const table = screen.getByRole("table");
+    await waitFor(() => {
+      const nameCell = table.querySelector("tbody tr td");
+      expect(nameCell.textContent).toEqual(
+        "fhir.onc.us-quality-core.USQualityCoreCommon" + "From HL7 IG"
+      );
+    });
+
+    userEvent.click(screen.getByTestId("edit-button-0"));
+    const dialog = await screen.findByTestId("view-apply-library-dialog");
+    expect(
+      within(dialog).getByTestId("library-name-container")
+    ).toHaveTextContent("fhir.onc.us-quality-core.USQualityCoreCommon");
+    userEvent.type(within(dialog).getByTestId("library-alias-input"), "UQC");
+    userEvent.click(within(dialog).getByTestId("apply-button"));
+    await waitFor(() => {
+      expect(handleApplyLibrary).toHaveBeenCalledWith({
+        name: 'fhir.onc."us-quality-core".USQualityCoreCommon',
+        version: "0.5.0",
+        alias: "UQC",
+      });
+    });
+  });
+
   it("should search on search term and display matching libraries", async () => {
     mockedAxios.get.mockImplementation((url) =>
       Promise.resolve({

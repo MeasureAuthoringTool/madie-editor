@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import _ from "lodash";
-import tw from "twin.macro";
-import "styled-components/macro";
 import { FunctionLookup } from "../../../model/CqlBuilderLookup";
 import { FunctionProps } from "../FunctionsSection";
 import {
@@ -21,10 +19,6 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import EditFunctionDialog from "../EditFunctionDialog";
 import Tooltip from "@mui/material/Tooltip";
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-const TD = tw.td`p-3 text-left text-sm break-all`;
-
 const getArgNameToolTipHtml = (args: string[], number) => {
   const result = args?.map((arg, index) => {
     if (index < number) {
@@ -37,7 +31,6 @@ const getArgNameToolTipHtml = (args: string[], number) => {
   });
   return result;
 };
-
 const Functions = ({
   canEdit,
   loading,
@@ -56,7 +49,6 @@ const Functions = ({
   const [visibleFunctions, setVisibleFunctions] = useState<FunctionLookup[]>(
     []
   );
-
   const [selectedFunction, setSelectedFunction] = useState<FunctionLookup>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialog, setDiscardDialog] = useState({
@@ -65,7 +57,6 @@ const Functions = ({
   });
   const [editFunctionDialogOpen, setEditFunctionDialogOpen] =
     useState<boolean>();
-
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -86,7 +77,6 @@ const Functions = ({
 
   // table data
   const data = visibleFunctions;
-
   const columns = useMemo<ColumnDef<FunctionLookup>[]>(
     () => [
       {
@@ -157,7 +147,10 @@ const Functions = ({
                   onClick: (e) => {
                     setSelectedFunction(table.getRow(row.cell.row.id).original);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "delete" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "delete",
+                      });
                     } else {
                       setDeleteDialogOpen(true);
                     }
@@ -175,7 +168,10 @@ const Functions = ({
                   onClick: (e) => {
                     setSelectedFunction(table.getRow(row.cell.row.id).original);
                     if (!isCQLUnchanged) {
-                      setDiscardDialog({ open: true, operation: "edit" });
+                      setDiscardDialog({
+                        open: true,
+                        operation: "edit",
+                      });
                     } else {
                       setEditFunctionDialogOpen(true);
                     }
@@ -191,13 +187,11 @@ const Functions = ({
     ],
     [canEdit, functions, isCQLUnchanged]
   );
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   const managePagination = useCallback(() => {
     if (functions?.length > 0) {
       setTotalItems(functions.length);
@@ -226,29 +220,37 @@ const Functions = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   return (
     <>
       <table
-        tw="min-w-full"
         data-testid="functions-tbl"
         id="functions-tbl"
         style={{
           borderBottom: "solid 1px #8c8c8c",
         }}
+        className="me:min-w-full"
       >
-        <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+        <thead
+          style={{
+            borderBottom: "solid 1px #8c8c8c",
+          }}
+          className="me:bg-slate"
+        >
           {table.getHeaderGroups()?.map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers?.map((header) => (
-                <TH key={header.id} scope="col">
+                <th
+                  key={header.id}
+                  scope="col"
+                  className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TH>
+                </th>
               ))}
             </tr>
           ))}
@@ -263,7 +265,7 @@ const Functions = ({
           )}
           {!loading && _.isEmpty(functions) && (
             <tr>
-              <td colSpan={columns.length} tw="text-center p-2">
+              <td colSpan={columns.length} className="me:text-center me:p-2">
                 No Results were found
               </td>
             </tr>
@@ -272,9 +274,12 @@ const Functions = ({
             table.getRowModel().rows.map((row) => (
               <tr key={row.id} data-testid={`functions-row-${row.id}`}>
                 {row.getVisibleCells().map((cell) => (
-                  <TD key={cell.id}>
+                  <td
+                    key={cell.id}
+                    className="me:p-3 me:text-left me:text-sm me:break-all"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TD>
+                  </td>
                 ))}
               </tr>
             ))}
@@ -366,5 +371,4 @@ const Functions = ({
     </>
   );
 };
-
 export default Functions;

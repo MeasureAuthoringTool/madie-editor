@@ -1,6 +1,4 @@
 import React, { useMemo, useState } from "react";
-import tw from "twin.macro";
-import "styled-components/macro";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoDisturbOutlinedIcon from "@mui/icons-material/DoDisturbOutlined";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
@@ -8,7 +6,6 @@ import ExpandingSection from "../../../../common/ExpandingSection";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import _ from "lodash";
-
 import {
   useReactTable,
   ColumnDef,
@@ -20,7 +17,6 @@ import ToolTippedIcon from "../../../../toolTippedIcon/ToolTippedIcon";
 import "./ResultsSection.scss";
 import EditCodeDetailsDialog from "../common/EditCodeDetailsDialog";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
-
 type ResultSectionProps = {
   showResultsTable: boolean;
   setShowResultsTable: any;
@@ -29,7 +25,6 @@ type ResultSectionProps = {
   editorVal: string;
   measureModel?: string;
 };
-
 type ResultsColumnRow = {
   name: string;
   display: string;
@@ -37,8 +32,6 @@ type ResultsColumnRow = {
   svsVersion: string;
   versionIncluded?: string;
 };
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-
 export default function ResultsSection({
   showResultsTable,
   setShowResultsTable,
@@ -50,14 +43,12 @@ export default function ResultsSection({
   const [selectedCodeDetails, setSelectedCodeDetails] =
     useState<ResultsColumnRow>(null);
   const [openEditCodeDialog, setOpenEditCodeDialog] = useState<boolean>(false);
-
   const handleOpen = async (
     selectedId,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     setSelectedCodeDetails(table.getRow(selectedId).original);
   };
-
   const data = [code];
   const columns = useMemo<ColumnDef<ResultsColumnRow>[]>(
     () => [
@@ -87,7 +78,12 @@ export default function ResultsSection({
         header: "",
         accessorKey: "apply",
         cell: (row: any) => (
-          <div className="inline-flex gap-x-2" style={{ width: "max-content" }}>
+          <div
+            className="inline-flex gap-x-2"
+            style={{
+              width: "max-content",
+            }}
+          >
             <ToolTippedIcon
               tooltipMessage="Edit"
               buttonProps={{
@@ -125,7 +121,6 @@ export default function ResultsSection({
     ],
     [editorVal]
   );
-
   const table = useReactTable({
     data,
     columns,
@@ -134,15 +129,12 @@ export default function ResultsSection({
   const handleApplyCodeInner = (selectedCode) => {
     handleApplyCode(selectedCode);
   };
-
   const toggleEditCodeDialogState = () => {
     setOpenEditCodeDialog(!open);
   };
-
   const handleEditCode = () => {
     setOpenEditCodeDialog(true);
   };
-
   const getCodeStatus = (status) => {
     if (status == CodeStatus.ACTIVE) {
       return (
@@ -164,7 +156,6 @@ export default function ResultsSection({
       </ToolTippedIcon>
     );
   };
-
   return (
     <div>
       <ExpandingSection
@@ -174,27 +165,33 @@ export default function ResultsSection({
         children={
           <>
             <table
-              tw="min-w-full"
               data-testid="codes-results-tbl"
               style={{
                 borderBottom: "solid 1px #8c8c8c",
               }}
+              className="me:min-w-full"
             >
               <thead
-                tw="bg-slate"
-                style={{ borderBottom: "solid 1px #8c8c8c" }}
+                style={{
+                  borderBottom: "solid 1px #8c8c8c",
+                }}
+                className="me:bg-slate"
               >
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
-                      <TH key={header.id} scope="col">
+                      <th
+                        key={header.id}
+                        scope="col"
+                        className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
                               header.getContext()
                             )}
-                      </TH>
+                      </th>
                     ))}
                   </tr>
                 ))}
@@ -202,7 +199,10 @@ export default function ResultsSection({
               <tbody>
                 {!code ? (
                   <tr>
-                    <td colSpan={columns.length} tw="text-center p-2">
+                    <td
+                      colSpan={columns.length}
+                      className="me:text-center me:p-2"
+                    >
                       No Results were found
                     </td>
                   </tr>
@@ -210,7 +210,7 @@ export default function ResultsSection({
                   table.getRowModel().rows.map((row) => (
                     <tr key={row.id} data-test-id={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} tw="p-2">
+                        <td key={cell.id} className="me:p-2">
                           {cell.column.id === "status"
                             ? getCodeStatus(cell.getValue())
                             : cell.column.id === "fhirVersion"

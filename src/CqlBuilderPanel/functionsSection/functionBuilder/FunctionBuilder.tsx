@@ -1,6 +1,4 @@
 import React, { useState, useRef } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import {
   Button,
@@ -19,7 +17,6 @@ import ExpressionEditor from "../../definitionsSection/expressionSection/Express
 import { getNewExpressionsAndLines } from "../../common/utils";
 import { CqlBuilderLookup } from "../../../model/CqlBuilderLookup";
 import UseToast from "../../../common/UseToast";
-
 export interface Funct {
   name?: string;
   fluentFunction?: boolean;
@@ -28,7 +25,6 @@ export interface Funct {
   expressionEditorValue?: string;
   logic?: string;
 }
-
 export interface FunctionProps {
   cqlBuilderLookupsTypes: CqlBuilderLookup;
   canEdit: boolean;
@@ -39,7 +35,6 @@ export interface FunctionProps {
   operation?: string;
   setEditFunctionDialogOpen?: Function;
 }
-
 export default function FunctionBuilder({
   canEdit,
   handleApplyFunction,
@@ -57,7 +52,6 @@ export default function FunctionBuilder({
   const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
   const [cursorPosition, setCursorPosition] = useState(null);
   const [autoInsert, setAutoInsert] = useState(false);
-
   const formik = useFormik({
     initialValues: {
       functionName: funct?.name || "",
@@ -100,7 +94,6 @@ export default function FunctionBuilder({
     formik.setFieldValue("expressionEditorValue", newEditorExpressionValue);
     formik.setFieldValue("type", "");
     formik.setFieldValue("name", "");
-
     textAreaRef.current.editor.setValue(newEditorExpressionValue, 1);
     textAreaRef.current.editor.moveCursorTo(
       newCursorPosition.row,
@@ -110,7 +103,6 @@ export default function FunctionBuilder({
     setAutoInsert(true);
     setCursorPosition(null);
   };
-
   const addArgumentToFunctionsArguments = (fn) => {
     const newArgs = [
       ...formik.values.functionsArguments.filter(
@@ -125,7 +117,6 @@ export default function FunctionBuilder({
     setToastType("success");
     setToastOpen(true);
   };
-
   const deleteArgumentFromFunctionArguments = (fn) => {
     const newArgs = formik.values.functionsArguments.filter(
       (argument) =>
@@ -134,14 +125,12 @@ export default function FunctionBuilder({
     );
     formik.setFieldValue("functionsArguments", newArgs);
   };
-
   const validateQuotesForFunctionArguments = (argument) => {
     if (argument.startsWith('"') && argument.endsWith("'")) {
       return argument;
     }
     return `"${argument}"`;
   };
-
   const getFunctionArguments = (args) => {
     let argStr = "";
     args?.forEach((arg) => {
@@ -172,23 +161,20 @@ export default function FunctionBuilder({
     logic += "  " + formik.values.expressionEditorValue;
     return logic;
   };
-
   const validateArguments = (functionArguments) => {
     return !functionArguments.some(
       (argument) => argument.argumentName && argument.dataType
     );
   };
-
   return (
     <div>
       <form id="function-form" onSubmit={formik.handleSubmit}>
-        <div tw="flex space-x-5">
-          <div tw="w-1/2">
+        <div className="me:flex me:editor-space-x-5">
+          <div className="me:w-1/2">
             <TextField
               required="required"
               id="function-name"
               name="functionName"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               label="Function Name"
@@ -208,9 +194,14 @@ export default function FunctionBuilder({
                   setArgumentsEditorOpen(true);
                 }
               }}
+              className="me:w-full"
             />
           </div>
-          <Box sx={{ marginTop: "22px" }}>
+          <Box
+            sx={{
+              marginTop: "22px",
+            }}
+          >
             <FormControlLabel
               control={
                 <Checkbox
@@ -222,7 +213,10 @@ export default function FunctionBuilder({
                   data-testid="fluentFunction"
                 />
               }
-              sx={{ textTransform: "none", color: "#515151" }}
+              sx={{
+                textTransform: "none",
+                color: "#515151",
+              }}
               label="Fluent Function"
             />
           </Box>
@@ -230,7 +224,6 @@ export default function FunctionBuilder({
         <br />
         <TextArea
           id="function-comment"
-          tw="w-full"
           label="Comment"
           readOnly={!canEdit}
           disabled={!canEdit}
@@ -243,8 +236,13 @@ export default function FunctionBuilder({
           value={formik.values.comment}
           name="comment"
           {...formik.getFieldProps("comment")}
+          className="me:w-full"
         />
-        <div style={{ marginTop: "36px" }} />
+        <div
+          style={{
+            marginTop: "36px",
+          }}
+        />
         <ExpandingSection
           title="Arguments"
           showHeaderContent={argumentsEditorOpen}
@@ -262,7 +260,11 @@ export default function FunctionBuilder({
           />
         </ExpandingSection>
 
-        <div style={{ marginTop: "36px" }} />
+        <div
+          style={{
+            marginTop: "36px",
+          }}
+        />
         <FormikProvider value={formik}>
           <ExpressionEditor
             canEdit={canEdit}
@@ -283,10 +285,10 @@ export default function FunctionBuilder({
             variant="outline"
             data-testid="clear-function-btn"
             disabled={!formik.dirty || !canEdit}
-            tw="mr-4"
             onClick={() => {
               setConfirmationDialog(true);
             }}
+            className="me:mr-4"
           >
             Clear
           </Button>

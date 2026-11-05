@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import { useFormik, FormikProvider } from "formik";
 import { Button, TextField } from "@madie/madie-design-system/dist/react";
 import "./Parameters.scss";
@@ -8,12 +6,10 @@ import { ParameterSchemaValidator } from "../../validations/ParameterSchemaValid
 import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../editor/MonacoCqlEditor";
-
 export interface Parameter {
   parameterName?: string;
   expression?: string;
 }
-
 export interface ParameterProps {
   canEdit: boolean;
   handleParameterEdit?: Function;
@@ -21,9 +17,10 @@ export interface ParameterProps {
   onClose?: Function;
   setOpenParameterDialog?: Function;
 }
-
-const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
-
+const emptyParseResult: MonacoParseResult = {
+  annotations: [],
+  markers: [],
+};
 export default function ParameterBuilder({
   canEdit,
   handleParameterEdit,
@@ -32,7 +29,6 @@ export default function ParameterBuilder({
   setOpenParameterDialog,
 }: ParameterProps) {
   const [editorHeight] = useState("180px");
-
   const formik = useFormik({
     initialValues: {
       parameterName: parameter?.parameterName || "",
@@ -43,17 +39,15 @@ export default function ParameterBuilder({
     onSubmit: (values) => {},
   });
   const { resetForm } = formik;
-
   return (
     <div>
       <form id="parameter-form" onSubmit={formik.handleSubmit}>
-        <div tw="flex space-x-5">
-          <div tw="w-1/2">
+        <div className="me:flex me:editor-space-x-5">
+          <div className="me:w-1/2">
             <TextField
               required="required"
               id="parameter-name"
               name="parameterName"
-              tw="w-full"
               readOnly={!canEdit}
               disabled={!canEdit}
               label="Paramter Name"
@@ -64,6 +58,7 @@ export default function ParameterBuilder({
               {...formik.getFieldProps("parameterName")}
               error={Boolean(formik.errors.parameterName)}
               helperText={formik.errors.parameterName}
+              className="me:w-full"
             />
           </div>
         </div>
@@ -82,17 +77,21 @@ export default function ParameterBuilder({
             />
           </div>
         </FormikProvider>
-        <div style={{ marginTop: "24px" }}>
+        <div
+          style={{
+            marginTop: "24px",
+          }}
+        >
           <div className="form-actions">
             <Button
               variant="outline"
               data-testid="parameter-cancel-btn"
               disabled={!formik.dirty || !canEdit}
-              tw="mr-4"
               onClick={() => {
                 resetForm();
                 setOpenParameterDialog(false);
               }}
+              className="me:mr-4"
             >
               Cancel
             </Button>

@@ -16,6 +16,11 @@ export interface CustomCqlCode extends Omit<CqlCode, "codeSystem"> {
   errorMessage?: string;
 }
 
+export interface CodeMappingCandidate {
+  name: string;
+  source: CqlCode | CqlCodeSystem;
+}
+
 export const mapCodeSystemErrorsToTranslationErrors = (
   cqlCodes: CustomCqlCode[]
 ): ElmTranslationError[] => {
@@ -99,6 +104,45 @@ export const getCustomCqlCodes = (
       ),
     };
   });
+};
+
+export const getCodeMappingCandidates = (
+  cqlResult: CqlResult
+): CodeMappingCandidate[] => [
+  ...(cqlResult?.codes?.map((code) => ({
+    name: code.codeSystem.replace(/['"]/g, ""),
+    source: code,
+  })) ?? []),
+
+  ...(cqlResult?.codeSystems?.map((codeSystem) => ({
+    name: codeSystem.name.replace(/['"]/g, ""),
+    source: codeSystem,
+  })) ?? []),
+];
+
+export const validateCodeSystemMapping = async (
+  codes: string[],
+  terminologyServiceApi: TerminologyServiceApi
+): Promise<string[]> => {
+  return terminologyServiceApi.validateCodeSystemMapping(codes);
+};
+
+export const mapMappingErrorsToTranslationErrors = (
+  mappingErrors: string[],
+  candidates: CodeMappingCandidate[]
+): ElmTranslationError[] => {
+  return candidates
+    .filter((candidate) => mappingErrors.includes(candidate.name))
+    .map((candidate) =>
+      getCqlErrors(
+        {
+          ...candidate.source,
+          errorMessage: `MADiE does not support the code system, '${candidate.name}'. Please contact the help desk if you need to use this code system.`,
+        },
+        "Error",
+        "Code System Mapping"
+      )
+    );
 };
 
 const ValidateCustomCqlCodes = async (

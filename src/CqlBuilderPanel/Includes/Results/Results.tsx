@@ -11,9 +11,14 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import tw from "twin.macro";
-import "styled-components/macro";
-import { CqlLibrary } from "../../../api/useCqlLibraryServiceApi";
+import {
+  CqlLibrary,
+  CqlLibraryDto,
+} from "../../../api/useCqlLibraryServiceApi";
+import {
+  getCqlIncludeName,
+  getQualifiedLibraryName,
+} from "../../../utils/cqlLibraryUtils";
 import {
   MadieDeleteDialog,
   MadieDiscardDialog,
@@ -26,6 +31,7 @@ import CqlLibraryDetailsDialog, {
 import toastReducer from "../../../common/ToastReducer";
 import IncludeResultActions from "./IncludeResultActions";
 import { useMemoizedLibrarySet } from "./useMemoisedLibrarySet";
+import { Chip, Tooltip } from "@mui/material";
 
 type PropTypes = {
   cqlLibraries: Array<CqlLibrary>;
@@ -40,7 +46,6 @@ type PropTypes = {
   handleDeleteLibrary?: (library) => void;
   operation?: string;
 };
-
 type RowDef = {
   id: string;
   name: string;
@@ -48,10 +53,8 @@ type RowDef = {
   alias: string;
   ownerDisplayName: string;
   librarySetId: string;
+  externalLibrary: boolean;
 };
-
-const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-
 const Results = ({
   cqlLibraries,
   canEdit,
@@ -68,7 +71,6 @@ const Results = ({
   const [visibleLibraries, setVisibleLibraries] = useState<CqlLibrary[]>([]);
   const [openLibraryDialog, setOpenLibraryDialog] = useState<boolean>(false);
   const [selectedLibrary, setSelectedLibrary] = useState<SelectedLibrary>();
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const [rowIndex, setRowIndex] = useState<string>();
@@ -92,7 +94,6 @@ const Results = ({
   const [offset, setOffset] = useState<number>(0);
   const [currentLimit, setCurrentLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   const managePagination = useCallback(() => {
     if (cqlLibraries.length < currentLimit) {
       setOffset(0);
@@ -120,12 +121,10 @@ const Results = ({
     setTotalItems,
     setTotalPages,
   ]);
-
   const canGoNext = (() => {
     return currentPage < totalPages;
   })();
   const canGoPrev = currentPage > 1;
-
   const handlePageChange = (e, v) => {
     setCurrentPage(v);
   };
@@ -133,7 +132,6 @@ const Results = ({
     setCurrentLimit(e.target.value);
     setCurrentPage(1);
   };
-
   useEffect(() => {
     managePagination();
   }, [cqlLibraries, currentPage, currentLimit]);
@@ -143,16 +141,17 @@ const Results = ({
     return {
       id: library.id,
       librarySetId: library.librarySetId,
-      name: library.cqlLibraryName,
+      // NPM libraries are referenced in CQL by their prefixed name
+      name: getQualifiedLibraryName(library),
       version: library.version,
       alias: library.alias,
       ownerDisplayName: library.ownerDisplayName,
+      externalLibrary: !!library.externalLibrary,
     };
   });
 
   // Use the custom hook to memoize the fetchLibrarySet async function
   const memoizedLibrarySetFetch = useMemoizedLibrarySet();
-
   const updateLibrarySelection = async (
     version: string,
     setId: string,
@@ -164,17 +163,20 @@ const Results = ({
       if (librarySet) {
         // filter out library for selected version from family of library
         const library = librarySet.libraries.find(
-          (library: CqlLibrary) => library.version === version
+          (library: CqlLibraryDto) => library.version === version
         );
         // list if all the versions for selected library
         const versions = librarySet.libraries.map(
-          (library: CqlLibrary) => library.version
+          (library: CqlLibraryDto) => library.version
         );
         setSelectedLibrary({
           id: library.id,
-          name: library.cqlLibraryName,
+          name: getQualifiedLibraryName({
+            ...library,
+            externalLibrary: library.external,
+          }),
           alias: alias,
-          ownerDisplayName: ownerDisplayName,
+          ownerDisplayName: ownerDisplayName || library.ownerDisplayName,
           librarySetId: setId,
           version: version,
           cql: library.cql,
@@ -186,7 +188,10 @@ const Results = ({
     } catch (error) {
       dispatch({
         type: "SHOW_TOAST",
-        payload: { type: "danger", message: error.message },
+        payload: {
+          type: "danger",
+          message: error.message,
+        },
       });
     }
   };
@@ -207,11 +212,10 @@ const Results = ({
       setDiscardDialogOpen(true);
     }
   };
-
   const showDeleteConfirmation = (index) => {
     const rowModal = table.getRow(index).original;
     setSelectedLibrary({
-      name: rowModal.name,
+      name: getCqlIncludeName(rowModal.name),
       version: rowModal.version,
       alias: rowModal.alias,
     } as SelectedLibrary);
@@ -221,7 +225,6 @@ const Results = ({
       setDiscardDialogOpen(true);
     }
   };
-
   const onDiscardContinue = async () => {
     setEditorValue(cql);
     setIsCQLUnchanged(true);
@@ -238,12 +241,44 @@ const Results = ({
     }
     setDiscardDialogOpen(false);
   };
-
   const columns = useMemo<ColumnDef<RowDef>[]>(() => {
     const columnDefs = [
       {
         header: "name",
         accessorKey: "name",
+        cell: (row: any) => {
+          const rowModal: RowDef = row.cell.row.original;
+          return (
+            <div className="me:flex me:flex-wrap me:items-center me:gap-2">
+              <span>{rowModal.name}</span>
+              {rowModal.externalLibrary && (
+                <Tooltip
+                  title="These libraries are created and stored in NPM and cannot be edited in MADiE"
+                  id={`external-library-tooltip-${row.cell.row.id}`}
+                  placement="bottom"
+                  arrow
+                  slotProps={{
+                    tooltip: {
+                      sx: {
+                        zIndex: 99,
+                        backgroundColor: "#333",
+                        "& .MuiTooltip-arrow": {
+                          color: "#333",
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <Chip
+                    className="chip-external"
+                    label="From HL7 IG"
+                    aria-label="External"
+                  />
+                </Tooltip>
+              )}
+            </div>
+          );
+        },
       },
       {
         header: "version",
@@ -282,36 +317,43 @@ const Results = ({
         ]
       : columnDefs;
   }, [canEdit, cqlLibraries, isCQLUnchanged]);
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
   return (
     <>
       <div className="search-results-container">
         <table
-          tw="min-w-full"
           data-testid="library-results-tbl"
           id="library-results-tbl"
           style={{
             borderBottom: "solid 1px #8c8c8c",
           }}
+          className="me:min-w-full"
         >
-          <thead tw="bg-slate" style={{ borderBottom: "solid 1px #8c8c8c" }}>
+          <thead
+            style={{
+              borderBottom: "solid 1px #8c8c8c",
+            }}
+            className="me:bg-slate"
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TH key={header.id} scope="col">
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="me:p-3 me:text-left me:text-sm me:font-bold me:capitalize"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TH>
+                  </th>
                 ))}
               </tr>
             ))}
@@ -332,7 +374,7 @@ const Results = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} tw="text-center p-2">
+                <td colSpan={columns.length} className="me:text-center me:p-2">
                   No Results were found
                 </td>
               </tr>
@@ -375,7 +417,11 @@ const Results = ({
         toastType={toastState.type}
         open={toastState.open}
         message={toastState.message}
-        onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        onClose={() =>
+          dispatch({
+            type: "HIDE_TOAST",
+          })
+        }
         autoHideDuration={8000}
       />
       <MadieDeleteDialog
@@ -393,5 +439,4 @@ const Results = ({
     </>
   );
 };
-
 export default Results;

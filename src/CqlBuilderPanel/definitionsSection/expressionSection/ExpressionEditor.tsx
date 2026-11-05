@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import "twin.macro";
-import "styled-components/macro";
 import {
   Select,
   Button,
@@ -13,16 +11,12 @@ import {
   timingNames,
 } from "./ExpressionEditorHelper";
 import * as _ from "lodash";
-
 import Skeleton from "@mui/material/Skeleton";
-
 import { CqlBuilderLookup, Lookup } from "../../../model/CqlBuilderLookup";
-
 import MonacoCqlEditor, {
   MonacoParseResult,
 } from "../../../editor/MonacoCqlEditor";
 import { useFormikContext } from "formik";
-
 interface ExpressionsProps {
   canEdit: boolean;
   expressionEditorOpen: boolean;
@@ -33,7 +27,6 @@ interface ExpressionsProps {
   setCursorPosition: Function;
   setAutoInsert: Function;
 }
-
 export const availableTypes = [
   "Parameters",
   "Definitions",
@@ -42,7 +35,6 @@ export const availableTypes = [
   "Timing",
   "Pre-Defined Functions",
 ];
-
 export default function ExpressionEditor(props: ExpressionsProps) {
   const {
     canEdit,
@@ -59,8 +51,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   const monacoEditorRef = useRef<any>(null);
   const editorValueRef = useRef(expressionEditorValue || "");
   const formik: any = useFormikContext();
-  const emptyParseResult: MonacoParseResult = { annotations: [], markers: [] };
-
+  const emptyParseResult: MonacoParseResult = {
+    annotations: [],
+    markers: [],
+  };
   const renderMenuItems = (options: string[]) => {
     return cqlBuilderLookupsTypes
       ? [
@@ -80,12 +74,10 @@ export default function ExpressionEditor(props: ExpressionsProps) {
           </MenuItem>
         ));
   };
-
   const handleCursorChange = (newCursorPosition) => {
     setCursorPosition(newCursorPosition);
     setAutoInsert(false); // disable auto-insert when cursor moves
   };
-
   const getDefinitionNameWithAlias = (def: Lookup, type: string) => {
     const lookupTypeName =
       def.libraryAlias && type !== "fluentFunctions"
@@ -95,11 +87,9 @@ export default function ExpressionEditor(props: ExpressionsProps) {
       ? lookupTypeName + "()"
       : lookupTypeName;
   };
-
   useEffect(() => {
     editorValueRef.current = expressionEditorValue || "";
   }, [expressionEditorValue]);
-
   useEffect(() => {
     if (!textAreaRef) {
       return;
@@ -134,7 +124,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
         },
       },
     };
-
     return () => {
       textAreaRef.current = null;
     };
@@ -153,10 +142,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
     const newHeight = Math.min(maxHeight, proposedNewHeight) + "px";
     setEditorHeight(newHeight);
   }, [expressionEditorValue]);
-
   useEffect(() => {
     const type = formik.values.type;
-
     if (
       type === "Parameters" ||
       type === "Definitions" ||
@@ -193,7 +180,6 @@ export default function ExpressionEditor(props: ExpressionsProps) {
   const handleContentChange = (value) => {
     setExpressionEditorValue(value);
   };
-
   return (
     <div>
       <ExpandingSection
@@ -201,8 +187,8 @@ export default function ExpressionEditor(props: ExpressionsProps) {
         showHeaderContent={expressionEditorOpen}
         children={
           <>
-            <div tw="flex flex-wrap">
-              <div tw="w-1/2">
+            <div className="me:flex me:flex-wrap">
+              <div className="me:w-1/2">
                 <Select
                   label="Type"
                   id="type-selector"
@@ -222,7 +208,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                   }}
                 />
               </div>
-              <div tw="flex-grow pl-5">
+              <div className="me:grow me:pl-5">
                 <AutoComplete
                   label="Name"
                   id="name-selector"
@@ -247,7 +233,7 @@ export default function ExpressionEditor(props: ExpressionsProps) {
               </div>
             </div>
 
-            <div tw="float-right">
+            <div className="me:float-right">
               <Button
                 type="submit"
                 data-testid="expression-insert-btn"
@@ -258,7 +244,11 @@ export default function ExpressionEditor(props: ExpressionsProps) {
                 Insert
               </Button>
             </div>
-            <div style={{ marginBottom: "72px" }} />
+            <div
+              style={{
+                marginBottom: "72px",
+              }}
+            />
             <div
               data-testid="expression-editor-wrapper"
               id="expression-editor-wrapper"

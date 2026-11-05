@@ -59,6 +59,9 @@ module.exports = (env, argv) => ({
   // chunks. Consumer micro-frontends only serve the main bundle, so extra chunk
   // requests would 404 at runtime.
   plugins: [
+    new webpack.ProvidePlugin({
+      process: require.resolve("process/browser.js"),
+    }),
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1,
     }),
@@ -69,7 +72,6 @@ module.exports = (env, argv) => ({
 
     "@emotion/react": "@emotion/react",
     "@emotion/styled": "@emotion/styled",
-    "styled-components": "styled-components",
 
     "@mui/material": "@mui/material",
     "@mui/icons-material": "@mui/icons-material",

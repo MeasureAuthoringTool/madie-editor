@@ -1,13 +1,10 @@
 import React from "react";
 import { MadieDialog, TextField } from "@madie/madie-design-system/dist/react";
 import { Checkbox, FormControlLabel } from "@mui/material";
-import "twin.macro";
-import "styled-components/macro";
 import { useFormik } from "formik";
 import { SuffixSchemaValidator } from "../../../../validations/SuffixSchemaValidator";
 import _ from "lodash";
 import { getFhirCodeSystemVersion } from "../savedCodesSubSection/SavedCodesSubSection";
-
 export default function EditCodeDetailsDialog({
   measureModel,
   selectedCodeDetails,
@@ -34,7 +31,6 @@ export default function EditCodeDetailsDialog({
     },
     enableReinitialize: true,
   });
-
   return (
     <MadieDialog
       form={true}
@@ -55,28 +51,31 @@ export default function EditCodeDetailsDialog({
         disabled: Boolean(formik.errors.suffix),
       }}
     >
-      <div tw="flex flex-col">
-        <div tw="flex mt-4">
-          <div tw="w-1/3" data-testid="code-info">
+      <div className="me:flex me:flex-col">
+        <div className="me:flex me:mt-4">
+          <div data-testid="code-info" className="me:w-1/3">
             <p className="result-label">Code</p>
             <span className="result-value">{selectedCodeDetails?.name}</span>
           </div>
 
-          <div tw="flex-grow pl-5" data-testid="code-description-info">
+          <div data-testid="code-description-info" className="me:grow me:pl-5">
             <p className="result-label">Code Description</p>
             <span className="result-value">{selectedCodeDetails?.display}</span>
           </div>
         </div>
 
-        <div tw="flex md:flex-wrap mt-4">
-          <div tw="w-1/3" data-testid="code-system-info">
+        <div className="me:flex me:md:flex-wrap me:mt-4">
+          <div data-testid="code-system-info" className="me:w-1/3">
             <p className="result-label">Code System</p>
             <span className="result-value">
               {selectedCodeDetails?.codeSystem}
             </span>
           </div>
 
-          <div tw="flex-grow pl-5" data-testid="code-system-version-info">
+          <div
+            data-testid="code-system-version-info"
+            className="me:grow me:pl-5"
+          >
             <p className="result-label">Code System Version</p>
             <span className="result-value">
               {_.includes(measureModel, "QDM")
@@ -86,8 +85,8 @@ export default function EditCodeDetailsDialog({
           </div>
         </div>
 
-        <div tw="flex md:flex-wrap mt-4">
-          <div tw="w-48">
+        <div className="me:flex me:md:flex-wrap me:mt-4">
+          <div className="me:w-48">
             <TextField
               {...formik.getFieldProps("suffix")}
               placeholder="Suffix"
@@ -105,7 +104,7 @@ export default function EditCodeDetailsDialog({
               maxLength={4}
             />
           </div>
-          <div tw="flex-grow pl-5 mt-2">
+          <div className="me:grow me:pl-5 me:mt-2">
             <FormControlLabel
               control={
                 <Checkbox

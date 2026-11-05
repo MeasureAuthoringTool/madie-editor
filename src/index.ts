@@ -1,3 +1,4 @@
+import "./styles/tailwind.css";
 import { FC } from "react";
 import MadieCqlEditor, {
   EditorPropsType,
