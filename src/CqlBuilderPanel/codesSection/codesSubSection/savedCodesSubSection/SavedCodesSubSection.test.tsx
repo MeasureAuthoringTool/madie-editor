@@ -69,6 +69,54 @@ const parsedCodesList: CodesList[] = [
 ];
 
 describe("Saved Codes section component", () => {
+  const warningProps = {
+    measureStoreCql: mockMeasureStoreCql,
+    measureModel: "QDM",
+    canEdit: true,
+    handleApplyCode: undefined,
+    handleCodeDelete: undefined,
+    setEditorVal: undefined,
+    setIsCQLUnchanged: undefined,
+    isCQLUnchanged: true,
+    parsedCodesList,
+    hasCqlError: false,
+  };
+
+  it("delegates the CQL warning to the host alert component", async () => {
+    (
+      mockTerminologyServiceApi.getCodesAndCodeSystems as jest.Mock
+    ).mockResolvedValueOnce({ data: [null] });
+    const HostAlert = jest.fn(({ content }) => (
+      <div data-testid="host-alert">{content}</div>
+    ));
+    render(
+      <SavedCodesSubSection {...warningProps} AlertComponent={HostAlert} />
+    );
+
+    expect(await screen.findByTestId("host-alert")).toHaveTextContent(
+      "Your Measure CQL contains errors."
+    );
+    expect(HostAlert.mock.calls[0][0]).toEqual(
+      expect.objectContaining({ type: "warning", canClose: false })
+    );
+    expect(screen.queryByTestId("minimize-button-0")).not.toBeInTheDocument();
+  });
+
+  it("keeps standalone minimize and restore behavior without a host", async () => {
+    (
+      mockTerminologyServiceApi.getCodesAndCodeSystems as jest.Mock
+    ).mockResolvedValueOnce({ data: [null] });
+    render(<SavedCodesSubSection {...warningProps} />);
+    const warning = await screen.findByText(/Your Measure CQL contains errors/);
+
+    userEvent.click(screen.getByTestId("minimize-button-0"));
+    expect(warning).not.toBeInTheDocument();
+    userEvent.click(screen.getByTestId("minimized-alert"));
+    expect(
+      screen.getByText(/Your Measure CQL contains errors/)
+    ).toBeInTheDocument();
+  });
+
   const checkRows = async (numberOfRows: number) => {
     const tableBody = await screen.findByTestId("saved-codes-tbl-body");
     expect(tableBody).toBeInTheDocument();

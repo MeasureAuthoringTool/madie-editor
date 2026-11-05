@@ -1,4 +1,5 @@
 import React from "react";
+import type { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import CqlError from "@madie/cql-antlr-parser/dist/src/dto/CqlError";
 import MonacoCqlEditor from "../editor/MonacoCqlEditor";
@@ -58,6 +59,7 @@ export interface EditorPropsType {
   getCqlDefinitionReturnTypes?: () => void;
   setOutboundAnnotations?: Function;
   hasCqlError?: boolean;
+  AlertComponent?: React.ComponentType<React.ComponentProps<typeof MadieAlert>>;
 }
 
 export interface UpdatedCqlObject {
