@@ -153,7 +153,7 @@ declare module "@madie/madie-util" {
       loggedInUMLS: boolean,
       model: string,
       oid?: string,
-      valueSetUrl?: string
+      valueSetUrls?: string[]
     ): Promise<ValueSet>;
   }
 

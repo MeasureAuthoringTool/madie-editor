@@ -30,7 +30,13 @@ const GetValueSetErrors = async (
           valuesetsErrorArray.push(valueSetUrlErrors);
         }
         await terminologyServiceApi
-          .getValueSet(locator, loggedInUMLS, model, oid, valueSetUrl)
+          .getValueSet(
+            locator,
+            loggedInUMLS,
+            model,
+            oid,
+            valueSetUrl ? [valueSetUrl] : []
+          )
           .then((response) => {
             if (response.errorMsg) {
               const vsErrorForElmTranslationError: ElmTranslationError =
