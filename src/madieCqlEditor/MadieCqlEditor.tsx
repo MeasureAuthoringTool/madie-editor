@@ -58,6 +58,7 @@ export interface EditorPropsType {
   getCqlDefinitionReturnTypes?: () => void;
   setOutboundAnnotations?: Function;
   hasCqlError?: boolean;
+  AlertComponent?: React.ComponentType<any>;
 }
 
 export interface UpdatedCqlObject {
