@@ -23,6 +23,7 @@ interface CodesSectionProps {
   isCQLUnchanged: boolean;
   handleApplyCode;
   hasCqlError?: boolean;
+  AlertComponent?: React.ComponentType<any>;
 }
 
 export default function CodesSection({
@@ -36,6 +37,7 @@ export default function CodesSection({
   isCQLUnchanged,
   handleApplyCode,
   hasCqlError,
+  AlertComponent,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("code");
   const { codeSystems } = useCodeSystems();
@@ -104,6 +106,7 @@ export default function CodesSection({
             isCQLUnchanged={isCQLUnchanged}
             parsedCodesList={parsedCodesList}
             hasCqlError={hasCqlError}
+            AlertComponent={AlertComponent}
           />
         )}
       </div>

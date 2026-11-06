@@ -46,6 +46,7 @@ const CqlEditorWithTerminology = ({
   resetCql,
   getCqlDefinitionReturnTypes,
   hasCqlError,
+  AlertComponent,
 }: EditorPropsType) => {
   const [expanded, setExpanded] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -143,6 +144,7 @@ const CqlEditorWithTerminology = ({
                 resetCql={resetCql}
                 getCqlDefinitionReturnTypes={getCqlDefinitionReturnTypes}
                 hasCqlError={hasCqlError}
+                AlertComponent={AlertComponent}
               />
             </Allotment.Pane>
           )}
