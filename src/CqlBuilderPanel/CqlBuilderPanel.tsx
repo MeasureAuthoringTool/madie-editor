@@ -64,6 +64,7 @@ export default function CqlBuilderPanel({
   getCqlDefinitionReturnTypes,
   makeExpanded,
   hasCqlError,
+  AlertComponent = MadieAlert,
 }) {
   const [activeTab, setActiveTabState] = useState<string>(
     getTabFromUrl() || "includes"
@@ -230,6 +231,7 @@ export default function CqlBuilderPanel({
               isCQLUnchanged={isCQLUnchanged}
               handleApplyCode={handleApplyCode}
               hasCqlError={hasCqlError}
+              AlertComponent={AlertComponent}
             />
           )}
           {activeTab === "parameters" && (

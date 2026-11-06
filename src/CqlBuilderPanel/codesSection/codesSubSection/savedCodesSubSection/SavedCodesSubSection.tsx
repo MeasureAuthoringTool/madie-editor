@@ -85,6 +85,7 @@ export default function SavedCodesSubSection({
   isCQLUnchanged,
   parsedCodesList,
   hasCqlError,
+  AlertComponent = MadieAlert,
 }) {
   const [codes, setCodes] = useState<Code[]>();
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -317,7 +318,7 @@ export default function SavedCodesSubSection({
   return (
     <div>
       {showCqlHasErrorsAlert && (
-        <MadieAlert
+        <AlertComponent
           type="warning"
           content={
             <div aria-live="polite" role="alert">

@@ -9,6 +9,8 @@ import SavedCodesSubSection, {
 import { useCodeSystems } from "./useCodeSystems";
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import _ from "lodash";
+import type { EditorPropsType } from "../../madieCqlEditor/MadieCqlEditor";
+
 interface CodesSectionProps {
   canEdit: boolean;
   measureStoreCql: string;
@@ -20,6 +22,7 @@ interface CodesSectionProps {
   isCQLUnchanged: boolean;
   handleApplyCode;
   hasCqlError?: boolean;
+  AlertComponent?: EditorPropsType["AlertComponent"];
 }
 export default function CodesSection({
   canEdit,
@@ -32,6 +35,7 @@ export default function CodesSection({
   isCQLUnchanged,
   handleApplyCode,
   hasCqlError,
+  AlertComponent,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("code");
   const { codeSystems } = useCodeSystems();
@@ -98,6 +102,7 @@ export default function CodesSection({
             isCQLUnchanged={isCQLUnchanged}
             parsedCodesList={parsedCodesList}
             hasCqlError={hasCqlError}
+            AlertComponent={AlertComponent}
           />
         )}
       </div>

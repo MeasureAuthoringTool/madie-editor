@@ -9,6 +9,7 @@ import userEvent from "@testing-library/user-event";
 import CqlEditorWithTerminology from "./CqlEditorWithTerminology";
 import * as React from "react";
 import { ServiceConfig } from "../api/useServiceConfig";
+import * as savedCodesSection from "../CqlBuilderPanel/codesSection/codesSubSection/savedCodesSubSection/SavedCodesSubSection";
 
 jest.mock("../api/axios-instance");
 jest.mock("@madie/madie-util", () => ({
@@ -47,6 +48,48 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 describe("CqlEditorWithTerminology component", () => {
   afterEach(() => {
     window.history.replaceState({}, "", window.location.pathname);
+  });
+
+  it("forwards the host alert component to the saved-codes warning", async () => {
+    window.history.replaceState({}, "", "?tab=codes");
+    const HostAlert = jest.fn(({ content }) => (
+      <div data-testid="host-alert">{content}</div>
+    ));
+    const savedCodes = jest
+      .spyOn(savedCodesSection, "default")
+      .mockImplementation(({ AlertComponent }) =>
+        AlertComponent ? (
+          <AlertComponent
+            type="warning"
+            content="Saved codes warning"
+            canClose={false}
+          />
+        ) : null
+      );
+
+    try {
+      render(
+        <CqlEditorWithTerminology
+          serviceConfig={mockConfig}
+          value=""
+          measureStoreCql=""
+          measureModel="QDM 5.6"
+          hasCqlError={true}
+          AlertComponent={HostAlert}
+        />
+      );
+      fireEvent.click(screen.getByRole("tab", { name: /Saved Codes/ }));
+
+      expect(await screen.findByTestId("host-alert")).toHaveTextContent(
+        "Saved codes warning"
+      );
+      expect(HostAlert.mock.calls[0][0]).toEqual(
+        expect.objectContaining({ type: "warning", canClose: false })
+      );
+      expect(screen.queryByTestId("minimize-button-0")).not.toBeInTheDocument();
+    } finally {
+      savedCodes.mockRestore();
+    }
   });
 
   it("should have CQL Builder panel closed by default", async () => {
