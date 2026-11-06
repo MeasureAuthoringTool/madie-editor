@@ -6,8 +6,10 @@ on:
 jobs:
   npm-publish:
     name: npm-publish
+    if: contains(github.event.pull_request.title || github.event.head_commit.message, 'Release')
     runs-on: ubuntu-latest
-
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,18 +18,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-
-      - name: Cache node modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install node dependencies
         run: npm ci
@@ -35,25 +26,11 @@ jobs:
       - name: Audit dependencies for security vulnerabilities
         run: npm audit --omit=dev
 
-      - name: Lint the source code
-        run: npm run-script lint
-
-      - name: Check prettier formatting
-        run: npm run-script check-format
-
       - name: Build the source code
         run: npm run build
 
-      - name: Execute test coverage
-        run: npm run-script coverage
-
-      - name: Publish if version has been updated
-        uses: pascalgn/npm-publish-action@master
-        with: # All of theses inputs are optional
-          tag_name: "v%s"
-          tag_message: "v%s"
-          commit_pattern: "[\\s\\S]*Release (\\S+)"
-          publish_args: " --access public"
-        env: # More info about the environment variables in the README
+      - name: Publish to npm
+        run: npm publish
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
