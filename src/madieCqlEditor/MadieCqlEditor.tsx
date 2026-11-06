@@ -138,6 +138,30 @@ const parsingLibrary = (
   };
 };
 
+const sanitizeValueSetDeclaration = (
+  valueSetText: string
+): { sanitizedText: string; changed: boolean } => {
+  let sanitizedText = valueSetText;
+
+  const valueSetUrlMatch = sanitizedText.match(/'([^']*)'/);
+  if (valueSetUrlMatch) {
+    const valueSetUrl = valueSetUrlMatch[1];
+    if (valueSetUrl.includes("|")) {
+      sanitizedText = sanitizedText.replace(
+        valueSetUrl,
+        valueSetUrl.split("|")[0]
+      );
+    }
+  }
+
+  const cleanedText = sanitizedText.replace(/version\s+('.*?'|[^\s]+)/gi, "");
+
+  return {
+    sanitizedText: cleanedText,
+    changed: cleanedText !== valueSetText,
+  };
+};
+
 const updateCql = (
   parsedEditorCql: ParsedCql | undefined,
   libraryName: string,
@@ -193,28 +217,18 @@ const updateCql = (
     if (!valueSet.text) {
       return;
     }
-    const parser = new CqlAntlr(valueSet.text).buildParser();
-    const declaration = parser.valuesetDefinition();
-    const version = declaration.versionSpecifier();
-    const versionKeyword = declaration.children?.find(
-      (child) => child.text === "version"
+
+    const { sanitizedText, changed } = sanitizeValueSetDeclaration(
+      valueSet.text
     );
-    if (versionKeyword && version?.stop) {
-      const versionStart = parser.inputStream.get(
-        versionKeyword.sourceInterval.a
-      ).startIndex;
-      const characters = Array.from(valueSet.text);
-      const updatedDeclaration = characters
-        .slice(0, versionStart)
-        .concat(characters.slice(version.stop.stopIndex + 1))
-        .join("");
-      cqlUpdates.cql = cqlUpdates.cql.replace(
-        valueSet.text,
-        () => updatedDeclaration
-      );
-      cqlUpdates.isValueSetChanged = true;
+    if (!changed) {
+      return;
     }
+
+    cqlUpdates.cql = cqlUpdates.cql.replace(valueSet.text, () => sanitizedText);
+    cqlUpdates.isValueSetChanged = true;
   });
+
   cqlUpdates.isConceptRemoved = conceptRemoved;
   return cqlUpdates;
 };
