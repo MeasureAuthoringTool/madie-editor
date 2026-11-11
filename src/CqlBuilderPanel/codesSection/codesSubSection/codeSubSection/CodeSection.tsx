@@ -18,6 +18,7 @@ interface CodeSectionProps {
   handleFormSubmit: Function;
   canEdit: boolean;
   allCodeSystems: CodeSystem[];
+  codeSystemsLastUpdated?: string;
   blankResults: Function;
   measureModel: string;
 }
@@ -41,6 +42,7 @@ const renderMenuItems = (options) =>
 export default function CodeSection({
   handleFormSubmit,
   allCodeSystems,
+  codeSystemsLastUpdated,
   canEdit,
   blankResults,
   measureModel,
@@ -137,11 +139,9 @@ export default function CodeSection({
             >
               List updated:
               <span className="updated-date">
-                {`${
-                  allCodeSystems?.length
-                    ? moment(allCodeSystems[0]?.lastUpdated).format("L")
-                    : ""
-                }`}
+                {codeSystemsLastUpdated
+                  ? moment(codeSystemsLastUpdated).format("L")
+                  : ""}
               </span>
             </div>
             <form onSubmit={formik.handleSubmit}>

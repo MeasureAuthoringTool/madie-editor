@@ -47,6 +47,11 @@ export interface CodeSystemVersion {
   vsacVersion: string;
 }
 
+export interface CodeSystemJobStatus {
+  status: "RUNNING" | "COMPLETED" | "FAILED";
+  completedAt?: string;
+}
+
 export enum CodeStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -178,6 +183,24 @@ export class TerminologyServiceApi {
     } catch (err) {
       console.error("Error retrieving getAllCodeSystems: ", err);
       return [];
+    }
+  }
+
+  // Returns the most recent successful code system update job
+  async getCodeSystemsLastUpdated(): Promise<CodeSystemJobStatus | undefined> {
+    try {
+      const response = await axios.get<CodeSystemJobStatus>(
+        `${this.baseUrl}/terminology/code-systems/last-updated`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      // 204 (no job has completed yet) has an empty body
+      return response.data || undefined;
+    } catch (err) {
+      console.error("Error retrieving getCodeSystemsLastUpdated: ", err);
     }
   }
 

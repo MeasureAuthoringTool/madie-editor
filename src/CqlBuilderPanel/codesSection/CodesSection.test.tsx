@@ -73,6 +73,7 @@ const mockUseCodeSystems = useCodeSystems as jest.MockedFunction<
 >;
 mockUseCodeSystems.mockReturnValue({
   codeSystems: mockCodeSystems,
+  codeSystemsLastUpdated: "2026-11-09T12:00:00Z",
 });
 const renderEditor = () => {
   // @ts-ignore: required props not required for tests
@@ -107,6 +108,7 @@ describe("CodesSection", () => {
     expect(resultsSectionHeading).toBeInTheDocument();
     const listUpdated = await screen.findByText("List updated:");
     expect(listUpdated).toBeInTheDocument();
+    expect(listUpdated).toHaveTextContent("List updated:11/09/2026");
   });
 
   it("should render saved codes tab section", async () => {

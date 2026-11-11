@@ -11,6 +11,7 @@ import { Toast } from "@madie/madie-design-system/dist/react";
 interface CodeSectionProps {
   canEdit: boolean;
   allCodeSystems: CodeSystem[];
+  codeSystemsLastUpdated?: string;
   handleApplyCode: (code: string) => void;
   measureModel: string;
   editorVal: string;
@@ -19,6 +20,7 @@ interface CodeSectionProps {
 export default function CodeSubSection({
   canEdit,
   allCodeSystems,
+  codeSystemsLastUpdated,
   handleApplyCode,
   measureModel,
   editorVal,
@@ -66,6 +68,7 @@ export default function CodeSubSection({
       <CodeSection
         handleFormSubmit={handleFormSubmit}
         allCodeSystems={allCodeSystems}
+        codeSystemsLastUpdated={codeSystemsLastUpdated}
         canEdit={canEdit}
         blankResults={blankResults}
         measureModel={measureModel}

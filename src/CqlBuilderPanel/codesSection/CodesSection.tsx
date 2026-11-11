@@ -34,7 +34,7 @@ export default function CodesSection({
   hasCqlError,
 }: CodesSectionProps) {
   const [activeTab, setActiveTab] = useState<string>("code");
-  const { codeSystems } = useCodeSystems();
+  const { codeSystems, codeSystemsLastUpdated } = useCodeSystems();
   const [parsedCodesList, setParsedCodesList] = useState<CodesList[]>(null);
   useEffect(() => {
     if (measureStoreCql && !hasCqlError && !_.isEmpty(codeSystems)) {
@@ -80,6 +80,7 @@ export default function CodesSection({
         {activeTab === "code" && (
           <CodeSubSection
             allCodeSystems={codeSystems}
+            codeSystemsLastUpdated={codeSystemsLastUpdated}
             canEdit={canEdit}
             handleApplyCode={handleApplyCode}
             measureModel={measureModel}
