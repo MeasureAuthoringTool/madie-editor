@@ -5,6 +5,8 @@ import useTerminologyServiceApi, {
 
 export function useCodeSystems() {
   const [codeSystems, setCodeSystems] = useState<CodeSystem[]>([]);
+  const [codeSystemsLastUpdated, setCodeSystemsLastUpdated] =
+    useState<string>();
   // const [loading, setLoading] = useState(true); maybe add later since this call is slow
 
   const terminologyService = useRef(useTerminologyServiceApi());
@@ -17,7 +19,12 @@ export function useCodeSystems() {
       // setLoading(false); possibly add later
     };
     fetchCodeSystems();
+    terminologyService.current
+      .getCodeSystemsLastUpdated()
+      .then((lastCompletedJob) =>
+        setCodeSystemsLastUpdated(lastCompletedJob?.completedAt)
+      );
   }, []);
 
-  return { codeSystems };
+  return { codeSystems, codeSystemsLastUpdated };
 }

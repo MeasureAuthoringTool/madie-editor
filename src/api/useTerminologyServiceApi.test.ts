@@ -110,4 +110,47 @@ describe("TerminologyServiceApi test", () => {
       expect(response.data.svsVersion).toEqual(mockCode.svsVersion);
     });
   });
+
+  describe("Code systems last updated", () => {
+    const service = new TerminologyServiceApi(
+      "http://mock-base-url",
+      () => "test.jwt"
+    );
+
+    it("should return the last completed code system update job", async () => {
+      const lastCompletedJob = {
+        status: "COMPLETED",
+        completedAt: "2026-11-09T12:00:00Z",
+      };
+      mockedAxios.get.mockResolvedValue({ data: lastCompletedJob } as any);
+
+      expect(await service.getCodeSystemsLastUpdated()).toEqual(
+        lastCompletedJob
+      );
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "http://mock-base-url/terminology/code-system-job/last-updated",
+        { headers: { Authorization: "Bearer test.jwt" } }
+      );
+    });
+
+    it("should return undefined when no code system update job has completed", async () => {
+      mockedAxios.get.mockResolvedValue({ status: 204, data: "" } as any);
+
+      expect(await service.getCodeSystemsLastUpdated()).toBeUndefined();
+    });
+
+    it("should return undefined when the request fails", async () => {
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+      mockedAxios.get.mockRejectedValue(new Error("fail"));
+
+      expect(await service.getCodeSystemsLastUpdated()).toBeUndefined();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error retrieving getCodeSystemsLastUpdated: ",
+        expect.any(Error)
+      );
+      consoleSpy.mockRestore();
+    });
+  });
 });

@@ -360,4 +360,37 @@ describe("Code Section component", () => {
     expect(codeSystemVersionOptions.length).toEqual(1);
     expect(codeSystemVersionOptions[0]).toHaveTextContent("1.0");
   });
+
+  it("should show the list updated date of the last completed code system update job", () => {
+    render(
+      <CodeSection
+        canEdit={readOnly}
+        allCodeSystems={mockedCodeSystems}
+        codeSystemsLastUpdated="2026-11-09T12:00:00Z"
+        handleFormSubmit={handleFormSubmitMock}
+        blankResults={jest.fn()}
+        measureModel="QDM v5.6"
+      />
+    );
+
+    expect(screen.getByTestId("code-list-updated-date")).toHaveTextContent(
+      /^List updated:11\/09\/2026$/
+    );
+  });
+
+  it("should leave the list updated date blank when no code system update job has completed", () => {
+    render(
+      <CodeSection
+        canEdit={readOnly}
+        allCodeSystems={mockedCodeSystems}
+        handleFormSubmit={handleFormSubmitMock}
+        blankResults={jest.fn()}
+        measureModel="QDM v5.6"
+      />
+    );
+
+    expect(screen.getByTestId("code-list-updated-date")).toHaveTextContent(
+      /^List updated:$/
+    );
+  });
 });
