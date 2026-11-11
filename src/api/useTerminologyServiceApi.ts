@@ -190,7 +190,7 @@ export class TerminologyServiceApi {
   async getCodeSystemsLastUpdated(): Promise<CodeSystemJobStatus | undefined> {
     try {
       const response = await axios.get<CodeSystemJobStatus>(
-        `${this.baseUrl}/terminology/code-systems/last-updated`,
+        `${this.baseUrl}/terminology/code-system-job/last-updated`,
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,

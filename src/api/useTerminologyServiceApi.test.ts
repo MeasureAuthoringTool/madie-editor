@@ -128,7 +128,7 @@ describe("TerminologyServiceApi test", () => {
         lastCompletedJob
       );
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        "http://mock-base-url/terminology/code-systems/last-updated",
+        "http://mock-base-url/terminology/code-system-job/last-updated",
         { headers: { Authorization: "Bearer test.jwt" } }
       );
     });
